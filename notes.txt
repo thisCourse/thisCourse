@@ -1,0 +1,9 @@
+node-dev --debug server.js
+sudo mongod
+mongo
+node-inspector
+
+http://127.0.0.1:3000/static/api_test.html
+http://127.0.0.1:3000/static/backbonetest.html
+http://127.0.0.1:8080/debug?port=5858
+

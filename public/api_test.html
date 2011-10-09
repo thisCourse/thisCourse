@@ -1,0 +1,99 @@
+<html>
+<head>
+<script src="/static/jquery.min.js" type="text/javascript"></script>
+<script src="/static/api_test.js" type="text/javascript"></script>
+<script src="/static/api_testsuite.js" type="text/javascript"></script>
+
+<style>
+.submit_button, button {
+    padding: 5px 15px;
+}
+#run_tests {
+    margin-left: 222px;
+}
+textarea {
+    width: 900px;
+    height: 100px;
+}
+#request_url {
+    width: 854px;
+}
+#content {
+    width: 900px;
+    text-align: left;
+}
+</style>
+<title>API Test</title>
+</head>
+<body>
+
+<script type="text/javascript">
+    $(function() {
+        $('.submit_button').click(function() {
+
+            $('#response_data').val('')
+            $('#response_code').html('')
+            
+            var data = $('#request_data').val()
+            if (data.length > 0)
+                data = JSON.stringify(eval('json = ' + data))
+        
+            $.ajax($('#request_url').val(), {
+                contentType: 'application/json',
+                data: data,
+                dataType: "json",
+                cache: false,
+                type: $(this).val(),
+                success: function(data, textStatus, jqXHR) {
+                    $('#response_data').val(JSON.stringify(data))
+                },                
+                error: function(textStatus, jqXHR) {
+                    $('#response_data').val(JSON.stringify(JSON.parse(textStatus.responseText)))
+                },
+                complete: function(textStatus, jqXHR) {
+                    $('#response_code').html('(' + textStatus.status + ')')
+                }
+            })
+            
+        })
+        
+        $('#request_url').keypress(function(ev) {
+            if (ev.which==13)
+                $('.submit_button').first().click()
+        
+        })
+        
+        $('#run_tests').click(run_api_tests)
+        
+    })
+</script>
+
+<center>
+<div id="content">
+
+<p>
+URL: <input type="text" value="/api/docs/" id="request_url">
+</p>
+
+<p>
+JSON to send:<br/>
+<textarea id="request_data"></textarea>
+</p>
+
+<p>
+<input type="Submit" class="submit_button" value="GET"/>
+<input type="Submit" class="submit_button" value="POST"/>
+<input type="Submit" class="submit_button" value="PUT"/>
+<input type="Submit" class="submit_button" value="DELETE"/>
+<button id="run_tests">Run tests!</button>
+</p>
+
+<p>JSON response: <span id="response_code"></span><br/>
+<textarea id="response_data"></textarea>
+</p>
+
+</div>
+</center>
+
+</body>
+</html>

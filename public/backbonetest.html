@@ -1,0 +1,76 @@
+<html>
+<head>
+<script src="jquery.min.js"></script>
+<script src="json2.js"></script>
+<script src="underscore.js"></script>
+<script src="backbone.js"></script>
+</head>
+<body>
+
+<script>
+
+Backbone.Model.prototype.idAttribute = "_id";
+
+var Person = Backbone.Model.extend({
+    initialize: function(){
+        
+    },
+    defaults: {
+        name: ""
+    }
+});
+
+var PersonCollection = Backbone.Collection.extend({
+    model: Person,
+    url: '/api/test/4e7cc0441c4238e830000002/people'
+});
+
+people = new PersonCollection()
+
+PersonView = Backbone.View.extend({
+    tagName : "div",
+    className: "person",
+    render: function() {
+        this.$(".name").text(this.model.get('name'))
+    },
+    events: {
+        "dblclick div.name": "edit"
+    },
+    initialize: function() {
+        this.model.bind('change', this.render, this)
+        this.model.bind('destroy', this.remove, this)
+        $(this.el).append("<div class='name'>").appendTo("#people")
+    },
+    edit: function() {
+      //alert('editing!')
+      this.model.save({"name": this.model.get("name") + " :)"})
+    },        
+});
+
+AppView = Backbone.View.extend({
+    el: $("#people"),
+    initialize: function() {
+
+        people.bind('add',   this.addPerson, this);
+        people.bind('reset', this.addPeople, this);
+        people.bind('all',   this.render, this);
+
+        people.fetch()
+    },
+    addPerson: function(person) {
+      var view = new PersonView({model: person});
+      view.render()
+    },    
+    addPeople: function() {
+      people.each(this.addPerson)
+    }
+})
+
+app = new AppView
+
+</script>
+
+<div id="people" style="border: 3 solid black; width: 500px; height: 300px;"></div>
+
+</body>
+</html>
