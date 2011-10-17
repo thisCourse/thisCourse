@@ -31,8 +31,8 @@
   var _ = root._;
   if (!_ && (typeof require !== 'undefined')) _ = require('underscore')._;
 
-  // For Backbone's purposes, jQuery or Zepto owns the `$` variable.
-  var $ = root.jQuery || root.Zepto;
+  // For Backbone's purposes, jQuery, Zepto, or Ender owns the `$` variable.
+  var $ = root.jQuery || root.Zepto || root.ender;
 
   // Runs Backbone.js in *noConflict* mode, returning the `Backbone` variable
   // to its previous owner. Returns a reference to this Backbone object.
@@ -761,12 +761,13 @@
           fragment = window.location.pathname;
           var search = window.location.search;
           if (search) fragment += search;
-          if (fragment.indexOf(this.options.root) == 0) fragment = fragment.substr(this.options.root.length);
         } else {
           fragment = window.location.hash;
         }
       }
-      return decodeURIComponent(fragment.replace(hashStrip, ''));
+      fragment = decodeURIComponent(fragment.replace(hashStrip, ''));
+      if (!fragment.indexOf(this.options.root)) fragment = fragment.substr(this.options.root.length);
+      return fragment;
     },
 
     // Start the hash change handling, returning `true` if the current URL matches
@@ -936,7 +937,7 @@
       return el;
     },
 
-    // Set callbacks, where `this.callbacks` is a hash of
+    // Set callbacks, where `this.events` is a hash of
     //
     // *{"event selector": "callback"}*
     //
@@ -953,7 +954,7 @@
     delegateEvents : function(events) {
       if (!(events || (events = this.events))) return;
       if (_.isFunction(events)) events = events.call(this);
-      $(this.el).unbind('.delegateEvents' + this.cid);
+      this.undelegateEvents();
       for (var key in events) {
         var method = this[events[key]];
         if (!method) throw new Error('Event "' + events[key] + '" does not exist');
@@ -967,6 +968,11 @@
           $(this.el).delegate(selector, eventName, method);
         }
       }
+    },
+
+    // Clears all callbacks previously bound to the view with `delegateEvents`.
+    undelegateEvents: function() {
+      $(this.el).unbind('.delegateEvents' + this.cid);
     },
 
     // Performs the initial configuration of a View with a set of options.
@@ -984,7 +990,7 @@
     // Ensure that the View has a DOM element to render into.
     // If `this.el` is a string, pass it through `$()`, take the first
     // matching element, and re-assign it to `el`. Otherwise, create
-    // an element from the `id`, `className` and `tagName` proeprties.
+    // an element from the `id`, `className` and `tagName` properties.
     _ensureElement : function() {
       if (!this.el) {
         var attrs = this.attributes || {};
@@ -1022,7 +1028,7 @@
 
   // Override this function to change the manner in which Backbone persists
   // models to the server. You will be passed the type of request, and the
-  // model in question. By default, uses makes a RESTful Ajax request
+  // model in question. By default, makes a RESTful Ajax request
   // to the model's `url()`. Some possible customizations could be:
   //
   // * Use `setTimeout` to batch rapid-fire updates into a single request.

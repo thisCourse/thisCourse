@@ -5,7 +5,7 @@
         {
             type: "book",
             width: 6,
-            widgets: [
+            items: [
                 {
                     name: "Great book",
                     isbn: 7538223422,
@@ -21,7 +21,7 @@
         {
             type: "teacher",
             width: 12,
-            widgets: [
+            items: [
                 {
                     name: "Jamie Alexandre",
                     title: "TA",
@@ -38,13 +38,13 @@
 }
 
 {
-    course: 17,
+    course: 1,
     title: "Intro to Cognitive Science",
     sections: [
         {
             type: "teacher",
             width: 12,
-            widgets: [
+            items: [
                 {
                     name: "Belle Tancioni",
                     title: "TA",
@@ -60,7 +60,7 @@
         {
             type: "book",
             width: 12,
-            widgets: [
+            items: [
                 {
                     name: "OK book",
                     isbn: 2346235712,
@@ -81,7 +81,7 @@
         {
             type: "schedule",
             width: 12,
-            widgets: [
+            items: [
                 {
                     date: new Date(991034523223),
                     topic: "Stuff to do in this class"

@@ -4,6 +4,7 @@
     <script src="json2.js"></script>
     <script src="underscore.js"></script>
     <script src="backbone.js"></script>
+    <script src="backbone-relational.js"></script>
     <title>Backbone test</title>
     
     <style>
@@ -20,53 +21,53 @@
 
 Backbone.Model.prototype.idAttribute = "_id";
 
-var Content = Backbone.Model.extend({
-    initialize: function(){
-        this.sections = new SectionCollection()
-        this.sections.urlRoot = this.url() + "/sections" 
-    },
-    defaults: {
-        sections: []
-    },
+var Content = Backbone.RelationalModel.extend({
+    relations: [{
+        type: Backbone.HasMany,
+        key: 'sections',
+        relatedModel: 'Section',
+        collectionType: 'SectionCollection',
+        includeInJSON: "_id",
+        reverseRelation: {
+            key: 'parent',
+            includeInJSON: false
+        },
+    }],
     urlRoot: '/api/courses',
-    parse: function(response) {
-        var that = this
-        _(response.sections).each(function(section) {
-            //alert(JSON.stringify(section))
-            if (sec=that.sections.get(section._id))
-                sec.set(section)
-            else
-                that.sections.add(section)
-        })
-        delete response.sections
-        this.change()
-        return response
+    initialize: function() {
+        if (!this.get('sections'))
+            this.save({sections: []}) 
+        this.get('sections').url = this.url() + "/sections"
     }
 })
 
-var Section = Backbone.Model.extend({
+var Section = Backbone.RelationalModel.extend({
+    relations: [{
+        type: Backbone.HasMany,
+        key: 'items',
+        relatedModel: 'Item',
+        collectionType: 'ItemCollection',
+        includeInJSON: "_id",
+        reverseRelation: {
+            key: 'parent',
+            includeInJSON: false
+        },
+    }],
     initialize: function() {
-    },
-    defaults: {
-        type: "",
+        //if (!this.id) this.save()
+        if (!this.get('items'))
+            this.save({items: []})
+        //alert(JSON.stringify(this.attributes)) 
+        this.get('items').url = this.url() + "/items"
     },
     parse: function(response) {
-        this.items = new ItemCollection()
-        alert(this.url())
-        this.items.urlRoot = this.url() + "/items"
-
-        var that = this
-        _(response.items).each(function(item) {
-            that.items.add(item)
-        })
-        delete response.items
         return response
-    }
+    },
 })
 
-var Item = Backbone.Model.extend({
+var Item = Backbone.RelationalModel.extend({
     initialize: function() {
-        
+        //if (!this.id) this.save()        
     },
     defaults: {
         
@@ -75,12 +76,18 @@ var Item = Backbone.Model.extend({
 
 var SectionCollection = Backbone.Collection.extend({
     model: Section,
-    
+    initialize: function() {
+    },
+    // url: function() {
+        // return this.models[0].get('parent').url() + "/sections" 
+    // }    
 });
 
 var ItemCollection = Backbone.Collection.extend({
     model: Item,
-    
+    // url: function() {
+        // return this.models[0].get('parent').url() + "/items" 
+    // }    
 })
 
 ItemView = Backbone.View.extend({
@@ -151,7 +158,7 @@ MainView = Backbone.View.extend({
 })
 
 content = new Content({_id: "4e922db06ec0e63c9fc6fa51"})
-content.bind("change:sections", function() { alert("blah") })
+//content.bind("change:sections", function() { alert("blah") })
 content.fetch({silent: false})
 
 main = new MainView({model: content})

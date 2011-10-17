@@ -1,4 +1,3 @@
-// curl -d '{"user":{"name":"tj"}}' -H "Content-Type: application/json" http://localhost:3000/
 var $ = require('jquery')
 var mongoskin = require('mongoskin')
 var mongodb = require('mongodb')
@@ -256,3 +255,101 @@ function APIError(res, msg, code) {
     res.json({_error: {message: msg, code: code}}, code)
 }
 
+// recursive merge, with arrays merged by _id, using the order from the src (new) array 
+function merge(dest, src) {
+
+    if (typeof(dest) != 'object')
+        return
+
+    for (key in src) {
+        if (dest[key]===undefined || typeof(dest[key])==="string" || typeof(dest[key])==="number")
+            dest[key] = src[key]
+        else if (dest instanceof Array && src instanceof Array)
+            dest[key] = merge_arrays(dest[key], src[key])
+        else if (typeof(dest[key])=='object' && typeof(src[key])=='object')
+            merge(dest[key], src[key])
+    }
+}
+
+// merge arrays
+function merge_arrays(dest, src) {
+    var target = []
+        
+    // both are basic literals
+    var src_is_ids = true
+    var src_is_objects_with_ids = true
+    var src_is_literals = true
+    var dest_is_objects_with_ids = true
+    var dest_is_literals = true
+    for (i in src) {
+        if (src_is_ids && !id_regex(src[i]))
+            src_is_ids = false
+        if (src_is_objects_with_ids && !(typeof(src[i])==='object' && id_regex(src[i]['_id'])))
+            src_is_objects_with_ids = false
+        if (src_is_literals && (typeof(src[i])==='object'))
+            src_is_literals = false
+        if (!(src_is_ids || src_is_objects_with_ids || src_is_literals))
+            break
+    }
+    for (i in dest) {
+        if (dest_is_objects_with_ids && !(typeof(dest[i])==='object' && id_regex(dest[i]['_id'])))
+            dest_is_objects_with_ids = false
+        if (dest_is_literals && (typeof(dest[i])==='object'))
+            dest_is_literals = false
+        if (!(dest_is_objects_with_ids || dest_is_literals))
+            break
+    }
+    // src is ids, and dest is objects with ids: rearrange the dest objects according to src order
+    if (src_is_ids && dest_is_objects_with_ids) {
+        console.log("src_is_ids && dest_is_objects_with_ids")
+        target = Array(src.length)
+        var src_ids = {}
+        for (i in src)
+            src_ids[src[i]] = i
+        for (i in dest) {  // write the object into the specified position -- or the end, if id not in src
+            var index = src_ids[dest[i]._id]
+            if (index === undefined)
+                index = target.length
+            target[index] = dest[i] 
+        }            
+    }
+
+    // src is objects, and dest is objects: arrange the dest objects by source order, then stick remaining src objects on end
+    if (src_is_objects_with_ids && dest_is_objects_with_ids) {
+        console.log("src_is_objects_with_ids && dest_is_objects_with_ids")
+        target = Array(src.length)
+        var src_ids = {}
+        for (i in src)
+            src_ids[src[i]._id] = i
+        for (i in dest) {
+            var index = src_ids[dest[i]._id]
+            if (index === undefined)
+                target[target.length] = dest[i]
+            else {
+                target[index] = dest[i]
+                merge(target[index], src[index])
+                delete src[index]
+            }
+        }
+        for (i in src_ids)
+            target.push(src[src_ids[i]])
+    }
+    
+    if (src_is_literals && dest_is_literals) {
+        console.log("src_is_literals && dest_is_literals")
+        target = dest.concat(src)
+    }
+    
+    target = target.filter(function(e) { return !(e===undefined) })
+    
+    if (target.length==0) {
+        console.log("WARNING: no result of merging " + JSON.stringify(src) + " into " + JSON.stringify(dest))
+        return dest
+    } else {
+        return target
+    }
+}
+
+api.merge = merge
+api.merge_arrays = merge_arrays
+api.id_regex = id_regex
