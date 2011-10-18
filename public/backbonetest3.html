@@ -36,8 +36,9 @@ var Content = Backbone.RelationalModel.extend({
     urlRoot: '/api/courses',
     initialize: function() {
         if (!this.get('sections'))
-            this.save({sections: []}) 
-        this.get('sections').url = this.url() + "/sections"
+            this.save({sections: []})
+        var self = this 
+        this.get('sections').url = function() { self.url() + "/sections" }
     }
 })
 
@@ -57,37 +58,26 @@ var Section = Backbone.RelationalModel.extend({
         //if (!this.id) this.save()
         if (!this.get('items'))
             this.save({items: []})
-        //alert(JSON.stringify(this.attributes)) 
-        this.get('items').url = this.url() + "/items"
+        var self = this 
+        this.get('items').url = function() { return self.url() + "/items" }
     },
     parse: function(response) {
         return response
-    },
+    }
 })
 
 var Item = Backbone.RelationalModel.extend({
     initialize: function() {
         //if (!this.id) this.save()        
-    },
-    defaults: {
-        
     }
 })
 
 var SectionCollection = Backbone.Collection.extend({
-    model: Section,
-    initialize: function() {
-    },
-    // url: function() {
-        // return this.models[0].get('parent').url() + "/sections" 
-    // }    
+    model: Section    
 });
 
 var ItemCollection = Backbone.Collection.extend({
-    model: Item,
-    // url: function() {
-        // return this.models[0].get('parent').url() + "/items" 
-    // }    
+    model: Item
 })
 
 ItemView = Backbone.View.extend({
@@ -145,23 +135,28 @@ SectionView = Backbone.View.extend({
 MainView = Backbone.View.extend({
     el: $("#content"),
     render: function() {
-        _(this.model.sections).each(function(section) {
+        alert('main render')
+        _(this.model.get('sections').models).each(function(section) {
             section.render()
         })
         return this
     },
     initialize: function() {
-
-        this.model.bind('reset', this.render, this);
+        
+        this.model.bind('reset', this.render, this)
+        this.model.bind('change', this.render, this)
 
     }
 })
 
 content = new Content({_id: "4e922db06ec0e63c9fc6fa51"})
 //content.bind("change:sections", function() { alert("blah") })
+
+//main = new MainView({model: content})
+
 content.fetch({silent: false})
 
-main = new MainView({model: content})
+
 
 </script>
 

@@ -216,13 +216,15 @@ var request_handler = function(req, res, next) {
                 // save the extended (updated) document back to the database
                 return update_and_respond(object)
             case 'PUT array': // hmm... use this spot to change order?
-                return APIError(res, "Performing PUT on an array is not yet defined (but may be used for sorting in future). " +
+                if (data instanceof Array)
+                    return update_and_respond(merge_arrays(object, data))
+                return APIError(res, "Only arrays can be PUT onto arrays. " +
                                      "Use POST to add an item to the array, or to overwrite the array with a new one.", 405)
             case 'PUT object': // update subobject with new data object (merge/extend into existing, preserving _id)                
                 if (!(data instanceof Object) || (data instanceof Array))
                     return APIError(res, "Cannot PUT a non-object value on top of an object. Use POST if you want to replace the object with this value.", 405)
                 // merge the fields specified in data into the existing object (true means recursively)
-                data = $.extend(true, object, data)
+                data = merge(object, data)
                 // save the extended (updated) object back to the database (by falling through to next)
             case 'PUT value':
                 return update_and_respond({$set: wrap_in_object(object_ref, data)})
@@ -259,7 +261,7 @@ function APIError(res, msg, code) {
 function merge(dest, src) {
 
     if (typeof(dest) != 'object')
-        return
+        return dest
 
     for (key in src) {
         if (dest[key]===undefined || typeof(dest[key])==="string" || typeof(dest[key])==="number")
@@ -269,6 +271,9 @@ function merge(dest, src) {
         else if (typeof(dest[key])=='object' && typeof(src[key])=='object')
             merge(dest[key], src[key])
     }
+    
+    return dest
+    
 }
 
 // merge arrays
