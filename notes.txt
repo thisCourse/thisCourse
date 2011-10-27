@@ -9,4 +9,4 @@ http://127.0.0.1:8080/debug?port=5858
 
 
 
-content.get('sections').models[0].get('items').models[1].url()
+content.get('sections').at(0).get('items').at(1).url()

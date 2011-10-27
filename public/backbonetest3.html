@@ -27,19 +27,24 @@ var Content = Backbone.RelationalModel.extend({
         key: 'sections',
         relatedModel: 'Section',
         collectionType: 'SectionCollection',
-        includeInJSON: "_id",
+        includeInJSON: '_id',
         reverseRelation: {
             key: 'parent',
             includeInJSON: false
         },
     }],
-    urlRoot: '/api/courses',
+    urlRoot: '/api/content',
     initialize: function() {
         if (!this.get('sections'))
             this.save({sections: []})
         var self = this 
-        this.get('sections').url = function() { self.url() + "/sections" }
-    }
+        this.get('sections').url = function() { return self.url() + "/sections" }
+    },
+    // parse: function(response) {
+        // var url = this.url()
+        // this.get('sections').url = function() { return url + "/sections" }
+        // return response
+    // }
 })
 
 var Section = Backbone.RelationalModel.extend({
@@ -149,13 +154,22 @@ MainView = Backbone.View.extend({
     }
 })
 
-content = new Content({_id: "4e922db06ec0e63c9fc6fa51"})
+content = new Content()
+content.save().complete(function() {
+    content.get('sections').add({type:"books"})
+    content.get('sections').at(0).save().complete(function() {
+        alert(content.get('sections').at(0).id)
+    })
+})
+
+
+
+
 //content.bind("change:sections", function() { alert("blah") })
 
 //main = new MainView({model: content})
 
-content.fetch({silent: false})
-
+//content.fetch({silent: false})
 
 
 </script>

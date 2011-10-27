@@ -13,6 +13,7 @@ var file = new(require('node-static').Server)('./public')
 var collections = {}
 
 var courses = collections['courses'] = db.collection('courses')
+var content = collections['content'] = db.collection('content')
 var grades = collections['grades'] = db.collection('grades')
 var docs = collections['docs'] = db.collection('docs')
 var test = collections['test'] = db.collection('test')
@@ -162,11 +163,12 @@ var request_handler = function(req, res, next) {
                 obj = {_id: data._id }
             else
                 obj = {}
+            console.log(err, obj)
             res.json(obj)
         }
         
         function update_and_respond(update_obj) {
-            //console.log(query, update_obj)
+            console.log(query, update_obj)
             collection.update(query, update_obj, {safe: true, upsert: true}, mongo_json_response)
         }
                 
@@ -188,6 +190,7 @@ var request_handler = function(req, res, next) {
             case 'GET array':
             case 'GET object':
             case 'GET value':
+                console.log(object)
                 return res.json(object)
 
             case 'POST document': // replace entire document with new document
@@ -280,7 +283,6 @@ function merge(dest, src) {
 function merge_arrays(dest, src) {
     var target = []
         
-    // both are basic literals
     var src_is_ids = true
     var src_is_objects_with_ids = true
     var src_is_literals = true
@@ -340,6 +342,7 @@ function merge_arrays(dest, src) {
             target.push(src[src_ids[i]])
     }
     
+    // both are basic literals
     if (src_is_literals && dest_is_literals) {
         console.log("src_is_literals && dest_is_literals")
         target = dest.concat(src)
