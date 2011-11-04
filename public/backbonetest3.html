@@ -9,18 +9,18 @@
     <title>Backbone test</title>
     
     <style>
-        #content {
+        .content {
             border: 3px solid black;
             width: 960px;
-            height: 500px;
+            height: 800px;
             padding: 10px;
         }
-        #content .section {
+        .content .section {
             border: 2px solid black;
             padding: 5px;
             margin: 10px;
         }
-        #content .section .item {
+        .content .section .item {
             border: 1px solid black;
             padding: 5px;
             margin: 5px;
@@ -37,188 +37,212 @@
 
 <script>
 
-Backbone.Model.prototype.idAttribute = "_id";
-
-var Content = Backbone.RelationalModel.extend({
-    relations: [{
-        type: Backbone.HasMany,
-        key: 'sections',
-        relatedModel: 'Section',
-        collectionType: 'SectionCollection',
-        includeInJSON: '_id',
-        reverseRelation: {
-            key: 'parent',
-            includeInJSON: false
-        },
-    }],
-    urlRoot: '/api/content',
-    initialize: function() {
-        if (!this.get('sections'))
-            this.save({sections: []})
-        var self = this 
-        this.get('sections').url = function() { return self.url() + "/sections" }
-    },
-    // parse: function(response) {
-        // var url = this.url()
-        // this.get('sections').url = function() { return url + "/sections" }
-        // return response
-    // }
-})
-
-var Section = Backbone.RelationalModel.extend({
-    relations: [{
-        type: Backbone.HasMany,
-        key: 'items',
-        relatedModel: 'Item',
-        collectionType: 'ItemCollection',
-        includeInJSON: "_id",
-        reverseRelation: {
-            key: 'parent',
-            includeInJSON: false
-        },
-    }],
-    initialize: function() {
-        //if (!this.id) this.save()
-        if (!this.get('items'))
-            this.save({items: []})
-        var self = this 
-        this.get('items').url = function() { return self.url() + "/items" }
-    },
-    parse: function(response) {
-        return response
-    }
-})
-
-var Item = Backbone.RelationalModel.extend({
-    initialize: function() {
-        //if (!this.id) this.save()        
-    }
-})
-
-var SectionCollection = Backbone.Collection.extend({
-    model: Section    
-});
-
-var ItemCollection = Backbone.Collection.extend({
-    model: Item
-})
-
-ItemView = Backbone.View.extend({
-    tagName : "div",
-    className: "item",
-    render: function() {
-        $(this.el).html("woooo!")
-        return this
-    },
-    events: {
-        "dblclick div.name": "edit"
-    },
-    initialize: function() {
-        _.bindAll(this)
-        this.model.bind('change', this.render)
-        //$(this.el).appendTo("#content")
-    },
-    edit: function() {
-      alert('editing! ' + this.model.attributes)
-      //this.model.save({"name": this.model.get("name") + " :)"})
-    },
-    updateItems: function(model, coll) {
-        
-    },
-    addItems: function(model, coll) {
-        this.itemViews[model.cid] = new ItemView({model: model})
-    },
-    removeItems: function(model, coll) {
-        
-    },
-    update: function() {
-        this.$('.title').text(this.model.get("title"))
-    }    
-})
-
-SectionView = Backbone.View.extend({
-    tagName : "div",
-    className: "section",
-    itemViews: {},
-    render: function() {
-        $(this.el).html("<h2 class='title'></h2><div class='items'></div>")
-        return this
-    },
-    events: {
-        "dblclick div.name": "edit"
-    },
-    initialize: function() {
-        _.bindAll(this)
-        this.model.bind('change', this.update)
-        this.model.bind("update:items", this.updateItems)
-        this.model.bind("add:items", this.addItems)
-        this.model.bind("remove:items", this.removeItems)
-        //$(this.el).appendTo("#content")
-    },
-    edit: function() {
-      alert('editing! ' + this.model.attributes)
-    },
-    updateItems: function(model, coll) {
-        
-    },
-    addItems: function(model, coll) {
-        var newView = new ItemView({model: model})
-        this.itemViews[model.cid] = newView
-        this.$(".items").append(newView.render().el)
-    },
-    removeItems: function(model, coll) {
-        $(this.itemViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
-        delete this.itemViews[model.cid]
-    },
-    update: function() {
-        this.$('.title').text(this.model.get("title"))
-    }
-})
-
-ContentView = Backbone.View.extend({
-    sectionViews: {},
-    render: function() {
-        $("#content").html("<h1 class='title'></h1><div class='sections'></div>")
-        this.update()
-        return this
-    },
-    initialize: function() {
-        this.el = $("#content")
-        _.bindAll(this)
-        this.model.bind('change', this.update)
-        this.model.bind("update:sections", this.updateSections)
-        this.model.bind("add:sections", this.addSections)
-        this.model.bind("remove:sections", this.removeSections)
-        this.render()
-    },
-    updateSections: function(model, coll) {
-        //alert('update sections')
-    },
-    addSections: function(model, coll) {
-        var newView = new SectionView({model: model})
-        this.sectionViews[model.cid] = newView
-        this.$(".sections").append(newView.render().el)
-    },
-    removeSections: function(model, coll) {
-        $(this.sectionViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
-        delete this.sectionViews[model.cid]
-    },
-    update: function() {
-        this.$('.title').text(this.model.get("title"))
-    }
-})
-
 $(function() {
 
-    content = new Content({_id: "4eae019c3df1271717000003"})
+    Backbone.Model.prototype.idAttribute = "_id";
     
-    contentview = new ContentView({model: content})
-    
-    content.fetch().then(function() {
-        content.get('sections').at(1).set({title: 'Books'})
+    window.Content = Backbone.RelationalModel.extend({
+        relations: [{
+            type: Backbone.HasMany,
+            key: 'sections',
+            relatedModel: 'Section',
+            collectionType: 'SectionCollection',
+            includeInJSON: '_id',
+            // reverseRelation: {
+                // key: 'parent',
+                // includeInJSON: false
+            // },
+        }],
+        urlRoot: '/api/content',
+        initialize: function() {
+            //if (!this.get('sections'))
+            //    this.save({sections: []})
+            var self = this 
+            this.get('sections').url = function() { return self.url() + "/sections" }
+        },
+        parse: function(data) {
+            $("#jsoncode").html(JSON.stringify(data))
+            return data
+        }
     })
     
+    window.Section = Backbone.RelationalModel.extend({
+        relations: [{
+            type: Backbone.HasMany,
+            key: 'items',
+            relatedModel: 'Item',
+            collectionType: 'ItemCollection',
+            includeInJSON: "_id",
+            // reverseRelation: {
+                // key: 'parent',
+                // includeInJSON: false
+            // },
+        }],
+        initialize: function() {
+            if (this.get('items').length==0)
+                this.set({items: [,]})
+            var self = this 
+            this.get('items').url = function() { return self.url() + "/items" }
+            console.log("section created", this)
+        }
+    })
     
+    window.Item = Backbone.RelationalModel.extend({
+        initialize: function() {
+            //if (!this.id) this.save()
+            console.log("item created", this)   
+        }
+    })
+    
+    window.SectionCollection = Backbone.Collection.extend({
+        model: Section,
+        initialize: function() {
+            console.log("sectioncollection created", this)   
+        }    
+    });
+    
+    window.ItemCollection = Backbone.Collection.extend({
+        model: Item,
+        initialize: function() {
+            console.log("itemcollection created", this)   
+        }
+    })
+    
+    window.ItemView = Backbone.View.extend({
+        tagName : "div",
+        className: "item",
+        render: function() {
+            $(this.el).html("<h3 class='title'></h3><div class='attributes'></div>")
+            this.$('.title').text(this.model.get("title"))
+            this.$('.attributes').text("")
+            for (attr in this.model.attributes) {
+                this.$('.attributes').append("<div class='attr_" + attr + "'><b>" + attr + ": " + this.model.get(attr) + "</div>")
+            }
+            this.$('.attributes').append("<div>" + Math.random() + "</div>")
+            return this
+        },
+        events: {
+            "dblclick div.name": "edit"
+        },
+        initialize: function() {
+            _.bindAll(this)
+            this.model.bind('change', this.render)
+            this.render()
+            //$(this.el).appendTo("#content")
+            console.log("itemview initialized")
+        },
+        edit: function() {
+          alert('editing! ' + this.model.attributes)
+          //this.model.save({"name": this.model.get("name") + " :)"})
+        }    
+    })
+    
+    window.SectionView = Backbone.View.extend({
+        tagName : "div",
+        className: "section",
+        itemViews: {},
+        render: function() {
+            //console.log("section rendering")
+            $(this.el).html("<h2 class='title'></h2><div class='items'></div>")
+            
+            this.update()
+            for (id in this.itemViews)
+                this.$('.items').append(this.itemViews[id].render().el)
+            this.$('.items').append("<div style='clear:both'>")
+            return this
+        },
+        events: {
+            "dblclick div.name": "edit"
+        },
+        initialize: function() {
+            console.log("binding add:items")
+            _.bindAll(this)
+            this.model.bind('change', this.update)
+            this.model.bind("update:items", this.updateItems)
+            this.model.bind("add:items", this.addItems)
+            this.model.bind("remove:items", this.removeItems)
+            this.render()
+            for (i in this.model.get('items').models)
+                this.addItems(this.model.get('items').at(i), this.collection)
+            //    this.model.trigger("add:items", this.model.get('items').at(i), this.collection)
+        },
+        edit: function() {
+          alert('editing! ' + this.model.attributes)
+        },
+        updateItems: function(model, coll) {
+            //alert('update items')
+        },
+        addItems: function(model, coll) {
+            console.log("addItems:", model)
+            var newView = new ItemView({model: model})
+            this.itemViews[model.cid] = newView
+            
+            //this.$(".items").append(newView.render().el)
+            //alert(this.$(".items").html())
+        },
+        removeItems: function(model, coll) {
+            console.log("removeItems:", model)
+            $(this.itemViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
+            delete this.itemViews[model.cid]
+        },
+        update: function() {
+            this.$('.title').text(this.model.get("title"))
+        }
+    })
+    
+    window.ContentView = Backbone.View.extend({
+        el: $(".content"),
+        sectionViews: {},
+        render: function() {
+            console.log("content render")
+            this.el.html("<h1 class='title'></h1><div class='sections'></div>")
+            this.update()
+            return this
+        },
+        initialize: function() {
+            console.log("binding add:sections")
+            this.model.bind('change', this.update, this)
+            this.model.bind("update:sections", this.updateSections, this)
+            this.model.bind("add:sections", this.addSections, this)
+            this.model.bind("remove:sections", this.removeSections, this)
+            this.render()
+        },
+        updateSections: function(model, coll) {
+            //alert('update sections')
+        },
+        addSections: function(model, coll) {
+            console.log("addSections:", model)
+            var sectionEl = $("<div class='section'>")
+            var newView = new SectionView({model: model, el: sectionEl})
+            this.sectionViews[model.cid] = newView
+            this.$(".sections").append(sectionEl)
+        },
+        removeSections: function(model, coll) {
+            console.log("removeSections:", model)
+            $(this.sectionViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
+            delete this.sectionViews[model.cid]
+        },
+        update: function() {
+            //console.log("content update")
+            this.$('.title').text(this.model.get("title"))
+        }
+    })
+
+
+    // var s = new Section()
+    // var i = new Item()
+    // var sc = new SectionCollection([s])
+    // var ic = new ItemCollection([i])
+    
+    window.content = new Content({_id: "4eb3315e3df127171700001c"})
+    
+    window.contentview = new ContentView({model: content})
+    
+    content.fetch().then(function() {
+        //content.get('sections').at(1).set({title: 'Books'})
+        //content.get('sections').at(0).set('items', [{stuff: "woooo", _id:33}])
+
+    })
     
 })
 
@@ -230,20 +254,11 @@ $(function() {
     // })
 // })
 
-
-
-
-
-//content.bind("change:sections", function() { alert("blah") })
-
-//main = new MainView({model: content})
-
-//content.fetch({silent: false})
-
-
 </script>
 
-<div id="content"></div>
+<div class="content"></div>
+
+<div id="jsoncode"></div>
 
 </body>
 </html>
