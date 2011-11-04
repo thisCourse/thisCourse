@@ -13,27 +13,26 @@
             border: 3px solid black;
             width: 960px;
             /* height: 800px; */
-            padding: 10px;
+            padding: 5px;
         }
         #content .section {
             border: 2px solid black;
-            padding: 5px;
+            padding: 10px;
             margin: 10px;
-            clear: both;
+            overflow: auto;
         }
         #content .section .item {
             border: 1px solid black;
             padding: 5px;
             margin: 5px;
-            float:left;
+            /* float:left; */
             width: 200px;
+            display: inline-block;
+            vertical-align: top;
         }
         h1, h2, h3 {
             margin: 5px 0px 5px 0px;
         }   
-        .clear {
-            clear: both;
-        }
         #jsoncode {
             padding: 25px;
         }
@@ -141,7 +140,7 @@ $(function() {
     window.SectionView = Backbone.View.extend({
         render: function() {
             console.log("section rendering")
-            this.el.html("<h2 class='sectiontitle'></h2><div class='items'><div class='clear'></div></div>")
+            this.el.html("<h2 class='sectiontitle'></h2><div class='items'></div>")
             this.update()
             return this
         },
@@ -168,12 +167,8 @@ $(function() {
         },
         addItems: function(model, coll) {
             console.log("addItems:", model)
-            //var newView = new ItemView({model: model})
-            //this.itemViews[model.cid] = newView
-            
-            var itemEl = $("<div class='item'>").insertBefore(this.$(".items .clear"))
-            this.itemViews[model.cid] = new ItemView({model: model, el: itemEl})
-            
+            var itemEl = $("<span class='item'>").appendTo(this.$(".items"))
+            this.itemViews[model.cid] = new ItemView({model: model, el: itemEl})            
         },
         removeItems: function(model, coll) {
             console.log("removeItems:", model)
@@ -208,7 +203,6 @@ $(function() {
         addSections: function(model, coll) {
             console.log("addSections:", model)
             var sectionEl = $("<div class='section'>").appendTo(this.$('.sections'))
-            //var sectionEl = $("<div class='section'>").insertBefore(this.$(".sections .clear"))
             this.sectionViews[model.cid] = new SectionView({model: model, el: sectionEl})
         },
         removeSections: function(model, coll) {
