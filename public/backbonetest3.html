@@ -2,40 +2,52 @@
 <html>
 <head>
     <script src="jquery.min.js"></script>
+    <script src="jquery-ui.min.js"></script>
     <script src="json2.js"></script>
     <script src="underscore.js"></script>
     <script src="backbone.js"></script>
     <script src="backbone-relational.js"></script>
     <title>Backbone test</title>
     
+    <link rel="stylesheet" type="text/css" href="reset.css" />
+    <link rel="stylesheet" type="text/css" href="960.css" />
+    
     <style>
         #content {
             border: 3px solid black;
-            width: 960px;
-            /* height: 800px; */
-            padding: 5px;
+            width: 984px;
+            padding: 10px;
+            margin: 20px auto;
         }
         #content .section {
-            border: 2px solid black;
-            padding: 10px;
-            margin: 10px;
+            /* border: 2px solid black;
+            /* padding: 10px 0 10px 0; */
+            margin: 5px;
+            padding: 5px;
             overflow: auto;
         }
         #content .section .item {
-            border: 1px solid black;
-            padding: 5px;
-            margin: 5px;
-            /* float:left; */
-            width: 200px;
+            margin-top: 10px;
+            margin-bottom: 10px;
             display: inline-block;
             vertical-align: top;
+            float: none;
+            overflow: hidden;
+            background-color: white;
         }
         h1, h2, h3 {
-            margin: 5px 0px 5px 0px;
-        }   
+            margin: 0px;
+        }
         #jsoncode {
             padding: 25px;
         }
+        .border1 {
+            border: 1px solid black;
+            padding: 5px;
+        }
+        .border2 {
+            border: 2px solid black;
+        }        
     </style>
 </head>
 <body>
@@ -81,6 +93,7 @@ $(function() {
                 includeInJSON: false
             },
         }],
+        defaults: {width: 16},
         initialize: function() {
             // this is a hack to force "items" to be a collection rather than an empty list 
             if (this.get('items').length==0)
@@ -95,7 +108,8 @@ $(function() {
         initialize: function() {
             //if (!this.id) this.save()
             console.log("item created", this)   
-        }
+        },
+        defaults: {width: 4}
     })
     
     window.SectionCollection = Backbone.Collection.extend({
@@ -113,21 +127,26 @@ $(function() {
     })
     
     window.ItemView = Backbone.View.extend({
+        tagName: "li",
+        className: "item",
         render: function() {
             console.log("itemview render")
-            this.el.html("<h3 class='itemtitle'></h3><div class='attributes'></div>")
+            this.el.html("<div class='border1'><h3 class='itemtitle'></h3><div class='attributes'></div></div>")
             this.$('.itemtitle').text(this.model.get("title"))
             this.$('.attributes').text("")
             for (attr in this.model.attributes) {
-                if (attr!="title" && attr!="_id" && attr!="parent")
-                    this.$('.attributes').append("<div class='attr_" + attr + "'><b>" + attr + ": " + this.model.get(attr) + "</div>")
+                if (attr!="title" && attr!="_id" && attr!="parent" && attr!="width")
+                    this.$('.attributes').append("<div class='attr_" + attr + "'><b>" + attr + ":</b> " + this.model.get(attr) + "</div>")
             }
+            this.el.addClass("grid_" + this.model.get('width'))
             return this
         },
         events: {
-            "dblclick .itemtitle": "edit"
+            "click .itemtitle": "edit"
         },
         initialize: function() {
+            this.el = $(this.el)
+            this.el.attr('id', this.model.id)
             this.model.bind('change', this.render, this)
             this.render()
             console.log("itemview initialized")
@@ -138,19 +157,31 @@ $(function() {
     })
     
     window.SectionView = Backbone.View.extend({
+        tagName: "div",
+        className: "section border2",
         render: function() {
             console.log("section rendering")
-            this.el.html("<h2 class='sectiontitle'></h2><div class='items'></div>")
+            this.el.html("<div class=''><h2 class='sectiontitle'></h2><div class='items'></div></div>")
+            this.$('.items').sortable({
+                update: function(event, ui) {
+                    document.title = "update"
+                    window.myevent = event
+                    window.myui = ui
+                }
+            })
             this.update()
             return this
         },
         events: {
-            "dblclick div.name": "edit"
+            "click .sectiontitle": "edit"
         },
         initialize: function() {
             this.itemViews = {}
+            this.el = $(this.el)
+            this.el.addClass("container_" + this.model.get("width"))
+            this.el.attr('id', this.model.id)
             console.log("binding add:items")
-            this.model.bind('change', this.update, this)
+            this.model.bind("change", this.update, this)
             this.model.bind("update:items", this.updateItems, this)
             this.model.bind("add:items", this.addItems, this)
             this.model.bind("remove:items", this.removeItems, this)
@@ -167,8 +198,8 @@ $(function() {
         },
         addItems: function(model, coll) {
             console.log("addItems:", model)
-            var itemEl = $("<span class='item'>").appendTo(this.$(".items"))
-            this.itemViews[model.cid] = new ItemView({model: model, el: itemEl})            
+            this.itemViews[model.cid] = new ItemView({model: model})
+            this.$(".items").append(this.itemViews[model.cid].el)
         },
         removeItems: function(model, coll) {
             console.log("removeItems:", model)
@@ -202,8 +233,8 @@ $(function() {
         },
         addSections: function(model, coll) {
             console.log("addSections:", model)
-            var sectionEl = $("<div class='section'>").appendTo(this.$('.sections'))
-            this.sectionViews[model.cid] = new SectionView({model: model, el: sectionEl})
+            this.sectionViews[model.cid] = new SectionView({model: model})
+            this.$('.sections').append(this.sectionViews[model.cid].el)
         },
         removeSections: function(model, coll) {
             console.log("removeSections:", model)
@@ -222,7 +253,7 @@ $(function() {
     content.fetch().then(function() {
         //content.get('sections').at(1).set({title: 'Books'})
         //content.get('sections').at(0).set('items', [{stuff: "woooo", _id:33}])
-
+        
     })
     
 })
