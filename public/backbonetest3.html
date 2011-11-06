@@ -15,15 +15,13 @@
     <style>
         #content {
             border: 3px solid black;
-            width: 994px;
+            width: 1004px;
             padding: 10px;
             margin: 20px auto;
         }
         #content .section {
-            /* border: 2px solid black;
-            /* padding: 10px 0 10px 0; */
             margin: 10px;
-            padding: 5px;
+            padding: 10px;
             overflow: auto;
         }
         #content .section .item {
@@ -56,7 +54,7 @@
         }
         .border2 {
             border: 2px solid black;
-        }        
+        }
     </style>
 </head>
 <body>
@@ -210,7 +208,9 @@ $(function() {
                     var new_order = self.$('.items').sortable("toArray")
                     self.model.get('items').reorder(new_order)
                     self.model.save()
-                }
+                },
+                opacity: 0.6,
+                tolerance: "pointer"
             })
         },
         edit: function() {
@@ -273,7 +273,9 @@ $(function() {
                     var new_order = self.$('.sections').sortable("toArray")
                     self.model.get('sections').reorder(new_order)
                     self.model.save()
-                }
+                },
+                opacity: 0.6,
+                tolerance: "pointer"
             })
         },
         update: function() {
