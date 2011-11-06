@@ -267,10 +267,10 @@ function merge(dest, src) {
         return dest
 
     for (key in src) {
-        if (dest[key]===undefined || typeof(dest[key])==="string" || typeof(dest[key])==="number")
-            dest[key] = src[key]
-        else if (dest instanceof Array && src instanceof Array)
+        if (dest[key] instanceof Array && src[key] instanceof Array)
             dest[key] = merge_arrays(dest[key], src[key])
+        else if (dest[key]===undefined || typeof(dest[key])==="string" || typeof(dest[key])==="number")
+            dest[key] = src[key]
         else if (typeof(dest[key])=='object' && typeof(src[key])=='object')
             merge(dest[key], src[key])
     }
@@ -306,6 +306,13 @@ function merge_arrays(dest, src) {
         if (!(dest_is_objects_with_ids || dest_is_literals))
             break
     }
+    
+    console.log("src_is_ids", src_is_ids)
+    console.log("src_is_objects_with_ids", src_is_objects_with_ids)
+    console.log("src_is_literals", src_is_literals)
+    console.log("dest_is_objects_with_ids", dest_is_objects_with_ids)
+    console.log("dest_is_literals", dest_is_literals)
+    
     // src is ids, and dest is objects with ids: rearrange the dest objects according to src order
     if (src_is_ids && dest_is_objects_with_ids) {
         console.log("src_is_ids && dest_is_objects_with_ids")
