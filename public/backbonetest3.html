@@ -11,6 +11,7 @@
     
     <link rel="stylesheet" type="text/css" href="reset.css" />
     <link rel="stylesheet" type="text/css" href="960.css" />
+    <link rel="stylesheet" type="text/css" href="jquery-ui-1.8.16.custom.css" />
     
     <style>
         #content {
@@ -51,9 +52,11 @@
         .border1 {
             border: 1px solid black;
             padding: 5px;
+            border-radius: 3px;
         }
         .border2 {
             border: 2px solid black;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -154,7 +157,7 @@ $(function() {
                 if (attr!="title" && attr!="_id" && attr!="parent" && attr!="width")
                     self.$('.attributes').append("<div class='attr_" + attr + "'><b>" + attr + ":</b> " + self.model.get(attr) + "</div>")
             })
-            this.el.addClass("grid_" + this.model.get('width'))
+            this.updateWidth()
             return this
         },
         events: {
@@ -167,6 +170,10 @@ $(function() {
             this.render()
             //console.log("itemview initialized")
         },
+        updateWidth: function() {
+            this.el.attr('class', this.el[0].className.replace(/\bgrid_\d+\b/g, ''))
+            this.el.addClass("grid_" + this.model.get("width"))
+        },
         edit: function() {
           this.model.save({"title": this.model.get("title") + " :)"})
         }    
@@ -177,7 +184,7 @@ $(function() {
         className: "section border2",
         render: function() {
             //console.log("section rendering")
-            this.el.html("<div class=''><h2 class='sectiontitle'></h2><div class='items'></div></div>")
+            this.el.html("<h2 class='sectiontitle'></h2><div class='items'></div>")
             this.makeSortable()
             this.update()
             return this
@@ -188,12 +195,13 @@ $(function() {
         initialize: function() {
             this.itemViews = {}
             this.el = $(this.el)
-            this.el.addClass("container_" + this.model.get("width"))
             this.el.attr('id', this.model.id)
             this.model.bind("change", this.update, this)
             this.model.bind("update:items", this.updateItems, this)
             this.model.bind("add:items", this.addItems, this)
             this.model.bind("remove:items", this.removeItems, this)
+            this.model.bind("change:width", this.updateWidth, this)
+            this.updateWidth()
             this.render()
             for (var i=0; i < this.model.get('items').length; i++)
                 this.addItems(this.model.get('items').at(i), this.collection)
@@ -226,6 +234,10 @@ $(function() {
             //console.log("removeItems:", model)
             $(this.itemViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
             delete this.itemViews[model.cid]
+        },
+        updateWidth: function() {
+            this.el.attr('class', this.el[0].className.replace(/\bcontainer_\d+\b/g, ''))
+            this.el.addClass("container_" + this.model.get("width"))
         },
         update: function() {
             this.$('.sectiontitle').text(this.model.get("title"))
