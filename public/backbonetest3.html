@@ -15,14 +15,14 @@
     <style>
         #content {
             border: 3px solid black;
-            width: 984px;
+            width: 994px;
             padding: 10px;
             margin: 20px auto;
         }
         #content .section {
             /* border: 2px solid black;
             /* padding: 10px 0 10px 0; */
-            margin: 5px;
+            margin: 10px;
             padding: 5px;
             overflow: auto;
         }
@@ -38,6 +38,15 @@
         h1, h2, h3 {
             margin: 0px;
         }
+        h1 {
+            font-size: 2em;
+        }
+        h2 {
+            font-size: 1.5em;
+        }
+        h3 {
+            font-size: 1.2em;
+        }                
         #jsoncode {
             padding: 25px;
         }
@@ -57,6 +66,15 @@
 $(function() {
 
     Backbone.Model.prototype.idAttribute = "_id";
+
+    Backbone.Collection.prototype.reorder = function(order) {
+        var new_models = []
+        for (var i=0; i < order.length; i++) {
+            new_models[i] = this.get(order[i])
+        }
+        this.models = new_models
+        return this
+    }
     
     window.Content = Backbone.RelationalModel.extend({
         relations: [{
@@ -123,11 +141,11 @@ $(function() {
         model: Item,
         initialize: function() {
             console.log("itemcollection created", this)   
-        }
+        } 
     })
     
     window.ItemView = Backbone.View.extend({
-        tagName: "li",
+        tagName: "span",
         className: "item",
         render: function() {
             console.log("itemview render")
@@ -162,13 +180,7 @@ $(function() {
         render: function() {
             console.log("section rendering")
             this.el.html("<div class=''><h2 class='sectiontitle'></h2><div class='items'></div></div>")
-            this.$('.items').sortable({
-                update: function(event, ui) {
-                    document.title = "update"
-                    window.myevent = event
-                    window.myui = ui
-                }
-            })
+            this.makeSortable()
             this.update()
             return this
         },
@@ -189,6 +201,17 @@ $(function() {
             for (i in this.model.get('items').models)
                 //this.addItems(this.model.get('items').at(i), this.collection)
                 this.model.trigger("add:items", this.model.get('items').at(i), this.collection, this)
+        },
+        makeSortable: function() {
+            var self = this
+            this.$('.items').sortable({
+                update: function(event, ui) {
+                    // get the post-sort item order (as a list of id's) and save the new collection order 
+                    var new_order = self.$('.items').sortable("toArray")
+                    self.model.get('items').reorder(new_order)
+                    self.model.save()
+                }
+            })
         },
         edit: function() {
           alert('editing! ' + this.model.attributes)
@@ -216,6 +239,7 @@ $(function() {
         render: function() {
             console.log("content render")
             this.el.html("<h1 class='title'></h1><div class='sections'></div>")
+            this.makeSortable()
             this.update()
             return this
         },
@@ -241,12 +265,23 @@ $(function() {
             $(this.sectionViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
             delete this.sectionViews[model.cid]
         },
+        makeSortable: function() {
+            var self = this
+            this.$('.sections').sortable({
+                update: function(event, ui) {
+                    // get the post-sort section order (as a list of id's) and save the new collection order 
+                    var new_order = self.$('.sections').sortable("toArray")
+                    self.model.get('sections').reorder(new_order)
+                    self.model.save()
+                }
+            })
+        },
         update: function() {
             this.$('.title').text(this.model.get("title"))
         }
     })
     
-    window.content = new Content({_id: "4eb3315e3df127171700001c"})
+    window.content = new Content({_id: "4eb60623adea32365e000001"})
     
     window.contentview = new ContentView({model: content})
     
@@ -257,13 +292,6 @@ $(function() {
     })
     
 })
-
-// content.save().complete(function() {
-    // content.get('sections').add({type:"books"})
-    // content.get('sections').at(0).save().complete(function() {
-        // alert(content.get('sections').at(0).id)
-    // })
-// })
 
 </script>
 

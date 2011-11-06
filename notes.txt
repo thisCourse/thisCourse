@@ -15,3 +15,13 @@ content.get('sections').at(0).get('items').at(1).url()
 models
     validate method: if it returns something, attributes won't be set
 
+
+
+
+
+
+
+
+sample section/item object:
+{"_id":"4eb60623adea32365e000001","sections":[{"_id":"4eb60641adea32365e000002","items":[{"width":4,"title":"Item A1","stuff":"here","morestuff":"down here","_id":"4eb62673adea32365e000005"},{"width":4,"title":"Item A2","stuff":"here","morestuff":0.9684028022456914,"_id":"4eb62689adea32365e000006"},{"width":4,"title":"Item A3","stuff":"here","morestuff":0.48285192577168345,"_id":"4eb62693adea32365e000007"},{"width":4,"title":"Item A4","stuff":"here","morestuff":0.21587684005498886,"_id":"4eb62696adea32365e000008"},{"width":4,"title":"Item A5","stuff":"here","morestuff":0.6798151803668588,"_id":"4eb6269aadea32365e000009"},{"width":4,"title":"Item A6","stuff":"here","morestuff":0.09314087429083884,"_id":"4eb6269fadea32365e00000a"}],"title":"Section A","width":16},{"_id":"4eb60643adea32365e000003","items":[{"width":4,"title":"Item B1","stuff":"here","morestuff":"abc","_id":"4eb626b6adea32365e00000b"},{"width":4,"title":"Item B2","stuff":"here","morestuff":"def","_id":"4eb626beadea32365e00000c"},{"width":4,"title":"Item B3","stuff":"here","morestuff":"ghi","_id":"4eb626c7adea32365e00000d"}],"title":"Section B","width":16},{"_id":"4eb60645adea32365e000004","items":[{"width":2,"title":"Item C1","testnum":515,"_id":"4eb627adadea32365e00000e"},{"width":2,"title":"Item C2","somelist":[4,7,9,4,7,9],"_id":"4eb627bfadea32365e00000f"},{"width":3,"title":"Item C3","now":"2011-11-06T06:23:13.614Z","_id":"4eb627d1adea32365e000010"},{"width":4,"title":"Item C6","obj":{"another":"embedded"},"_id":"4eb628d7adea32365e000013"},{"width":2,"title":"Item C4","_id":"4eb627e8adea32365e000011"},{"width":4,"title":"Item C5","longstring":"lalalalalalalalalalalalalalala","_id":"4eb628b5adea32365e000012"},{"width":4,"title":"Item C7","_id":"4eb62951adea32365e000014","wishlist":["stuff","more stuff","yet more"]}],"title":"Section C","width":16}]}
+
