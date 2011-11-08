@@ -1,0 +1,3 @@
+{{#people}}
+{{ name }}<br/>{{>test}}
+{{/people}}
