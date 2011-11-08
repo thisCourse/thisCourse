@@ -1,9 +1,10 @@
 ItemView = Backbone.View.extend({
     tagName: "span",
     className: "item",
+    template: "item",
     render: function() {
         //console.log("itemview render")
-        this.el.html("<div class='border1'><h3 class='itemtitle'></h3><div class='attributes'></div></div>")
+        this.el.html(Handlebars.templates.item())
         this.$('.itemtitle').text(this.model.get("title"))
         this.$('.attributes').text("")
         var self = this

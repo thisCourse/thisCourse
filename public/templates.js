@@ -1,5 +1,11 @@
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['item'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers;
+  var self=this;
+
+
+  return "<div class='border1'><h3 class='itemtitle'></h3><div class='attributes'></div></div>\n";});
 templates['test'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers;
   var buffer = "", stack1, self=this, functionType="function", helperMissing=helpers.helperMissing, undef=void 0, escapeExpression=this.escapeExpression;
@@ -9,7 +15,7 @@ templates['test'] = template(function (Handlebars,depth0,helpers,partials,data) 
   stack1 = helpers.q || depth0.q
   if(typeof stack1 === functionType) { stack1 = stack1.call(depth0, { hash: {} }); }
   else if(stack1=== undef) { stack1 = helperMissing.call(depth0, "q", { hash: {} }); }
-  buffer += escapeExpression(stack1) + "</b>\n";
+  buffer += escapeExpression(stack1) + "</b>\n\n\n";
   return buffer;});
 templates['test2'] = template(function (Handlebars,depth0,helpers,partials,data) {
   helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials;
