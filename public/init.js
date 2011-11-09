@@ -20,3 +20,17 @@ Backbone.Collection.prototype.reorder = function(order) {
     return this
 }
 
+// render a view's template using its model data, then write it to the element
+Backbone.View.prototype.renderTemplate = function() {
+    var html = ""
+    if (this.template) {
+        if (this.model) {
+            html = Handlebars.templates[this.template](this.model.attributes)
+        } else {
+            console.log("View does not have a model associated with it.")
+        }
+    } else {
+        console.log("View does not have a template associated with it.")
+    }
+    $(this.el).html(html)
+}

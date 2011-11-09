@@ -1,9 +1,9 @@
 SectionView = Backbone.View.extend({
     tagName: "div",
     className: "section border2",
+    template: "section",
     render: function() {
-        //console.log("section rendering")
-        this.el.html("<h2 class='sectiontitle'></h2><div class='items'></div>")
+        this.renderTemplate()
         this.makeSortable()
         this.update()
         return this
@@ -56,7 +56,7 @@ SectionView = Backbone.View.extend({
     },
     updateWidth: function() {
         this.el.attr('class', this.el[0].className.replace(/\bcontainer_\d+\b/g, ''))
-        this.el.addClass("container_" + this.model.get("width"))
+        this.el.addClass("span" + this.model.get("width"))
     },
     update: function() {
         this.$('.sectiontitle').text(this.model.get("title"))

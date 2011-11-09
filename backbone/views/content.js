@@ -1,16 +1,15 @@
 ContentView = Backbone.View.extend({
     tagName: "div",
     className: "content",
+    template: "content",
     render: function() {
-        //console.log("content render")
-        this.el.html("<h1 class='title'></h1><div class='sections'></div>")
+        this.renderTemplate()
         this.makeSortable()
         this.update()
         return this
     },
     initialize: function() {
         this.sectionViews = {}
-        //console.log("binding add:sections")
         this.el = $(this.el)
         this.model.bind('change', this.update, this)
         this.model.bind("update:sections", this.updateSections, this)
@@ -22,12 +21,10 @@ ContentView = Backbone.View.extend({
         //alert('update sections')
     },
     addSections: function(model, coll) {
-        //console.log("addSections:", model)
         this.sectionViews[model.cid] = new SectionView({model: model})
         this.$('.sections').append(this.sectionViews[model.cid].el)
     },
     removeSections: function(model, coll) {
-        //console.log("removeSections:", model)
         $(this.sectionViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
         delete this.sectionViews[model.cid]
     },

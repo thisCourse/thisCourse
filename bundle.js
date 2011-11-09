@@ -45,6 +45,7 @@ function watchDir(rootDir, callback) {
         next()
     })
 
+    callback()
 }
 
 function compile_handlebar_templates(callback) {
@@ -61,7 +62,10 @@ watchDir("backbone/templates", compile_handlebar_templates)
 function compile_less_stylesheets(callback) {
     console.log("Recompiling base less stylesheet...")
     child_process.exec("lessc ./backbone/styles/base.less", function(err, stdout, errout) {
-        if (err) throw err
+        if (err) {
+            console.log(err)
+            throw err
+        }
         console.log("Base less template compiled; writing to ./public/base_styles.css")
         fs.writeFile("./public/base_styles.css", stdout, callback)
     })

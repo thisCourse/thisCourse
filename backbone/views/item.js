@@ -3,10 +3,7 @@ ItemView = Backbone.View.extend({
     className: "item",
     template: "item",
     render: function() {
-        //console.log("itemview render")
-        this.el.html(Handlebars.templates.item())
-        this.$('.itemtitle').text(this.model.get("title"))
-        this.$('.attributes').text("")
+        this.renderTemplate()
         var self = this
         _.each(_.keys(this.model.attributes), function(attr) {
             if (attr!="title" && attr!="_id" && attr!="parent" && attr!="width")
@@ -23,11 +20,10 @@ ItemView = Backbone.View.extend({
         this.el.attr('id', this.model.id)
         this.model.bind('change', this.render, this)
         this.render()
-        //console.log("itemview initialized")
     },
     updateWidth: function() {
         this.el.attr('class', this.el[0].className.replace(/\bgrid_\d+\b/g, ''))
-        this.el.addClass("grid_" + this.model.get("width"))
+        this.el.addClass("span" + this.model.get("width"))
     },
     edit: function() {
       this.model.save({"title": this.model.get("title") + " :)"})

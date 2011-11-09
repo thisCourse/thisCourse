@@ -17,7 +17,6 @@ Section = Backbone.RelationalModel.extend({
             this.set({items: [,]})
         var self = this 
         this.get('items').url = function() { return self.url() + "/items" }
-        //console.log("section created", this)
     }
 })
 
