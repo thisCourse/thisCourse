@@ -54,10 +54,6 @@ SectionView = Backbone.View.extend({
         $(this.itemViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
         delete this.itemViews[model.cid]
     },
-    updateWidth: function() {
-        this.el.attr('class', this.el[0].className.replace(/\bcontainer_\d+\b/g, ''))
-        this.el.addClass("span" + this.model.get("width"))
-    },
     update: function() {
         this.$('.sectiontitle').text(this.model.get("title"))
     }
