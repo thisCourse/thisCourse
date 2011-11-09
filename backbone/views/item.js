@@ -21,10 +21,6 @@ ItemView = Backbone.View.extend({
         this.model.bind('change', this.render, this)
         this.render()
     },
-    updateWidth: function() {
-        this.el.attr('class', this.el[0].className.replace(/\bgrid_\d+\b/g, ''))
-        this.el.addClass("span" + this.model.get("width"))
-    },
     edit: function() {
       this.model.save({"title": this.model.get("title") + " :)"})
     }    

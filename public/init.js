@@ -34,3 +34,9 @@ Backbone.View.prototype.renderTemplate = function() {
     }
     $(this.el).html(html)
 }
+
+// set a view's Bootstrap grid system width according to its model's "width" property 
+Backbone.View.prototype.updateWidth = function() {
+    this.el.attr('class', this.el[0].className.replace(/\bspan\d+\b/g, ''))
+    this.el.addClass("span" + this.model.get("width"))
+}

@@ -1,0 +1,34 @@
+@import "bootstrap/mixins.less";
+@import "bootstrap/variables.less";
+@import "globals.less";
+
+.content {
+    margin: 0 auto;
+    width: 985px; 
+    padding: 20px;
+    background-color: #ffffff;
+    .border-radius(10px);
+}
+
+.content .section {
+    overflow: auto;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border: 1px solid #CCC;
+    .border-radius(5px);
+}
+
+.content .section .item {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+    vertical-align: top;
+    float: none;
+    overflow: hidden;
+}
+
+.content .section .item .inner {
+    background-color: #f2f2f2;
+    padding: 10px;
+    .border-radius(5px);
+}
