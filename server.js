@@ -21,7 +21,8 @@ app.use(function (req, res, next) {
     next()
 });
 
-app.use('/static', express.static(__dirname + '/public'));
+app.use('/static', express.static(__dirname + '/public'))
+app.use('/backbone', express.static(__dirname + '/backbone'));
 
 // express routing
 app.namespace('/api', api.router)

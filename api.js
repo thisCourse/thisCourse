@@ -349,12 +349,13 @@ function merge_arrays(dest, src) {
     // both are basic literals
     if (src_is_literals && dest_is_literals) {
         console.log("src_is_literals && dest_is_literals")
-        target = dest.concat(src)
+        //target = dest.concat(src)
+        target = src
     }
     
     target = target.filter(function(e) { return !(e===undefined) })
     
-    if (target.length==0) {
+    if (target.length==0 && src.length > 0) {
         console.log("WARNING: no result of merging " + JSON.stringify(src) + " into " + JSON.stringify(dest))
         return dest
     } else {

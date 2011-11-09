@@ -1,0 +1,95 @@
+<html>
+<head>
+    <script src="/static/libs/js/jquery.min.js"></script>
+    <script src="/static/libs/js/jquery-ui.min.js"></script>
+    <script src="/static/libs/js/json2.js"></script>
+    <script src="/static/libs/js/underscore.js"></script>
+    <script src="/static/libs/js/backbone.js"></script>
+    <script src="/static/libs/js/backbone-relational.js"></script>
+    <script src="/static/libs/js/handlebars.vm.js"></script>
+    
+    <!--js-->
+    <script src="/static/templates.js"></script>
+    
+    <script src="/backbone/models/content.js"></script>
+    <script src="/backbone/models/section.js"></script>
+    <script src="/backbone/models/item.js"></script>
+
+    <script src="/backbone/views/content.js"></script>
+    <script src="/backbone/views/section.js"></script>
+    <script src="/backbone/views/item.js"></script>    
+    <!--/js-->
+    
+    <script src="/static/init.js"></script>
+    
+    <title>Backbone test</title>
+    
+    <link rel="stylesheet" type="text/css" href="/static/libs/css/960.css" />
+    <link rel="stylesheet" type="text/css" href="/static/compiled_styles.css" />
+    
+    <!--css-->
+    
+    <!--/css-->
+    
+    <style>
+        .content {
+            border: 3px solid black;
+            width: 1004px;
+            padding: 10px;
+            margin: 20px auto;
+        }
+        .content .section {
+            margin: 10px;
+            padding: 10px;
+            overflow: auto;
+        }
+        .content .section .item {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+            vertical-align: top;
+            float: none;
+            overflow: hidden;
+            background-color: white;
+        }      
+        #jsoncode {
+            padding: 25px;
+        }
+        .border1 {
+            border: 1px solid black;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .border2 {
+            border: 2px solid black;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+
+$(function() {
+    
+    window.content = new Content({_id: "4eb60623adea32365e000001"})
+    
+    window.contentview = new ContentView({model: content})
+    $("#content").append(contentview.el)
+    
+    content.fetch().then(function() {
+        //content.get('sections').at(1).set({title: 'Books'})
+        //content.get('sections').at(0).set('items', [{stuff: "woooo", _id:33}])
+        
+    })
+    
+})
+
+</script>
+
+<div id="content"></div>
+
+<div id="jsoncode"></div>
+
+</body>
+</html>
