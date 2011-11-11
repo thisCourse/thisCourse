@@ -23,14 +23,14 @@ ItemView = Backbone.View.extend({
     },
     edit: function() {
         var editView = new ItemEditView({model: this.model}).render()
-        $("body").append(editView.el)
+        editView.el.insertAfter(this.el)
         //this.model.save({"title": this.model.get("title") + " :)"})
     }    
 })
 
 ItemEditView = Backbone.View.extend({
     tagName: "div",
-    className: "item-edit",
+    className: "item-edit item span5",
     template: "item-edit",    
     render: function() {
         this.renderTemplate()
@@ -50,11 +50,11 @@ ItemEditView = Backbone.View.extend({
     },
     save: function() {
         this.model.save()
-        this.el.fadeOut()
+        this.el.fadeOut(300, function() { $(this).remove() })
     },
     cancel: function() {
         this.memento.restore()
-        this.el.hide()
+        this.el.remove()
     },    
     change: function() {
         var new_vals = {}
