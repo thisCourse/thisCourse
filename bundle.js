@@ -1,6 +1,7 @@
 //bundle = module['exports']
 
 var walk = require('walk')
+var less = require('less')
 var fs = require('fs')
 var options
 var walker
@@ -61,13 +62,10 @@ watchDir("backbone/templates", compile_handlebar_templates)
 
 function compile_less_stylesheets(callback) {
     console.log("Recompiling base less stylesheet...")
-    child_process.exec("lessc ./backbone/styles/base.less", function(err, stdout, errout) {
-        if (err) {
-            console.log(err)
-            throw err
-        }
+    less.render("@import 'backbone/styles/base.less';", function(err, result) {
+        if (err) throw err
         console.log("Base less template compiled; writing to ./public/base_styles.css")
-        fs.writeFile("./public/base_styles.css", stdout, callback)
+        fs.writeFile("./public/base_styles.css", result, callback)
     })
 
 }

@@ -13,7 +13,7 @@ ItemView = Backbone.View.extend({
         return this
     },
     events: {
-        "click .itemtitle": "edit"
+        "dblclick .itemtitle": "edit"
     },
     initialize: function() {
         this.el = $(this.el)
@@ -22,6 +22,45 @@ ItemView = Backbone.View.extend({
         this.render()
     },
     edit: function() {
-      this.model.save({"title": this.model.get("title") + " :)"})
+        var editView = new ItemEditView({model: this.model}).render()
+        $("body").append(editView.el)
+        //this.model.save({"title": this.model.get("title") + " :)"})
     }    
+})
+
+ItemEditView = Backbone.View.extend({
+    tagName: "div",
+    className: "item-edit",
+    template: "item-edit",    
+    render: function() {
+        this.renderTemplate()
+        return this
+    },
+    events: {
+        "click .save": "save",
+        "click .cancel": "cancel",
+        "change input": "change",
+        "keyup input": "change"
+    },
+    initialize: function() {
+        this.el = $(this.el)
+        this.memento = new Backbone.Memento(this.model)
+        this.memento.store()
+        this.render()
+    },
+    save: function() {
+        this.model.save()
+        this.el.fadeOut()
+    },
+    cancel: function() {
+        this.memento.restore()
+        this.el.hide()
+    },    
+    change: function() {
+        var new_vals = {}
+        this.$("input[type=text]").each(function(index, input) {
+            new_vals[$(input).attr("class")] = $(input).val() 
+        })
+        this.model.set(new_vals)
+    }
 })
