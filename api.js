@@ -86,8 +86,12 @@ function wrap_in_object(key, obj) {
     return update
 }
 
-// handle an api request
 var request_handler = function(req, res, next) {
+    setTimeout(function() { request_handler2(req, res, next) }, 0)
+}
+
+// handle an api request
+var request_handler2 = function(req, res, next) {
 
     console.log(req.method, req.params.path, req.body)
 
