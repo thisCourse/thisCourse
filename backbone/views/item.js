@@ -57,7 +57,7 @@ ItemEditView = Backbone.View.extend({
         this.memento = new Backbone.Memento(this.model)
         this.memento.store()
         this.render()
-        this.reposition(0)
+        this.reposition()
         Dispatcher.bind("resized", this.reposition, this)
     },
     reposition: function(duration) {
@@ -66,17 +66,15 @@ ItemEditView = Backbone.View.extend({
         var pos = parent.el.offset()
         var top = pos.top + parent.el.height()
         var left = pos.left
-        //this.el.attr('left', left).attr('top', top)
         this.el.animate({left: left, top: top}, duration)
     },
     save: function() {
-        this.$('.status').text("Saving...")
         var self = this
+        self.$('.save.btn').button('loading')
         this.model.save({}, {
             success: function() {
-                self.$('.status').text("Saved!")
-                self.el.fadeOut(500, function() { $(self).remove() })
-                self.model.editing = false
+                self.$('.save.btn').button('complete')
+                self.el.fadeOut(500, function() { self.close() })
             },
             error: function(model, err) {
                 var msg = "An unknown error occurred while saving. Please try again."
@@ -89,14 +87,13 @@ ItemEditView = Backbone.View.extend({
                         break
                 }
                 self.$('.errors').text(msg)
-                self.$('.status').text("")
+                self.$('.save.btn').button('complete')
             }
         })
     },
     cancel: function() {
         this.memento.restore()
-        this.el.remove()
-        this.model.editing = false
+        this.close()
     },    
     change: function() {
         var new_vals = {}
@@ -105,5 +102,11 @@ ItemEditView = Backbone.View.extend({
         })
         this.model.set(new_vals)
         this.reposition()
+    },
+    close: function() {
+        this.remove()
+        this.unbind()
+        Dispatcher.unbind("resized", this.reposition, this)
+        this.model.editing = false
     }
 })
