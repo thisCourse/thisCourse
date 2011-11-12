@@ -43,7 +43,7 @@ get_by_path = function(obj, path, index) {
     // if we've reached the end of the path, return result
     if (index >= path.length) return obj
     // if the next item in the path is an id, descend into the array by item id
-    if (id_regex(path[index]) && obj instanceof Array) return get_by_path(get_by_id(obj, path[index], path), path, index+1)
+    if (id_regex.exec(path[index]) && obj instanceof Array) return get_by_path(get_by_id(obj, path[index], path), path, index+1)
     // if we hit a missing property, abort
     if (!obj || !obj.hasOwnProperty(path[index])) return null
     // keep traversing
@@ -86,8 +86,12 @@ function wrap_in_object(key, obj) {
     return update
 }
 
-// handle an api request
 var request_handler = function(req, res, next) {
+    setTimeout(function() { request_handler2(req, res, next) }, 0)
+}
+
+// handle an api request
+var request_handler2 = function(req, res, next) {
 
     console.log(req.method, req.params.path, req.body)
 
@@ -286,9 +290,9 @@ function merge_arrays(dest, src) {
     var dest_is_objects_with_ids = true
     var dest_is_literals = true
     for (i in src) {
-        if (src_is_ids && !id_regex(src[i]))
+        if (src_is_ids && !id_regex.exec(src[i]))
             src_is_ids = false
-        if (src_is_objects_with_ids && !(typeof(src[i])==='object' && id_regex(src[i]['_id'])))
+        if (src_is_objects_with_ids && !(typeof(src[i])==='object' && id_regex.exec(src[i]['_id'])))
             src_is_objects_with_ids = false
         if (src_is_literals && (typeof(src[i])==='object'))
             src_is_literals = false
@@ -296,7 +300,7 @@ function merge_arrays(dest, src) {
             break
     }
     for (i in dest) {
-        if (dest_is_objects_with_ids && !(typeof(dest[i])==='object' && id_regex(dest[i]['_id'])))
+        if (dest_is_objects_with_ids && !(typeof(dest[i])==='object' && id_regex.exec(dest[i]['_id'])))
             dest_is_objects_with_ids = false
         if (dest_is_literals && (typeof(dest[i])==='object'))
             dest_is_literals = false

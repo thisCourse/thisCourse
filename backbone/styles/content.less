@@ -2,6 +2,8 @@
 @import "bootstrap/variables.less";
 @import "globals.less";
 
+@iconpath: "/backbone/images/icons/";
+
 .content {
     margin: 0 auto;
     width: 985px; 
@@ -25,10 +27,39 @@
     vertical-align: top;
     float: none;
     overflow: hidden;
+    position: relative;
 }
 
 .content .section .item .inner {
     background-color: #f2f2f2;
     padding: 10px;
     .border-radius(5px);
+}
+
+.content .section .item .edit-button {
+    background: url("@{iconpath}pencil_32.png") no-repeat;
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    display: none;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+.item-edit {
+    position: absolute;
+    .border-radius(5px);
+    padding: 15px;
+    background-color: #f6f6f6;
+    border: 1px #ccc solid;
+}
+
+.item-edit .status {
+    color: #090;
+    margin: 4px;
+}
+
+.item-edit .errors {
+    color: #C00;
 }
