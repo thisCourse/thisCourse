@@ -9,7 +9,17 @@ SectionView = Backbone.View.extend({
         return this
     },
     events: {
-        "click .sectiontitle": "edit"
+        //"click .sectiontitle": "edit",
+        "mouseover .section-inner": "showActionButtons",
+        "mouseout .section-inner": "hideActionButtons",
+        "mouseover .items": "hideActionButtons"
+    },
+    showActionButtons: function() {
+        this.$(".section-button").show()
+    },
+    hideActionButtons: function() {
+        this.$(".section-button").hide()
+        return false // to stop the propagation so that it won't trigger the parent's
     },
     initialize: function() {
         this.itemViews = {}
@@ -35,7 +45,8 @@ SectionView = Backbone.View.extend({
                 self.model.save()
             },
             opacity: 0.6,
-            tolerance: "pointer"
+            tolerance: "pointer",
+            handle: ".drag-button"
         })
     },
     edit: function() {

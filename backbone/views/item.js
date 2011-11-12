@@ -14,8 +14,8 @@ ItemView = Backbone.View.extend({
     },
     events: {
         "click .edit-button": "edit",
-        "mouseover .inner": "showActionButtons",
-        "mouseout .inner": "hideActionButtons"
+        "mouseover .item-inner": "showActionButtons",
+        "mouseout .item-inner": "hideActionButtons"
     },
     initialize: function() {
         this.el = $(this.el)
@@ -25,15 +25,16 @@ ItemView = Backbone.View.extend({
     },
     showActionButtons: function() {
         if (this.model.editing) return
-        this.$(".edit-button").show()
+        this.$(".item-button").show()
     },
     hideActionButtons: function() {
-        this.$(".edit-button").hide()
+        this.$(".item-button").hide()
     },
     edit: function() {
         this.model.editing = true
         var editView = new ItemEditView({model: this.model, parent: this}).render()
         $("body").append(editView.el)
+        this.hideActionButtons()
     }    
 })
 
@@ -62,9 +63,10 @@ ItemEditView = Backbone.View.extend({
     reposition: function(duration) {
         if (duration===undefined) duration = 0
         var parent = this.options.parent
-        var pos = parent.el.position()
-        var top = pos.top + parent.el.height() + 8
-        var left = pos.left + 10
+        var pos = parent.el.offset()
+        var top = pos.top + parent.el.height()
+        var left = pos.left
+        //this.el.attr('left', left).attr('top', top)
         this.el.animate({left: left, top: top}, duration)
     },
     save: function() {
@@ -72,9 +74,9 @@ ItemEditView = Backbone.View.extend({
         var self = this
         this.model.save({}, {
             success: function() {
-                this.$('.status').text("Saved!")
+                self.$('.status').text("Saved!")
                 self.el.fadeOut(500, function() { $(self).remove() })
-                this.model.editing = false
+                self.model.editing = false
             },
             error: function(model, err) {
                 var msg = "An unknown error occurred while saving. Please try again."
@@ -86,8 +88,8 @@ ItemEditView = Backbone.View.extend({
                         msg = "The object could not be found on the server; it may have been deleted."
                         break
                 }
-                this.$('.errors').text(msg)
-                this.$('.status').text("")
+                self.$('.errors').text(msg)
+                self.$('.status').text("")
             }
         })
     },

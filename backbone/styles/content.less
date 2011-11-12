@@ -13,11 +13,16 @@
 }
 
 .content .section {
-    overflow: auto;
-    padding: 10px 20px;
+    overflow: hidden;
+/*    padding: 10px 20px;*/
     margin-bottom: 20px;
     border: 1px solid #CCC;
     .border-radius(5px);
+    position: relative;
+}
+
+.content .section .section-inner {
+    margin: 10px 20px;
 }
 
 .content .section .item {
@@ -30,13 +35,13 @@
     position: relative;
 }
 
-.content .section .item .inner {
+.content .section .item .item-inner {
     background-color: #f2f2f2;
     padding: 10px;
     .border-radius(5px);
 }
 
-.content .section .item .edit-button {
+.content .edit-button {
     background: url("@{iconpath}pencil_32.png") no-repeat;
     width: 35px;
     height: 35px;
@@ -44,6 +49,17 @@
     display: none;
     bottom: 0;
     right: 0;
+    cursor: pointer;
+}
+
+.content .drag-button {
+    background: url("@{iconpath}nonfree/cursor_drag_arrow_32_blur.png") no-repeat;
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    display: none;
+    top: 2px;
+    left: 2px;
     cursor: pointer;
 }
 

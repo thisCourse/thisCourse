@@ -38,7 +38,8 @@ ContentView = Backbone.View.extend({
                 self.model.save()
             },
             opacity: 0.6,
-            tolerance: "pointer"
+            tolerance: "pointer",
+            handle: ".drag-button"
         })
     },
     update: function() {
