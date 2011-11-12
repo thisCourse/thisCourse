@@ -22,16 +22,15 @@ ItemView = Backbone.View.extend({
         this.render()
     },
     edit: function() {
-        var editView = new ItemEditView({model: this.model}).render()
-        editView.el.insertAfter(this.el)
-        //this.model.save({"title": this.model.get("title") + " :)"})
+        var editView = new ItemEditView({model: this.model, parent: this}).render()
+        $("body").append(editView.el)
     }    
 })
 
 ItemEditView = Backbone.View.extend({
     tagName: "div",
     className: "item-edit item span5",
-    template: "item-edit",    
+    template: "item-edit",
     render: function() {
         this.renderTemplate()
         return this
@@ -47,10 +46,36 @@ ItemEditView = Backbone.View.extend({
         this.memento = new Backbone.Memento(this.model)
         this.memento.store()
         this.render()
+        this.reposition(0)
+        Dispatcher.bind("resized", this.reposition, this)
+    },
+    reposition: function(duration) {
+        if (duration===undefined) duration = 0
+        var parent = this.options.parent
+        var pos = parent.el.position()
+        var top = pos.top + parent.el.height() + 8
+        var left = pos.left + 10
+        this.el.animate({left: left, top: top}, duration)
     },
     save: function() {
-        this.model.save()
-        this.el.fadeOut(300, function() { $(this).remove() })
+        var self = this
+        this.model.save({}, {
+            success: function() {
+                self.el.fadeOut(300, function() { $(self).remove() })
+            },
+            error: function(model, err) {
+                var msg = "An unknown error occurred while saving. Please try again."
+                switch(err.status) {
+                    case 0:
+                        msg = "Unable to connect; please check internet connectivity and then try again."
+                        break
+                    case 404:
+                        msg = "The object could not be found on the server; it may have been deleted."
+                        break
+                }
+                this.$('.errors').text(msg)
+            }
+        })
     },
     cancel: function() {
         this.memento.restore()
@@ -62,5 +87,6 @@ ItemEditView = Backbone.View.extend({
             new_vals[$(input).attr("class")] = $(input).val() 
         })
         this.model.set(new_vals)
+        this.reposition()
     }
 })
