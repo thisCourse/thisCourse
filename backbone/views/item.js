@@ -35,7 +35,12 @@ ItemView = Backbone.View.extend({
         var editView = new ItemEditView({model: this.model, parent: this}).render()
         $("body").append(editView.el)
         this.hideActionButtons()
-    }    
+    },
+    close: function() {
+        this.remove()
+        this.unbind()
+        this.model.unbind('change', this.render)
+    }
 })
 
 ItemEditView = Backbone.View.extend({
