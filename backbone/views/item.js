@@ -18,6 +18,7 @@ ItemView = Backbone.View.extend({
         "mouseout .item-inner": "hideActionButtons"
     },
     initialize: function() {
+        this.type = this.options.type || "default"
         this.el = $(this.el)
         this.el.attr('id', this.model.id)
         this.model.bind('change', this.render, this)
@@ -32,8 +33,8 @@ ItemView = Backbone.View.extend({
     },
     edit: function() {
         this.model.editing = true
-        var editView = new ItemEditView({model: this.model, parent: this}).render()
-        $("body").append(editView.el)
+        this.editView = new ItemEditViews[this.type]({model: this.model, parent: this}).render()
+        $("body").append(this.editView.el)
         this.hideActionButtons()
     },
     close: function() {
@@ -49,13 +50,15 @@ ItemEditView = Backbone.View.extend({
     template: "item-edit",
     render: function() {
         this.renderTemplate()
+        Backbone.ModelBinding.bind(this)
+        this.focusFirstInput()
         return this
     },
     events: {
         "click .save": "save",
         "click .cancel": "cancel",
         "change input": "change",
-        "keyup input": "change"
+        "keyup input": "keyup"
     },
     initialize: function() {
         this.el = $(this.el)
@@ -63,7 +66,12 @@ ItemEditView = Backbone.View.extend({
         this.memento.store()
         this.render()
         this.reposition()
+        this.scrollToShow()
         Dispatcher.bind("resized", this.reposition, this)
+    },
+    focusFirstInput: function() {
+        var self = this
+        setTimeout(function() { self.$("input:first").focus() }, 100)
     },
     reposition: function(duration) {
         if (duration===undefined) duration = 0
@@ -73,8 +81,16 @@ ItemEditView = Backbone.View.extend({
         var left = pos.left
         this.el.animate({left: left, top: top}, duration)
     },
+    scrollToShow: function() {
+        var self = this
+        setTimeout(function() {
+            if ($(window).height() + $("html").scrollTop() < $(self.el).offset().top + $(self.el).height())
+                $("html").animate({scrollTop: $(self.el).offset().top + $(self.el).height() - $(window).height()}, 1000)
+        }, 100)
+    },
     save: function() {
         var self = this
+        self.$("input").blur()
         self.$('.save.btn').button('loading')
         this.model.save({}, {
             success: function() {
@@ -99,19 +115,23 @@ ItemEditView = Backbone.View.extend({
     cancel: function() {
         this.memento.restore()
         this.close()
-    },    
-    change: function() {
-        var new_vals = {}
-        this.$("input[type=text]").each(function(index, input) {
-            new_vals[$(input).attr("class")] = $(input).val() 
-        })
-        this.model.set(new_vals)
+    },
+    keyup: function(ev) {
+        //$(ev.target).change()
+        if (ev.which==13) this.save()
+        if (ev.which==27) this.cancel()
+    },
+    change: function(ev) {
         this.reposition()
     },
     close: function() {
+        this.model.editing = false
         this.remove()
         this.unbind()
         Dispatcher.unbind("resized", this.reposition, this)
-        this.model.editing = false
+        Backbone.ModelBinding.unbind(this)
     }
 })
+
+ItemViews = {"default": ItemView}
+ItemEditViews = {"default": ItemEditView}

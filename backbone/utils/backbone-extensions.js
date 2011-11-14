@@ -7,11 +7,13 @@ Handlebars.partials = Handlebars.templates
 
 /* ----- Backbone ----- */
 
-var Dispatcher = {}
-_.extend(Dispatcher, Backbone.Events)
+var Dispatcher = _.extend({}, Backbone.Events)
 
 // change the id attribute to use Mongo's _id
 Backbone.Model.prototype.idAttribute = "_id";
+
+// set default data-binding attribute name to "field", globally
+Backbone.ModelBinding.Configuration.configureAllBindingAttributes("data")
 
 // reorder the models in a collection by a list of ids (e.g. from jquery ui sortable)
 Backbone.Collection.prototype.reorder = function(order) {
