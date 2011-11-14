@@ -2,6 +2,19 @@ ContentView = Backbone.View.extend({
     tagName: "div",
     className: "content",
     template: "content",
+    events: {
+        "mouseover .content-inner": "showActionButtons",
+        "mouseout .content-inner": "hideActionButtons",
+        "mouseover .sections": "hideActionButtons",
+        "click .add-button": "addNewSection"
+    },
+    showActionButtons: function() {
+        this.$(".content-button").show()
+    },
+    hideActionButtons: function() {
+        this.$(".content-button").hide()
+        return false // to stop the propagation so that it won't trigger the parent's
+    },
     render: function() {
         this.renderTemplate()
         this.makeSortable()
@@ -17,6 +30,9 @@ ContentView = Backbone.View.extend({
         this.model.bind("remove:sections", this.removeSections, this)
         this.render()
     },
+    addNewSection: function() {
+        this.model.get('sections').create({})
+    },    
     updateSections: function(model, coll) {
         //alert('update sections')
     },
