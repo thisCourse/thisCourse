@@ -20,9 +20,8 @@ ItemView = Backbone.View.extend({
     initialize: function() {
         this.type = this.options.type || "default"
         this.el = $(this.el)
-        this.el.attr('id', this.model.id)
-        this.model.bind('change', this.render, this)
-        this.render()
+        this.model.bind('change', this.change, this)
+        this.change()
     },
     showActionButtons: function() {
         if (this.model.editing) return
@@ -41,12 +40,16 @@ ItemView = Backbone.View.extend({
         this.remove()
         this.unbind()
         this.model.unbind('change', this.render)
+    },
+    change: function() {
+        this.render()
+        this.el.attr('id', this.model.id)
     }
 })
 
 ItemEditView = Backbone.View.extend({
     tagName: "div",
-    className: "item-edit item span5",
+    className: "item-edit",
     template: "item-edit",
     render: function() {
         this.renderTemplate()
@@ -117,7 +120,7 @@ ItemEditView = Backbone.View.extend({
         this.close()
     },
     keyup: function(ev) {
-        //$(ev.target).change()
+        $(ev.target).change()
         if (ev.which==13) this.save()
         if (ev.which==27) this.cancel()
     },

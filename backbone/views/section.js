@@ -12,7 +12,8 @@ SectionView = Backbone.View.extend({
         //"click .sectiontitle": "edit",
         "mouseover .section-inner": "showActionButtons",
         "mouseout .section-inner": "hideActionButtons",
-        "mouseover .items": "hideActionButtons"
+        "mouseover .items": "hideActionButtons",
+        "click .add-button": "addNewItem"
     },
     showActionButtons: function() {
         this.$(".section-button").show()
@@ -49,6 +50,9 @@ SectionView = Backbone.View.extend({
             handle: ".drag-button"
         })
     },
+    addNewItem: function() {
+        this.model.get('items').add({})
+    },
     edit: function() {
         alert('editing! ' + this.model.attributes)
     },
@@ -59,6 +63,8 @@ SectionView = Backbone.View.extend({
         var type = model.get('type') || this.model.get('type') || "default"
         var view = this.itemViews[model.cid] = new ItemViews[type]({model: model, type: type})
         this.$(".items").append(view.el)
+        // if this is a new (unsaved) item, put it directly into edit mode
+        if (!model.get("_id")) view.edit()
     },
     removeItems: function(model, coll) {
         $(this.itemViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
