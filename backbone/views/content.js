@@ -6,7 +6,7 @@ ContentView = Backbone.View.extend({
         "mouseover .content-inner": "showActionButtons",
         "mouseout .content-inner": "hideActionButtons",
         "mouseover .sections": "hideActionButtons",
-        "click .add-button": "addNewSection"
+        "click .content-button.add-button": "addNewSection"
     },
     showActionButtons: function() {
         this.$(".content-button").show()

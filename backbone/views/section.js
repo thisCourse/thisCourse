@@ -13,7 +13,7 @@ SectionView = Backbone.View.extend({
         "mouseover .section-inner": "showActionButtons",
         "mouseout .section-inner": "hideActionButtons",
         "mouseover .items": "hideActionButtons",
-        "click .add-button": "addNewItem"
+        "click .section-button.add-button": "addNewItem"
     },
     showActionButtons: function() {
         this.$(".section-button").show()
