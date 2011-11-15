@@ -61,7 +61,8 @@ ItemEditView = Backbone.View.extend({
         "click .save": "save",
         "click .cancel": "cancel",
         "change input": "change",
-        "keyup input": "keyup"
+        "keyup input": "keyup",
+        "focus input": "scrollToShow"
     },
     initialize: function() {
         this.el = $(this.el)
@@ -77,19 +78,25 @@ ItemEditView = Backbone.View.extend({
         setTimeout(function() { self.$("input:first").focus() }, 100)
     },
     reposition: function(duration) {
+        var self = this
         if (duration===undefined) duration = 0
         var parent = this.options.parent
         var pos = parent.el.offset()
         var top = pos.top + parent.el.height()
         var left = pos.left
-        this.el.animate({left: left, top: top}, duration)
+        this.el.stop().animate({left: left, top: top}, duration, "swing", function () {
+            if (self.$("input:focus").length > 0)
+                self.scrollToShow()
+        })
     },
     scrollToShow: function() {
         var self = this
         setTimeout(function() {
-            if ($(window).height() + $("html").scrollTop() < $(self.el).offset().top + $(self.el).height())
-                $("html").animate({scrollTop: $(self.el).offset().top + $(self.el).height() - $(window).height()}, 1000)
-        }, 100)
+            if ($(window).height() + $("body").scrollTop() < $(self.el).offset().top + $(self.el).height() + 30)
+                $("html, body").stop().animate({scrollTop: $(self.el).offset().top + $(self.el).height() - $(window).height() + 30}, 500)
+            if ($("body").scrollTop() > $(self.el).offset().top)
+                $("html, body").stop().animate({scrollTop: $(self.el).offset().top}, 500)
+        }, 10)
     },
     save: function() {
         var self = this
@@ -126,6 +133,7 @@ ItemEditView = Backbone.View.extend({
     },
     change: function(ev) {
         this.reposition()
+        this.scrollToShow() // TODO: check if this adds too much of a burden
     },
     close: function() {
         this.model.editing = false
