@@ -18,10 +18,10 @@ ItemView = Backbone.View.extend({
         "mouseout .item-inner": "hideActionButtons"
     },
     initialize: function() {
+        this.type = this.options.type || "default"
         this.el = $(this.el)
-        this.el.attr('id', this.model.id)
-        this.model.bind('change', this.render, this)
-        this.render()
+        this.model.bind('change', this.change, this)
+        this.change()
     },
     showActionButtons: function() {
         if (this.model.editing) return
@@ -32,25 +32,37 @@ ItemView = Backbone.View.extend({
     },
     edit: function() {
         this.model.editing = true
-        var editView = new ItemEditView({model: this.model, parent: this}).render()
-        $("body").append(editView.el)
+        this.editView = new ItemEditViews[this.type]({model: this.model, parent: this}).render()
+        $("body").append(this.editView.el)
         this.hideActionButtons()
-    }    
+    },
+    close: function() {
+        this.remove()
+        this.unbind()
+        this.model.unbind('change', this.render)
+    },
+    change: function() {
+        this.render()
+        this.el.attr('id', this.model.id)
+    }
 })
 
 ItemEditView = Backbone.View.extend({
     tagName: "div",
-    className: "item-edit item span5",
+    className: "item-edit",
     template: "item-edit",
     render: function() {
         this.renderTemplate()
+        Backbone.ModelBinding.bind(this)
+        this.focusFirstInput()
         return this
     },
     events: {
         "click .save": "save",
         "click .cancel": "cancel",
         "change input": "change",
-        "keyup input": "change"
+        "keyup input": "keyup",
+        "focus input": "scrollToShow"
     },
     initialize: function() {
         this.el = $(this.el)
@@ -58,18 +70,37 @@ ItemEditView = Backbone.View.extend({
         this.memento.store()
         this.render()
         this.reposition()
+        this.scrollToShow()
         Dispatcher.bind("resized", this.reposition, this)
     },
+    focusFirstInput: function() {
+        var self = this
+        setTimeout(function() { self.$("input:first").focus() }, 100)
+    },
     reposition: function(duration) {
+        var self = this
         if (duration===undefined) duration = 0
         var parent = this.options.parent
         var pos = parent.el.offset()
         var top = pos.top + parent.el.height()
         var left = pos.left
-        this.el.animate({left: left, top: top}, duration)
+        this.el.stop().animate({left: left, top: top}, duration, "swing", function () {
+            if (self.$("input:focus").length > 0)
+                self.scrollToShow()
+        })
+    },
+    scrollToShow: function() {
+        var self = this
+        setTimeout(function() {
+            if ($(window).height() + $("body").scrollTop() < $(self.el).offset().top + $(self.el).height() + 30)
+                $("html, body").stop().animate({scrollTop: $(self.el).offset().top + $(self.el).height() - $(window).height() + 30}, 500)
+            if ($("body").scrollTop() > $(self.el).offset().top)
+                $("html, body").stop().animate({scrollTop: $(self.el).offset().top}, 500)
+        }, 10)
     },
     save: function() {
         var self = this
+        self.$("input").blur()
         self.$('.save.btn').button('loading')
         this.model.save({}, {
             success: function() {
@@ -94,19 +125,24 @@ ItemEditView = Backbone.View.extend({
     cancel: function() {
         this.memento.restore()
         this.close()
-    },    
-    change: function() {
-        var new_vals = {}
-        this.$("input[type=text]").each(function(index, input) {
-            new_vals[$(input).attr("class")] = $(input).val() 
-        })
-        this.model.set(new_vals)
+    },
+    keyup: function(ev) {
+        $(ev.target).change()
+        if (ev.which==13) this.save()
+        if (ev.which==27) this.cancel()
+    },
+    change: function(ev) {
         this.reposition()
+        this.scrollToShow() // TODO: check if this adds too much of a burden
     },
     close: function() {
+        this.model.editing = false
         this.remove()
         this.unbind()
         Dispatcher.unbind("resized", this.reposition, this)
-        this.model.editing = false
+        Backbone.ModelBinding.unbind(this)
     }
 })
+
+ItemViews = {"default": ItemView}
+ItemEditViews = {"default": ItemEditView}

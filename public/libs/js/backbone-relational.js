@@ -463,7 +463,7 @@
 			_.bindAll( this, 'onChange' );
 			this.instance.bind( 'relational:change:' + this.key, this.onChange );
 			
-			var model = this.findRelated();
+			var model = this.findRelated( { silent: true } );
 			this.setRelated( model );
 			
 			// Notify new 'related' object of the new relation.
@@ -613,7 +613,7 @@
 			}
 			
 			this.setRelated( this.prepareCollection( new this.collectionType() ) );
-			this.findRelated();
+			this.findRelated( { silent: true } );
 		},
 		
 		prepareCollection: function( collection ) {
@@ -705,6 +705,12 @@
 		 */
 		handleAddition: function( model, coll, options ) {
 			//console.debug('handleAddition called; args=%o', arguments);
+			// Make sure the model is in fact a valid model before continuing.
+			// (it can be invalid as a result of failing validation in Backbone.Collection._prepareModel)
+			if( !( model instanceof Backbone.Model ) ) {
+				return;
+			}
+			
 			options = this.sanitizeOptions( options );
 			var dit = this;
 			
@@ -1034,15 +1040,14 @@
 				return this.id;
 			}
 			
+			this.acquire();
 			var json = Backbone.Model.prototype.toJSON.call( this );
 			
 			_.each( this._relations, function( rel ) {
 					var value = json[ rel.key ];
 					
 					if ( rel.options.includeInJSON === true && value && _.isFunction( value.toJSON ) ) {
-						this.acquire();
 						json[ rel.key ] = value.toJSON();
-						this.release();
 					}
 					else if ( _.isString( rel.options.includeInJSON ) ) {
 						if ( value instanceof Backbone.Collection ) {
@@ -1057,6 +1062,7 @@
 					}
 				}, this );
 			
+			this.release();
 			return json;
 		}
 	});
@@ -1080,7 +1086,7 @@
 		if ( !( model instanceof Backbone.Model ) || !( this.get( model ) || this.getByCid( model ) ) ) {
 			model = _add.call( this, model, options );
 		}
-		this.trigger('relational:add', model, this, options);
+		model && this.trigger('relational:add', model, this, options);
 		
 		return model;
 	};
@@ -1092,7 +1098,7 @@
 	Backbone.Collection.prototype._remove = function( model, options ) {
 		//console.debug('calling _remove on coll=%o; model=%s (%o), options=%o', this, model.cid, model, options );
 		model = _remove.call( this, model, options );
-		this.trigger('relational:remove', model, this, options);
+		model && this.trigger('relational:remove', model, this, options);
 		
 		return model;
 	};

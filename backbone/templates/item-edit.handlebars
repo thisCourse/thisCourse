@@ -1,10 +1,6 @@
-<div class="editor">
-    <p>Title: <input type="text" class="title" value="{{ title }}"/></p>
-    <p>Width: <input type="text" class="width" value="{{ width }}"/></p>
-    <p>Blah: <input type="text" class="blah" value="{{ blah }}"/></p>
-</div>
-<p>
-    <button class="save btn success" data-loading-text="Saving..." data-complete-text="Saved">Save</button>
-    <button class="cancel btn">Cancel</button>
-</p>
-<div class="errors"></div>
+<p>Title: <input type="text" data="title"/></p>
+<p>Width: <input type="text" data="width"/></p>
+<p>Blah: <input type="text" data="blah"/></p>
+<p>More: <input type="text" data="morestuff"/></p>
+<p>Wishlist: <span data-bind="text blah"></span></p>
+{{>item-edit-buttons}}
