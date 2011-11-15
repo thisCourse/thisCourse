@@ -9,25 +9,28 @@ SectionView = Backbone.View.extend({
         return this
     },
     events: {
-        "mouseenter .section-inner": "showActionButtons",
-        "mouseleave .section-inner": "hideActionButtons",
-        "mouseenter .sectiontitle": "showDragButton",
-        "mouseout .sectiontitle": "hideDragButton",
-        "mouseenter .items": "hideDragButton",
-        "click .section-button.add-button": "addNewItem"
+        "mouseenter .section-inner": "showBottomActionButtons",
+        "mouseleave .section-inner": "hideBottomActionButtons",
+        "mouseenter .sectiontitle": "showTopActionButtons",
+        "mouseleave .sectiontitle": "hideTopActionButtons",
+        "mouseenter .items": "hideTopActionButtons",
+        "click .section-button.add-button": "addNewItem",
+        "click .section-button.delete-button": "delete"
     },
-    showActionButtons: function() {
-        this.$(".section-button").not(".drag-button").fadeIn(50)
+    showBottomActionButtons: function() {
+        this.$(".section-button.add-button").fadeIn(50)
     },
-    hideActionButtons: function() {
-        this.$(".section-button").fadeOut(50)
+    hideBottomActionButtons: function() {
+        this.$(".section-button.add-button").fadeOut(50)
         return false // to stop the propagation so that it won't trigger the parent's
     },
-    showDragButton: function() {
+    showTopActionButtons: function() {
         this.$(".section-button.drag-button").fadeIn(50)
+        this.$(".section-button.delete-button").fadeIn(50)
     },
-    hideDragButton: function() {
+    hideTopActionButtons: function() {
         this.$(".section-button.drag-button").fadeOut(50)
+        this.$(".section-button.delete-button").fadeOut(50)
         //return false // to stop the propagation so that it won't trigger the parent's
     },
     initialize: function() {
@@ -63,6 +66,10 @@ SectionView = Backbone.View.extend({
     },
     edit: function() {
         alert('editing! ' + this.model.attributes)
+    },
+    "delete": function() {
+        var self = this
+        delete_section_confirmation(this.model, function() { self.model.destroy() })
     },
     updateItems: function(model, coll) {
         //alert('update items')

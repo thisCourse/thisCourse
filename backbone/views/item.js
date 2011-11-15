@@ -25,12 +25,10 @@ ItemView = Backbone.View.extend({
         this.change()
     },
     showActionButtons: function() {
-        console.log("show")
         if (this.model.editing) return
         this.$(".item-button").fadeIn(50)
     },
     hideActionButtons: function() {
-        console.log("hide")
         this.$(".item-button").fadeOut(50)
     },
     edit: function() {
@@ -39,7 +37,7 @@ ItemView = Backbone.View.extend({
         $("body").append(this.editView.el)
         this.hideActionButtons()
     },
-    delete: function() {
+    "delete": function() {
         this.model.destroy()
     },
     close: function() {
