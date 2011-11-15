@@ -48,33 +48,31 @@
     min-height: 35px;
 }
 
-.content .edit-button {
-    /* background: url("@{iconpath}pencil_32.png") no-repeat;
-    width: 35px;
-    height: 35px; */
+.content-button, .section-button, .item-button {
     position: absolute;
     display: none;
+    margin: 5px;    
+}
+
+.content .edit-button {
     bottom: 0;
     right: 0;
-    margin-right: 5px;
-    margin-bottom: 5px;
 }
 
 .content .add-button {
-    position: absolute;
-    display: none;
     top: 0;
     right: 0;
-    margin-right: 5px;
-    margin-top: 5px;
+}
+
+.content .delete-button {
+    top: 0;
+    right: 0;
 }
 
 .content .drag-button {
     background: url("@{iconpath}nonfree/cursor_drag_arrow_32_blur.png") no-repeat;
     width: 35px;
     height: 35px;
-    position: absolute;
-    display: none;
     top: 2px;
     left: 2px;
     cursor: pointer;
@@ -89,12 +87,7 @@
 }
 
 .item-edit .save.btn {
-    width: 80px;
-}
-
-.item-edit .status {
-    color: #090;
-    margin: 4px;
+    min-width: 80px;
 }
 
 .item-edit .errors {
