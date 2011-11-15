@@ -14,6 +14,7 @@ ItemView = Backbone.View.extend({
     },
     events: {
         "click .edit-button": "edit",
+        "click .delete-button": "delete",
         "mouseover .item-inner": "showActionButtons",
         "mouseout .item-inner": "hideActionButtons"
     },
@@ -35,6 +36,9 @@ ItemView = Backbone.View.extend({
         this.editView = new ItemEditViews[this.type]({model: this.model, parent: this}).render()
         $("body").append(this.editView.el)
         this.hideActionButtons()
+    },
+    delete: function() {
+        this.model.destroy()
     },
     close: function() {
         this.remove()
