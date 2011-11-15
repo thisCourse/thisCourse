@@ -10,12 +10,20 @@ function dialog_from_template(template_name, data, options) {
 function delete_section_confirmation(model, delete_callback, options) {
         dialog_from_template("dialog-section-delete", model.attributes, _.extend({ 
             buttons: {
-                "Yes, delete!": function() {
-                    delete_callback()
-                    $(this).dialog("close")
+                "delete": {
+                    html: "Yes, delete!",
+                    "class": "btn danger",
+                    click: function() {
+                        delete_callback()
+                        $(this).dialog("close")
+                    }
                 },
-                Cancel: function() {
-                    $(this).dialog("close")
+                "cancel": {
+                    html: "Cancel",
+                    "class": "btn",
+                    click: function() {
+                        $(this).dialog("close")
+                    }
                 }
             }
         }, options))

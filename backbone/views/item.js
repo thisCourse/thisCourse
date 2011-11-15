@@ -95,11 +95,12 @@ ItemEditView = Backbone.View.extend({
     },
     scrollToShow: function() {
         var self = this
+        $("html, body").stop()
         setTimeout(function() {
             if ($(window).height() + $("body").scrollTop() < $(self.el).offset().top + $(self.el).height() + 30)
-                $("html, body").stop().animate({scrollTop: $(self.el).offset().top + $(self.el).height() - $(window).height() + 30}, 500)
+                $("html, body").stop().animate({scrollTop: $(self.el).offset().top + $(self.el).height() - $(window).height() + 30}, 400)
             if ($("body").scrollTop() > $(self.el).offset().top)
-                $("html, body").stop().animate({scrollTop: $(self.el).offset().top}, 500)
+                $("html, body").stop().animate({scrollTop: $(self.el).offset().top}, 400)
         }, 10)
     },
     save: function() {
@@ -109,7 +110,7 @@ ItemEditView = Backbone.View.extend({
         this.model.save({}, {
             success: function() {
                 self.$('.save.btn').button('complete')
-                self.el.fadeOut(500, function() { self.close() })
+                self.el.fadeOut(300, function() { self.close() })
             },
             error: function(model, err) {
                 var msg = "An unknown error occurred while saving. Please try again."
@@ -137,7 +138,6 @@ ItemEditView = Backbone.View.extend({
     },
     change: function(ev) {
         this.reposition()
-        this.scrollToShow() // TODO: check if this adds too much of a burden
     },
     close: function() {
         this.model.editing = false

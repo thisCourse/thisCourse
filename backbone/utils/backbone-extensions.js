@@ -108,7 +108,6 @@ Backbone.View.prototype.renderTemplate = function() {
         console.log("View does not have a template associated with it.")
     }
     $(this.el).html(html)
-    Dispatcher.trigger("resized")
 }
 
 // set a view's Bootstrap grid system width according to its model's "width" property 

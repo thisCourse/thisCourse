@@ -2,6 +2,7 @@ SectionView = Backbone.View.extend({
     tagName: "div",
     className: "section border2",
     template: "section",
+    buttonFadeSpeed: 60,
     render: function() {
         this.renderTemplate()
         this.makeSortable()
@@ -10,27 +11,31 @@ SectionView = Backbone.View.extend({
     },
     events: {
         "mouseenter .section-inner": "showBottomActionButtons",
-        "mouseleave .section-inner": "hideBottomActionButtons",
+        "mouseleave .section-inner": "hideAllActionButtons",
         "mouseenter .sectiontitle": "showTopActionButtons",
-        "mouseleave .sectiontitle": "hideTopActionButtons",
+        "mouseout .sectiontitle": "hideTopActionButtons",
         "mouseenter .items": "hideTopActionButtons",
         "click .section-button.add-button": "addNewItem",
         "click .section-button.delete-button": "delete"
     },
     showBottomActionButtons: function() {
-        this.$(".section-button.add-button").fadeIn(50)
+        this.$(".section-button.add-button").fadeIn(this.buttonFadeSpeed)
     },
     hideBottomActionButtons: function() {
-        this.$(".section-button.add-button").fadeOut(50)
-        return false // to stop the propagation so that it won't trigger the parent's
+        this.$(".section-button.add-button").fadeOut(this.buttonFadeSpeed)
+        //return false // to stop the propagation so that it won't trigger the parent's
     },
     showTopActionButtons: function() {
-        this.$(".section-button.drag-button").fadeIn(50)
-        this.$(".section-button.delete-button").fadeIn(50)
+        this.$(".section-button.drag-button").fadeIn(this.buttonFadeSpeed)
+        this.$(".section-button.delete-button").fadeIn(this.buttonFadeSpeed)
     },
     hideTopActionButtons: function() {
-        this.$(".section-button.drag-button").fadeOut(50)
-        this.$(".section-button.delete-button").fadeOut(50)
+        this.$(".section-button.drag-button").fadeOut(this.buttonFadeSpeed)
+        this.$(".section-button.delete-button").fadeOut(this.buttonFadeSpeed)
+        //return false // to stop the propagation so that it won't trigger the parent's
+    },
+    hideAllActionButtons: function() {
+        this.$(".section-button").fadeOut(this.buttonFadeSpeed)
         //return false // to stop the propagation so that it won't trigger the parent's
     },
     initialize: function() {
