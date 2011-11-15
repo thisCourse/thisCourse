@@ -15,8 +15,8 @@ ItemView = Backbone.View.extend({
     events: {
         "click .edit-button": "edit",
         "click .delete-button": "delete",
-        "mouseover .item-inner": "showActionButtons",
-        "mouseout .item-inner": "hideActionButtons"
+        "mouseenter .item-inner": "showActionButtons",
+        "mouseleave .item-inner": "hideActionButtons"
     },
     initialize: function() {
         this.type = this.options.type || "default"
@@ -25,11 +25,13 @@ ItemView = Backbone.View.extend({
         this.change()
     },
     showActionButtons: function() {
+        console.log("show")
         if (this.model.editing) return
-        this.$(".item-button").show()
+        this.$(".item-button").fadeIn(50)
     },
     hideActionButtons: function() {
-        this.$(".item-button").hide()
+        console.log("hide")
+        this.$(".item-button").fadeOut(50)
     },
     edit: function() {
         this.model.editing = true
