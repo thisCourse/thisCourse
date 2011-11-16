@@ -68,7 +68,7 @@ SectionView = Backbone.View.extend({
     },
     addNewItem: _.throttle(function() {
         this.model.get('items').add({})
-    }, 1000),
+    }, 500),
     edit: function() {
         alert('editing! ' + this.model.attributes)
     },
@@ -80,7 +80,7 @@ SectionView = Backbone.View.extend({
         //alert('update items')
     },
     addItems: function(model, coll) {
-        var type = model.get('type') || this.model.get('type') || "default"
+        var type = model.get('type') || this.model.get('type') || ""
         var view = this.itemViews[model.cid] = new ItemViews[type]({model: model, type: type})
         this.$(".items").append(view.el)
         // if this is a new (unsaved) item, put it directly into edit mode

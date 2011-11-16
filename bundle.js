@@ -61,11 +61,16 @@ function compile_handlebar_templates(callback) {
 watchDir("backbone/templates", compile_handlebar_templates)
 
 function compile_less_stylesheets(callback) {
+    var itemtypeimports = ""
+    fs.readdirSync("backbone/styles/item-types").forEach(function(f) {
+        itemtypeimports += "@import 'item-types/" + f + "';\n"
+    })
+    fs.writeFileSync("backbone/styles/item-types.less", itemtypeimports) 
     console.log("Recompiling base less stylesheet...")
     less.render("@import 'backbone/styles/base.less';", function(err, result) {
         if (err) throw err
         console.log("Base less template compiled; writing to ./public/base_styles.css")
-        fs.writeFile("./public/base_styles.css", result, callback)
+        fs.writeFile("public/base_styles.css", result, callback)
     })
 
 }

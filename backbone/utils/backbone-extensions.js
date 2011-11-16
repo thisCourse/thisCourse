@@ -107,7 +107,8 @@ Backbone.View.prototype.renderTemplate = function(options) {
 // set a view's Bootstrap grid system width according to its model's "width" property 
 Backbone.View.prototype.updateWidth = function() {
     this.el.attr('class', this.el[0].className.replace(/\w*\bspan\d+\b/g, ''))
-    var width = Math.max(this.model.get("width") || 3, this.editView && this.editView.minwidth || 1) 
-    this.el.addClass("span" + width)
+    var width = Math.max(this.model.get("width"), this.editView && this.editView.minwidth || 4) 
+    if (isFinite(width))
+        this.el.addClass("span" + width)
     Dispatcher.trigger("resized")
 }

@@ -1,7 +1,6 @@
 ItemView = Backbone.View.extend({
     tagName: "span",
     className: "item",
-    template: "item",
     render: function() {
         this.renderTemplate({target: ".item-inner"})
         var self = this
@@ -12,15 +11,22 @@ ItemView = Backbone.View.extend({
         this.updateWidth()
         return this
     },
-    events: {
-        "click .edit-button": "edit",
-        "click .delete-button": "delete",
-        "mouseenter .item-inner": "showActionButtons",
-        "mouseleave .item-inner": "hideActionButtons"
+    events: function() {
+        return {
+            "click .edit-button": "edit",
+            "click .delete-button": "delete",
+            "mouseenter .item-inner": "showActionButtons",
+            "mouseleave .item-inner": "hideActionButtons"
+        }
     },
     initialize: function() {
-        this.type = this.options.type || "default"
         this.el = $(this.el)
+        this.type = this.type || this.options.type || ""
+        if (this.type)
+            this.template = "item-" + this.type
+        else
+            this.template = "item"
+        this.el.addClass(this.template)
         this.model.bind('change', this.change, this)
         this.renderTemplate({template: "item-container"})
         this.change()
@@ -53,21 +59,26 @@ ItemView = Backbone.View.extend({
 })
 
 ItemEditView = Backbone.View.extend({
-    tagName: "div",
-    className: "item-edit",
-    template: "item-edit",
     render: function() {
         Backbone.ModelBinding.bind(this)
         this.focusFirstInput()
         return this
     },
-    events: {
-        "click .save": "save",
-        "click .cancel": "cancel",
-        "change input": "change"
+    events: function() {
+        return {
+            "click .save": "save",
+            "click .cancel": "cancel",
+            "change input": "change"
+        }
     },
     initialize: function() {
         this.el = $(this.el)
+        this.type = this.type || this.options.type || this.options.parent.type || ""
+        if (this.type)
+            this.template = "item-" + this.type + "-edit"
+        else
+            this.template = "item-edit"
+        this.el.addClass(this.template)
         this.memento = new Backbone.Memento(this.model)
         this.memento.store()
         this.render()
@@ -134,7 +145,7 @@ ItemEditPopupView = ItemEditView.extend({
             "focus input": "scrollToShow",
             "keyup input": "keyup",
             "mouseenter": "bringToTop"
-        }, this.base.events)
+        }, this.base.events())
     },
     initialize: function() {
         this.base.initialize.apply(this, arguments)
@@ -205,7 +216,7 @@ ItemEditInlineView = ItemEditView.extend({
     events: function() {
         return _.extend({
             "keyup input": "keyup"
-        }, this.base.events)
+        }, this.base.events())
     },
     keyup: function(ev) {
         if (ev.which==13) this.save()
@@ -225,5 +236,6 @@ ItemEditInlineView = ItemEditView.extend({
     }    
 })
 
-ItemViews = {"default": ItemView}
-ItemEditViews = {"default": ItemEditPopupView}
+ItemViews = {"": ItemView}
+ItemEditViews = {"": ItemEditPopupView}
+
