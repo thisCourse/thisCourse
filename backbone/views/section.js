@@ -2,6 +2,7 @@ SectionView = Backbone.View.extend({
     tagName: "div",
     className: "section border2",
     template: "section",
+    buttonFadeSpeed: 60,
     render: function() {
         this.renderTemplate()
         this.makeSortable()
@@ -9,18 +10,33 @@ SectionView = Backbone.View.extend({
         return this
     },
     events: {
-        //"click .sectiontitle": "edit",
-        "mouseover .section-inner": "showActionButtons",
-        "mouseout .section-inner": "hideActionButtons",
-        "mouseover .items": "hideActionButtons",
-        "click .section-button.add-button": "addNewItem"
+        "mouseenter .section-inner": "showBottomActionButtons",
+        "mouseleave .section-inner": "hideAllActionButtons",
+        "mouseenter .sectiontitle": "showTopActionButtons",
+        "mouseout .sectiontitle": "hideTopActionButtons",
+        "mouseenter .items": "hideTopActionButtons",
+        "click .section-button.add-button": "addNewItem",
+        "click .section-button.delete-button": "delete"
     },
-    showActionButtons: function() {
-        this.$(".section-button").show()
+    showBottomActionButtons: function() {
+        this.$(".section-button.add-button").fadeIn(this.buttonFadeSpeed)
     },
-    hideActionButtons: function() {
-        this.$(".section-button").hide()
-        return false // to stop the propagation so that it won't trigger the parent's
+    hideBottomActionButtons: function() {
+        this.$(".section-button.add-button").fadeOut(this.buttonFadeSpeed)
+        //return false // to stop the propagation so that it won't trigger the parent's
+    },
+    showTopActionButtons: function() {
+        this.$(".section-button.drag-button").fadeIn(this.buttonFadeSpeed)
+        this.$(".section-button.delete-button").fadeIn(this.buttonFadeSpeed)
+    },
+    hideTopActionButtons: function() {
+        this.$(".section-button.drag-button").fadeOut(this.buttonFadeSpeed)
+        this.$(".section-button.delete-button").fadeOut(this.buttonFadeSpeed)
+        //return false // to stop the propagation so that it won't trigger the parent's
+    },
+    hideAllActionButtons: function() {
+        this.$(".section-button").fadeOut(this.buttonFadeSpeed)
+        //return false // to stop the propagation so that it won't trigger the parent's
     },
     initialize: function() {
         this.itemViews = {}
@@ -50,11 +66,15 @@ SectionView = Backbone.View.extend({
             handle: ".drag-button"
         })
     },
-    addNewItem: function() {
+    addNewItem: _.throttle(function() {
         this.model.get('items').add({})
-    },
+    }, 1000),
     edit: function() {
         alert('editing! ' + this.model.attributes)
+    },
+    "delete": function() {
+        var self = this
+        delete_section_confirmation(this.model, function() { self.model.destroy() })
     },
     updateItems: function(model, coll) {
         //alert('update items')

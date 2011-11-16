@@ -96,24 +96,18 @@ Backbone.Collection.prototype.reorder = function(order) {
 }
 
 // render a view's template using its model data, then write it to the element
-Backbone.View.prototype.renderTemplate = function() {
-    var html = ""
-    if (this.template) {
-        if (this.model) {
-            html = Handlebars.templates[this.template](this.model.attributes)
-        } else {
-            console.log("View does not have a model associated with it.")
-        }
-    } else {
-        console.log("View does not have a template associated with it.")
-    }
-    $(this.el).html(html)
-    Dispatcher.trigger("resized")
+Backbone.View.prototype.renderTemplate = function(options) {
+    var settings = _.extend({target: this.el, template: this.template}, options)
+    settings.data = settings.data || (settings.model && settings.model.attributes)
+                                  || (this.model && this.model.attributes) || {}    
+    var html = Handlebars.templates[settings.template](settings.data)
+    this.$(settings.target).html(html)
 }
 
 // set a view's Bootstrap grid system width according to its model's "width" property 
 Backbone.View.prototype.updateWidth = function() {
-    this.el.attr('class', this.el[0].className.replace(/\bspan\d+\b/g, ''))
-    this.el.addClass("span" + this.model.get("width"))
+    this.el.attr('class', this.el[0].className.replace(/\w*\bspan\d+\b/g, ''))
+    var width = Math.max(this.model.get("width") || 3, this.editView && this.editView.minwidth || 1) 
+    this.el.addClass("span" + width)
     Dispatcher.trigger("resized")
 }
