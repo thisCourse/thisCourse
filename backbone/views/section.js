@@ -66,9 +66,9 @@ SectionView = Backbone.View.extend({
             handle: ".drag-button"
         })
     },
-    addNewItem: function() {
+    addNewItem: _.throttle(function() {
         this.model.get('items').add({})
-    },
+    }, 1000),
     edit: function() {
         alert('editing! ' + this.model.attributes)
     },

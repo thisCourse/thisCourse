@@ -13,6 +13,10 @@
     position: relative;
 }
 
+.content-inner {
+    width: 940px;
+}
+
 .content .section {
     overflow: hidden;
     margin-bottom: 20px;
@@ -40,7 +44,7 @@
     position: relative;
 }
 
-.content .section .item .item-inner {
+.content .item-inner, .content .item-edit-inline {
     background-color: #f2f2f2;
     padding: 10px;
     .border-radius(5px);
@@ -88,12 +92,21 @@
     cursor: pointer;
 }
 
-.item-edit {
+.item-edit-popup {
     position: absolute;
     .border-radius(5px);
     padding: 15px;
     background-color: #f6f6f6;
     border: 1px #ccc solid;
+}
+
+.item-edit dd {
+    font-weight: bold;
+    padding-top: 7px;
+}
+
+.item-edit dt {
+    padding-bottom: 7px;
 }
 
 .item-edit .save.btn {

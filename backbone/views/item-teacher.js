@@ -19,8 +19,8 @@ ItemViews["teacher"] = ItemView.extend({
     }
 })
 
-ItemEditViews["teacher"] = ItemEditView.extend({
-    base: ItemEditView.prototype,
+ItemEditViews["teacher"] = ItemEditPopupView.extend({
+    base: ItemEditPopupView.prototype,
     template: "item-teacher-edit",
     render: function() {
         this.base.render.apply(this, arguments)
