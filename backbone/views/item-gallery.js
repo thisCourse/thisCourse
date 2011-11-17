@@ -5,7 +5,25 @@
     ItemViews[type] = ItemView.extend({
         base: ItemView.prototype,
         render: function() {
+            var self = this
             this.base.render.apply(this, arguments)
+            this.$(".imagelink").fancybox({ // TODO: can trim down the CSS and remove images
+                cyclic: true,
+                hideOnContentClick: true,
+                overlayOpacity: 0.2,
+                showCloseButton: false,
+                title: this.renderTemplate({template: "item-gallery-title", target: null}),
+                titlePosition: 'over',
+                onComplete: function() {
+                    $("#fancybox-wrap").mousemove(function() { // TODO: more efficient, but still hides by default?
+                        $("#fancybox-title").show()
+                    })
+                    $("#fancybox-wrap").mouseleave(function() {
+                        $("#fancybox-title").hide()
+                    })
+                    $("#fancybox-title").hide()
+                }
+            })
             return this
         },
         events: function() {

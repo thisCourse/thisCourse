@@ -5,7 +5,7 @@ ItemView = Backbone.View.extend({
         this.renderTemplate({target: ".item-inner"})
         var self = this
         _.each(_.keys(this.model.attributes), function(attr) {
-            if (attr!="title" && attr!="_id" && attr!="parent" && attr!="width")
+            if (attr!="title" && attr!="_id" && attr!="parent" && attr!="width" && self.model.get(attr))
                 self.$('.attributes').append("<div class='attr_" + attr + "'><b>" + attr + ":</b> " + self.model.get(attr) + "</div>")
         })
         this.updateWidth()

@@ -101,7 +101,10 @@ Backbone.View.prototype.renderTemplate = function(options) {
     settings.data = settings.data || (settings.model && settings.model.attributes)
                                   || (this.model && this.model.attributes) || {}    
     var html = Handlebars.templates[settings.template](settings.data)
-    this.$(settings.target).html(html)
+    if (settings.target)
+        this.$(settings.target).html(html)
+    else
+        return html
 }
 
 // set a view's Bootstrap grid system width according to its model's "width" property 
