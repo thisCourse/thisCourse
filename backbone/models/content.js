@@ -20,3 +20,10 @@ Content = Backbone.RelationalModel.extend({
         return data
     }
 })
+
+ContentCollection = Backbone.Collection.extend({
+    model: Content,
+    initialize: function() {
+        //console.log("sectioncollection created", this)   
+    }    
+})
