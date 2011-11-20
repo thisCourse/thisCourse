@@ -74,7 +74,10 @@ SectionView = Backbone.View.extend({
     },
     "delete": function() {
         var self = this
-        delete_section_confirmation(this.model, function() { self.model.destroy() })
+        if (this.model.get("items").length)
+            delete_section_confirmation(this.model, function() { self.model.destroy() })
+        else
+            self.model.destroy()
     },
     updateItems: function(model, coll) {
         //alert('update items')

@@ -1,4 +1,4 @@
-(function(Backbone, ItemView, ItemEditViews, ItemEditInlineView, ItemEditPopupView) {
+(function() {
 
     var type = "gallery"
     
@@ -16,10 +16,10 @@
                 titlePosition: 'over',
                 onComplete: function() {
                     $("#fancybox-wrap").mousemove(function() { // TODO: more efficient, but still hides by default?
-                        $("#fancybox-title").show()
+                        $("#fancybox-title").fadeIn(200)
                     })
                     $("#fancybox-wrap").mouseleave(function() {
-                        $("#fancybox-title").hide()
+                        $("#fancybox-title").stop().fadeOut(200)
                     })
                     $("#fancybox-title").hide()
                 }
@@ -60,5 +60,5 @@
             baseview.prototype.close.apply(this, arguments)
         }
     })
-    
-})(Backbone, ItemView, ItemEditViews, ItemEditInlineView, ItemEditPopupView)
+
+})()

@@ -54,7 +54,7 @@ ItemView = Backbone.View.extend({
     },
     change: function() {
         this.render()
-        this.el.attr('id', this.model.id)
+        this.el.attr('id', this.model.id || this.model.cid)
     }
 })
 

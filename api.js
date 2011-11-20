@@ -12,8 +12,9 @@ var file = new(require('node-static').Server)('./public')
 
 var collections = {}
 
-var courses = collections['courses'] = db.collection('courses')
+var course = collections['course'] = db.collection('course')
 var content = collections['content'] = db.collection('content')
+var page = collections['page'] = db.collection('page')
 var grades = collections['grades'] = db.collection('grades')
 var docs = collections['docs'] = db.collection('docs')
 var test = collections['test'] = db.collection('test')

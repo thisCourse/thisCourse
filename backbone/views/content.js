@@ -3,7 +3,7 @@ ContentView = Backbone.View.extend({
     className: "content",
     template: "content",
     events: {
-        "mouseover .content-inner": "showActionButtons",
+        //"mouseover .content-inner": "showActionButtons",
         //"mouseout .content-inner": "hideActionButtons",
         //"mouseenter .sections": "hideActionButtons",
         "click .content-button.add-button": "addNewSection"
@@ -31,7 +31,7 @@ ContentView = Backbone.View.extend({
         this.render()
     },
     addNewSection: function() {
-        this.model.get('sections').create({})
+        this.model.get('sections').create({type: this.$(".add-section-type").val()})
     },    
     updateSections: function(model, coll) {
         //alert('update sections')
