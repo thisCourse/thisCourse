@@ -23,6 +23,7 @@
     <script src="/backbone/models/section.js"></script>
     <script src="/backbone/models/item.js"></script>
 
+    <script src="/backbone/views/page.js"></script>
     <script src="/backbone/views/content.js"></script>
     <script src="/backbone/views/section.js"></script>
     <script src="/backbone/views/item.js"></script>
@@ -61,30 +62,38 @@ $(function() {
     window.contentview = new ContentView({model: content})
     $("#content").append(contentview.el)
     
-    content.fetch().then(function() {
-        //content.get('sections').at(1).set({title: 'Books'})
-        //content.get('sections').at(0).set('items', [{stuff: "woooo", _id:33}])
-        
-    })
+    content.fetch().then(function() {})
+
+    // window.page = new Page({_id: "4ec85b53f88cd68b2f000003"})
+//     
+    // window.pageview = new PageView({model: page})
+    // $("#content").append(pageview.el)
+//     
+    // page.fetch().then(function() {})
     
 })
 
 </script>
 
-<div class="container">
+<div id="container-outer">
 
-     <ul class="pills">
+    <ul class="pills">
         <li class="active"><a href="#">Home</a></li>
         <li><a href="#">Lectures</a></li>
         <li><a href="#">Assignments</a></li>
         <li><a href="#">Discussion</a></li>
         <li><a href="#">Grades</a></li>
-     </ul>
+    </ul>
 
-    <div id="content"></div>
-    
-    <br/><br/><br/>
-    
+    <div id="container">
+        
+        <div id="container-inner">
+        
+            <div id="content"></div>
+        
+        </div>
+                
+    </div>
 </div>
 
 </body>

@@ -2,5 +2,31 @@
 
 @import "globals.less";
 @import "content.less";
+@import "page.less";
 
 @import "item-types.less";
+
+body {
+    background-color: #c0c9e0;
+}
+
+.pills {
+    padding: 10px 25px;
+    margin: 0;
+}
+
+#container-outer {
+    width: @siteWidth + 2 * @container-padding + 2 * @content-border-width;
+    margin: 0 auto;
+}
+
+#container {    
+    background-color: #ffffff;
+    .border-radius(10px);
+    padding: @container-padding;
+}
+    
+#container-inner {
+    .columns(13);
+}
+    
