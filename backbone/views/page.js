@@ -31,10 +31,9 @@ PageView = Backbone.View.extend({
         this.render()
     },
     addNewContent: function() {
-        var self = this
-        var newContent = new Content({title: "dummy", width: 8})
-        this.model.get('contents').add(newContent)
-        newContent.save(function() { self.model.save() })
+        var new_content = new Content({title: "dummy", width: 12})
+        this.model.get('contents').add(new_content)
+        new_content.save()
     },    
     updateContents: function(model, coll) {
         //alert('update contents')
@@ -49,10 +48,10 @@ PageView = Backbone.View.extend({
     },
     makeSortable: function() {
         var self = this
-        this.$('.contents').sortable({
+        this.$('.navigation ul').sortable({
             update: function(event, ui) {
                 // get the post-sort section order (as a list of id's) and save the new collection order 
-                var new_order = self.$('.contents').sortable("toArray")
+                var new_order = self.$('.navigation ul').sortable("toArray")
                 self.model.get('contents').reorder(new_order)
                 self.model.save()
             },
@@ -80,9 +79,10 @@ PageNavRowView = Backbone.View.extend({
         this.contentViews = {}
         this.el = $(this.el)
         this.model.bind('change:title', this.render, this)
-        this.model.bind('change:_id', this.saveParent, this)
+        this.model.bind('change:_id', this.changeId, this)
         this.model.bind('change:title', this.titleChange, this)
-        this.model.bind('save', this.saveParent, this)
+        this.model.bind('save', this.saved, this)
+        this.el.attr('id', this.model.id)
         this.render()
     },
     showContent: function() {
@@ -99,13 +99,20 @@ PageNavRowView = Backbone.View.extend({
         // keep track of the title having changed so we know to save the parent  
         this.titleChanged = true
     },
-    saveParent: function() {
-        // save the parent too (so it stores the title), but only if the title has changed 
+    saved: function() {
+        // save the parent too (so it stores the title), but only if the title has changed
         if (this.titleChanged) {
-            alert('saving parent')
-            this.model.get('parent').save()
+            this.saveParent()
             delete this.titleChanged
-        }
+        }        
+    },
+    changeId: function () {
+        this.saveParent()
+        this.el.attr('id', this.model.id)
+    },
+    saveParent: function() {
+        alert('saving parent')
+        this.model.get('parent').save()
     }
 })
 

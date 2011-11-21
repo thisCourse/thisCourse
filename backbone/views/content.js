@@ -31,7 +31,10 @@ ContentView = Backbone.View.extend({
         this.render()
     },
     addNewSection: function() {
-        this.model.get('sections').create({type: this.$(".add-section-type").val()})
+        var new_section = {type: this.$(".add-section-type").val()}
+        if (this.model.get("width"))
+            new_section.width = this.model.get("width") 
+        this.model.get('sections').create(new_section)
     },    
     updateSections: function(model, coll) {
         //alert('update sections')

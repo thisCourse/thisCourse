@@ -8,7 +8,7 @@ Content = Backbone.RelationalModel.extend({
         reverseRelation: {
             key: 'parent',
             includeInJSON: false
-        },
+        }
     }],
     urlRoot: '/api/content',
     initialize: function() {

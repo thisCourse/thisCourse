@@ -67,12 +67,12 @@ $(function() {
     
     //*/
     
-    window.page = new Page({_id: "4ec999ca095bdf932c000001"})
+    window.page = new Page({_id: "4ec9d86ee69e559b2e00005b"})
     
     window.pageview = new PageView({model: page})
     $("#content").append(pageview.el)
     
-    page.fetch().then(function() { page.get('contents').at(11).set({title: "New title 4"}) })
+    page.fetch().then(function() { })
     
 })
 
