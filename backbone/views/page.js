@@ -6,7 +6,7 @@ PageView = Backbone.View.extend({
         //"mouseover .content-inner": "showActionButtons",
         //"mouseout .content-inner": "hideActionButtons",
         //"mouseenter .sections": "hideActionButtons",
-        "click .content-button.add-button": "addNewSection"
+        "click .page-button.add-button": "addNewContent"
     },
     showActionButtons: function() {
         this.$(".page-button").show()
@@ -22,7 +22,7 @@ PageView = Backbone.View.extend({
         return this
     },
     initialize: function() {
-        this.contentViews = {}
+        this.pageNavRowViews = {}
         this.el = $(this.el)
         this.model.bind('change', this.update, this)
         this.model.bind("update:contents", this.updateContents, this)
@@ -30,19 +30,22 @@ PageView = Backbone.View.extend({
         this.model.bind("remove:contents", this.removeContents, this)
         this.render()
     },
-    addNewSection: function() {
-        this.model.get('sections').create({type: this.$(".add-section-type").val()})
+    addNewContent: function() {
+        var self = this
+        var newContent = new Content({title: "dummy", width: 8})
+        this.model.get('contents').add(newContent)
+        newContent.save(function() { self.model.save() })
     },    
     updateContents: function(model, coll) {
-        //alert('update sections')
+        //alert('update contents')
     },
     addContents: function(model, coll) {
-        this.contentViews[model.cid] = new ContentView({model: model})
-        this.$('.contents').append(this.contentViews[model.cid].el)
+        this.pageNavRowViews[model.cid] = new PageNavRowView({model: model, parent: this})
+        this.$('.nav-links').append(this.pageNavRowViews[model.cid].el)
     },
     removeContents: function(model, coll) {
-        $(this.contentViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
-        delete this.contentViews[model.cid]
+        $(this.pageNavRowViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
+        delete this.pageNavRowViews[model.cid]
     },
     makeSortable: function() {
         var self = this
@@ -61,3 +64,48 @@ PageView = Backbone.View.extend({
         this.$('.title').text(this.model.get("title"))
     }
 })
+
+
+PageNavRowView = Backbone.View.extend({
+    tagName: "li",
+    template: "page-nav-row",
+    events: {
+        "click a": "showContent"
+    },
+    render: function() {
+        this.renderTemplate()
+        return this
+    },
+    initialize: function() {
+        this.contentViews = {}
+        this.el = $(this.el)
+        this.model.bind('change:title', this.render, this)
+        this.model.bind('change:_id', this.saveParent, this)
+        this.model.bind('change:title', this.titleChange, this)
+        this.model.bind('save', this.saveParent, this)
+        this.render()
+    },
+    showContent: function() {
+        if (!this.contentView) {
+            console.log("fetching content block to show")
+            this.model.fetch()
+            this.contentView = new ContentView({model: this.model})
+            this.options.parent.$(".contents").append(this.contentView.render().el)
+        }
+        console.log("showing content block")
+        this.contentView.el.show().siblings().hide()
+    },
+    titleChange: function() {
+        // keep track of the title having changed so we know to save the parent  
+        this.titleChanged = true
+    },
+    saveParent: function() {
+        // save the parent too (so it stores the title), but only if the title has changed 
+        if (this.titleChanged) {
+            alert('saving parent')
+            this.model.get('parent').save()
+            delete this.titleChanged
+        }
+    }
+})
+

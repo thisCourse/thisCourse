@@ -115,3 +115,15 @@ Backbone.View.prototype.updateWidth = function() {
         this.el.addClass("span" + width)
     Dispatcher.trigger("resized")
 }
+
+Backbone.Model.prototype.parse = function(data) {
+    $("#jsoncode").text(JSON.stringify(data))
+    return data
+}
+
+// add in a "save" event to be fired when a model is saved
+Backbone.Model.prototype.save_original = Backbone.Model.prototype.save
+Backbone.Model.prototype.save = function() {
+    this.trigger("save", this)
+    return Backbone.Model.prototype.save_original.apply(this, arguments)
+} 

@@ -57,19 +57,22 @@
 
 $(function() {
     
+    /*
     window.content = new Content({_id: "4eb60623adea32365e000001"})
     
     window.contentview = new ContentView({model: content})
     $("#content").append(contentview.el)
     
     content.fetch().then(function() {})
-
-    // window.page = new Page({_id: "4ec85b53f88cd68b2f000003"})
-//     
-    // window.pageview = new PageView({model: page})
-    // $("#content").append(pageview.el)
-//     
-    // page.fetch().then(function() {})
+    
+    //*/
+    
+    window.page = new Page({_id: "4ec999ca095bdf932c000001"})
+    
+    window.pageview = new PageView({model: page})
+    $("#content").append(pageview.el)
+    
+    page.fetch().then(function() { page.get('contents').at(11).set({title: "New title 4"}) })
     
 })
 
@@ -87,14 +90,15 @@ $(function() {
 
     <div id="container">
         
-        <div id="container-inner">
-        
-            <div id="content"></div>
-        
-        </div>
+        <div id="content"></div>
                 
     </div>
+    
+    <div id="jsoncode"></div>
+    
 </div>
+
+
 
 </body>
 </html>

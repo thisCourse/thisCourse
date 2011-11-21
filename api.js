@@ -53,6 +53,10 @@ get_by_path = function(obj, path, index) {
 
 // sanitize an object; right now this just removes fields starting with _, but could put html sanitization in here?
 recursively_sanitize = function(obj) {
+    
+    // sanitization disabled for now; this should probably be handled within the permissions callback
+    return obj
+    
     if (!(obj instanceof Object))
         return obj
     for (key in obj) {

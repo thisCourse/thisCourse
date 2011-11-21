@@ -4,7 +4,7 @@ Page = Backbone.RelationalModel.extend({
         key: 'contents',
         relatedModel: 'Content',
         collectionType: 'ContentCollection',
-        includeInJSON: '_id',
+        includeInJSON: ["_id", "title"],
         reverseRelation: {
             key: 'parent',
             includeInJSON: false

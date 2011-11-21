@@ -1057,6 +1057,23 @@
 							json[ rel.key ] = value.get( rel.options.includeInJSON );
 						}
 					}
+					else if ( _.isArray( rel.options.includeInJSON ) ) { // JA added
+                        if ( value instanceof Backbone.Collection ) {
+                            json[ rel.key ] = _.map(value.models, function(model) {
+                                var model_subset = {};
+                                _.each(rel.options.includeInJSON, function(key) {
+                                    model_subset[ key ] = model.get( key );
+                                })
+                                return model_subset;
+                            })
+                        }
+                        else if ( value instanceof Backbone.Model ) {
+                            json[ rel.key ] = {};
+                            _.each(rel.options.includeInJSON, function(key) {
+                                json[ rel.key ][ key ] = value.get( key );
+                            })
+                        }
+					}
 					else {
 						delete json[ rel.key ];
 					}
