@@ -7,7 +7,7 @@ ckeditor_config.toolbar =
     //{ name: 'editing', items : [ 'Find','Replace','-','SelectAll' ] },
     //'/',
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-    { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-',
+    { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-',
         'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
     { name: 'links', items : [ 'Link','Unlink' ] },
     { name: 'insert', items : [ 'Image','Table','HorizontalRule','SpecialChar' ] },

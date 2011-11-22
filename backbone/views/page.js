@@ -31,9 +31,13 @@ PageView = Backbone.View.extend({
         this.render()
     },
     addNewContent: function() {
-        var new_content = new Content({title: "dummy", width: 12})
-        this.model.get('contents').add(new_content)
-        new_content.save()
+        var self = this
+        dialog_request_response("Please enter a title:", function(val) {
+            var new_content = new Content({title: val, width: 12})
+            self.model.get('contents').add(new_content)
+            self.pageNavRowViews[new_content.cid].showContent()
+            new_content.save()
+        })
     },    
     updateContents: function(model, coll) {
         //alert('update contents')
