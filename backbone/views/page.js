@@ -41,6 +41,8 @@ PageView = Backbone.View.extend({
     addContents: function(model, coll) {
         this.pageNavRowViews[model.cid] = new PageNavRowView({model: model, parent: this})
         this.$('.nav-links').append(this.pageNavRowViews[model.cid].el)
+        if (!this.activeSubpage)
+            this.pageNavRowViews[model.cid].showContent()
     },
     removeContents: function(model, coll) {
         $(this.pageNavRowViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
@@ -61,7 +63,7 @@ PageView = Backbone.View.extend({
         })
     },
     update: function() {
-        this.$('.title').text(this.model.get("title"))
+        
     }
 })
 
@@ -99,6 +101,7 @@ PageNavRowView = Backbone.View.extend({
             if (view.contentView) // hide or show each content block appropriately
                 view.contentView.el.toggle(view===self)
         })
+        this.options.parent.activeSubpage = this
     },
     titleChange: function() {
         // keep track of the title having changed so we know to save the parent  
@@ -116,7 +119,7 @@ PageNavRowView = Backbone.View.extend({
         this.el.attr('id', this.model.id)
     },
     saveParent: function() {
-        alert('saving parent')
+        //alert('saving parent')
         this.model.get('parent').save()
     }
 })
