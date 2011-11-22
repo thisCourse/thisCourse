@@ -26,10 +26,12 @@
     var baseview = ItemEditInlineView 
     
     ItemEditViews[type] = baseview.extend({
-        minwidth: 12,
+        minwidth: 11,
         render: function() {
-            baseview.prototype.render.apply(this, arguments)
-            $("#" + this.options.parent.el.attr('id') + " .ckeditor").ckeditor()
+            //baseview.prototype.render.apply(this, arguments)
+            this.renderTemplate()
+            //$("#" + this.options.parent.el.attr('id') + " .ckeditor").ckeditor(ckeditor_config)
+            $(".ckeditor", this.options.parent.el).ckeditor(ckeditor_config)
             return this
         },
         events: function() {

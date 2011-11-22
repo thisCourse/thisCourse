@@ -45,7 +45,7 @@ PageView = Backbone.View.extend({
             this.pageNavRowViews[model.cid].showContent()
     },
     removeContents: function(model, coll) {
-        $(this.pageNavRowViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
+        $(this.pageNavRowViews[model.cid].el).remove() //fadeOut(300, function() { $(this).remove() })
         delete this.pageNavRowViews[model.cid]
     },
     makeSortable: function() {
