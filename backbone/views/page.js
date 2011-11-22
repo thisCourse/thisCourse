@@ -56,7 +56,8 @@ PageView = Backbone.View.extend({
                 self.model.save()
             },
             opacity: 0.6,
-            tolerance: "pointer"
+            tolerance: "pointer",
+            distance: 5
         })
     },
     update: function() {
@@ -86,14 +87,18 @@ PageNavRowView = Backbone.View.extend({
         this.render()
     },
     showContent: function() {
+        var self = this
         if (!this.contentView) {
-            console.log("fetching content block to show")
             this.model.fetch()
             this.contentView = new ContentView({model: this.model})
             this.options.parent.$(".contents").append(this.contentView.render().el)
         }
-        console.log("showing content block")
-        this.contentView.el.show().siblings().hide()
+        _.each(this.options.parent.pageNavRowViews, function(view) {
+            // set each nav list item to active (bold) or not, appropriately
+            view.el.toggleClass("active", view===self)
+            if (view.contentView) // hide or show each content block appropriately
+                view.contentView.el.toggle(view===self)
+        })
     },
     titleChange: function() {
         // keep track of the title having changed so we know to save the parent  
