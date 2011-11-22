@@ -32,7 +32,7 @@
             }, this.base.events())
         },
         initialize: function() {
-            this.model.attributes.width = 5
+            this.model.attributes.width = 4
             this.base.initialize.apply(this, arguments)
         },
         close: function() {
@@ -43,9 +43,10 @@
     var baseview = ItemEditInlineView 
     
     ItemEditViews[type] = baseview.extend({
-        minwidth: 5,
+        minwidth: 4,
         render: function() {
             baseview.prototype.render.apply(this, arguments)
+            this.enablePlaceholders()
             return this
         },
         events: function() {

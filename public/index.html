@@ -15,6 +15,7 @@
     <script src="/static/libs/ckeditor/ckeditor_source.js"></script>
     <script src="/static/libs/ckeditor/adapters/jquery.js"></script>
     <script src="/static/libs/js/jquery.jeditable.js"></script>
+    <script src="/static/libs/js/jquery.watermark.js"></script>
     
     <!--js-->
     <script src="/static/templates.js"></script>
@@ -68,13 +69,16 @@ $(function() {
     content.fetch().then(function() {})
     
     //*/
-    
+   
+    //*
     window.page = new Page({_id: "4ec9d86ee69e559b2e00005b"})
     
     window.pageview = new PageView({model: page})
     $("#content").append(pageview.el)
     
     page.fetch().then(function() { })
+    
+    //*/
     
 })
 

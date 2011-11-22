@@ -61,7 +61,7 @@ ItemView = Backbone.View.extend({
 ItemEditView = Backbone.View.extend({
     render: function() {
         Backbone.ModelBinding.bind(this)
-        this.focusFirstInput()
+        //this.focusFirstInput()
         return this
     },
     events: function() {

@@ -1,27 +1,45 @@
-.item-gallery .item-inner, .item-gallery .item-edit {
-    padding: 15px;
-    min-height: 225px;
+.item-gallery {
+    
+    .item-inner, .item-edit {
+        padding: 15px;
+        min-height: 210px;
+    }
+    
+    h4 {
+        line-height: inherit;
+        padding: 5px;
+        padding-top: 0px;
+        padding-left: 0px;
+    }
+    
+    img {
+        max-height: 120px;
+        max-width: 190px;
+        margin: 5px 0;
+    }
+    
+    .item-edit { 
+        input, textarea {
+            width: 180px;
+        }
+        
+        input, textarea {
+            margin-bottom: 5px;
+        }
+                
+        textarea {
+            min-height: 65px;
+        }
+    }    
+
+    a {
+        color: #333333;
+        font-weight: bold; 
+    }
+    
 }
 
-.item-gallery h4 {
-    line-height: inherit;
-    padding: 5px;
-    padding-top: 0px;
-}
 
-.item-gallery img {
-    max-height: 140px;
-    max-width: 250px;
-    margin: 5px 0;
-}
-
-.item-gallery .item-edit input, .item-gallery .item-edit textarea {
-    width: 180px;
-}
-
-.item-gallery .item-edit textarea {
-    min-height: 65px;
-}
 
 .fancybox-title-over .notes {
     color: #CCC;
@@ -29,10 +47,5 @@
 
 .fancybox-title-over a {
     color: white;
-    font-weight: bold; 
-}
-
-.item-gallery a {
-    color: #333333;
     font-weight: bold; 
 }

@@ -15,7 +15,7 @@
             }, this.base.events())
         },
         initialize: function() {
-            this.model.attributes.width = this.model.get('parent').get('width') - 1
+            this.model.attributes.width = this.model.get('parent').get('width')
             this.base.initialize.apply(this, arguments)
         },
         close: function() {
@@ -26,11 +26,10 @@
     var baseview = ItemEditInlineView 
     
     ItemEditViews[type] = baseview.extend({
-        minwidth: 11,
+        minwidth: 12,
         render: function() {
             //baseview.prototype.render.apply(this, arguments)
             this.renderTemplate()
-            //$("#" + this.options.parent.el.attr('id') + " .ckeditor").ckeditor(ckeditor_config)
             $(".ckeditor", this.options.parent.el).ckeditor(ckeditor_config)
             return this
         },

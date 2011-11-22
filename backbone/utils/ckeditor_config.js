@@ -8,7 +8,7 @@ ckeditor_config.toolbar =
     //'/',
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
     { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-',
-        'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
+        'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
     { name: 'links', items : [ 'Link','Unlink' ] },
     { name: 'insert', items : [ 'Image','Table','HorizontalRule','SpecialChar' ] },
     //'/',

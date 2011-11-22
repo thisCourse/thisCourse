@@ -116,6 +116,13 @@ Backbone.View.prototype.updateWidth = function() {
     Dispatcher.trigger("resized")
 }
 
+Backbone.View.prototype.enablePlaceholders = function() {
+    this.$("[placeholder]").each(function(ind, el) {
+        $(el).watermark($(el).attr("placeholder"), {})
+        $(el).attr("title", $(el).attr("placeholder"))
+    })
+}
+
 Backbone.Model.prototype.parse = function(data) {
     $("#jsoncode").text(JSON.stringify(data))
     return data
