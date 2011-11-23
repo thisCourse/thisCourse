@@ -6,13 +6,20 @@ Page = Backbone.RelationalModel.extend({
         collectionType: 'ContentCollection',
         includeInJSON: ["_id", "title"],
         reverseRelation: {
-            key: 'parent',
-            includeInJSON: false
-        },
+            key: 'page',
+            includeInJSON: "_id"
+        }
     }],
     urlRoot: '/api/page',
     initialize: function() {
         var self = this 
         //this.get('sections').url = function() { return self.url() + "/sections" }
     }
+})
+
+PageCollection = Backbone.Collection.extend({
+    model: Page,
+    initialize: function() {
+           
+    }    
 })

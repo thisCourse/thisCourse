@@ -14,6 +14,8 @@ var collections = {}
 
 var course = collections['course'] = db.collection('course')
 var content = collections['content'] = db.collection('content')
+var lecture = collections['lecture'] = db.collection('lecture')
+var assignment = collections['assignment'] = db.collection('assignment')
 var page = collections['page'] = db.collection('page')
 var grades = collections['grades'] = db.collection('grades')
 var docs = collections['docs'] = db.collection('docs')
@@ -269,13 +271,16 @@ function APIError(res, msg, code) {
 // recursive merge, with arrays merged by _id, using the order from the src (new) array 
 function merge(dest, src) {
 
+    if (dest===null || dest===undefined)
+        return src
+
     if (typeof(dest) != 'object')
         return dest
 
     for (key in src) {
         if (dest[key] instanceof Array && src[key] instanceof Array)
             dest[key] = merge_arrays(dest[key], src[key])
-        else if (dest[key]===undefined || typeof(dest[key])==="string" || typeof(dest[key])==="number")
+        else if (dest[key]===undefined || dest[key]===null || typeof(dest[key])==="string" || typeof(dest[key])==="number")
             dest[key] = src[key]
         else if (typeof(dest[key])=='object' && typeof(src[key])=='object')
             merge(dest[key], src[key])
