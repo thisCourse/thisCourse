@@ -3,6 +3,7 @@ var mongoskin = require("mongoskin")
 var mongodb = require("mongodb")
 var ObjectId = mongodb.BSONPure.ObjectID
 var db = mongoskin.db("localhost/test?auto_reconnect")
+var fs = require("fs")
 var async = require("async")
 var express = require("express")
     require('express-namespace')
@@ -27,9 +28,15 @@ app.use('/backbone', express.static(__dirname + '/backbone'));
 // express routing
 app.namespace('/api', api.router)
 
-app.all('/', function(req, res){
-    var data = $.extend(true, req.body, req.query)
-    res.send(data)
+app.use('/', function(request, response) {
+  fs.readFile(__dirname + '/public/index.html', function(err,text) {
+      response.end(text)
+  })
 })
+
+// app.all('/', function(req, res){
+    // var data = $.extend(true, req.body, req.query)
+    // res.send(data)
+// })
 
 
