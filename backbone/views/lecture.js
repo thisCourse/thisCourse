@@ -22,7 +22,8 @@ LectureView = Backbone.View.extend({
         this.model.bind('change:title', this.titleChange, this)
         this.model.bind('save', this.saved, this)
         this.pageChanged()
-        this.model.fetch()
+        this.model.get("page").fetch()
+        //this.model.fetch()
         this.render()
     },
     pageChanged: function() {
@@ -38,6 +39,7 @@ LectureView = Backbone.View.extend({
     },
     saved: function() {
         // save the parent too (so it stores the title), but only if the title has changed
+        console.log("lecture saved")
         if (this.titleChanged) {
             this.saveParent()
             delete this.titleChanged
@@ -73,16 +75,19 @@ LectureListView = Backbone.View.extend({
     showLecture: function(ev) {
         var self = this
         var model_id = $(ev.target).attr("href")
-        this.collection.get(model_id).fetch()
+        //this.collection.get(model_id).fetch()
         app.set({url: "lectures/" + model_id})
         return false
     },
     addNewLecture: function() {
         var self = this
-        dialog_request_response("Please enter a title:", function(val) {
-            var new_lecture = new Lecture({title: val})
-            app.course.get('lectures').add(new_lecture)
-            new_lecture.save().success(function() { app.course.save() })
+        dialog_request_response("Please enter a title:", function(title) {
+            var page = new Page
+            page.save().success(function() {
+                var new_lecture = new Lecture({title: title, page: page})
+                app.course.get('lectures').add(new_lecture)
+                new_lecture.save().success(function() { app.course.save() })
+            })
         })
     },
     close: function() {

@@ -3,7 +3,7 @@ Lecture = Backbone.RelationalModel.extend({
         type: Backbone.HasOne,
         key: 'page',
         relatedModel: 'Page',
-        includeInJSON: true,
+        includeInJSON: "_id",
         reverseRelation: {
             key: 'parent',
             includeInJSON: false,
@@ -16,7 +16,7 @@ Lecture = Backbone.RelationalModel.extend({
     },
     initialize: function() {
         var self = this
-        this.get("page").bind('save', this.save, this)
+        //this.get("page").bind('save', this.save, this)
         //this.get("page").url = function() { return self.url() + "/page" }
         //this.get('sections').url = function() { return self.url() + "/sections" }
     }

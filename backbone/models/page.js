@@ -10,13 +10,13 @@ Page = Backbone.RelationalModel.extend({
             includeInJSON: false
         }
     }],
-    //urlRoot: '/api/page',
+    urlRoot: '/api/page',
     initialize: function() {
         var self = this 
         //this.get('sections').url = function() { return self.url() + "/sections" }
     },
-    save: function() {
-        this.get("parent").save()
+    saved: function() {
+        console.log("page saved")        
     }
 })
 

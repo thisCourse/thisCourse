@@ -41,7 +41,7 @@ PageView = Backbone.View.extend({
             var new_content = new Content({title: val, width: 12})
             self.model.get('contents').add(new_content)
             self.pageNavRowViews[new_content.cid].showContent()
-            new_content.save()
+            new_content.save().success(function() { self.model.save() }) 
         })
     },    
     updateContents: function(model, coll) {
@@ -54,6 +54,7 @@ PageView = Backbone.View.extend({
             this.pageNavRowViews[model.cid].showContent()
     },
     removeContents: function(model, coll) {
+        if (!this.pageNavRowViews[model.cid]) return
         $(this.pageNavRowViews[model.cid].el).remove() //fadeOut(300, function() { $(this).remove() })
         delete this.pageNavRowViews[model.cid]
     },
@@ -131,6 +132,12 @@ PageNavRowView = Backbone.View.extend({
     saveParent: function() {
         //alert('saving parent')
         this.model.get('page').save()
+    },
+    close: function() {
+        this.model.unbind('change', this.update, this)
+        this.model.unbind("update:contents", this.updateContents, this)
+        this.model.unbind("add:contents", this.addContents, this)
+        this.model.unbind("remove:contents", this.removeContents, this)
     }
 })
 

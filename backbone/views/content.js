@@ -29,6 +29,7 @@ ContentView = Backbone.View.extend({
         this.model.bind("update:sections", this.updateSections, this)
         this.model.bind("add:sections", this.addSections, this)
         this.model.bind("remove:sections", this.removeSections, this)
+        this.model.bind('save', this.saved, this)
         this.render()
     },
     addNewSection: function() {
@@ -79,5 +80,8 @@ ContentView = Backbone.View.extend({
     },
     update: function() {
         this.$('.title').text(this.model.get("title"))
+    },
+    saved: function() {
+        console.log("content saved")        
     }
 })

@@ -132,7 +132,7 @@ $(function() {
 
     window.app = new App
 
-    app.course = new Course({_id: "4ecc8e416e0604665d000016"}) //4ecdcece5ce3fac87f000001"})
+    app.course = new Course({_id: "4eceb49ab86119eb2a000049"}) //4ecdcece5ce3fac87f000001"})
     app.course.fetch().then(function() {
     
         app.tabView = new TabsView
