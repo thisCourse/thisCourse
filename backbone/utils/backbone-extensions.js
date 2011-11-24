@@ -99,7 +99,9 @@ Backbone.Collection.prototype.reorder = function(order) {
 Backbone.View.prototype.renderTemplate = function(options) {
     var settings = _.extend({target: this.el, template: this.template}, options)
     settings.data = settings.data || (settings.model && settings.model.attributes)
-                                  || (this.model && this.model.attributes) || {}    
+                                  || (settings.collection)
+                                  || (this.model && this.model.attributes)
+                                  || (this.collection) || {}  
     var html = Handlebars.templates[settings.template](settings.data)
     if (settings.target)
         this.$(settings.target).html(html)

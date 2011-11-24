@@ -4,7 +4,17 @@ Course = Backbone.RelationalModel.extend({
         key: 'lectures',
         relatedModel: 'Lecture',
         collectionType: 'LectureCollection',
-        includeInJSON: ["_id", "title", "description"],
+        includeInJSON: ["_id", "title", "description", "scheduled"],
+        reverseRelation: {
+            key: 'course',
+            includeInJSON: "_id"
+        }
+    }, {
+        type: Backbone.HasMany,
+        key: 'assignments',
+        relatedModel: 'Assignment',
+        collectionType: 'AssignmentCollection',
+        includeInJSON: ["_id", "title", "description", "due"],
         reverseRelation: {
             key: 'course',
             includeInJSON: "_id"

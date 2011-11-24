@@ -20,6 +20,6 @@ Page = Backbone.RelationalModel.extend({
 PageCollection = Backbone.Collection.extend({
     model: Page,
     initialize: function() {
-           
+        //console.log("sectioncollection created", this)   
     }    
 })

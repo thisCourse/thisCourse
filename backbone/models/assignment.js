@@ -1,4 +1,4 @@
-Lecture = Backbone.RelationalModel.extend({
+Assignment = Backbone.RelationalModel.extend({
     relations: [{
         type: Backbone.HasOne,
         key: 'page',
@@ -9,16 +9,16 @@ Lecture = Backbone.RelationalModel.extend({
             includeInJSON: "_id"
         }
     }],
-    urlRoot: '/api/lecture',
+    urlRoot: '/api/assignment',
     initialize: function() {
         var self = this 
         //this.get('sections').url = function() { return self.url() + "/sections" }
     }
 })
 
-LectureCollection = Backbone.Collection.extend({
-    model: Lecture,
+AssignmentCollection = Backbone.Collection.extend({
+    model: Assignment,
     initialize: function() {
-        
+           
     }    
 })
