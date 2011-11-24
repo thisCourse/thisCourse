@@ -6,7 +6,7 @@ PageView = Backbone.View.extend({
         //"mouseover .content-inner": "showActionButtons",
         //"mouseout .content-inner": "hideActionButtons",
         //"mouseenter .sections": "hideActionButtons",
-        "click .page-button.add-button": "addNewContent"
+        //"click .page-button.add-button": "addNewContent"
     },
     showActionButtons: function() {
         this.$(".page-button").show()
@@ -16,10 +16,15 @@ PageView = Backbone.View.extend({
         return false // to stop the propagation so that it won't trigger the parent's
     },
     render: function() {
+        var self = this
         this.renderTemplate()
         this.makeSortable()
         this.update()
+        this.$(".page-button.add-button").click(function() { self.addNewContent() })
         return this
+    },
+    button: function() {
+        alert("button")
     },
     initialize: function() {
         this.pageNavRowViews = {}
@@ -95,7 +100,8 @@ PageNavRowView = Backbone.View.extend({
     showContent: function() {
         var self = this
         if (!this.contentView) {
-            this.model.fetch()
+            if (this.model.id)
+                this.model.fetch()
             this.contentView = new ContentView({model: this.model})
             this.options.parent.$(".contents").append(this.contentView.render().el)
         }
@@ -124,7 +130,7 @@ PageNavRowView = Backbone.View.extend({
     },
     saveParent: function() {
         //alert('saving parent')
-        this.model.get('parent').save()
+        this.model.get('page').save()
     }
 })
 

@@ -9,19 +9,47 @@ LectureView = Backbone.View.extend({
     },
     render: function() {
         this.renderTemplate()
+        this.el.append(this.pageView.render().el)
+        //this.pageView.render().el.after(this.el)
         return this
     },
     initialize: function() {
         this.pageNavRowViews = {}
         this.el = $(this.el)
-        this.model.bind('change', this.update, this)
-        this.model.bind("update:contents", this.updateContents, this)
-        this.model.bind("add:contents", this.addContents, this)
-        this.model.bind("remove:contents", this.removeContents, this)
+        this.model.bind('change:page', this.pageChanged, this)
+        this.model.bind('change:title', this.render, this)
+        this.model.bind('change:_id', this.changeId, this)
+        this.model.bind('change:title', this.titleChange, this)
+        this.model.bind('save', this.saved, this)
+        this.pageChanged()
+        this.model.fetch()
         this.render()
+    },
+    pageChanged: function() {
+        console.log("page changed")
+        this.pageView = new PageView({model: this.model.get("page")})
     },
     close: function() {
         this.el.remove()
+    },
+    titleChange: function() {
+        // keep track of the title having changed so we know to save the parent  
+        this.titleChanged = true
+    },
+    saved: function() {
+        // save the parent too (so it stores the title), but only if the title has changed
+        if (this.titleChanged) {
+            this.saveParent()
+            delete this.titleChanged
+        }        
+    },
+    changeId: function () {
+        this.saveParent()
+        this.el.attr('id', this.model.id)
+    },
+    saveParent: function() {
+        //alert('saving parent')
+        this.model.get('page').save()
     }
 })
 
@@ -39,25 +67,27 @@ LectureListView = Backbone.View.extend({
     },
     initialize: function() {
         this.el = $(this.el)
-        this.collection.bind("add", this.render, this)
+        this.collection.bind("change", this.render, this)
         this.render()
     },
     showLecture: function(ev) {
         var self = this
-        ev.preventDefault()
-        app.set({url: "lectures/" + $(ev.target).attr("href")})
+        var model_id = $(ev.target).attr("href")
+        this.collection.get(model_id).fetch()
+        app.set({url: "lectures/" + model_id})
         return false
     },
     addNewLecture: function() {
         var self = this
         dialog_request_response("Please enter a title:", function(val) {
             var new_lecture = new Lecture({title: val})
-            app.course.get('lectures').create(new_lecture)
+            app.course.get('lectures').add(new_lecture)
             new_lecture.save().success(function() { app.course.save() })
         })
     },
     close: function() {
         this.el.remove()
+        this.collection.unbind("add", this.render, this)
     }
 })
 

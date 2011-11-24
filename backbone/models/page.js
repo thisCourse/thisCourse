@@ -7,13 +7,16 @@ Page = Backbone.RelationalModel.extend({
         includeInJSON: ["_id", "title"],
         reverseRelation: {
             key: 'page',
-            includeInJSON: "_id"
+            includeInJSON: false
         }
     }],
-    urlRoot: '/api/page',
+    //urlRoot: '/api/page',
     initialize: function() {
         var self = this 
         //this.get('sections').url = function() { return self.url() + "/sections" }
+    },
+    save: function() {
+        this.get("parent").save()
     }
 })
 

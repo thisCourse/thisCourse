@@ -24,9 +24,9 @@ var AppView = Backbone.View.extend({
         this.el.html("").append(app.get("topview").render().el)
     },
     urlChanged: function(model, new_url) {
-        console.log("url changed:", new_url)
-        var path = new_url.split("/")
-        this.model.set({tab: path[0] || path[1] || ""})
+        // if the url starts with a slash, strip that off first
+        if (new_url[0]=="/") return this.model.set({url: new_url.slice(1)})
+        this.model.set({tab: new_url.split("/")[0]})
         Backbone.history.navigate(new_url, true)
     }
 })
@@ -58,6 +58,7 @@ var MainRouter = Backbone.Router.extend({
         if (lecture) {
             var model = app.course.get('lectures').get(lecture)
             topview = new LectureView({model: model})
+            model.fetch().then(function() { model.fetchRelated() })
         } else {
             topview = new LectureListView({collection: app.course.get('lectures')}) 
         }
@@ -140,7 +141,7 @@ $(function() {
         
         Backbone.history.start({pushState: true, root: "/"}) 
                 
-        app.set({tab: Backbone.history.fragment})
+        app.set({url: Backbone.history.fragment})
     
     })
 })
