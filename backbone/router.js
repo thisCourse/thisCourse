@@ -1,17 +1,13 @@
 var App = Backbone.Model.extend({
     initialize: function() {
         var self = this 
-        this.bind("change:tab", this.tabChanged, this)
     },
     defaults: {
         tabs: [
             {title: "Home", route: ""},
-            {title: "Lectures", route: "lectures/"},
-            {title: "Assignments", route: "assignments/"}
+            {title: "Lectures", route: "lectures"},
+            {title: "Assignments", route: "assignments"}
         ]
-    },
-    tabChanged: function() {
-        Backbone.history.navigate(this.get("tab"), true)
     }
 })
 
@@ -19,12 +15,19 @@ var AppView = Backbone.View.extend({
     el: "#content",
     initialize: function() {
         this.el = $(this.el)
-        app.bind("change:topview", this.changeView, this)
+        this.model.bind("change:topview", this.viewChanged, this)
+        this.model.bind("change:url", this.urlChanged, this)
     },
-    changeView: function() {
+    viewChanged: function() {
         if (app.previous("topview") && app.previous("topview").close)
             app.previous("topview").close()
         this.el.html("").append(app.get("topview").render().el)
+    },
+    urlChanged: function(model, new_url) {
+        console.log("url changed:", new_url)
+        var path = new_url.split("/")
+        this.model.set({tab: path[0] || path[1] || ""})
+        Backbone.history.navigate(new_url, true)
     }
 })
 
@@ -32,8 +35,10 @@ var MainRouter = Backbone.Router.extend({
 
     routes: {
         "":                                     "home",
+        "lectures":                             "lecture",
         "lectures/:lecture":                    "lecture",
         "lectures/:lecture/page/:page":         "lecture",
+        "assignments":                          "assignment",
         "assignments/:assignment":              "assignment",
         "assignments/:assignment/page/:page":   "assignment"
     },
@@ -80,7 +85,7 @@ TabView = Backbone.View.extend({
     },
     linkClicked: function(ev) {
         ev.preventDefault()
-        app.set({tab: this.options.route})
+        app.set({url: this.options.route})
         return false
     }
 })
@@ -112,10 +117,10 @@ TabsView = Backbone.View.extend({
             self.tabViews.push(new TabView(tab)) 
         })
     },
-    tabChanged: function() {
+    tabChanged: function(model, tab) {
         _.each(this.tabViews, function(tabView) {
-            tabView.el.toggleClass("active", tabView.options.route==app.get("tab"))
-        })        
+            tabView.el.toggleClass("active", tabView.options.route==tab)
+        })
     },
     changed: function() {
         
@@ -127,14 +132,15 @@ $(function() {
     window.app = new App
 
     app.course = new Course({_id: "4ecc8e416e0604665d000016"}) //4ecdcece5ce3fac87f000001"})
-    app.course.fetch()
+    app.course.fetch().then(function() {
     
-    app.tabView = new TabsView
-    app.router = new MainRouter
-    app.view = new AppView
+        app.tabView = new TabsView
+        app.router = new MainRouter
+        app.view = new AppView({model: app})
+        
+        Backbone.history.start({pushState: true, root: "/"}) 
+                
+        app.set({tab: Backbone.history.fragment})
     
-    Backbone.history.start({pushState: true, root: "/"}) 
-            
-    app.set({tab: Backbone.history.fragment})
-    
+    })
 })

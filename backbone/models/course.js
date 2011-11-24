@@ -5,30 +5,30 @@ Course = Backbone.RelationalModel.extend({
         relatedModel: 'Lecture',
         collectionType: 'LectureCollection',
         includeInJSON: ["_id", "title", "description", "scheduled"],
-        reverseRelation: {
-            key: 'course',
-            includeInJSON: "_id"
-        }
+        // reverseRelation: {
+            // key: 'course',
+            // includeInJSON: "_id"
+        // }
     }, {
         type: Backbone.HasMany,
         key: 'assignments',
         relatedModel: 'Assignment',
         collectionType: 'AssignmentCollection',
         includeInJSON: ["_id", "title", "description", "due"],
-        reverseRelation: {
-            key: 'course',
-            includeInJSON: "_id"
-        }
+        // reverseRelation: {
+            // key: 'course',
+            // includeInJSON: "_id"
+        // }
     }, {
         type: Backbone.HasOne,
         key: 'content',
         relatedModel: 'Content',
         includeInJSON: "_id",
-        reverseRelation: {
-            key: 'course',
-            includeInJSON: "_id",
-            type: Backbone.HasOne
-        }
+        // reverseRelation: {
+            // key: 'course',
+            // includeInJSON: "_id",
+            // type: Backbone.HasOne
+        // }
     }],
     urlRoot: '/api/course',
     initialize: function() {

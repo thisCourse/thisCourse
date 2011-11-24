@@ -6,12 +6,9 @@ LectureView = Backbone.View.extend({
         //"mouseover .content-inner": "showActionButtons",
         //"mouseout .content-inner": "hideActionButtons",
         //"mouseenter .sections": "hideActionButtons",
-        "click .page-button.add-button": "addNewContent"
     },
     render: function() {
         this.renderTemplate()
-        this.makeSortable()
-        this.update()
         return this
     },
     initialize: function() {
@@ -33,7 +30,8 @@ LectureListView = Backbone.View.extend({
     tagName: "div",
     template: "lecture-list",
     events: {
-        "click a": "showLecture"
+        "click a": "showLecture",
+        "click .add-button": "addNewLecture"
     },
     render: function() {
         this.renderTemplate()
@@ -46,8 +44,17 @@ LectureListView = Backbone.View.extend({
     },
     showLecture: function(ev) {
         var self = this
-        
+        ev.preventDefault()
+        app.set({url: "lectures/" + $(ev.target).attr("href")})
         return false
+    },
+    addNewLecture: function() {
+        var self = this
+        dialog_request_response("Please enter a title:", function(val) {
+            var new_lecture = new Lecture({title: val})
+            app.course.get('lectures').create(new_lecture)
+            new_lecture.save().success(function() { app.course.save() })
+        })
     },
     close: function() {
         this.el.remove()
