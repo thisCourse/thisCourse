@@ -265,9 +265,9 @@ var request_handler = function(req, res, next) {
 
 function APIError(res, msg, code) {
     code = code || 500
-    res.write(msg)
+    //res.write(msg)
     console.log("error:", msg)
-    //res.json({_error: {message: msg, code: code}}, code)
+    res.json({_error: {message: msg, code: code}}, code)
 }
 
 // recursive merge, with arrays merged by _id, using the order from the src (new) array 
