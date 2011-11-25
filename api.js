@@ -2,7 +2,7 @@ var $ = require('jquery')
 var mongoskin = require('mongoskin')
 var mongodb = require('mongodb')
 var ObjectId = mongodb.BSONPure.ObjectID
-var db = mongoskin.db('localhost/test?auto_reconnect')
+var db = mongoskin.db('127.0.0.1/test?auto_reconnect')
 var async = require('async')
 var express = require("express")
 
@@ -138,7 +138,7 @@ var request_handler = function(req, res, next) {
         return
     }
     
-    var query = {_id: ObjectId(req.params.id)}
+    var query = {_id: collection.id(req.params.id)}
     
     // find the existing object in the database
     collection.find(query).toArray(function(err, arr) {
