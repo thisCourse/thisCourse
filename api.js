@@ -2,7 +2,7 @@ var $ = require('jquery')
 var mongoskin = require('mongoskin')
 var mongodb = require('mongodb')
 var ObjectId = mongodb.BSONPure.ObjectID
-var db = mongoskin.db('localhost/test?auto_reconnect')
+var db = mongoskin.db('127.0.0.1/test?auto_reconnect')
 var async = require('async')
 var express = require("express")
 
@@ -265,7 +265,9 @@ var request_handler = function(req, res, next) {
 
 function APIError(res, msg, code) {
     code = code || 500
-    res.json({_error: {message: msg, code: code}}, code)
+    res.write(msg)
+    console.log("error:", msg)
+    //res.json({_error: {message: msg, code: code}}, code)
 }
 
 // recursive merge, with arrays merged by _id, using the order from the src (new) array 

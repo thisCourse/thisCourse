@@ -39,4 +39,9 @@ app.use('/kirsh', function(request, response) {
     // res.send(data)
 // })
 
+var server = express.createServer(
+  //express.logger(), // Log responses to the terminal using Common Log Format.
+  //express.responseTime() // Add a special header with timing information.
+)
 
+server.use(express.vhost('beta.thiscourse.com', app))
