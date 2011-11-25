@@ -28,7 +28,7 @@ app.use('/backbone', express.static(__dirname + '/backbone'));
 // express routing
 app.namespace('/api', api.router)
 
-app.use('/', function(request, response) {
+app.use('/kirsh', function(request, response) {
   fs.readFile(__dirname + '/public/index.html', function(err,text) {
       response.end(text)
   })

@@ -31,9 +31,9 @@
             //baseview.prototype.render.apply(this, arguments)
             var self = this
             this.renderTemplate()
-            _.defer(function() {
+            setTimeout(function() {
                 $(".ckeditor", self.options.parent.el).ckeditor(ckeditor_config)
-            })
+            }, 200) // TODO: why does this need to be delayed?
             return this
         },
         events: function() {

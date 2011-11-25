@@ -8,7 +8,7 @@ var express = require("express")
 
 api = module['exports']
 
-var file = new(require('node-static').Server)('./public')
+//var file = new(require('node-static').Server)('./public')
 
 var collections = {}
 
@@ -93,12 +93,12 @@ function wrap_in_object(key, obj) {
     return update
 }
 
-var request_handler = function(req, res, next) {
-    setTimeout(function() { request_handler2(req, res, next) }, 300)
-}
+// var request_handler = function(req, res, next) {
+    // setTimeout(function() { request_handler2(req, res, next) }, 300)
+// }
 
 // handle an api request
-var request_handler2 = function(req, res, next) {
+var request_handler = function(req, res, next) {
 
     console.log(req.method, req.url, req.params.path, req.body)
 

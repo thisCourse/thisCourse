@@ -129,16 +129,20 @@ TabsView = Backbone.View.extend({
 
 $(function() {
 
+    var base_url = window.location.pathname.split("/").slice(0,3).join("/") + "/"
+
+    var course_id = window.location.pathname.split("/")[2]
+
     window.app = new App
 
-    app.course = new Course({_id: "4eceb49ab86119eb2a000049"}) //4ecdcece5ce3fac87f000001"})
+    app.course = new Course({_id: course_id}) //4ecdcece5ce3fac87f000001"})
     app.course.fetch().then(function() {
     
         app.tabView = new TabsView
         app.router = new MainRouter
         app.view = new AppView({model: app})
         
-        Backbone.history.start({pushState: true, root: "/"}) 
+        Backbone.history.start({pushState: true, root: base_url}) 
                 
         app.set({url: Backbone.history.fragment})
     
