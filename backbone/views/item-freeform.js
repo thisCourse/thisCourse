@@ -29,8 +29,11 @@
         minwidth: 12,
         render: function() {
             //baseview.prototype.render.apply(this, arguments)
+            var self = this
             this.renderTemplate()
-            $(".ckeditor", this.options.parent.el).ckeditor(ckeditor_config)
+            _.defer(function() {
+                $(".ckeditor", self.options.parent.el).ckeditor(ckeditor_config)
+            })
             return this
         },
         events: function() {

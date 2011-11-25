@@ -90,6 +90,7 @@ SectionView = Backbone.View.extend({
         if (!model.get("_id")) view.edit()
     },
     removeItems: function(model, coll) {
+        if (!this.itemViews[model.cid].el) return
         $(this.itemViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
         delete this.itemViews[model.cid]
     },

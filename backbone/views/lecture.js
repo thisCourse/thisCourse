@@ -2,33 +2,26 @@ LectureView = Backbone.View.extend({
     tagName: "div",
     className: "lecture",
     template: "lecture",
-    events: {
-        //"mouseover .content-inner": "showActionButtons",
-        //"mouseout .content-inner": "hideActionButtons",
-        //"mouseenter .sections": "hideActionButtons",
-    },
     render: function() {
         this.renderTemplate()
-        this.el.append(this.pageView.render().el)
-        //this.pageView.render().el.after(this.el)
+        this.$(".lecture-top").html("").append(this.topView.render().el)
+        this.$(".lecture-page").html("").append(this.pageView.render().el)
         return this
     },
     initialize: function() {
-        this.pageNavRowViews = {}
         this.el = $(this.el)
         this.model.bind('change:page', this.pageChanged, this)
-        this.model.bind('change:title', this.render, this)
         this.model.bind('change:_id', this.changeId, this)
         this.model.bind('change:title', this.titleChange, this)
         this.model.bind('save', this.saved, this)
-        this.pageChanged()
+        this.topView = new LectureTopView({model: this.model})
+        this.pageView = new PageView({model: this.model.get("page")})
         this.model.get("page").fetch()
-        //this.model.fetch()
         this.render()
     },
     pageChanged: function() {
         console.log("page changed")
-        this.pageView = new PageView({model: this.model.get("page")})
+        
     },
     close: function() {
         this.el.remove()
@@ -55,6 +48,43 @@ LectureView = Backbone.View.extend({
     }
 })
 
+LectureTopView = Backbone.View.extend({
+    tagName: "div",
+    className: "lecture-top",
+    template: "lecture-top",
+    events: {
+        //"mouseover .content-inner": "showActionButtons",
+        //"mouseout .content-inner": "hideActionButtons",
+        //"mouseenter .sections": "hideActionButtons",
+    },
+    render: function() {
+        this.renderTemplate()
+        //this.pageView.render().el.after(this.el)
+        return this
+    },
+    initialize: function() {
+        this.el = $(this.el)
+        this.model.bind('change:title', this.render, this)
+        this.model.bind('change:description', this.render, this)
+        //this.model.fetch()
+        this.render()
+    },
+    pageChanged: function() {
+        console.log("page changed")
+        this.pageView = new PageView({model: this.model.get("page")})
+    },
+    close: function() {
+        this.el.remove()
+    },
+    titleChange: function() {
+        // keep track of the title having changed so we know to save the parent  
+        this.titleChanged = true
+    },
+    changeId: function () {
+        this.saveParent()
+        this.el.attr('id', this.model.id)
+    }
+})
 
 LectureListView = Backbone.View.extend({
     tagName: "div",
@@ -96,3 +126,25 @@ LectureListView = Backbone.View.extend({
     }
 })
 
+LectureEditView = Backbone.View.extend({
+    tagName: "div",
+    className: "lecture-edit",
+    template: "lecture-edit",
+    render: function() {
+        this.renderTemplate({target: ''})
+        this.enablePlaceholders()
+        
+        return this
+    },
+    events: function() {
+        return _.extend({
+            //"dblclick": "dblclick"
+        }, ItemEditInlineView.prototype.events())
+    },
+    initialize: function() {
+        ItemEditInlineView.prototype.initialize.apply(this, arguments)
+    },
+    close: function() {
+        ItemEditInlineView.prototype.close.apply(this, arguments)
+    }
+})
