@@ -48,8 +48,7 @@ var MainRouter = Backbone.Router.extend({
     },
 
     home: function() {
-        //$("#content").text("home")
-        
+        $("#content").text("Home page content will go here")
     },
     
     lecture: function(lecture, page) {
@@ -67,7 +66,7 @@ var MainRouter = Backbone.Router.extend({
 
     assignment: function(assignment, page) {
         //$("#content").text("assignment " + assignment + " (page " + page + ")")
-        
+        $("#content").text("Assignments: coming soon!")
     }
 
 })

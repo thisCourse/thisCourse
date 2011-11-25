@@ -4,9 +4,18 @@ LectureView = Backbone.View.extend({
     template: "lecture",
     render: function() {
         this.renderTemplate()
-        this.$(".lecture-top").html("").append(this.topView.render().el)
-        this.$(".lecture-page").html("").append(this.pageView.render().el)
+        this.renderTopView()
+        this.renderPageView()
         return this
+    },
+    renderTopView: function() {
+        this.$(".lecture-top").html("").append(this.topView.render().el)
+    },
+    renderPageView: function() {
+        this.$(".lecture-page").html("").append(this.pageView.render().el)
+    },
+    events: {
+        "click .lecture-top .edit-button": "edit"
     },
     initialize: function() {
         this.el = $(this.el)
@@ -29,6 +38,10 @@ LectureView = Backbone.View.extend({
     titleChange: function() {
         // keep track of the title having changed so we know to save the parent  
         this.titleChanged = true
+    },
+    edit: function(){
+        this.topEditView = new LectureTopEditView({model: this.model, parent: this})
+        this.$(".lecture-top").html("").append(this.topEditView.render().el)
     },
     saved: function() {
         // save the parent too (so it stores the title), but only if the title has changed
@@ -126,25 +139,36 @@ LectureListView = Backbone.View.extend({
     }
 })
 
-LectureEditView = Backbone.View.extend({
+LectureTopEditView = Backbone.View.extend({
     tagName: "div",
     className: "lecture-edit",
     template: "lecture-edit",
     render: function() {
-        this.renderTemplate({target: ''})
+        this.renderTemplate()
         this.enablePlaceholders()
-        
+        Backbone.ModelBinding.bind(this)
         return this
     },
-    events: function() {
-        return _.extend({
-            //"dblclick": "dblclick"
-        }, ItemEditInlineView.prototype.events())
+    events: {
+        "click button.save": "save",
+        "click button.cancel": "cancel"
+    },
+    base: ItemEditInlineView,
+    save: ItemEditInlineView.prototype.save,
+    saved: function() {
+        ItemEditInlineView.prototype.saved.apply(this)
+        this.model.get("course").save()
+    },
+    cancel: ItemEditInlineView.prototype.cancel,
+    restore: ItemEditInlineView.prototype.cancel,
+    close: function() {
+        this.options.parent.renderTopView()
+        Backbone.ModelBinding.unbind(this)
     },
     initialize: function() {
-        ItemEditInlineView.prototype.initialize.apply(this, arguments)
-    },
-    close: function() {
-        ItemEditInlineView.prototype.close.apply(this, arguments)
+        this.el = $(this.el)
+        this.memento = new Backbone.Memento(this.model)
+        this.memento.store()
+        this.render()
     }
 })
