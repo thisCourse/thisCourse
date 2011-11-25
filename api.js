@@ -138,7 +138,7 @@ var request_handler = function(req, res, next) {
         return
     }
     
-    var query = {_id: ObjectId(req.params.id)}
+    var query = {_id: collection.id(req.params.id)}
     
     // find the existing object in the database
     collection.find(query).toArray(function(err, arr) {
