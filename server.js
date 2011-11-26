@@ -1,4 +1,4 @@
-var $ = require('jquery')
+//var $ = require('jquery')
 var mongoskin = require("mongoskin")
 var mongodb = require("mongodb")
 var ObjectId = mongodb.BSONPure.ObjectID
