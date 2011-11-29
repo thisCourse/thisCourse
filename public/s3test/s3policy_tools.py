@@ -5,7 +5,7 @@ def create_policy(json):
     return base64.b64encode(json)
 
 def sign_policy(policy):
-    aws_secret_key = 'MgZOrTRimfNRbX2BH0ErwdnjsvNAsxSRc2B+3sT2'
+    aws_secret_key = '7ytH0P+dwSBxlG5nIIiidBQyE3xvm4+OX/DlwiHq'
     return base64.b64encode(hmac.new(aws_secret_key, policy, sha).digest())
 
 if __name__ == '__main__':
@@ -22,4 +22,3 @@ if __name__ == '__main__':
     enc_policy =  create_policy(policy_json)
     print enc_policy
     print sign_policy(enc_policy)
-
