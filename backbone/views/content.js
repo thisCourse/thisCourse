@@ -46,7 +46,7 @@ ContentView = Backbone.View.extend({
         this.$('.sections').append(this.sectionViews[model.cid].el)
     },
     removeSections: function(model, coll) {
-        if (!this.sectionViews[model.cid].el) return
+        if (!this.sectionViews[model.cid] || !this.sectionViews[model.cid].el) return
         $(this.sectionViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
         delete this.sectionViews[model.cid]
     },
