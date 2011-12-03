@@ -8,7 +8,8 @@ var async = require("async")
 var express = require("express")
     require('express-namespace')
 
-var api = require('./api')
+var api = require('./api/api')
+var s3 = require('./api/s3')
 
 var courses = db.collection("courses")
 
@@ -27,6 +28,7 @@ app.use('/backbone', express.static(__dirname + '/backbone'));
 
 // express routing
 app.namespace('/api', api.router)
+app.namespace('/s3', s3.router)
 
 app.use('/kirsh', function(request, response) {
   fs.readFile(__dirname + '/public/index.html', function(err,text) {

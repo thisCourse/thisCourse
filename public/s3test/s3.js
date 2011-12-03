@@ -21,14 +21,3 @@ req.on('response', function(res){
 
 req.end(buf)
 
-var crypto = require("crypto")
-
-function sign_policy(policy) {
-    if (typeof(policy)!=='string') policy = JSON.stringify(policy)
-    return crypto.createHmac("sha1", '7ytH0P+dwSBxlG5nIIiidBQyE3xvm4+OX/DlwiHq').update(policy).digest(encoding='base64')
-}
-
-function create_policy(policy) {
-    return new Buffer(policy).toString('base64')
-}
-
