@@ -3,20 +3,13 @@
     <title>S3 POST Form</title> 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     
-    <link rel="stylesheet" href="plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
     
     <script type="text/javascript" src="plupload/js/plupload.js"></script>
-    <script type="text/javascript" src="plupload/js/plupload.gears.js"></script>
     <script type="text/javascript" src="plupload/js/plupload.silverlight.js"></script>
     <script type="text/javascript" src="plupload/js/plupload.flash.js"></script>
-    <script type="text/javascript" src="plupload/js/plupload.browserplus.js"></script>
     <script type="text/javascript" src="plupload/js/plupload.html4.js"></script>
     <script type="text/javascript" src="plupload/js/plupload.html5.js"></script>
-    <script type="text/javascript" src="plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
     
     <script>
         function get_params() {
@@ -33,7 +26,7 @@
             
             var params = get_params()
             
-            $("#uploader").plupload({
+            var uploader_params = {
                 runtimes : 'html5,flash,silverlight',
                 url : '/',
                 max_file_size : '10mb',
@@ -49,30 +42,24 @@
                     'policy': params.policy,
                     'signature': params.signature
                 },
+
+				browse_button : 'pickfiles',
+				container : 'container',
                 
-                // !!!Important!!! 
-                // this is not recommended with S3, since it will force Flash runtime into the mode, with no progress indication
+				filters : [
+					{title : "Image files", extensions : "jpg,gif,png"}
+				],
+
                 //resize : {width : 100, height : 100, quality : 80},  // Resize images on clientside, if possible 
                 
-                // optional, but better be specified directly
-                file_data_name: 'file',
-                
-                // re-use widget (not related to S3, but to Plupload UI Widget)
-                multiple_queues: true,
-        
-                // Specify what files to browse for
-                // filters : [
-                    // {title : "JPEG files", extensions : "jpg"}
-                // ],
-        
-                // Flash settings
                 flash_swf_url : 'plupload/js/plupload.flash.swf',
-        
-                // Silverlight settings
                 silverlight_xap_url : 'plupload/js/plupload.silverlight.xap'
-            })
+            }
             
-            var uploader = $('#uploader').plupload('getUploader')
+            var uploader = new plupload.Uploader(uploader_params)
+            
+            uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
+            uploader_params.resize = {width: 100, height: 100, quality: 80}
             
             uploader.bind('Error', function(up, error) {
                 alert("Error code: " + error.status)
@@ -81,6 +68,47 @@
             uploader.bind('FileUploaded', function(up, file, response) {
                 console.log(response)
             })
+
+			uploader.bind('Init', function(up, params) {
+				$('#filelist').html("<div>Current runtime: " + params.runtime + "</div>");
+			});
+		
+			$('#uploadfiles').click(function(e) {
+				uploader.start();
+				e.preventDefault();
+			});
+		
+			uploader.init();
+		
+			uploader.bind('FilesAdded', function(up, files) {
+				$.each(files, function(i, file) {
+					$('#filelist').append(
+						'<div id="' + file.id + '">' +
+						file.name + ' (' + plupload.formatSize(file.size) + ') <b></b>' +
+					'</div>');
+				});
+		
+				up.refresh(); // Reposition Flash/Silverlight
+			});
+		
+			uploader.bind('UploadProgress', function(up, file) {
+				$('#' + file.id + " b").html(file.percent + "%");
+			});
+		
+			uploader.bind('Error', function(up, err) {
+				$('#filelist').append("<div>Error: " + err.code +
+					", Message: " + err.message +
+					(err.file ? ", File: " + err.file.name : "") +
+					"</div>"
+				);
+		
+				up.refresh(); // Reposition Flash/Silverlight
+			});
+		
+			uploader.bind('FileUploaded', function(up, file) {
+				$('#' + file.id + " b").html("100%");
+	});
+
             
         })    
     </script>
@@ -89,9 +117,13 @@
 
   <body>  
 
-    <div id="uploader">
-        <p>Your browser doesn't have Flash, Silverlight, or HTML5 support.</p>
-    </div>
+	<div id="container">
+		<div id="filelist">No runtime found.</div>
+		<br />
+		<a id="pickfiles" href="#">[Select files]</a>
+		<a id="uploadfiles" href="#">[Upload files]</a>
+	</div>
+    
 
   </body>
 </html>

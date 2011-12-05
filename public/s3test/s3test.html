@@ -3,21 +3,21 @@
     <title>S3 POST Form</title> 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     
-    <link rel="stylesheet" href="/static/libs/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="uploader/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
 
     
     <script src="/static/libs/js/jquery.js"></script>
     <script src="/static/libs/js/jquery-ui.js"></script>
     
-    <script type="text/javascript" src="/static/libs/plupload/js/plupload.js"></script>
-    <script type="text/javascript" src="/static/libs/plupload/js/plupload.gears.js"></script>
-    <script type="text/javascript" src="/static/libs/plupload/js/plupload.silverlight.js"></script>
-    <script type="text/javascript" src="/static/libs/plupload/js/plupload.flash.js"></script>
-    <script type="text/javascript" src="/static/libs/plupload/js/plupload.browserplus.js"></script>
-    <script type="text/javascript" src="/static/libs/plupload/js/plupload.html4.js"></script>
-    <script type="text/javascript" src="/static/libs/plupload/js/plupload.html5.js"></script>
-    <script type="text/javascript" src="/static/libs/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.gears.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.silverlight.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.flash.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.browserplus.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.html4.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.html5.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
     
     <script>
         $(function() {
@@ -29,7 +29,7 @@
 
                 $("#uploader").plupload({
                     runtimes : 'html5,flash,silverlight',
-                    url : 'http://thiscourse.s3.amazonaws.com/',
+                    url : 'https://thiscourse.s3.amazonaws.com/',
                     max_file_size : '10mb',
                     
                     multipart: true,
@@ -61,23 +61,23 @@
                     ],
             
                     // Flash settings
-                    flash_swf_url : '/static/libs/plupload/js/plupload.flash.swf',
+                    flash_swf_url : 'uploader/plupload/js/plupload.flash.swf',
             
                     // Silverlight settings
-                    silverlight_xap_url : '/static/libs/plupload/js/plupload.silverlight.xap'
+                    silverlight_xap_url : 'uploader/plupload/js/plupload.silverlight.xap'
                 });
 
             })
 
             
             
-            $("iframe").load(function() {
-                var frame = $("iframe").contents()
-                if (frame.length > 0)
-                    $("#preview").attr('src', JSON.parse($("body", frame).text()).url)
-                else
-                    alert('Error uploading!')
-            })
+            // $("iframe").load(function() {
+                // var frame = $("iframe").contents()
+                // if (frame.length > 0)
+                    // $("#preview").attr('src', JSON.parse($("body", frame).text()).url)
+                // else
+                    // alert('Error uploading!')
+            // })
             
         })    
     </script>
@@ -85,7 +85,7 @@
   </head>
 
   <body> 
-    <form action="https://s3.amazonaws.com/thiscourse/" method="post" enctype="multipart/form-data" target="uploader">
+    <form action="https://thiscourse.s3.amazonaws.com/" method="post" enctype="multipart/form-data" target="uploader">
       <input type="hidden" name="key" value="uploads/${filename}">
       <input type="hidden" name="AWSAccessKeyId" value="AKIAJLU4UNM7TIOYH6HA"> 
       <input type="hidden" name="acl" value="private">
@@ -109,18 +109,12 @@
     
     <iframe name="uploader">Nothing yet.</iframe>
 
+    <br/> 
 
-<div id="uploader">
-    <p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p>
-</div>
 
-<script type="text/javascript">
-    // Convert divs to queue widgets when the DOM is ready
-    $(function() {
-
-    });
-</script>
-
+	<div id="uploader">
+	    <p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p>
+	</div>
     
   </body>
 </html>

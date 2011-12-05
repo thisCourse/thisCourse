@@ -24,7 +24,7 @@ s3.router = function() {
 policy_params = {
     key: "uploads/${filename}",
     AWSAccessKeyId: "AKIAJLU4UNM7TIOYH6HA",
-    acl: "private",
+    acl: "public-read",
     success_action_redirect: "http://127.0.0.1:3000/s3/uploaded"
 }
 
@@ -36,8 +36,8 @@ var policy = {
         {acl: policy_params.acl},
         //{success_action_redirect: policy_params.success_action_redirect},
         ["content-length-range", 0, 1048576],
-        //["starts-with", "$name", ""],
-        //["starts-with", "$Filename", ""],
+        ["starts-with", "$name", ""],
+        ["starts-with", "$Filename", ""],
         ["starts-with", "$success_action_status", ""],
     ]
 }
