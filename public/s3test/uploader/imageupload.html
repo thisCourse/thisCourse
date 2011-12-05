@@ -27,7 +27,7 @@
             var params = get_params()
             
             var uploader_params = {
-                runtimes : 'html5,flash,silverlight',
+                runtimes : 'flash,html5,silverlight',
                 url : '/',
                 max_file_size : '10mb',
                 
@@ -50,17 +50,14 @@
 					{title : "Image files", extensions : "jpg,gif,png"}
 				],
 
-                //resize : {width : 100, height : 100, quality : 80},  // Resize images on clientside, if possible 
+                resize : {width : 800, height : 600, quality : 90},  // Resize images on clientside, if possible 
                 
                 flash_swf_url : 'plupload/js/plupload.flash.swf',
                 silverlight_xap_url : 'plupload/js/plupload.silverlight.xap'
             }
             
-            var uploader = new plupload.Uploader(uploader_params)
-            
-            uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
-            uploader_params.resize = {width: 100, height: 100, quality: 80}
-            
+            window.uploader = new plupload.Uploader(uploader_params)
+                        
             uploader.bind('Error', function(up, error) {
                 alert("Error code: " + error.status)
             })
@@ -106,9 +103,23 @@
 			});
 		
 			uploader.bind('FileUploaded', function(up, file) {
+				if (uploader.already_uploaded) return
 				$('#' + file.id + " b").html("100%");
-	});
+				//var resize_params = $.merge({resize: {width: 100, height: 100, quality: 80}}, uploader_params)
+				uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
+				uploader_params.resize.width = 190
+				uploader_params.resize.height = 120
+				//uploader_params.resize = {width: 100, height: 100, quality: 80}
+				//uploader.settings = uploader_params 
+				uploader.already_uploaded = true
+				uploader.trigger("UploadFile", file)
+			});
 
+            //var thumbnail_uploader_params = $.merge({}, uploader_params)
+            
+            //thumbnail_uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
+            //thumbnail_uploader_params.resize = {width: 100, height: 100, quality: 80}
+            
             
         })    
     </script>
