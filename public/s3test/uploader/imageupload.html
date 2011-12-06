@@ -27,9 +27,10 @@
             var params = get_params()
             
             var uploader_params = {
-                runtimes : 'flash,html5,silverlight',
+            	// TODO: only flash is allowed for now, until thumbnail upload can be made to work in HTML5
+                runtimes : 'flash,', // 'html5,flash,silverlight',
                 url : '/',
-                max_file_size : '10mb',
+                max_file_size : '1mb',
                 
                 multipart: true,
                 multipart_params: {
@@ -42,7 +43,9 @@
                     'policy': params.policy,
                     'signature': params.signature
                 },
-
+				
+				multi_selection: false,
+				
 				browse_button : 'pickfiles',
 				container : 'container',
                 
@@ -50,46 +53,39 @@
 					{title : "Image files", extensions : "jpg,gif,png"}
 				],
 
-                resize : {width : 800, height : 600, quality : 90},  // Resize images on clientside, if possible 
+                //resize: {width : 800, height : 600, quality : 90},  // Resize images on clientside, if possible
+                resize: {}, 
                 
                 flash_swf_url : 'plupload/js/plupload.flash.swf',
                 silverlight_xap_url : 'plupload/js/plupload.silverlight.xap'
             }
             
             window.uploader = new plupload.Uploader(uploader_params)
-                        
-            uploader.bind('Error', function(up, error) {
-                alert("Error code: " + error.status)
-            })
-            
-            uploader.bind('FileUploaded', function(up, file, response) {
-                console.log(response)
-            })
-
+			
 			uploader.bind('Init', function(up, params) {
-				$('#filelist').html("<div>Current runtime: " + params.runtime + "</div>");
-			});
-		
-			$('#uploadfiles').click(function(e) {
-				uploader.start();
-				e.preventDefault();
-			});
-		
-			uploader.init();
-		
+				//$('#filelist').html("<div>Current runtime: " + params.runtime + "</div>");
+				$('#filelist').html("")
+				setTimeout(function() { $('#pickfiles').click() }, 200)
+			})
+			
+			uploader.init()
+			
 			uploader.bind('FilesAdded', function(up, files) {
 				$.each(files, function(i, file) {
 					$('#filelist').append(
-						'<div id="' + file.id + '">' +
+						'<div id="' + file.id + '"><i>Uploading:</i> ' +
 						file.name + ' (' + plupload.formatSize(file.size) + ') <b></b>' +
 					'</div>');
-				});
+				})
+				$("#pickfiles").hide()
+				up.refresh()
+				up.start()
 		
-				up.refresh(); // Reposition Flash/Silverlight
 			});
 		
 			uploader.bind('UploadProgress', function(up, file) {
-				$('#' + file.id + " b").html(file.percent + "%");
+				$('#' + file.id + " b").html(file.percent + "%")
+				up.refresh()
 			});
 		
 			uploader.bind('Error', function(up, err) {
@@ -97,29 +93,31 @@
 					", Message: " + err.message +
 					(err.file ? ", File: " + err.file.name : "") +
 					"</div>"
-				);
-		
-				up.refresh(); // Reposition Flash/Silverlight
+				)
+				up.refresh()
 			});
 		
-			uploader.bind('FileUploaded', function(up, file) {
-				if (uploader.already_uploaded) return
-				$('#' + file.id + " b").html("100%");
-				//var resize_params = $.merge({resize: {width: 100, height: 100, quality: 80}}, uploader_params)
+			uploader.bind('FileUploaded', function(up, file, response) {
+				$('#' + file.id + " b").html("DONE")
+				
+				response = $.parseXML(response.response)
+				var key = response.getElementsByTagName("Key")[0].textContent
+				
+				if (file.already_made_thumbnail) {
+					console.log("Thumbnail:", key) 
+					return
+				} else {
+					console.log("Image:", key)
+				}
+				
+				// upload the thumbnail version now, too
 				uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
 				uploader_params.resize.width = 190
 				uploader_params.resize.height = 120
-				//uploader_params.resize = {width: 100, height: 100, quality: 80}
-				//uploader.settings = uploader_params 
-				uploader.already_uploaded = true
+				file.already_made_thumbnail = true
+				
 				uploader.trigger("UploadFile", file)
-			});
-
-            //var thumbnail_uploader_params = $.merge({}, uploader_params)
-            
-            //thumbnail_uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
-            //thumbnail_uploader_params.resize = {width: 100, height: 100, quality: 80}
-            
+			})
             
         })    
     </script>
@@ -129,10 +127,8 @@
   <body>  
 
 	<div id="container">
-		<div id="filelist">No runtime found.</div>
-		<br />
-		<a id="pickfiles" href="#">[Select files]</a>
-		<a id="uploadfiles" href="#">[Upload files]</a>
+		<div id="filelist"></div>
+		<a id="pickfiles" href="#">[Select file]</a>
 	</div>
     
 
