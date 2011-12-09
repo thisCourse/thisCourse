@@ -56,7 +56,9 @@ function dialog_request_response(request, callback) {
         }
     })
     dialog.keypress(function(ev) {
-    	if (ev.which==13) $(".dialog-save-button").click()
-    	return false
+    	if (ev.which==13) {
+    		$(".dialog-save-button").click()
+    		return false
+    	}
     })
 }
