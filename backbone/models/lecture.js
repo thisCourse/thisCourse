@@ -4,11 +4,11 @@ Lecture = Backbone.RelationalModel.extend({
         key: 'page',
         relatedModel: 'Page',
         includeInJSON: "_id",
-        reverseRelation: {
-            key: 'parent',
-            includeInJSON: false,
-            type: Backbone.HasOne
-        }
+        // reverseRelation: { // TODO: this was commented out because it BREAKS EVERYTHING FOR NO REASON... grr
+            // key: 'parent',
+            // includeInJSON: false,
+            // type: Backbone.HasOne
+        // }
     }],
     urlRoot: '/api/lecture',
     defaults: {

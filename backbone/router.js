@@ -65,8 +65,15 @@ var MainRouter = Backbone.Router.extend({
     },
 
     assignment: function(assignment, page) {
-        //$("#content").text("assignment " + assignment + " (page " + page + ")")
-        $("#content").text("Assignments: coming soon!")
+        var topview
+        if (assignment) {
+            var model = app.course.get('assignments').get(assignment)
+            topview = new AssignmentView({model: model})
+            model.fetch().then(function() { model.fetchRelated() })
+        } else {
+            topview = new AssignmentListView({collection: app.course.get('assignments')}) 
+        }
+        app.set({topview: topview})
     }
 
 })

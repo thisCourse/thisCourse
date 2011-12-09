@@ -14,7 +14,7 @@ Course = Backbone.RelationalModel.extend({
         key: 'assignments',
         relatedModel: 'Assignment',
         collectionType: 'AssignmentCollection',
-        includeInJSON: ["_id", "title", "description", "due"],
+        includeInJSON: ["_id", "title", "description", "due", "page"],
         reverseRelation: {
             key: 'course',
             includeInJSON: "_id"
@@ -36,9 +36,12 @@ Course = Backbone.RelationalModel.extend({
         // this.bind("change:content", function() {
             // self.fetchRelated("content")
         // })
-        this.bind("remove:lectures", function() {
-            alert("removing")
-        })        
+        // this.bind("add:lectures", function() {
+            // alert("lecture added")
+        // })        
+        // this.bind("add:assignments", function() {
+            // alert("assignment added")
+        // })
         //this.get('sections').url = function() { return self.url() + "/sections" }
     }
 })

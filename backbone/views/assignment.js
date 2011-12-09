@@ -1,7 +1,7 @@
-LectureView = Backbone.View.extend({
+AssignmentView = Backbone.View.extend({
     tagName: "div",
-    className: "lecture",
-    template: "lecture",
+    className: "assignment",
+    template: "assignment",
     render: function() {
         this.renderTemplate()
         this.renderTopView()
@@ -9,13 +9,13 @@ LectureView = Backbone.View.extend({
         return this
     },
     renderTopView: function() {
-        this.$(".lecture-top").html("").append(this.topView.render().el)
+        this.$(".assignment-top").html("").append(this.topView.render().el)
     },
     renderPageView: function() {
-        this.$(".lecture-page").html("").append(this.pageView.render().el)
+        this.$(".assignment-page").html("").append(this.pageView.render().el)
     },
     events: {
-        "click .lecture-top .edit-button": "edit"
+        "click .assignment-top .edit-button": "edit"
     },
     initialize: function() {
         this.el = $(this.el)
@@ -23,7 +23,7 @@ LectureView = Backbone.View.extend({
         this.model.bind('change:_id', this.changeId, this)
         this.model.bind('change:title', this.titleChange, this)
         this.model.bind('save', this.saved, this)
-        this.topView = new LectureTopView({model: this.model})
+        this.topView = new AssignmentTopView({model: this.model})
         this.pageView = new PageView({model: this.model.get("page")})
         this.model.get("page").fetch()
         this.render()
@@ -40,12 +40,12 @@ LectureView = Backbone.View.extend({
         this.titleChanged = true
     },
     edit: function(){
-        this.topEditView = new LectureTopEditView({model: this.model, parent: this})
-        this.$(".lecture-top").html("").append(this.topEditView.render().el)
+        this.topEditView = new AssignmentTopEditView({model: this.model, parent: this})
+        this.$(".assignment-top").html("").append(this.topEditView.render().el)
     },
     saved: function() {
         // save the parent too (so it stores the title), but only if the title has changed
-        console.log("lecture saved")
+        console.log("assignment saved")
         if (this.titleChanged) {
             this.saveParent()
             delete this.titleChanged
@@ -61,10 +61,10 @@ LectureView = Backbone.View.extend({
     }
 })
 
-LectureTopView = Backbone.View.extend({
+AssignmentTopView = Backbone.View.extend({
     tagName: "div",
-    className: "lecture-top",
-    template: "lecture-top",
+    className: "assignment-top",
+    template: "assignment-top",
     events: {
         //"mouseover .content-inner": "showActionButtons",
         //"mouseout .content-inner": "hideActionButtons",
@@ -99,12 +99,12 @@ LectureTopView = Backbone.View.extend({
     }
 })
 
-LectureListView = Backbone.View.extend({
+AssignmentListView = Backbone.View.extend({
     tagName: "div",
-    template: "lecture-list",
+    template: "assignment-list",
     events: {
-        "click a": "showLecture",
-        "click .add-button": "addNewLecture"
+        "click a": "showAssignment",
+        "click .add-button": "addNewAssignment"
     },
     render: function() {
         this.renderTemplate()
@@ -115,21 +115,21 @@ LectureListView = Backbone.View.extend({
         this.collection.bind("change", this.render, this)
         this.render()
     },
-    showLecture: function(ev) {
+    showAssignment: function(ev) {
         var self = this
         var model_id = $(ev.target).attr("href")
         //this.collection.get(model_id).fetch()
-        app.set({url: "lectures/" + model_id})
+        app.set({url: "assignments/" + model_id})
         return false
     },
-    addNewLecture: function() {
+    addNewAssignment: function() {
         var self = this
         dialog_request_response("Please enter a title:", function(title) {
             var page = new Page
             page.save().success(function() {
-                var new_lecture = new Lecture({title: title, page: page})
-                app.course.get('lectures').add(new_lecture)
-                new_lecture.save().success(function() { app.course.save() })
+                var new_assignment = new Assignment({title: title, page: page})
+                app.course.get('assignments').add(new_assignment)
+                new_assignment.save().success(function() { app.course.save() })
             })
         })
     },
@@ -139,10 +139,10 @@ LectureListView = Backbone.View.extend({
     }
 })
 
-LectureTopEditView = Backbone.View.extend({
+AssignmentTopEditView = Backbone.View.extend({
     tagName: "div",
-    className: "lecture-edit",
-    template: "lecture-edit",
+    className: "assignment-edit",
+    template: "assignment-edit",
     render: function() {
         this.renderTemplate()
         Backbone.ModelBinding.bind(this)
