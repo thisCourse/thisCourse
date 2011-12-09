@@ -1,6 +1,6 @@
 <h4 class='itemtitle'>{{ title }}</h4>
 <a href="{{ image_url }}" target="_blank" class="imagelink" rel="gallery_{{ parent.id }}">
-    <img src="{{ image_url }}" class="thumb" />
+    <img src="{{ thumb_url }}" class="thumb" />
 </a>
 <p class="notes">{{ notes }}{{#if url }} (<a target="_blank" href="{{ url }}">link</a>){{/if}}</p>
 {{> item-buttons }}

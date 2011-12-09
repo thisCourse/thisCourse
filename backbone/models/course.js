@@ -23,7 +23,7 @@ Course = Backbone.RelationalModel.extend({
         type: Backbone.HasOne,
         key: 'content',
         relatedModel: 'Content',
-        includeInJSON: true,
+        includeInJSON: "_id",
         reverseRelation: {
             key: 'course',
             includeInJSON: "_id",

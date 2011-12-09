@@ -3,7 +3,53 @@
     <title>S3 POST Form</title> 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
+
+	<style type="text/css">
+	
+		html, body {
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+		}
+		
+		#progressbar {
+			width: 98%;
+			height: 16px;
+			background-color: #F2F5F7;
+			border: 1px solid #AAA;
+			display: none;
+		}
+		
+		#progressbar-inner {
+			width: 0;
+			height: 100%;
+			background: #8AB;
+			text-align: center;
+		}
+		
+		#progressbar {
+			border-radius: 4px;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+		}
+
+		#progressbar-inner {
+			border-radius: 2px;
+			-webkit-border-radius: 2px;
+			-moz-border-radius: 2px;
+		}
+
+		#progress {
+			color: #225;
+			font-size: 10px;
+			padding: 2px;
+		}
+		
+	</style>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
     
     <script type="text/javascript" src="plupload/js/plupload.js"></script>
     <script type="text/javascript" src="plupload/js/plupload.silverlight.js"></script>
@@ -26,18 +72,19 @@
             
             var params = get_params()
             
+            $('#message').text(params.message)
+            
             var uploader_params = {
             	// TODO: only flash is allowed for now, until thumbnail upload can be made to work in HTML5
                 runtimes : 'flash,', // 'html5,flash,silverlight',
                 url : '/',
-                max_file_size : '1mb',
+                max_file_size : '2mb',
                 
                 multipart: true,
                 multipart_params: {
                     'key': 'uploads/${filename}',
                     'Filename': '${filename}', // adding this to keep consistency across the runtimes
                     'acl': 'public-read',
-                    //'success_action_redirect': 'http://127.0.0.1:3000/s3/uploaded',
                     'success_action_status': '201',
                     'AWSAccessKeyId' : 'AKIAJLU4UNM7TIOYH6HA',       
                     'policy': params.policy,
@@ -63,60 +110,70 @@
             window.uploader = new plupload.Uploader(uploader_params)
 			
 			uploader.bind('Init', function(up, params) {
-				//$('#filelist').html("<div>Current runtime: " + params.runtime + "</div>");
-				$('#filelist').html("")
-				setTimeout(function() { $('#pickfiles').click() }, 200)
+				
 			})
 			
 			uploader.init()
 			
 			uploader.bind('FilesAdded', function(up, files) {
-				$.each(files, function(i, file) {
-					$('#filelist').append(
-						'<div id="' + file.id + '"><i>Uploading:</i> ' +
-						file.name + ' (' + plupload.formatSize(file.size) + ') <b></b>' +
-					'</div>');
-				})
-				$("#pickfiles").hide()
+				$("#uploader").hide()
+				$("#progressbar").show()
 				up.refresh()
 				up.start()
 		
-			});
+			})
 		
 			uploader.bind('UploadProgress', function(up, file) {
-				$('#' + file.id + " b").html(file.percent + "%")
+				$("#progressbar-inner").css({width: file.percent + "%"})
+				$("#progress").text(file.percent==100 ? "Creating thumbnail..." : file.percent + "%")
 				up.refresh()
-			});
+			})
 		
 			uploader.bind('Error', function(up, err) {
-				$('#filelist').append("<div>Error: " + err.code +
-					", Message: " + err.message +
-					(err.file ? ", File: " + err.file.name : "") +
-					"</div>"
-				)
-				up.refresh()
-			});
+				display_error(err.message, up)
+				$("#uploader").show()
+				$("#progressbar").hide()
+			})
+
+			function display_error(error, up) {
+				$('#message').text("Error: " + error)
+				if (up) up.refresh()
+			}
 		
 			uploader.bind('FileUploaded', function(up, file, response) {
-				$('#' + file.id + " b").html("DONE")
 				
-				response = $.parseXML(response.response)
-				var key = response.getElementsByTagName("Key")[0].textContent
+				try {
 				
-				if (file.already_made_thumbnail) {
-					console.log("Thumbnail:", key) 
-					return
-				} else {
-					console.log("Image:", key)
+					response = $.parseXML(response.response) 
+					
+					var file_info = {
+						key: response.getElementsByTagName("Key")[0].textContent,
+						url: response.getElementsByTagName("Location")[0].textContent,
+						etag: response.getElementsByTagName("ETag")[0].textContent.slice(1,-1)
+					}
+					
+					if (file.already_made_thumbnail) {
+						this.thumb = file_info
+						window.location = "http://127.0.0.1:3000/s3/uploaded_image?image_key=" + this.image.key + "&thumb_key="  + this.thumb.key
+						return
+					} else {
+						this.image = file_info
+					}
+					
+					// upload the thumbnail version now, too
+					uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
+					uploader_params.resize.width = 190
+					uploader_params.resize.height = 120
+					file.already_made_thumbnail = true
+					
+					uploader.trigger("UploadFile", file)
+				
+				} catch(err) {
+					console.log("Error:", err)
+					display_error(err.message, up)
 				}
 				
-				// upload the thumbnail version now, too
-				uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
-				uploader_params.resize.width = 190
-				uploader_params.resize.height = 120
-				file.already_made_thumbnail = true
 				
-				uploader.trigger("UploadFile", file)
 			})
             
         })    
@@ -127,8 +184,8 @@
   <body>  
 
 	<div id="container">
-		<div id="filelist"></div>
-		<a id="pickfiles" href="#">[Select file]</a>
+		<div id="uploader"><span id="message"></span> [<a id="pickfiles" href="#">Upload image</a>]</div>
+		<div id="progressbar"><div id="progressbar-inner"><div id="progress">0%</div></div></div>
 	</div>
     
 
