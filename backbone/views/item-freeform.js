@@ -15,7 +15,7 @@
             }, this.base.events())
         },
         initialize: function() {
-            this.model.attributes.width = this.model.get('parent').get('width') - 1
+            this.model.attributes.width = this.model.get('parent').get('width')
             this.base.initialize.apply(this, arguments)
         },
         close: function() {
@@ -28,8 +28,12 @@
     ItemEditViews[type] = baseview.extend({
         minwidth: 12,
         render: function() {
-            baseview.prototype.render.apply(this, arguments)
-            $("#" + this.options.parent.el.attr('id') + " .ckeditor").ckeditor()
+            //baseview.prototype.render.apply(this, arguments)
+            var self = this
+            this.renderTemplate()
+            setTimeout(function() {
+                $(".ckeditor", self.options.parent.el).ckeditor(ckeditor_config)
+            }, 200) // TODO: why does this need to be delayed?
             return this
         },
         events: function() {

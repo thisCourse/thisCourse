@@ -2,23 +2,119 @@
   <head>
     <title>S3 POST Form</title> 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+    <link rel="stylesheet" href="uploader/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
+
+    
+    <script src="/static/libs/js/jquery.js"></script>
+    <script src="/static/libs/js/jquery-ui.js"></script>
+    
+    <script type="text/javascript" src="uploader/plupload/js/plupload.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.gears.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.silverlight.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.flash.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.browserplus.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.html4.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/plupload.html5.js"></script>
+    <script type="text/javascript" src="uploader/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
+    
+    <script>
+        $(function() {
+            
+            $.get("/s3?" + Math.random(), function(policy_params) {
+                $("input.policy").val(policy_params.policy)
+                $("input.signature").val(policy_params.signature)
+                $("input.submit").removeAttr('disabled')
+
+                $("#uploader").plupload({
+                    runtimes : 'html5,flash,silverlight',
+                    url : 'https://thiscourse.s3.amazonaws.com/',
+                    max_file_size : '10mb',
+                    
+                    multipart: true,
+                    multipart_params: {
+                        'key': 'uploads/${filename}', // use filename as a key
+                        'Filename': '${filename}', // adding this to keep consistency across the runtimes
+                        'acl': 'private',
+                        'success_action_redirect': 'http://127.0.0.1:3000/s3/uploaded',
+                        //'Content-Type': 'image/jpeg',
+                        'success_action_status': '201',
+                        'AWSAccessKeyId' : 'AKIAJLU4UNM7TIOYH6HA',       
+                        'policy': policy_params.policy,
+                        'signature': policy_params.signature
+                    },
+                    
+                    // !!!Important!!! 
+                    // this is not recommended with S3, since it will force Flash runtime into the mode, with no progress indication
+                    //resize : {width : 800, height : 600, quality : 60},  // Resize images on clientside, if possible 
+                    
+                    // optional, but better be specified directly
+                    file_data_name: 'file',
+                    
+                    // re-use widget (not related to S3, but to Plupload UI Widget)
+                    multiple_queues: true,
+            
+                    // Specify what files to browse for
+                    filters : [
+                        {title : "JPEG files", extensions : "jpg"}
+                    ],
+            
+                    // Flash settings
+                    flash_swf_url : 'uploader/plupload/js/plupload.flash.swf',
+            
+                    // Silverlight settings
+                    silverlight_xap_url : 'uploader/plupload/js/plupload.silverlight.xap'
+                });
+
+            })
+
+            
+            
+            // $("iframe").load(function() {
+                // var frame = $("iframe").contents()
+                // if (frame.length > 0)
+                    // $("#preview").attr('src', JSON.parse($("body", frame).text()).url)
+                // else
+                    // alert('Error uploading!')
+            // })
+            
+        })    
+    </script>
+    
   </head>
 
   <body> 
-    <form action="https://thiscourse_uploads.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
+    <form action="https://thiscourse.s3.amazonaws.com/" method="post" enctype="multipart/form-data" target="uploader">
       <input type="hidden" name="key" value="uploads/${filename}">
-      <input type="hidden" name="AWSAccessKeyId" value="AKIAIZ6YYCQC5UJ6XEWA"> 
-      <input type="hidden" name="acl" value="private"> 
-      <input type="hidden" name="success_action_redirect" value="http://localhost/">
-      <input type="hidden" name="policy" value="eyJleHBpcmF0aW9uIjogIjIwMTItMDEtMDFUMDA6MDA6MDBaIiwKICAiY29uZGl0aW9ucyI6IFsgCiAgICB7ImJ1Y2tldCI6ICJ0aGlzY291cnNlX3VwbG9hZHMifSwgCiAgICBbInN0YXJ0cy13aXRoIiwgIiRrZXkiLCAidXBsb2Fkcy8iXSwKICAgIHsiYWNsIjogInByaXZhdGUifSwKICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL2xvY2FsaG9zdC8ifSwKICAgIFsic3RhcnRzLXdpdGgiLCAiJENvbnRlbnQtVHlwZSIsICIiXSwKICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAxMDQ4NTc2XQogIF0KfQ==">
-      <input type="hidden" name="signature" value="1Btp0GIb0chniLDGXmKxkKF0zfQ=">
-      <input type="hidden" name="Content-Type" value="image/jpeg">
-      <!-- Include any additional input fields here -->
+      <input type="hidden" name="AWSAccessKeyId" value="AKIAJLU4UNM7TIOYH6HA"> 
+      <input type="hidden" name="acl" value="private">
+      <input type="hidden" name="success_action_redirect" value="http://127.0.0.1:3000/s3/uploaded">
+      <input type="hidden" name="policy" class="policy" value="">
+      <input type="hidden" name="signature" class="signature" value="">
 
       File to upload to S3: 
       <input name="file" type="file"> 
-      <br> 
-      <input type="submit" value="Upload File to S3"> 
-    </form> 
+      <br/> 
+      <input type="submit" class="submit" value="Upload File to S3" disabled="disabled"> 
+      <br/> 
+      <input type="button" class="submit async" value="Upload File to S3 Async" disabled="disabled">
+    </form>
+
+    <br/> 
+
+    <img id="preview" />
+    
+    <br/> 
+    
+    <iframe name="uploader">Nothing yet.</iframe>
+
+    <br/> 
+
+
+	<div id="uploader">
+	    <p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p>
+	</div>
+    
   </body>
 </html>

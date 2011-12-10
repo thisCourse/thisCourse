@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <title>S3 POST Form</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+    <link rel="stylesheet" href="plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    
+    <script type="text/javascript" src="plupload/js/plupload.js"></script>
+    <script type="text/javascript" src="plupload/js/plupload.gears.js"></script>
+    <script type="text/javascript" src="plupload/js/plupload.silverlight.js"></script>
+    <script type="text/javascript" src="plupload/js/plupload.flash.js"></script>
+    <script type="text/javascript" src="plupload/js/plupload.browserplus.js"></script>
+    <script type="text/javascript" src="plupload/js/plupload.html4.js"></script>
+    <script type="text/javascript" src="plupload/js/plupload.html5.js"></script>
+    <script type="text/javascript" src="plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
+    
+    <script>
+        function get_params() {
+            var params = window.location.hash.slice(1).split(",")
+            var param_obj = {}
+            for (var i=0; i<params.length; i++) {
+                var param = params[i].split(":")
+                param_obj[param[0]] = param[1]
+            }
+            return param_obj
+        }
+    
+        $(function() {
+            
+            var params = get_params()
+            
+            $("#uploader").plupload({
+                runtimes : 'html5,flash,silverlight',
+                url : '/',
+                max_file_size : '10mb',
+                
+                multipart: true,
+                multipart_params: {
+                    'key': 'uploads/${filename}',
+                    'Filename': '${filename}', // adding this to keep consistency across the runtimes
+                    'acl': 'public-read',
+                    //'success_action_redirect': 'http://127.0.0.1:3000/s3/uploaded',
+                    'success_action_status': '201',
+                    'AWSAccessKeyId' : 'AKIAJLU4UNM7TIOYH6HA',       
+                    'policy': params.policy,
+                    'signature': params.signature
+                },
+                
+                // !!!Important!!! 
+                // this is not recommended with S3, since it will force Flash runtime into the mode, with no progress indication
+                //resize : {width : 100, height : 100, quality : 80},  // Resize images on clientside, if possible 
+                
+                // optional, but better be specified directly
+                file_data_name: 'file',
+                
+                // re-use widget (not related to S3, but to Plupload UI Widget)
+                multiple_queues: true,
+        
+                // Specify what files to browse for
+                // filters : [
+                    // {title : "JPEG files", extensions : "jpg"}
+                // ],
+        
+                // Flash settings
+                flash_swf_url : 'plupload/js/plupload.flash.swf',
+        
+                // Silverlight settings
+                silverlight_xap_url : 'plupload/js/plupload.silverlight.xap'
+            })
+            
+            var uploader = $('#uploader').plupload('getUploader')
+            
+            uploader.bind('Error', function(up, error) {
+                alert("Error code: " + error.status)
+            })
+            
+            uploader.bind('FileUploaded', function(up, file, response) {
+                console.log(response)
+            })
+            
+        })    
+    </script>
+    
+  </head>
+
+  <body>  
+
+    <div id="uploader">
+        <p>Your browser doesn't have Flash, Silverlight, or HTML5 support.</p>
+    </div>
+
+  </body>
+</html>

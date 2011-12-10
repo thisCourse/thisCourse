@@ -6,7 +6,7 @@ ContentView = Backbone.View.extend({
         //"mouseover .content-inner": "showActionButtons",
         //"mouseout .content-inner": "hideActionButtons",
         //"mouseenter .sections": "hideActionButtons",
-        "click .content-button.add-button": "addNewSection"
+        "click .content-button.add-button": "addNewSection", 
     },
     showActionButtons: function() {
         this.$(".content-button").show()
@@ -19,6 +19,7 @@ ContentView = Backbone.View.extend({
         this.renderTemplate()
         this.makeSortable()
         this.update()
+        this.makeEditable()
         return this
     },
     initialize: function() {
@@ -28,10 +29,14 @@ ContentView = Backbone.View.extend({
         this.model.bind("update:sections", this.updateSections, this)
         this.model.bind("add:sections", this.addSections, this)
         this.model.bind("remove:sections", this.removeSections, this)
+        this.model.bind('save', this.saved, this)
         this.render()
     },
     addNewSection: function() {
-        this.model.get('sections').create({type: this.$(".add-section-type").val()})
+        var new_section = {type: this.$(".add-section-type").val()}
+        if (this.model.get("width"))
+            new_section.width = this.model.get("width") 
+        this.model.get('sections').create(new_section)
     },    
     updateSections: function(model, coll) {
         //alert('update sections')
@@ -41,8 +46,24 @@ ContentView = Backbone.View.extend({
         this.$('.sections').append(this.sectionViews[model.cid].el)
     },
     removeSections: function(model, coll) {
+        if (!this.sectionViews[model.cid] || !this.sectionViews[model.cid].el) return
         $(this.sectionViews[model.cid].el).fadeOut(300, function() { $(this).remove() })
         delete this.sectionViews[model.cid]
+    },
+    makeEditable: function() {
+        var self = this
+        this.$(".title").editable(function(new_value) {
+            self.model.set({title: new_value}).save()
+        }, {
+            submit: "Save",
+            cancel: "Cancel",
+            event: "dblclick",
+            cssclass: "jeditable",
+            tooltip: "Double click to edit",
+            onedit: function() {
+                _.defer(function() { self.$(".jeditable button").addClass("btn").css("margin-left", 5) })
+            }
+        })
     },
     makeSortable: function() {
         var self = this
@@ -60,5 +81,8 @@ ContentView = Backbone.View.extend({
     },
     update: function() {
         this.$('.title').text(this.model.get("title"))
+    },
+    saved: function() {
+        console.log("content saved")        
     }
 })

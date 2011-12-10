@@ -14,6 +14,12 @@
     <script src="/static/libs/fancybox/jquery.fancybox-1.3.4.js"></script>
     <script src="/static/libs/ckeditor/ckeditor_source.js"></script>
     <script src="/static/libs/ckeditor/adapters/jquery.js"></script>
+    <script src="/static/libs/js/jquery.jeditable.js"></script>
+    <script src="/static/libs/js/jquery.watermark.js"></script>
+    
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
     
     <!--js-->
     <script src="/static/templates.js"></script>
@@ -22,18 +28,26 @@
     <script src="/backbone/models/content.js"></script>
     <script src="/backbone/models/section.js"></script>
     <script src="/backbone/models/item.js"></script>
+    <script src="/backbone/models/course.js"></script>
+    <script src="/backbone/models/lecture.js"></script>
+    <script src="/backbone/models/assignment.js"></script>
 
-    <script src="/backbone/views/page.js"></script>
-    <script src="/backbone/views/content.js"></script>
-    <script src="/backbone/views/section.js"></script>
     <script src="/backbone/views/item.js"></script>
     <script src="/backbone/views/item-teacher.js"></script>
     <script src="/backbone/views/item-gallery.js"></script>
     <script src="/backbone/views/item-freeform.js"></script>
+    <script src="/backbone/views/page.js"></script>
+    <script src="/backbone/views/content.js"></script>
+    <script src="/backbone/views/section.js"></script>
+    <script src="/backbone/views/lecture.js"></script>
+    <script src="/backbone/views/assignment.js"></script>
     <!--/js-->
     
     <script src="/backbone/utils/backbone-extensions.js"></script>
     <script src="/backbone/utils/jquery-helpers.js"></script>
+    <script src="/backbone/utils/ckeditor_config.js"></script>
+    
+    <script src="/backbone/router.js"></script>
     
     <title>Backbone test</title>
     
@@ -57,19 +71,29 @@
 
 $(function() {
     
+    /*
     window.content = new Content({_id: "4eb60623adea32365e000001"})
     
     window.contentview = new ContentView({model: content})
     $("#content").append(contentview.el)
     
     content.fetch().then(function() {})
-
-    // window.page = new Page({_id: "4ec85b53f88cd68b2f000003"})
-//     
-    // window.pageview = new PageView({model: page})
-    // $("#content").append(pageview.el)
-//     
-    // page.fetch().then(function() {})
+    
+    //*/
+   
+    /*
+    window.page = new Page({_id: "4ec9d86ee69e559b2e00005b"})
+    
+    window.pageview = new PageView({model: page})
+    $("#content").append(pageview.el)
+    
+    page.fetch().then(function() { window.c = new Course() })
+    
+    //*/
+   
+   // c = new Course({_id: '4ecc8e416e0604665d000016'})
+   // c.fetch()
+   
     
 })
 
@@ -77,24 +101,19 @@ $(function() {
 
 <div id="container-outer">
 
-    <ul class="pills">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">Lectures</a></li>
-        <li><a href="#">Assignments</a></li>
-        <li><a href="#">Discussion</a></li>
-        <li><a href="#">Grades</a></li>
-    </ul>
+    <ul class="pills" id="toptabs"></ul>
 
     <div id="container">
         
-        <div id="container-inner">
-        
-            <div id="content"></div>
-        
-        </div>
+        <div id="content"></div>
                 
     </div>
+    
+    <div id="jsoncode"></div>
+    
 </div>
+
+
 
 </body>
 </html>

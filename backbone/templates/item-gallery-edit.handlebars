@@ -1,8 +1,7 @@
-<div class="row span6">
-    <dd class="span1">Title:</dd><dt class="span4"><input type="text" data="title"/></dt>
-    <dd class="span1">Image:</dd><dt class="span4"><input type="text" data="image_url"/></dt>
-    <dd class="span1">URL:</dd><dt class="span4"><input type="text" data="url"/></dt>
-    <dd class="span1">Notes:</dd><dt class="span4"><textarea data="notes"/></dt>
-    <!--<dd class="span1">Width:</dd><dt class="span4"><input type="text" data="width"/></dt>-->
-    <div class="offset1 span4">{{>item-edit-buttons}}</div>
-</div>
+<input type="text" data="title" placeholder="Title"/>
+<input type="text" data="image_url" placeholder="Image URL"/>
+<input type="text" data="thumb_url" placeholder="Thumbnail URL"/>
+<iframe class="uploader"></iframe>
+<input type="text" data="url" placeholder="Link URL"/>
+<textarea data="notes" placeholder="Notes..."/>
+{{>item-edit-buttons}}

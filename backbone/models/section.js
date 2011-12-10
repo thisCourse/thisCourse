@@ -11,8 +11,8 @@ Section = Backbone.RelationalModel.extend({
         },
     }],
     defaults: {width: 16},
-    initialize: function() {
-        // this is a hack to force "items" to be a collection rather than an empty list 
+    initialize: function() { 
+        // this is a hack to force "items" to be a collection rather than an empty list
         if (this.get('items').length==0)
             this.set({items: [,]})
         var self = this 

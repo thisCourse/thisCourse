@@ -99,7 +99,9 @@ Backbone.Collection.prototype.reorder = function(order) {
 Backbone.View.prototype.renderTemplate = function(options) {
     var settings = _.extend({target: this.el, template: this.template}, options)
     settings.data = settings.data || (settings.model && settings.model.attributes)
-                                  || (this.model && this.model.attributes) || {}    
+                                  || (settings.collection)
+                                  || (this.model && this.model.attributes)
+                                  || (this.collection) || {}  
     var html = Handlebars.templates[settings.template](settings.data)
     if (settings.target)
         this.$(settings.target).html(html)
@@ -115,3 +117,22 @@ Backbone.View.prototype.updateWidth = function() {
         this.el.addClass("span" + width)
     Dispatcher.trigger("resized")
 }
+
+Backbone.View.prototype.enablePlaceholders = function() {
+    this.$("[placeholder]").each(function(ind, el) {
+        $(el).watermark($(el).attr("placeholder"), {})
+        $(el).attr("title", $(el).attr("placeholder"))
+    })
+}
+
+Backbone.Model.prototype.parse = function(data) {
+    $("#jsoncode").text(JSON.stringify(data))
+    return data
+}
+
+// add in a "save" event to be fired when a model is saved
+Backbone.Model.prototype.save_original = Backbone.Model.prototype.save
+Backbone.Model.prototype.save = function() {
+    this.trigger("save", this)
+    return Backbone.Model.prototype.save_original.apply(this, arguments)
+} 

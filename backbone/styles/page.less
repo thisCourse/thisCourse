@@ -2,14 +2,32 @@
 @import "bootstrap/variables.less";
 @import "globals.less";
 
-.page .navigation {
-    float: right;
-    width: 200px;
-    border: 2px solid black;
-}
+.page {
 
-.page .contents {
-    float: left;
-    width: 700px;
-    border: 2px solid black;
+    .navigation {
+        float: right;
+        width: 160px;
+        padding: 10px;
+        border: 1px solid black;
+        .border-radius(5px);
+/*        margin-top: 55px;*/
+        
+        .active {
+            font-weight: bolder;
+        }
+        
+    }
+
+    .contents {
+        float: left;
+        width: 760px;
+/*        border: 2px solid black;*/
+        overflow: hidden;
+        
+        .section {
+            width: 740px;
+        }
+        
+    }
+    
 }

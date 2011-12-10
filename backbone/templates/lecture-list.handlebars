@@ -1,0 +1,8 @@
+<h2>Lectures</h2>
+<ul>
+    {{#each models }}
+        <li><a href="{{id}}">{{ attributes/title }}</a></li>
+    {{/each}}
+</ul>
+
+<button class="add-button btn success">Add lecture</button>

@@ -1,19 +1,22 @@
-var $ = require('jquery')
+//var $ = require('jquery')
 var mongoskin = require('mongoskin')
 var mongodb = require('mongodb')
-var ObjectId = mongodb.BSONPure.ObjectID
-var db = mongoskin.db('localhost/test?auto_reconnect')
+//var ObjectId = mongodb.BSONPure.ObjectID
+var ObjectId = mongodb.pure().ObjectID
+var db = mongoskin.db('127.0.0.1/test?auto_reconnect')
 var async = require('async')
 var express = require("express")
 
 api = module['exports']
 
-var file = new(require('node-static').Server)('./public')
+//var file = new(require('node-static').Server)('./public')
 
 var collections = {}
 
 var course = collections['course'] = db.collection('course')
 var content = collections['content'] = db.collection('content')
+var lecture = collections['lecture'] = db.collection('lecture')
+var assignment = collections['assignment'] = db.collection('assignment')
 var page = collections['page'] = db.collection('page')
 var grades = collections['grades'] = db.collection('grades')
 var docs = collections['docs'] = db.collection('docs')
@@ -53,6 +56,10 @@ get_by_path = function(obj, path, index) {
 
 // sanitize an object; right now this just removes fields starting with _, but could put html sanitization in here?
 recursively_sanitize = function(obj) {
+    
+    // sanitization disabled for now; this should probably be handled within the permissions callback
+    return obj
+    
     if (!(obj instanceof Object))
         return obj
     for (key in obj) {
@@ -87,14 +94,14 @@ function wrap_in_object(key, obj) {
     return update
 }
 
-var request_handler = function(req, res, next) {
-    setTimeout(function() { request_handler2(req, res, next) }, 300)
-}
+// var request_handler = function(req, res, next) {
+    // setTimeout(function() { request_handler2(req, res, next) }, 300)
+// }
 
 // handle an api request
-var request_handler2 = function(req, res, next) {
+var request_handler = function(req, res, next) {
 
-    console.log(req.method, req.params.path, req.body)
+    console.log(req.method, req.url, req.params.path, req.body)
 
     req.params.path = req.params.path.split('/').filter(function(m) { return m.length > 0 })
     
@@ -132,7 +139,7 @@ var request_handler2 = function(req, res, next) {
         return
     }
     
-    var query = {_id: ObjectId(req.params.id)}
+    var query = {_id: collection.id(req.params.id)}
     
     // find the existing object in the database
     collection.find(query).toArray(function(err, arr) {
@@ -259,11 +266,16 @@ var request_handler2 = function(req, res, next) {
 
 function APIError(res, msg, code) {
     code = code || 500
+    //res.write(msg)
+    console.log("error:", msg)
     res.json({_error: {message: msg, code: code}}, code)
 }
 
 // recursive merge, with arrays merged by _id, using the order from the src (new) array 
 function merge(dest, src) {
+
+    if (dest===null || dest===undefined)
+        return src
 
     if (typeof(dest) != 'object')
         return dest
@@ -271,7 +283,7 @@ function merge(dest, src) {
     for (key in src) {
         if (dest[key] instanceof Array && src[key] instanceof Array)
             dest[key] = merge_arrays(dest[key], src[key])
-        else if (dest[key]===undefined || typeof(dest[key])==="string" || typeof(dest[key])==="number")
+        else if (dest[key]===undefined || dest[key]===null || typeof(dest[key])==="string" || typeof(dest[key])==="number")
             dest[key] = src[key]
         else if (typeof(dest[key])=='object' && typeof(src[key])=='object')
             merge(dest[key], src[key])
