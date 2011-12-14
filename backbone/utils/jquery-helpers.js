@@ -42,7 +42,10 @@ function dialog_request_response(request, callback) {
                 html: "Save",
                 "class": "btn success dialog-save-button",
                 click: function() {
-                    callback($("#" + rand_id).val())
+                	if ($("#" + rand_id).val()) {
+	                    callback($("#" + rand_id).val())
+	                    $("#" + rand_id).val("")                		
+                	}
                     $(this).dialog("close")
                 }
             },
