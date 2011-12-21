@@ -4,10 +4,20 @@ define(function() {
     
     function loadTemplates(name, parentRequire, load, config) {
     	
-    	parentRequire(["text!" + name], function(text) {
+    	function process_template(text) {
     		buildMap[name] = text
-    		load(text)
-    	})
+    		var template = Handlebars.compile(text)
+    		load(template)    		
+    	}
+    	
+    	if (require.nodeRequire) {
+    		Handlebars = require.nodeRequire('handlebars')
+    		var fs = require.nodeRequire("fs")
+    		var text = fs.readFileSync("/home/jamalex/node/require/src/" + name).toString()
+    		process_template(text)
+    	} else {
+	    	parentRequire(["text!" + name], process_template)    		
+    	}
     
     }
     
@@ -25,9 +35,11 @@ define(function() {
 	      knownHelpers: [],
 	    }
 		
-	    output.push('templates[\'' + template + '\'] = template(' + handlebars.precompile(data, options) + ');\n')
+	    output.push('templates[\'' + moduleName + '\'] = template(' + handlebars.precompile(data, options) + ');\n')
 		output.push('})()')	
 		output = output.join('')
+		
+		write(output)
         
     }
     
