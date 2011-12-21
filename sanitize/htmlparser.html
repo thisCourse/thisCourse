@@ -1,0 +1,77 @@
+<script src="http://beta.thiscourse.com:3000/static/libs/ckeditor/ckeditor_source.js"></script>
+<script>
+window.onload = function(){
+	var input = document.getElementById("input");
+	var output = document.getElementById("output");
+	var form = document.getElementById("form");
+
+	input.value = "<p>hello <b style='test foo' disabled align=\"b\\\"ar\">john <a href='http://ejohn.org/'>resig</b><img src=test.jpg></img><div>test</div><p>hello world";
+	output.value = "";
+
+	form.onsubmit = function(e){
+		if (e) e.preventDefault();
+		if (typeof event != "undefined") event.returnValue = false;
+
+        output.value = sanitize(input.value);
+        
+		return false;
+	};
+};
+
+function sanitize(html) {
+    var results = "";
+
+    var parser = new CKEDITOR.htmlParser();
+    parser.onTagOpen = function(tag, attrs, unary) {
+        results += "<" + tag;
+
+        for (var a in attrs) {
+          if (!attrs.hasOwnProperty(a)) continue
+          if (a.length >= 2 && a.slice(0,2)==="on") continue
+          results += " " + a + '="' + attrs[i] + '"';
+        }
+
+        results += (unary ? "/" : "") + ">";
+    }
+    
+    parser.onTagClose = function(tag) {
+        results += "</" + tag + ">";
+    }
+    
+    parser.onText = function(text) {
+        results += text;
+    }
+
+    parser.onCDATA = function(cdata) {
+        results += cdata;
+    }
+    
+    parser.parse(html);
+
+    return results;
+}
+
+</script>
+<div style="float:left;width:50%">
+<p><a href="http://ejohn.org/blog/pure-javascript-html-parser/">Pure JavaScript HTML Parser</a></p>
+<p><a href="http://ejohn.org/files/htmlparser.js">htmlparser.js</a></p>
+<form id="form"><b>Input (HTML):</b><br/>
+<textarea cols="60" rows="10" id="input"></textarea><br/>
+<input type="submit" value="Run"/></form><br/>
+<b>Output (XML):</b><br/>
+<textarea cols="60" rows="10" id="output"></textarea>
+</div>
+<div>
+
+While this library doesn't cover the full gamut of possible weirdness that HTML provides, it does handle a lot of the most obvious stuff. All of the following are accounted for:
+
+<ul>
+<li>Unclosed Tags: <pre>HTMLtoXML("&lt;p>&lt;b>Hello") == '&lt;p>&lt;b>Hello&lt;/b>&lt;/p>'</pre></li>
+<li>Empty Elements: <pre>HTMLtoXML("&lt;img src=test.jpg>") == '&lt;img src="test.jpg"/>'</pre></li>
+<li>Block vs. Inline Elements: <pre>HTMLtoXML("&lt;b>Hello &lt;p>John") == '&lt;b>Hello &lt;/b>&lt;p>John&lt;/p>'</pre></li>
+<li>Self-closing Elements: <pre>HTMLtoXML("&lt;p>Hello&lt;p>World") == '&lt;p>Hello&lt;/p>&lt;p>World&lt;/p>'</pre></li>
+<li>Attributes Without Values: <pre>HTMLtoXML("&lt;input disabled>") == '&lt;input disabled="disabled"/>'</pre></li>
+</ul>
+
+<b>Note:</b> It does <b>not</b> take into account where in the document an element should exist. Right now you can put block elements in a head or th inside a p and it'll happily accept them. It's not entirely clear how the logic should work for those, but it's something that I'm open to exploring.
+</div>

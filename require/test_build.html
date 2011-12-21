@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Sample Project</title>
+        <script data-main="build/test1" src="require.js"></script>
+    </head>
+    <body>
+        <h1>My Sample Project</h1>
+        
+        <script>
+            require(["test1"], function(test1) { console.log(test1.x) })
+        </script>
+        
+    </body>
+</html>

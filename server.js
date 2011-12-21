@@ -36,6 +36,9 @@ app.use('/kirsh', function(request, response) {
   })
 })
 
+// TODO: TEMP
+app.use('/', express.static(__dirname))
+
 // app.all('/', function(req, res){
     // var data = $.extend(true, req.body, req.query)
     // res.send(data)
