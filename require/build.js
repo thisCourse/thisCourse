@@ -6,7 +6,8 @@
     dir: 'build',
     paths: {
         cs: 'cs',
-        hb: 'hb'
+        hb: 'hb',
+        less: 'less'
     },
     //This pragma excludes the CoffeeScript compiler code
     //from the optimized source, since all CoffeeScript files
@@ -15,7 +16,8 @@
     //files after a build, comment out the pragmasOnSave section.
     pragmasOnSave: {
         excludeCoffeeScript: true,
-        excludeHandlebars: true
+        excludeHandlebars: true,
+        excludeLESS: true
     },
     modules: [
         {

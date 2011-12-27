@@ -59,8 +59,8 @@ define(function() {
     		})
     	}
     	
-    	if (require.nodeRequire) {
-    		var text = fs.readFileSync(__dirname + "/../src/" + name).toString()
+    	if (config.isBuild) {
+    		var text = fs.readFileSync(config.appDir + name).toString()
     		process_templates(text)
     	} else {
 	    	parentRequire(["text!" + name], process_templates)    		
