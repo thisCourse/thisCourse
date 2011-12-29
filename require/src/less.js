@@ -1,57 +1,45 @@
 
-define(function() {
-	
-	//>>excludeStart('excludeLESS', pragmas.excludeLESS)    	
+//>>excludeStart('excludeLESS', pragmas.excludeLESS)
+define(function() {	
     
-    var cache = {}
-    
-    //>>excludeEnd('excludeLESS')
-    
+    var less_source = ""
+        
     function loadStylesheet(name, parentRequire, callback, config) {
     	
+    	
     	if (config.isBuild) {
-			// we're in Node, so we need to manually load the helpers
 			less = require.nodeRequire('less')
-			var fs = require.nodeRequire("fs")
-		} else {
+			var fs = require.nodeRequire('fs')
+			less_source = fs.readFileSync(config.appDir + name + ".less", 'utf8')
+			less.render(less_source, {paths: ['.', config.appDir, config.dir, config.appDir + name.replace(/[^\/]*$/, "")], compress: true}, function(err, css) {
+				if (err) {
+					console.log("Error compiling stylesheet '" + name + "':")
+					throw err
+				}
+				var file = fs.openSync(config.dir + "styles.css", 'a')
+				css = css.replace(/\/\*(.|\W)*?\*\//g, " ").replace("  ", " ").trim()
+				fs.writeSync(file, "/* " + name + ".less */  " + css + "\n")
+				callback()
+			})
+			callback()
+		} else if (typeof(window.less !== "undefined")) {
 			less.sheets.push($('<link rel="stylesheet/less" type="text/css" href="' + parentRequire.toUrl(name + '.less') + '"/>')[0])
             less.refresh()
             callback()
+		} else
+		
+		{
+			callback()
 		}
+		
+		
 
-		
-    	
-    	//>>excludeStart('excludeLESS', pragmas.excludeLESS)
-		
-    	//>>excludeEnd('excludeLESS')
-    	    
     }
     
     function writeStylesheet(pluginName, moduleName, write) {
 
-		//>>excludeStart('excludeLESS', pragmas.excludeLESS)
-		
-		var output = []
-		
-		output.push('define("' + pluginName + '_' + moduleName + '", function() {\n  var templates = {};\n  Handlebars.templates = Handlebars.templates || {};\n')
-
-	    var templates = cache[moduleName]
-	
-	    var options = {
-	      knownHelpers: [],
-	    }
-	    
-		for (var i=0; i<templates.length; i++) {
-			output.push('  templates[\'' + templates[i].id + '\'] = Handlebars.templates[\'' + moduleName + ':' + templates[i].id + '\'] = Handlebars.template(' + Handlebars.precompile(templates[i].text, options) + ');\n')
-		}
-	    
-		output.push('  return templates;\n})')	
-		output = output.join('')
-		
-		write(output)
-		
-		//>>excludeEnd('excludeLESS')
-        
+		write("define('" + pluginName + "!" + moduleName + "', function() { return; })")
+		        
     }
     
     return {
@@ -60,3 +48,5 @@ define(function() {
     }
 	
 })
+    
+//>>excludeEnd('excludeLESS')
