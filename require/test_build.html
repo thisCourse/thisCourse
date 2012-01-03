@@ -2,9 +2,15 @@
 <html>
     <head>
         <title>Build</title>
-        <script src="/static/libs/js/handlebars.vm.js"></script>
-        <script src="require.js" data-main="build/bootloader"></script>
+        
+        <script type="text/javascript">
+        	var environ = "DEPLOY"
+        </script>
+        
         <link rel="stylesheet" href="build/styles.css" type="text/css"/>
+        
+        <script src="build/engine.js"></script>
+        
     </head>
     <body>
         <h1>Build</h1>
