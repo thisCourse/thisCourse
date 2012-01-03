@@ -1,6 +1,6 @@
-
-//>>excludeStart('excludeLESS', pragmas.excludeLESS)
 define(function() {	
+ 
+ 	//>>excludeStart('excludeLESS', pragmas.excludeLESS)
     
     var less_source = ""
         
@@ -11,7 +11,9 @@ define(function() {
 			less = require.nodeRequire('less')
 			var fs = require.nodeRequire('fs')
 			less_source = fs.readFileSync(config.appDir + name + ".less", 'utf8')
+			console.log(config.appDir, config.dir, config.appDir + name.replace(/[^\/]*$/, ""))
 			less.render(less_source, {paths: ['.', config.appDir, config.dir, config.appDir + name.replace(/[^\/]*$/, "")], compress: true}, function(err, css) {
+				console.log("finished compiling")
 				if (err) {
 					console.log("Error compiling stylesheet '" + name + "':")
 					throw err
@@ -47,6 +49,11 @@ define(function() {
         write: writeStylesheet
     }
 	
+	//>>excludeEnd('excludeLESS')
+	
+    return {
+        load: function() {}
+    }	
+	
 })
-    
-//>>excludeEnd('excludeLESS')
+

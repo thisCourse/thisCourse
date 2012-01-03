@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>My Sample Project</title>
-        <script src="/static/libs/js/jquery.js"></script>
+        <title>Build</title>
         <script src="/static/libs/js/handlebars.vm.js"></script>
-        <script data-main="build/test1" src="require.js"></script>
+        <script src="require.js" data-main="build/bootloader"></script>
         <link rel="stylesheet" href="build/styles.css" type="text/css"/>
     </head>
     <body>
-        <h1>My Sample Project</h1>
+        <h1>Build</h1>
         
         <script>
-            require(["test1"], function(test1) { console.log(test1.x) })
+            //require(["test1"], function(test1) { console.log(test1.x) })
         </script>
         
     </body>

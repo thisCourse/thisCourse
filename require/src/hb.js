@@ -1,7 +1,6 @@
-
 define(function() {
 	
-	//>>excludeStart('excludeHandlebars', pragmas.excludeHandlebars)
+	//>>excludeStart('excludeHandlebars', pragmas.excludeHandlebars)	
 	
 	if (require.nodeRequire) {
 		// we're in Node, so we need to manually load the helpers
@@ -38,16 +37,8 @@ define(function() {
     
     var cache = {}
     
-    //>>excludeEnd('excludeHandlebars')
-    
     function loadTemplates(name, parentRequire, callback, config) {
-    	
-    	var uncompiled = true
-    	
-    	//>>excludeStart('excludeHandlebars', pragmas.excludeHandlebars)
-		
-		uncompiled = false
-		    	
+
     	function process_templates(text) {
     		parse_templates(text, function(templates) {
     			cache[name] = templates
@@ -65,21 +56,14 @@ define(function() {
     	} else {
 	    	parentRequire(["text!" + name], process_templates)    		
     	}
-    	
-    	//>>excludeEnd('excludeHandlebars')
-    	
-    	if (uncompiled)
-    		require(["hb_" + name], callback)
-    
+    	    
     }
     
     function writeTemplates(pluginName, moduleName, write) {
-
-		//>>excludeStart('excludeHandlebars', pragmas.excludeHandlebars)
 		
 		var output = []
 		
-		output.push('define("' + pluginName + '_' + moduleName + '", function() {\n  var templates = {};\n  Handlebars.templates = Handlebars.templates || {};\n')
+		output.push('define("' + pluginName + '!' + moduleName + '", function() {\n  var templates = {};\n  Handlebars.templates = Handlebars.templates || {};\n')
 
 	    var templates = cache[moduleName]
 	
@@ -96,13 +80,16 @@ define(function() {
 		
 		write(output)
 		
-		//>>excludeEnd('excludeHandlebars')
-        
     }
     
     return {
         load: loadTemplates,
         write: writeTemplates
     }
-	
+
+	//>>excludeEnd('excludeHandlebars')
+
+    return {
+        load: function() {}
+    }
 })
