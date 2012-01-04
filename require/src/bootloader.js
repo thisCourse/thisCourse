@@ -7,14 +7,15 @@ config = {
         order: 'libs/requirejs/order',
         text: 'libs/requirejs/text'
     },
-    waitSeconds: 5
+    waitSeconds: 5,
+    baseUrl: "."
 }
 
-if (environ==="DEPLOY") {
-	config.baseUrl = "build"
-} else {
-	config.baseUrl = "src"
-}
+// if (environ==="DEPLOY") {
+	// config.baseUrl = "build"
+// } else {
+	// config.baseUrl = "src"
+// }
 
 require.config(config)
 
