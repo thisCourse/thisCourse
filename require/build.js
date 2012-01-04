@@ -1,13 +1,15 @@
 ({
     appDir: 'src',
     baseUrl: './',
-    //Uncomment to turn off uglify minification.
     optimize: 'none',
     dir: 'build',
     paths: {
-        cs: 'cs',
-        hb: 'hb',
-        less: 'less'
+        cs: 'libs/requirejs/cs',
+        domReady: 'libs/requirejs/domReady',
+        hb: 'libs/requirejs/hb',
+        less: 'libs/requirejs/less',
+        order: 'libs/requirejs/order',
+        text: 'libs/requirejs/text'
     },
     pragmasOnSave: {
         excludeCoffeeScript: true,

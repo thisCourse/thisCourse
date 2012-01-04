@@ -1,8 +1,13 @@
 config = {
     paths: {
-        "some": "some/v1.0"
+        cs: 'libs/requirejs/cs',
+        domReady: 'libs/requirejs/domReady',
+        hb: 'libs/requirejs/hb',
+        less: 'libs/requirejs/less',
+        order: 'libs/requirejs/order',
+        text: 'libs/requirejs/text'
     },
-    waitSeconds: 4
+    waitSeconds: 5
 }
 
 if (environ==="DEPLOY") {
@@ -32,9 +37,7 @@ define(
 		"order!libs/ckeditor/adapters/jquery",
 		"cs!app"
 	], function() {
-		console.log("All modules initialized.")
-		var app = require("cs!app")
-		app.initialize()
+		require("cs!app").initialize()
 	}
 )
     
