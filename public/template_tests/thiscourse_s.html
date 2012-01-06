@@ -35,8 +35,8 @@
 <div class="row">
 <div id="login_form" class="span6 offset10">
 	<form>
-	<input class="span3" type="text" value="email">
-	<input class="span2" type="text" value="password">
+	<input class="span3" type="text" placeholder="email">
+	<input class="span2" type="text" placeholder="password">
 	<input type="submit" class="btn primary" value="Log in">
 	<p><a data-controls-modal="registration_modal" data-backdrop="static">Create account</a></p>
 	</form>
@@ -53,10 +53,16 @@
             <div class="modal-body">
               <p>Register for thisCourse. It only takes a moment.</p>
 	<form action="#" method="POST">
+	    <div class="clearfix">
+	    	<label for="reg_name">Name: </label>
+	    	<div class="input">
+	    	<input class="xlarge" id="reg_name" type="text" placeholder="John Smith">
+	    	</div>
+	    </div>
 		<div class="clearfix">
 			<label for="reg_email">Email: </label>
 			<div class="input">
-			<input class="xlarge" id="reg_email" type="text">
+			<input class="xlarge" id="reg_email" type="text" placeholder="jsmith@domain.com">
 			</div>
 		</div>
 		<div class="clearfix">
@@ -111,8 +117,10 @@
                 <td>Please remember to bring a calculator to the exam next week. There will be no extra calculators available </td>
             </tr>
         </table>    
+        <button class="btn primary">Add announcement</button>
 	</div>
-
+    
+    
 	<h3 class="section_name">Instructors</h3>
 	<div class="row section">
 		<div class="span16">	
@@ -139,10 +147,10 @@
     </div>
     <br />
     <div class="row">
-        <div class="span12 section_item">
+        <div class="span10 section_item">
         <p><span class="text_icon">A</span> <input type="text" class="span4" placeholder="Jamie Alexandre" />, <input type="text" class="span3" placeholder="Professor" /></p>
         <p><span class="text_icon">E</span> <input type="text" name="" placeholder="jamalex@gmail.com" /></p>
-        <p><span class="text_icon">q</span> <input type="text" name="" placeholder="(858) 452-2100" /> <input type="text" name="" placeholder="Office Hours (ghost text)" /></p>
+        <p><span class="text_icon">q</span> <input type="text" name="" placeholder="(858) 452-2100" /> <span class="text_icon">c</span> <input type="text" name="" placeholder="Office Hours (ghost text)" /></p>
         <p><span class="text_icon">H</span> <input type="text" class="span4" placeholder="http://thiscourse.com/ucsd/mbregman (ghost)" /</p>
         
         <p><button class="btn success">Save</button> <button class="btn">Cancel</button></p>
@@ -213,7 +221,7 @@
         </tr>
         </table>
     </div>
-        <button class="btn primary">Add an event</button>
+        <button class="btn primary">Add event</button>
         
     </div>
        
