@@ -48,7 +48,7 @@ var MainRouter = Backbone.Router.extend({
     },
 
     home: function() {
-        $("#content").text("Home page content will go here")
+        app.set({topview: new HomeView({model: app.course})})
     },
     
     lecture: function(lecture, page) {
@@ -136,9 +136,11 @@ TabsView = Backbone.View.extend({
 
 $(function() {
 
-    var base_url = window.location.pathname.split("/").slice(0,3).join("/") + "/"
+	if (!window.base_url)
+    	base_url = window.location.pathname.split("/").slice(0,3).join("/") + "/"
 
-    var course_id = window.location.pathname.split("/")[2]
+	if (!window.course_id)
+    	course_id = window.location.pathname.split("/")[2]
 
     window.app = new App
 

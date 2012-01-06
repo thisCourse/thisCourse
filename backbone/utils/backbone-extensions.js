@@ -120,6 +120,16 @@ Backbone.View.prototype.renderTemplate = function(options) {
         return html
 }
 
+// turn straight "a" links into router navigations
+Backbone.View.prototype.hookURLs = function() {
+	this.$("a").each(function(ind,el) {
+		$(el).click(function(ev) {
+			app.set({url: $(this).attr("href")})
+			return false
+		})
+	})
+}
+
 // set a view's Bootstrap grid system width according to its model's "width" property 
 Backbone.View.prototype.updateWidth = function() {
     this.el.attr('class', this.el[0].className.replace(/\w*\bspan\d+\b/g, ''))

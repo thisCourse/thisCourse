@@ -25,19 +25,19 @@ ScheduleView = Backbone.View.extend({
         this.model.bind("add:lectures", this.addLectures, this)
         this.model.bind("add:assignments", this.addAssignments, this)
         this.render()
-        for (var i=0; i < this.model.get('assignments').length; i++)
-            this.addAssignments(this.model.get('assignments').at(i))
         for (var i=0; i < this.model.get('lectures').length; i++)
             this.addLectures(this.model.get('lectures').at(i))
+        for (var i=0; i < this.model.get('assignments').length; i++)
+            this.addAssignments(this.model.get('assignments').at(i))
     },
     addAssignments: function(model, coll) {
-        var itemView = new ScheduleItemView({model: model, type: "Assignment"})
+        var itemView = new ScheduleItemView({model: model, type: "Assignment", url: "assignments/" + model.id})
         var dateView = this.getOrCreateDateView(model.getDate("due"))
         if (dateView)
         	dateView.$(".schedule-items").append(itemView.render().el)
     },
     addLectures: function(model, coll) {
-        var itemView = new ScheduleItemView({model: model, type: "Lecture"})
+        var itemView = new ScheduleItemView({model: model, type: "Lecture", url: "lectures/" + model.id})
         var dateView = this.getOrCreateDateView(model.getDate("scheduled"))
         if (dateView)
         	dateView.$(".schedule-items").append(itemView.render().el)
@@ -90,7 +90,8 @@ ScheduleItemView = Backbone.View.extend({
     className: "schedule_item",
     template: "schedule-item",
     render: function() {
-        this.renderTemplate({data: {type: this.options.type, item: this.model.attributes}})
+        this.renderTemplate({data: {item: this.model.attributes, options: this.options}})
+        this.hookURLs()
         return this
     },
     events: {
@@ -104,7 +105,6 @@ ScheduleItemView = Backbone.View.extend({
     },
     initialize: function() {
         this.el = $(this.el)
-        console.log(this.model)
         //this.model.bind("change", this.update, this)
         this.render()
     },
@@ -112,8 +112,3 @@ ScheduleItemView = Backbone.View.extend({
     	
     }
 })
-
-setTimeout(function() {
-	v = new ScheduleView
-	$("#container").append(v.el)
-}, 2000)

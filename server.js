@@ -36,6 +36,19 @@ app.use('/kirsh', function(request, response) {
   })
 })
 
+app.use('/ucsd/cogs160/wi12/', function(request, response) {
+  fs.readFile(__dirname + '/public/cogs160.html', function(err,text) {
+      response.end(text)
+  })
+})
+
+app.use('/ucsd/cogs187a/wi12/', function(request, response) {
+  fs.readFile(__dirname + '/public/cogs187a.html', function(err,text) {
+      response.end(text)
+  })
+})
+
+
 // TODO: TEMP
 app.use('/', express.static(__dirname))
 

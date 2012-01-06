@@ -144,9 +144,18 @@ LectureTopEditView = Backbone.View.extend({
     className: "lecture-edit",
     template: "lecture-edit",
     render: function() {
+    	var self = this
         this.renderTemplate()
         Backbone.ModelBinding.bind(this)
         this.enablePlaceholders()
+        var scheduled = this.model.getDate("scheduled")
+        if (scheduled)
+        	this.$(".scheduled-date").val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
+        this.$(".scheduled-date").datepicker({
+        	onSelect: function(date) {
+        		$(".scheduled-date").val(date) // TODO: why does scoping this make it not work?
+        	}
+        })
         return this
     },
     events: {
@@ -154,7 +163,10 @@ LectureTopEditView = Backbone.View.extend({
         "click button.cancel": "cancel"
     },
     base: ItemEditInlineView,
-    save: ItemEditInlineView.prototype.save,
+    save: function() {
+    	this.model.set({scheduled: new Date(this.$(".scheduled-date").val())})
+        ItemEditInlineView.prototype.save.apply(this)
+    },
     saved: function() {
         ItemEditInlineView.prototype.saved.apply(this)
         this.model.get("course").save()
