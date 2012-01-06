@@ -12,6 +12,17 @@ var Dispatcher = _.extend({}, Backbone.Events)
 // change the id attribute to use Mongo's _id
 Backbone.Model.prototype.idAttribute = "_id";
 
+Backbone.Model.prototype.getDate = function(attr) {
+	var date = this.get(attr)
+	if (!date) return undefined
+	date = new Date(date)
+	date.setHours(0)
+	date.setMinutes(0)
+	date.setSeconds(0)
+	date.setMilliseconds(0)
+    return date
+}
+
 // set default data-binding attribute name to "field", globally
 Backbone.ModelBinding.Configuration.configureAllBindingAttributes("data")
 
