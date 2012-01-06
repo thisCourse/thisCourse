@@ -150,10 +150,10 @@ AssignmentTopEditView = Backbone.View.extend({
         this.enablePlaceholders()
         var due = this.model.getDate("due")
         if (due)
-        	this.$(".due-date").val((due.getMonth()+1) + "/" + due.getDate() + "/" + due.getFullYear())
-        this.$(".due-date").datepicker({
+        	$(".due-date", this.el).val((due.getMonth()+1) + "/" + due.getDate() + "/" + due.getFullYear())
+        $(".due-date", this.el).datepicker({
         	onSelect: function(date) {
-        		$(".due-date").val(date) // TODO: why does scoping this make it not work?
+        		$(".due-date", this.el).val(date) // TODO: why does scoping this make it not work?
         	}
         })
         return this
@@ -164,7 +164,9 @@ AssignmentTopEditView = Backbone.View.extend({
     },
     base: ItemEditInlineView,
     save: function() {
-    	this.model.set({due: new Date($(".due-date").val())}) // TODO: why does scoping this make it not work?
+    	var due = $(".due-date").val() || undefined
+    	if (due) due = new Date(due)
+    	this.model.set({due: due}) // TODO: why does scoping this make it not work?
         ItemEditInlineView.prototype.save.apply(this)
     },
     saved: function() {
