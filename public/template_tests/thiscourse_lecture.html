@@ -26,8 +26,8 @@
 	
  	<ul class="pills">
 		<li><a href="#">Home</a></li>
-		<li><a href="#">Lectures</a></li>
-		<li class="active"><a href="#">Assignments</a></li>
+		<li class="active"><a href="#">Lectures</a></li>
+		<li><a href="#">Assignments</a></li>
 	        <li><a href="#">Discussion</a></li>
 	        <li><a href="#">Grades</a></li>
         </ul>
@@ -87,33 +87,56 @@
   <p><strong>Password incorrect</strong> Please check your password and try logging in again.</p>
 </div>
 -->
-<h2><a>Assignments: </a>Writing Assignment 1</h2>
-<h5>Short assignment description</h5>
+<h2><a>Lectures: </a>Vision lecture 1</h2>
+<h5>Rods and cones, transduction of light</h5>
 
-<p><i>Due: January 12th, 2012</i> <p><button id="assign_turnin" class="btn primary">Turn in assignment</button></p>
+<p><i>January 12th, 2012</i>
+<div class="row">
+    <div class="span10 section_item">
+    <h3>Rods and Cones</h3>
+    <p>The retina is the back part of the eye that contains the cells that
+    respond to light. These specialized cells are called <strong>
+    photoreceptors</strong>.  There are 2 types of photoreceptors in the
+    retina: <strong>rods</strong> and <strong>cones</strong>.</p>
+    
+    <p>The rods are most sensitive to light and dark changes, shape and
+    movement and contain only one type of light-sensitive pigment.  Rods are
+    not good for color vision.  In a dim room, however, we use mainly our
+    rods, but we are "color blind." Rods are more numerous than cones in the
+    periphery of the retina.  Next time you want to see a dim star at night,
+    try to look at it with your peripheral vision and use your ROD VISION to
+    see the dim star. There are about 120 million rods in the human
+    retina.</p>
+    
+    <p>
+    The cones are not as sensitive to light as the rods. However, cones are
+    most sensitive to one of three different colors (green, red or blue).
+    Signals from the cones are sent to the brain which then translates these
+    messages into the perception of color.  Cones, however, work only in
+    bright light.  That's why you cannot see color very well in dark places.  
+    So, the cones are used for color vision and are better suited for
+    detecting fine details. There are about 6 million cones in the human
+    retina. Some people cannot tell some colors from others - these
+    people are "color blind."  Someone who is color blind does not have a
+    particular type of cone in the retina or one type of cone may be weak.  
+    In the general population, about 8% of all males are color blind and about
+    0.5% of all females are color blind.</p>
+    
+    </div>
+    
+    <div class="span4 section_item">
+    <strong>Sections</strong>
+    <ul class="lecture_list">
+        <li><a href="#">Rods and Cones</a></li>
+        <li><a href="#">The Rhodopsin molecule</a></li>
+        <li><a href="#">The anatomy of transduction</a></li>
+    </ul>
+    </div>
+</div>   
 
-<div id="turnin_div" style="display: none;">
-<p><input type="textbox" name="" placeholder="Description" /></p>
-<p><span class="text_icon">D</span><input type="file" /></p>
-
-
-<button class="btn success">Submit assignment</button> <button id="cancel_submit" class="btn">Cancel</button>
-</div></p>
-<div class="row section">
-    <div class="span12 section_item">
-        <p>Here is where all of the rich content associated with the assignment will go, including the interface for 
-        instructors to add stuff.</p>
-    </div>    
 </div>
-<br/>
 
 
-<script>
-$('#assign_turnin').click(function() { $('#turnin_div').show(); $('#assign_turnin').hide(); });
-$('#cancel_submit').click(function() { $('#turnin_div').hide(); $('#assign_turnin').show();});
-</script>
-
-</div>
     
        
       <footer>
