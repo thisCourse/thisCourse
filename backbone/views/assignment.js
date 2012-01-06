@@ -164,7 +164,7 @@ AssignmentTopEditView = Backbone.View.extend({
     },
     base: ItemEditInlineView,
     save: function() {
-    	this.model.set({due: new Date(this.$(".due-date").val())})
+    	this.model.set({due: new Date($(".due-date").val())}) // TODO: why does scoping this make it not work?
         ItemEditInlineView.prototype.save.apply(this)
     },
     saved: function() {
