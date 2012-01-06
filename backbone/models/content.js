@@ -15,10 +15,10 @@ Content = Backbone.RelationalModel.extend({
         var self = this 
         this.get('sections').url = function() { return self.url() + "/sections" }
     },
-    parse: function(data) {
-        $("#jsoncode").html(JSON.stringify(data))
-        return data
-    }
+    // parse: function(data) {
+        // $("#jsoncode").html(JSON.stringify(data))
+        // return data
+    // }
 })
 
 ContentCollection = Backbone.Collection.extend({
