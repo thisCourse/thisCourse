@@ -153,7 +153,7 @@ LectureTopEditView = Backbone.View.extend({
         	$(".scheduled-date", this.el).val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
         $(".scheduled-date", this.el).datepicker({
         	onSelect: function(date) {
-        		$(".scheduled-date", this.el).val(date) // TODO: why does scoping this make it not work?
+        		$(".scheduled-date", this.el).val(date)
         	}
         })
         return this
@@ -164,7 +164,7 @@ LectureTopEditView = Backbone.View.extend({
     },
     base: ItemEditInlineView,
     save: function() {
-    	var scheduled = $(".scheduled-date", this.el).val() || undefined
+    	var scheduled = $(".scheduled-date:visible").val() || undefined // TODO: why does scoping this make it not work?
     	if (scheduled) scheduled = new Date(scheduled)
     	this.model.set({scheduled: scheduled})
         ItemEditInlineView.prototype.save.apply(this)
