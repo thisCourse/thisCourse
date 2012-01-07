@@ -150,10 +150,10 @@ LectureTopEditView = Backbone.View.extend({
         this.enablePlaceholders()
         var scheduled = this.model.getDate("scheduled")
         if (scheduled)
-        	$(".scheduled-date", this.el).val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
-        $(".scheduled-date", this.el).datepicker({
+        	$(".scheduled-date").val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
+        $(".scheduled-date").datepicker({
         	onSelect: function(date) {
-        		$(".scheduled-date", this.el).val(date)
+        		$(".scheduled-date").val(date)
         	}
         })
         return this

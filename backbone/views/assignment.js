@@ -150,10 +150,10 @@ AssignmentTopEditView = Backbone.View.extend({
         this.enablePlaceholders()
         var due = this.model.getDate("due")
         if (due)
-        	$(".due-date", this.el).val((due.getMonth()+1) + "/" + due.getDate() + "/" + due.getFullYear())
-        $(".due-date", this.el).datepicker({
+        	$(".due-date").val((due.getMonth()+1) + "/" + due.getDate() + "/" + due.getFullYear())
+        $(".due-date").datepicker({
         	onSelect: function(date) {
-        		$(".due-date", this.el).val(date) // TODO: why does scoping this make it not work?
+        		$(".due-date").val(date) // TODO: why does scoping this make it not work?
         	}
         })
         return this
