@@ -150,10 +150,10 @@ AssignmentTopEditView = Backbone.View.extend({
         this.enablePlaceholders()
         var due = this.model.getDate("due")
         if (due)
-        	$(".due-date").val((due.getMonth()+1) + "/" + due.getDate() + "/" + due.getFullYear())
-        $(".due-date").datepicker({
+        	this.$(".due-date").val((due.getMonth()+1) + "/" + due.getDate() + "/" + due.getFullYear())
+        this.$(".due-date").datepicker({
         	onSelect: function(date) {
-        		$(".due-date").val(date) // TODO: why does scoping this make it not work?
+        		$(".due-date:visible").val(date) // TODO: why does scoping this make it not work?
         	}
         })
         return this
@@ -164,7 +164,7 @@ AssignmentTopEditView = Backbone.View.extend({
     },
     base: ItemEditInlineView,
     save: function() {
-    	var due = $(".due-date").val() || null // TODO: why does scoping this make it not work?
+    	var due = $(".due-date:visible").val() || null // TODO: why does scoping this make it not work?
     	if (due) due = new Date(due)
     	this.model.set({due: due})
         ItemEditInlineView.prototype.save.apply(this)
@@ -183,6 +183,6 @@ AssignmentTopEditView = Backbone.View.extend({
         this.el = $(this.el)
         this.memento = new Backbone.Memento(this.model)
         this.memento.store()
-        this.render()
+        //this.render()
     }
 })

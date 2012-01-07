@@ -150,10 +150,10 @@ LectureTopEditView = Backbone.View.extend({
         this.enablePlaceholders()
         var scheduled = this.model.getDate("scheduled")
         if (scheduled)
-        	$(".scheduled-date").val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
-        $(".scheduled-date").datepicker({
+        	this.$(".scheduled-date").val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
+        this.$(".scheduled-date").datepicker({
         	onSelect: function(date) {
-        		$(".scheduled-date").val(date)
+        		$(".scheduled-date:visible").val(date)
         	}
         })
         return this
@@ -183,6 +183,6 @@ LectureTopEditView = Backbone.View.extend({
         this.el = $(this.el)
         this.memento = new Backbone.Memento(this.model)
         this.memento.store()
-        this.render()
+        //this.render()
     }
 })
