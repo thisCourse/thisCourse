@@ -100,9 +100,22 @@
 <div class="row">
     <div class="span6 offset1 section_item">
     <p> The exam is next week. There haven't been any changes to the schedule.</p>
-    <p class="right_aligned"><a href="#">Reply</a></p>
+    <p class="right_aligned"><a id="reply_button" href="#">Reply</a></p>
     </div>
 </div>
+<br/>
+<div class="row">
+    <div id="discussion_reply" class="span6 offset2 section_item" style="display: none;">
+    <p><input type="textarea" name="" placeholder="reply goes here" /></p>
+    <p><button class="btn success">Save</button> <button id="reply_cancel" class="btn">Cancel</button></p>
+    </div>
+</div>
+<button class="btn primary">Post new topic</button>
+
+<script type="text/javascript">
+$('#reply_button').click(function () { $('#discussion_reply').show(); });
+$('#reply_cancel').click(function () { $('#discussion_reply').hide(); });
+</script>
 
 <div class="pagination">
   <ul>
@@ -115,7 +128,7 @@
     <li class="next"><a href="#">Next &rarr;</a></li>
   </ul>
 </div>
-       
+
       <footer>
         <p>&copy; thisCourse 2011</p>
       </footer>
