@@ -16,10 +16,6 @@ cat public/libs/js/bootstrap/bootstrap-buttons.js
 echo ";"; echo
 cat public/libs/fancybox/jquery.fancybox-1.3.4.js
 echo ";"; echo
-cat public/libs/ckeditor/ckeditor.js
-echo ";"; echo
-cat public/libs/ckeditor/adapters/jquery.js
-echo ";"; echo
 cat public/libs/js/jquery.jeditable.js
 echo ";"; echo
 cat public/libs/js/jquery.watermark.js    
