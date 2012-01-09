@@ -46,6 +46,19 @@ ContentView = Backbone.View.extend({
     },
     addSections: function(model, coll) {
         this.sectionViews[model.cid] = new SectionView({model: model})
+        // hack to make sure it's inserted in the right position (order)
+        var found = false
+        for (var i=0; i<coll.length; i++) {
+        	if (found) {
+        		if (this.sectionViews[coll.at(i).cid]) {
+        			this.sectionViews[coll.at(i).cid].el.before(this.sectionViews[model.cid].el)
+        			return
+        		}
+        	} else if (model.cid==coll.at(i).cid) {
+        		found = true
+        	}
+        }
+        // we didn't find something to insert it before, so append it to end
         this.$('.sections').append(this.sectionViews[model.cid].el)
     },
     removeSections: function(model, coll) {
