@@ -16,3 +16,9 @@ ckeditor_config.toolbar =
     { name: 'colors', items : [ 'TextColor','BGColor' ] },
     { name: 'tools', items : [ 'Maximize', 'ShowBlocks' ] }
 ]
+
+ckeditor_config.extraPlugins = 'autogrow'
+ckeditor_config.autoGrow_bottomSpace = 30
+ckeditor_config.autoGrow_maxHeight = 1000
+ckeditor_config.autoGrow_minHeight = 300
+ckeditor_config.autoGrow_onStartup = true
