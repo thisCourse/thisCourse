@@ -21,7 +21,7 @@ AssignmentView = Backbone.View.extend({
         this.el = $(this.el)
         this.model.bind('change:page', this.pageChanged, this)
         this.model.bind('change:_id', this.changeId, this)
-        this.model.bind('change:_editor', this.render, this)
+        this.model.bind('change:_editor', this.renderTopView, this)
         this.model.bind('change:title', this.titleChange, this)
         this.model.bind('save', this.saved, this)
         this.topView = new AssignmentTopView({model: this.model})
