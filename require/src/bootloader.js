@@ -22,7 +22,6 @@ require.config(config)
 // require all the non-AMD libraries, in order, to be bundled with the AMD modules
 define(
 	[
-		"order!libs/jquery/jquery",
 		"order!libs/jquery/jquery-ui",
 		"order!libs/jquery/jquery.jeditable",
 		"order!libs/jquery/jquery.watermark",
