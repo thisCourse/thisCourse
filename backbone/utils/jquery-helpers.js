@@ -33,13 +33,15 @@ function delete_section_confirmation(model, delete_callback, options) {
     }, options))
 }
 
-function dialog_request_response(request, callback) {
+function dialog_request_response(request, callback, confirm_button, cancel_button) {
+	if (!confirm_button) confirm_button = "Confirm"
+	if (!cancel_button) cancel_button = "Cancel"
     var rand_id = Math.random().toString().slice(2)
     var dialog = show_dialog("<input id='" + rand_id + "' />", {
         title: request, 
         buttons: {
             "save": {
-                html: "Save",
+                html: confirm_button,
                 "class": "btn success dialog-save-button",
                 click: function() {
                 	if ($("#" + rand_id).val()) {
@@ -50,7 +52,7 @@ function dialog_request_response(request, callback) {
                 }
             },
             "cancel": {
-                html: "Cancel",
+                html: cancel_button,
                 "class": "btn",
                 click: function() {
                     $(this).dialog("close")

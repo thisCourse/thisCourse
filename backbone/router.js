@@ -75,7 +75,7 @@ var MainRouter = Backbone.Router.extend({
         }
         app.set({topview: topview})
     }
-
+    
 })
 
 TabView = Backbone.View.extend({
@@ -156,4 +156,34 @@ $(function() {
         app.set({url: Backbone.history.fragment})
     
     })
+	
+	$.get("/check", function(response) {
+		if (response)
+			bind_logout_link()
+		else
+			bind_login_link()
+	})
+	
+    
 })
+
+function bind_login_link() {
+    $("#login").unbind().html("Login...").click(function() {
+		dialog_request_response("Enter password:", function(password) {
+			$.get("/login?password=" + password, function(response) {
+				if (response.token) {
+					app.token = response.token
+					bind_logout_link()
+				}
+			})
+		}, "Login")
+		return false
+    })	
+}
+
+function bind_logout_link() {
+	$("#login").unbind().html("Logout...").click(function() {
+		$.get("/logout", bind_login_link)
+		return false
+	})	
+}
