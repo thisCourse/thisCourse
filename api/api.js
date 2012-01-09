@@ -194,12 +194,6 @@ var request_handler = function(req, res, next) {
                 obj = {_id: data._id }
             else
                 obj = {}
-            if (obj instanceof Object) {
-            	if (req.session.email)
-            		obj._editor = true
-            	else
-            		obj._editor = false
-        	}
             console.log(err, obj)
             res.json(obj)
         }
@@ -227,8 +221,14 @@ var request_handler = function(req, res, next) {
             case 'GET array':
             case 'GET object':
             case 'GET value':
+	            if (object instanceof Object) {
+	            	if (req.session.email)
+	            		object._editor = true
+	            	else
+	            		object._editor = false
+	        	}
                 console.log(object)
-                return mongo_json_response(null, object)
+                return res.json(object)
 
             case 'POST document': // replace entire document with new document
                 return update_and_respond(data)
