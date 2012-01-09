@@ -158,6 +158,7 @@ $(function() {
     })
 	
 	$.get("/check", function(response) {
+		app.token = get_cookie_token()
 		if (response)
 			bind_logout_link()
 		else
@@ -166,6 +167,15 @@ $(function() {
 	
     
 })
+
+function get_cookie_token() {
+	var cookies = document.cookie.split(";")
+	for (var i=0; i<cookies.length; i++) {
+		cookie = cookies[i].split("=")
+		if (cookie[0]==="token")
+			return cookie[1]
+	}
+}
 
 function bind_login_link() {
     $("#login").unbind().html("Login...").click(function() {
@@ -184,6 +194,7 @@ function bind_login_link() {
 function bind_logout_link() {
 	$("#login").unbind().html("Logout...").click(function() {
 		$.get("/logout", bind_login_link)
+		app.token = ""
 		return false
 	})	
 }

@@ -1,7 +1,7 @@
 bcrypt = require "bcrypt"
 
 passwordHashes = {
-  default: "$2a$10$sDH2lO4eiX7Xt7vzw93Qv.IvfCeX3Q2d9WVESPiaf33WaPFTlbSly"
+  kirsh: "$2a$10$sDH2lO4eiX7Xt7vzw93Qv.IvfCeX3Q2d9WVESPiaf33WaPFTlbSly"
 }
 
 hash_password = (password, callback) ->

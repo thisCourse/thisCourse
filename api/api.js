@@ -101,6 +101,9 @@ function wrap_in_object(key, obj) {
 // handle an api request
 var request_handler = function(req, res, next) {
 
+	if (req.method !== "GET" && !req.session.email) // TODO: this will be more robust... :P
+		return APIError(res, "You must be logged in to do that!", 403)
+
     console.log(req.method, req.url, req.params.path, req.body)
 
     req.params.path = req.params.path.split('/').filter(function(m) { return m.length > 0 })
