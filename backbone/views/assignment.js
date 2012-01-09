@@ -79,6 +79,7 @@ AssignmentTopView = Backbone.View.extend({
         this.el = $(this.el)
         this.model.bind('change:title', this.render, this)
         this.model.bind('change:description', this.render, this)
+        this.model.bind('change:_editor', this.render, this)
         //this.model.fetch()
         this.render()
     },
@@ -107,6 +108,7 @@ AssignmentListView = Backbone.View.extend({
         "click .add-button": "addNewAssignment"
     },
     render: function() {
+    	this.collection._editor = app._editor // TODO: find a better solution here, obviously
         this.renderTemplate()
         return this
     },

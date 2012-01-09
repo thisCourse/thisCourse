@@ -57,6 +57,9 @@ get_by_path = function(obj, path, index) {
 // sanitize an object; right now this just removes fields starting with _, but could put html sanitization in here?
 recursively_sanitize = function(obj) {
     
+    // TODO: fix this up
+    recursively_sanitize_temp(obj)
+    
     // sanitization disabled for now; this should probably be handled within the permissions callback
     return obj
     
@@ -73,6 +76,19 @@ recursively_sanitize = function(obj) {
     return obj
 }
 
+recursively_sanitize_temp = function(obj) {
+    if (!(obj instanceof Object))
+        return obj
+    for (key in obj) {
+        if (key==="_editor")
+            delete obj[key]
+        else
+            recursively_sanitize(obj[key])
+    }
+    return obj
+}
+
+
 // attach the various HTTP verbs to the api path (for some reason this.all(...) doesn't work with this pattern)
 api.router = function() {
 
@@ -80,7 +96,7 @@ api.router = function() {
         file.serveFile('/api_test.html', 200, {}, req, res)
     })
     
-    this.use(express.static(__dirname + '/public'));
+    this.use(express["static"](__dirname + '/public'));
 
     this.get(routing_pattern, request_handler)
         .post(routing_pattern, request_handler)
@@ -178,6 +194,10 @@ var request_handler = function(req, res, next) {
                 obj = {_id: data._id }
             else
                 obj = {}
+            if (req.session.email)
+            	obj._editor = true
+            else
+            	obj._editor = false
             console.log(err, obj)
             res.json(obj)
         }
@@ -206,7 +226,7 @@ var request_handler = function(req, res, next) {
             case 'GET object':
             case 'GET value':
                 console.log(object)
-                return res.json(object)
+                return mongo_json_response(null, object)
 
             case 'POST document': // replace entire document with new document
                 return update_and_respond(data)

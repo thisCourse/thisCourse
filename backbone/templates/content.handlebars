@@ -1,13 +1,16 @@
 <div class="content-inner">
      <h3 class='title'>{{ title }}</h3>
+     
      <br/>
      <div class='sections row'></div>
      
+         {{#if _editor }}
          <select class="content-button add-section-type">
              <option value="freeform">Freeform</option>
              <option value="gallery">Gallery</option>
              <option value="">Generic</option>
          </select>
          <button class="content-button add-button btn success">Add section</button>
+         {{/if}}
      <div class="clearfix"></div>
 </div> 

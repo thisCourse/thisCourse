@@ -39,6 +39,7 @@ SectionView = Backbone.View.extend({
         //return false // to stop the propagation so that it won't trigger the parent's
     },
     initialize: function() {
+    	this.model.set({_editor: app._editor})
         this.itemViews = {}
         this.el = $(this.el)
         this.el.attr('id', this.model.id)

@@ -107,6 +107,7 @@ LectureListView = Backbone.View.extend({
         "click .add-button": "addNewLecture"
     },
     render: function() {
+    	this.collection._editor = app._editor // TODO: find a better solution here, obviously
         this.renderTemplate()
         return this
     },

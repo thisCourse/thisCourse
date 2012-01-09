@@ -20,6 +20,7 @@ ItemView = Backbone.View.extend({
         }
     },
     initialize: function() {
+    	this.model.set({_editor: app._editor})
         this.el = $(this.el)
         this.type = this.type || this.options.type || ""
         if (this.type)

@@ -18,7 +18,8 @@ PageView = Backbone.View.extend({
     render: function() {
         var self = this
         this.renderTemplate()
-        this.makeSortable()
+        if (this.model.get("_editor"))
+        	this.makeSortable()
         this.update()
         this.$(".page-button.add-button").click(function() { self.addNewContent() })
         return this
@@ -33,12 +34,13 @@ PageView = Backbone.View.extend({
         this.model.bind("update:contents", this.updateContents, this)
         this.model.bind("add:contents", this.addContents, this)
         this.model.bind("remove:contents", this.removeContents, this)
+        this.model.bind('change:_editor', this.render, this)
         this.render()
     },
     addNewContent: function() {
         var self = this
         dialog_request_response("Please enter a title:", function(val) {
-            var new_content = new Content({title: val, width: 12})
+            var new_content = new Content({title: val, width: 12, _editor: true})
             self.model.get('contents').add(new_content)
             self.pageNavRowViews[new_content.cid].showContent()
             new_content.save().success(function() { self.model.save() }) 

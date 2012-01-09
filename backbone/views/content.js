@@ -17,9 +17,11 @@ ContentView = Backbone.View.extend({
     },
     render: function() {
         this.renderTemplate()
-        this.makeSortable()
+        if (this.model.get("_editor")) {
+        	this.makeEditable()
+        	this.makeSortable()
+        }
         this.update()
-        this.makeEditable()
         return this
     },
     initialize: function() {
@@ -29,6 +31,7 @@ ContentView = Backbone.View.extend({
         this.model.bind("update:sections", this.updateSections, this)
         this.model.bind("add:sections", this.addSections, this)
         this.model.bind("remove:sections", this.removeSections, this)
+        this.model.bind('change:_editor', this.render, this)
         this.model.bind('save', this.saved, this)
         this.render()
     },

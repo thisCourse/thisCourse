@@ -55,7 +55,7 @@ login = (req, res, next) ->
     res.end "Please specify an email address (and password)!"
 
 check = (req, res, next) ->
-  res.end(req.session.email)
+  res.json {email: req.session.email, token: req.sessionID}
 
 logout = (req, res, next) ->
   req.session.destroy ->
