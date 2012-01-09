@@ -194,10 +194,12 @@ var request_handler = function(req, res, next) {
                 obj = {_id: data._id }
             else
                 obj = {}
-            if (req.session.email)
-            	obj._editor = true
-            else
-            	obj._editor = false
+            if (obj instanceof Object) {
+            	if (req.session.email)
+            		obj._editor = true
+            	else
+            		obj._editor = false
+        	}
             console.log(err, obj)
             res.json(obj)
         }
