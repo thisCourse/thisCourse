@@ -159,7 +159,7 @@ $(function() {
 	
 	$.get("/check", function(response) {
 		app.token = get_cookie_token()
-		//alert('"' + response + '"')
+		//alert('"' + response.email + '"')
 		//console.log(arguments)
 		if (response.email)
 			bind_logout_link()
@@ -167,7 +167,6 @@ $(function() {
 			bind_login_link()
 	})
 	
-    
 })
 
 function get_cookie_token() {
@@ -186,7 +185,7 @@ function bind_login_link() {
 			$.get("/login?password=" + password, function(response) {
 				if (response.token) {
 					app.token = response.token
-					window.location = window.location
+					window.location = window.location.pathname
 				}
 			})
 		}, "Login")
@@ -198,7 +197,7 @@ function bind_logout_link() {
 	app._editor = true
 	$("#login").unbind().html("Logout...").click(function() {
 		$.get("/logout", function() {
-			window.location = window.location
+			window.location = window.location.pathname
 		})
 		app.token = ""
 		return false
