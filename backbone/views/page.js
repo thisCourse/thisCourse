@@ -115,6 +115,7 @@ PageNavRowView = Backbone.View.extend({
                 view.contentView.el.toggle(view===self)
         })
         this.options.parent.activeSubpage = this
+        return false
     },
     titleChange: function() {
         // keep track of the title having changed so we know to save the parent  
