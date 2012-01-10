@@ -81,14 +81,12 @@ var MainRouter = Backbone.Router.extend({
 TabView = Backbone.View.extend({
     tagName: "li",
     render: function() {
-        this.el.html("<a href='/" + this.options.route + "'>" + this.options.title + "</a>")
+        this.el.html("<a>" + this.options.title + "</a>")
+        make_link(this.$("a"), this.options.route)
         return this
     },
     initialize: function() {
         this.el = $(this.el)
-    },
-    events: {
-        "click a": "linkClicked"
     },
     linkClicked: function(ev) {
         ev.preventDefault()
@@ -203,3 +201,11 @@ function bind_logout_link() {
 		return false
 	})	
 }
+
+function make_link(el, url) {
+	$(el).attr("href", base_url + url).click(function(ev) {
+		if (ev.shiftKey || ev.ctrlKey) return true
+		app.set({url: url})
+		return false
+	})
+} 

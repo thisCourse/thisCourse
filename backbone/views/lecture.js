@@ -104,12 +104,14 @@ LectureListView = Backbone.View.extend({
     tagName: "div",
     template: "lecture-list",
     events: {
-        "click a": "showLecture",
         "click .add-button": "addNewLecture"
     },
     render: function() {
     	this.collection._editor = app._editor // TODO: find a better solution here, obviously
         this.renderTemplate()
+        this.$("li").each(function(ind, el) {
+        	make_link($("a", el), "lectures/" + $(el).attr("id"))
+        })
         return this
     },
     initialize: function() {
@@ -117,20 +119,13 @@ LectureListView = Backbone.View.extend({
         this.collection.bind("change", this.render, this)
         this.render()
     },
-    showLecture: function(ev) {
-        var self = this
-        var model_id = $(ev.target).attr("href")
-        //this.collection.get(model_id).fetch()
-        app.set({url: "lectures/" + model_id})
-        return false
-    },
     addNewLecture: function() {
         var self = this
         dialog_request_response("Please enter a title:", function(title) {
             var page = new Page
             page.save().success(function() {
                 var new_lecture = new Lecture({title: title, page: page})
-                app.course.get('lectures').add(new_lecture)
+                this.collection.add(new_lecture)
                 new_lecture.save().success(function() { app.course.save() })
             })
         })

@@ -91,7 +91,7 @@ ScheduleItemView = Backbone.View.extend({
     template: "schedule-item",
     render: function() {
         this.renderTemplate({data: {item: this.model.attributes, options: this.options}})
-        this.hookURLs()
+        make_link(this.$("a"), this.options.url)
         return this
     },
     events: {

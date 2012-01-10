@@ -18,10 +18,6 @@ var auth = require("./auth")
 
 var courses = db.collection("courses")
 
-var usersByLogin = {
-  'jamalex@gmail.com': "test"
-}
-
 var settings = {
 	session: {
 		key: 'token',

@@ -105,25 +105,20 @@ AssignmentListView = Backbone.View.extend({
     tagName: "div",
     template: "assignment-list",
     events: {
-        "click a": "showAssignment",
         "click .add-button": "addNewAssignment"
     },
     render: function() {
     	this.collection._editor = app._editor // TODO: find a better solution here, obviously
         this.renderTemplate()
+        this.$("li").each(function(ind, el) {
+        	make_link($("a", el), "assignments/" + $(el).attr("id"))
+        })
         return this
     },
     initialize: function() {
         this.el = $(this.el)
         this.collection.bind("change", this.render, this)
         this.render()
-    },
-    showAssignment: function(ev) {
-        var self = this
-        var model_id = $(ev.target).attr("href")
-        //this.collection.get(model_id).fetch()
-        app.set({url: "assignments/" + model_id})
-        return false
     },
     addNewAssignment: function() {
         var self = this
