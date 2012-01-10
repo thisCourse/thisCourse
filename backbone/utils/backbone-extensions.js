@@ -137,7 +137,7 @@ Backbone.View.prototype.enablePlaceholders = function() {
 }
 
 Backbone.Model.prototype.parse = function(data) {
-    $("#jsoncode").text(JSON.stringify(data))
+    //$("#jsoncode").text(JSON.stringify(data))
     return data
 }
 
