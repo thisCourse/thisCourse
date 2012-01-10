@@ -206,7 +206,7 @@ function bind_logout_link() {
 }
 
 function make_link(el, url) {
-	console.log("MAKING LINK: " + base_url + url)
+	//console.log("MAKING LINK: " + base_url + url)
 	$(el).attr("href", base_url + url).click(function(ev) {
 		if (ev.shiftKey || ev.ctrlKey) return true
 		app.set({url: url})
