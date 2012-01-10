@@ -115,6 +115,8 @@ AssignmentListView = Backbone.View.extend({
         	make_link($("a.open", el), "assignments/" + $(el).attr("id"))
         	$("a.delete", el).click(function() { self.deleteAssignment($(el).attr("id")) })
         })
+        if (this.collection._editor)
+        	this.makeSortable()
         return this
     },
     initialize: function() {
@@ -140,8 +142,21 @@ AssignmentListView = Backbone.View.extend({
     	var self = this
     	delete_confirmation(this.collection.get(id), "assignment", function() {
 	    	self.collection.remove(self.collection.get(id))
-	    	app.course.save()    		
+	    	app.course.save()
     	})
+    },
+    makeSortable: function() {
+        var self = this
+        this.$('ul').sortable({
+            update: function(event, ui) {
+                // get the post-sort order (as a list of id's) and save the new collection order 
+                var new_order = self.$('ul').sortable("toArray")
+                self.collection.reorder(new_order)
+                app.course.save()
+            },
+            opacity: 0.6,
+            tolerance: "pointer"
+        })
     },
     close: function() {
         this.el.remove()
