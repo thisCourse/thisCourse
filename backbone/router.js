@@ -215,8 +215,7 @@ function make_link(el, url) {
 } 
 
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-4950843-3']);
-_gaq.push(['_setDomainName', 'beta.thiscourse.com']);
+_gaq.push(['_setAccount', 'UA-4950843-5']);
 
 function ga_initialize() {
 	var ga = document.createElement('script');

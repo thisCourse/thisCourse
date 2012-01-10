@@ -29,7 +29,7 @@ policy_params = {
 }
 
 var policy = {
-    expiration: "2012-01-01T00:00:00Z",
+    expiration: "2013-01-01T00:00:00Z",
     conditions: [ 
         {bucket: "thiscourse"},
         ["starts-with", "$key", "uploads/"], // TODO: include user_id before filename, to namespace
