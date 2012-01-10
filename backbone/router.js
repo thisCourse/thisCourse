@@ -177,7 +177,7 @@ function get_cookie_token() {
 }
 
 function bind_login_link() {
-	app._editor = false
+	app.set({_editor: false})
     $("#login").unbind().html("Login...").click(function() {
 		dialog_request_response("Enter password:", function(password) {
 			$.get("/login?password=" + password, function(response) {
@@ -192,7 +192,7 @@ function bind_login_link() {
 }
 
 function bind_logout_link() {
-	app._editor = true
+	app.set({_editor: true})
 	$("#login").unbind().html("Logout...").click(function() {
 		$.get("/logout", function() {
 			window.location = window.location.pathname

@@ -107,16 +107,21 @@ LectureListView = Backbone.View.extend({
         "click .add-button": "addNewLecture"
     },
     render: function() {
-    	this.collection._editor = app._editor // TODO: find a better solution here, obviously
+    	var self = this
+    	this.collection._editor = app.get("_editor") // TODO: find a better solution here, obviously
         this.renderTemplate()
         this.$("li").each(function(ind, el) {
-        	make_link($("a", el), "lectures/" + $(el).attr("id"))
+        	make_link($("a.open", el), "lectures/" + $(el).attr("id"))
+        	$("a.delete", el).click(function() { self.deleteLecture($(el).attr("id")) })
         })
         return this
     },
     initialize: function() {
         this.el = $(this.el)
         this.collection.bind("change", this.render, this)
+        this.collection.bind("remove", this.render, this)
+        this.collection.bind("add", this.render, this)
+        app.bind("change:_editor", this.render, this)
         this.render()
     },
     addNewLecture: function() {
@@ -125,10 +130,18 @@ LectureListView = Backbone.View.extend({
             var page = new Page
             page.save().success(function() {
                 var new_lecture = new Lecture({title: title, page: page})
-                this.collection.add(new_lecture)
+                app.course.get('lectures').add(new_lecture)
                 new_lecture.save().success(function() { app.course.save() })
             })
         })
+        return false
+    },
+    deleteLecture: function(id) {
+    	var self = this
+    	delete_confirmation(this.collection.get(id), "lecture", function() {
+	    	self.collection.remove(self.collection.get(id))
+	    	app.course.save()    		
+    	})
     },
     close: function() {
         this.el.remove()

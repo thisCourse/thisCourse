@@ -10,8 +10,8 @@ function show_dialog(html, options) {
     }, options))
 }
 
-function delete_section_confirmation(model, delete_callback, options) {
-    dialog_from_template("dialog-section-delete", model.attributes, _.extend({ 
+function delete_confirmation(model, type, delete_callback, options) {
+    dialog_from_template("dialog-delete", {title: model.get("title"), type: type}, _.extend({ 
         buttons: {
             "delete": {
                 html: "Yes, delete!",

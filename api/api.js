@@ -370,22 +370,27 @@ function merge_arrays(dest, src) {
     // src is objects, and dest is objects: arrange the dest objects by source order, then stick remaining src objects on end
     if (src_is_objects_with_ids && dest_is_objects_with_ids) {
         console.log("src_is_objects_with_ids && dest_is_objects_with_ids")
-        target = Array(src.length)
+        
+        //target = Array(src.length)
+        target = src // start with the src, then we'll be overwriting ones that are also in dest with the merged version
+        
         var src_ids = {}
         for (i in src)
             src_ids[src[i]._id] = i
+        
         for (i in dest) {
             var index = src_ids[dest[i]._id]
-            if (index === undefined)
-                target[target.length] = dest[i]
-            else {
+            if (index === undefined) {
+                //target.push(dest[i]) // TODO: reinstate this once the client-side stuff uses DELETE to delete stuff  
+            } else {
                 target[index] = dest[i]
                 merge(target[index], src[index])
-                delete src[index]
+                //delete src[index]
             }
         }
-        for (i in src_ids)
-            target.push(src[src_ids[i]])
+        
+        //for (i in src_ids)
+        //    target.push(src[src_ids[i]])
     }
     
     // both are basic literals

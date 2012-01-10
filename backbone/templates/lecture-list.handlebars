@@ -1,7 +1,7 @@
 <h2>Lectures</h2>
 <ul>
     {{#each models }}
-        <li id="{{ id }}"><a>{{ attributes/title }}</a></li>
+        <li id="{{ id }}"><a class="open">{{ attributes/title }}</a>{{#if ../_editor }} (<a class="delete" href="#">delete</a>){{/if}}</li>
     {{/each}}
 </ul>
 

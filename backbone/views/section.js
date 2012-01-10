@@ -39,7 +39,7 @@ SectionView = Backbone.View.extend({
         //return false // to stop the propagation so that it won't trigger the parent's
     },
     initialize: function() {
-    	this.model.set({_editor: app._editor})
+    	this.model.set({_editor: app.get("_editor")})
         this.itemViews = {}
         this.el = $(this.el)
         this.el.attr('id', this.model.id)
@@ -76,7 +76,7 @@ SectionView = Backbone.View.extend({
     "delete": function() {
         var self = this
         if (this.model.get("items").length)
-            delete_section_confirmation(this.model, function() { self.model.destroy() })
+            delete_confirmation(this.model, "section", function() { self.model.destroy() })
         else
             self.model.destroy()
     },

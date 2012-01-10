@@ -108,16 +108,21 @@ AssignmentListView = Backbone.View.extend({
         "click .add-button": "addNewAssignment"
     },
     render: function() {
-    	this.collection._editor = app._editor // TODO: find a better solution here, obviously
+    	var self = this
+    	this.collection._editor = app.get("_editor") // TODO: find a better solution here, obviously
         this.renderTemplate()
         this.$("li").each(function(ind, el) {
-        	make_link($("a", el), "assignments/" + $(el).attr("id"))
+        	make_link($("a.open", el), "assignments/" + $(el).attr("id"))
+        	$("a.delete", el).click(function() { self.deleteAssignment($(el).attr("id")) })
         })
         return this
     },
     initialize: function() {
         this.el = $(this.el)
         this.collection.bind("change", this.render, this)
+        this.collection.bind("remove", this.render, this)
+        this.collection.bind("add", this.render, this)
+        app.bind("change:_editor", this.render, this)
         this.render()
     },
     addNewAssignment: function() {
@@ -130,6 +135,13 @@ AssignmentListView = Backbone.View.extend({
                 new_assignment.save().success(function() { app.course.save() })
             })
         })
+    },
+    deleteAssignment: function(id) {
+    	var self = this
+    	delete_confirmation(this.collection.get(id), "assignment", function() {
+	    	self.collection.remove(self.collection.get(id))
+	    	app.course.save()    		
+    	})
     },
     close: function() {
         this.el.remove()
