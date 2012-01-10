@@ -27,6 +27,7 @@ var AppView = Backbone.View.extend({
         // if the url starts with a slash, strip that off first
         if (new_url[0]=="/") return this.model.set({url: new_url.slice(1)})
         this.model.set({tab: new_url.split("/")[0]})
+        ga_track_pageview(base_url + new_url)
         Backbone.history.navigate(new_url, true)
     }
 })
@@ -165,6 +166,8 @@ $(function() {
 			bind_login_link()
 	})
 	
+	ga_initialize()
+	
 })
 
 function get_cookie_token() {
@@ -209,3 +212,20 @@ function make_link(el, url) {
 		return false
 	})
 } 
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-4950843-3']);
+_gaq.push(['_setDomainName', 'beta.thiscourse.com']);
+
+function ga_initialize() {
+	var ga = document.createElement('script');
+	ga.type = 'text/javascript';
+	ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(ga, s);
+}
+
+function ga_track_pageview(url) {
+	_gaq.push(['_trackPageview', url]);
+}
