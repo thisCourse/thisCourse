@@ -372,7 +372,7 @@ function merge_arrays(dest, src) {
         console.log("src_is_objects_with_ids && dest_is_objects_with_ids")
         
         //target = Array(src.length)
-        target = src // start with the src, then we'll be overwriting ones that are also in dest with the merged version
+        target = src.slice() // start with the src, then we'll be overwriting ones that are also in dest with the merged version
         
         var src_ids = {}
         for (i in src)
