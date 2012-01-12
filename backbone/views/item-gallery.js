@@ -71,12 +71,12 @@
             baseview.prototype.initialize.apply(this, arguments)
         },
         loadDownloadFrame: function(message) {
-        	// TODO: fetch a live policy and use it here
-        	var policy = "eyJleHBpcmF0aW9uIjoiMjAxMi0wMS0wMVQwMDowMDowMFoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJ0aGlzY291cnNlIn0sWyJzdGFydHMtd2l0aCIsIiRrZXkiLCJ1cGxvYWRzLyJdLHsiYWNsIjoicHVibGljLXJlYWQifSxbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwwLDEwNDg1NzZdLFsic3RhcnRzLXdpdGgiLCIkbmFtZSIsIiJdLFsic3RhcnRzLXdpdGgiLCIkRmlsZW5hbWUiLCIiXSxbInN0YXJ0cy13aXRoIiwiJHN1Y2Nlc3NfYWN0aW9uX3N0YXR1cyIsIiJdXX0="
-        	var signature = "5I6tyYvu7M58QxizUXrf/3O1DPs="
-        	var url = "https://thiscourse.s3.amazonaws.com/uploader/imageupload.html#policy:" + policy + ",signature:" + signature
-        	if (message) url += ",message:" + message
-        	this.$("iframe.uploader").attr("src", url)
+        	var self = this
+        	$.get("/s3?" + Math.random(), function(policy_params) {
+        		var url = "https://thiscourse.s3.amazonaws.com/uploader/imageupload.html#policy:" + policy_params.policy + ",signature:" + policy_params.signature
+	        	if (message) url += ",message:" + message
+	        	self.$("iframe.uploader").attr("src", url)
+        	})
         },
         close: function() {
             baseview.prototype.close.apply(this, arguments)
