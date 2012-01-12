@@ -73,7 +73,7 @@
         loadDownloadFrame: function(message) {
         	var self = this
         	$.get("/s3?" + Math.random(), function(policy_params) {
-        		var url = "https://thiscourse.s3.amazonaws.com/uploader/imageupload.html#policy:" + policy_params.policy + ",signature:" + policy_params.signature
+        		var url = "https://thiscourse.s3.amazonaws.com/uploader/imageupload.html?" + Math.random() + "#policy:" + policy_params.policy + ",signature:" + policy_params.signature
 	        	if (message) url += ",message:" + message
 	        	self.$("iframe.uploader").attr("src", url)
         	})
