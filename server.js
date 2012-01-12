@@ -59,31 +59,35 @@ app.use('/backbone', express['static'](__dirname + '/backbone'))
 app.namespace('/api', api.router)
 app.namespace('/s3', s3.router)
 
-app.use('/kirsh', function(request, response) {
+app.get('/kirsh/*', function(request, response) {
   fs.readFile(__dirname + '/public/index.html', function(err,text) {
       response.end(text)
   })
 })
 
-app.use('/ucsd/cogs160/wi12/', function(request, response) {
+app.get('/ucsd/cogs160/wi12/*', function(request, response) {
   fs.readFile(__dirname + '/public/cogs160.html', function(err,text) {
       response.end(text)
   })
 })
 
-app.use('/ucsd/cogs187a/wi12/', function(request, response) {
+app.get('/ucsd/cogs187a/wi12/*', function(request, response) {
   fs.readFile(__dirname + '/public/cogs187a.html', function(err,text) {
       response.end(text)
   })
 })
 
 // TODO: TEMP
-app.use('/', express['static'](__dirname))
+app.get('/', express['static'](__dirname))
 
 // app.all('/', function(req, res){
     // var data = $.extend(true, req.body, req.query)
     // res.send(data)
 // })
+
+app.get("*", function(req, res) {
+	res.redirect("/ucsd/cogs187a/wi12/")
+})
 
 var server = express.createServer(
   //express.logger(), // Log responses to the terminal using Common Log Format.
