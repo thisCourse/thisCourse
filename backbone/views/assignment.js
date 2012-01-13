@@ -8,11 +8,11 @@ AssignmentView = Backbone.View.extend({
         this.renderPageView()
         return this
     },
-    renderTopView: function() {
+    renderTopView: _.debounce(function() {
         this.$(".assignment-top").html("").append(this.topView.render().el)
-    },
+    }, 50),
     renderPageView: function() {
-        this.$(".assignment-page").html("").append(this.pageView.render().el)
+        this.$(".assignment-page").html("").append(this.pageView.el)
     },
     events: {
         "click .assignment-top .edit-button": "edit"
@@ -30,7 +30,7 @@ AssignmentView = Backbone.View.extend({
         this.render()
     },
     pageChanged: function() {
-        console.log("page changed")
+        //console.log("page changed")
         
     },
     close: function() {
@@ -46,7 +46,7 @@ AssignmentView = Backbone.View.extend({
     },
     saved: function() {
         // save the parent too (so it stores the title), but only if the title has changed
-        console.log("assignment saved")
+        //console.log("assignment saved")
         if (this.titleChanged) {
             this.saveParent()
             delete this.titleChanged
@@ -80,7 +80,6 @@ AssignmentTopView = Backbone.View.extend({
         this.el = $(this.el)
         this.model.bind('change:title', this.render, this)
         this.model.bind('change:description', this.render, this)
-        this.model.bind('change:_editor', this.render, this)
         //this.model.fetch()
         this.render()
     },

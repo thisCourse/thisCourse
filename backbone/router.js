@@ -21,7 +21,7 @@ var AppView = Backbone.View.extend({
     viewChanged: function() {
         if (app.previous("topview") && app.previous("topview").close)
             app.previous("topview").close()
-        this.el.html("").append(app.get("topview").render().el)
+        this.el.html("").append(app.get("topview").el)
     },
     urlChanged: function(model, new_url) {
         // if the url starts with a slash, strip that off first
@@ -88,6 +88,7 @@ TabView = Backbone.View.extend({
     },
     initialize: function() {
         this.el = $(this.el)
+        this.render()
     },
     linkClicked: function(ev) {
         ev.preventDefault()
@@ -104,7 +105,7 @@ TabsView = Backbone.View.extend({
         var self = this
         this.el.html("")
         _.each(this.tabViews, function(tabView) {
-            self.el.append(tabView.render().el)
+            self.el.append(tabView.el)
         })
     },
     initialize: function() {
@@ -224,7 +225,6 @@ function ga_initialize() {
 	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 	var s = document.getElementsByTagName('script')[0];
 	s.parentNode.insertBefore(ga, s);
-	ga_track_pageview(window.location.pathname)
 }
 
 function ga_track_pageview(url) {

@@ -15,7 +15,7 @@
             }, this.base.events())
         },
         initialize: function() {
-            this.model.attributes.width = this.model.get('parent').get('width')
+            this.model.set({width: Math.min(14, this.model.get('parent').get('width'))})
             this.base.initialize.apply(this, arguments)
         },
         close: function() {
@@ -31,9 +31,9 @@
             //baseview.prototype.render.apply(this, arguments)
             var self = this
             this.renderTemplate()
-            setTimeout(function() {
+            _.defer(function() {
                 $(".ckeditor", self.options.parent.el).ckeditor(ckeditor_config)
-            }, 200) // TODO: why does this need to be delayed?
+            }) // TODO: why does this need to be deferred?
             return this
         },
         events: function() {

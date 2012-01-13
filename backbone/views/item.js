@@ -40,11 +40,11 @@ ItemView = Backbone.View.extend({
     hideActionButtons: function() {
         this.$(".item-button").fadeOut(50)
     },
-    edit: function() {
+    edit: _.debounce(function() { // TODO: debouncing keeps it from being made/destroyed too often
         this.model.editing = true
-        this.editView = new ItemEditViews[this.type]({model: this.model, parent: this}).render()
+        this.editView = new ItemEditViews[this.type]({model: this.model, parent: this})
         this.hideActionButtons()
-    },
+    }, 100),
     "delete": function() {
         this.model.destroy()
     },

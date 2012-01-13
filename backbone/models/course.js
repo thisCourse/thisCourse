@@ -23,14 +23,17 @@ Course = Backbone.RelationalModel.extend({
         type: Backbone.HasOne,
         key: 'content',
         relatedModel: 'Content',
-        includeInJSON: "_id",
-        reverseRelation: {
-            key: 'course',
-            includeInJSON: "_id",
-            type: Backbone.HasOne
-        }
+        includeInJSON: ["_id"],
+        // reverseRelation: {
+            // key: 'course',
+            // includeInJSON: "_id",
+            // type: Backbone.HasOne
+        // }
     }],
     urlRoot: '/api/course',
+    defaults: {
+        content: {}
+    },
     initialize: function() {
         var self = this
         // this.bind("change:content", function() {
