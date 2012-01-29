@@ -15,18 +15,21 @@ Lecture = Backbone.RelationalModel.extend({
         page: {},
         scheduled: []
     },
+    scheduleChanged: function() {
+        var scheduled = this.get("scheduled")
+        console.log(scheduled) 
+    	if (scheduled) {
+	    	if (!(scheduled instanceof Array)) scheduled = [scheduled] // because the old schema just had a single date
+	    	scheduled = _.map(scheduled, function(date) { return new Date(date) })
+	    }
+		this.set({scheduled: scheduled})
+    },
     initialize: function() {
         var self = this
+        this.bind("change:scheduled", this.scheduleChanged, this)
         //this.get("page").bind('save', this.save, this)
         //this.get("page").url = function() { return self.url() + "/page" }
         //this.get('sections').url = function() { return self.url() + "/sections" }
-    },
-    parse: function(data) {
-    	if (data.scheduled) {
-	    	if (!(data.scheduled instanceof Array)) data.scheduled = [data.scheduled] // because the old schema just had a single date
-	    	data.scheduled = _.map(data.scheduled, function(date) { return new Date(date) })
-	    }
-    	return data
     }
 })
 
