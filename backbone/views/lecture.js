@@ -42,7 +42,7 @@ LectureView = Backbone.View.extend({
     },
     edit: function(){
         this.topEditView = new LectureTopEditView({model: this.model, parent: this})
-        this.$(".lecture-top").html("").append(this.topEditView.render().el)
+        this.$(".lecture-top").empty().append(this.topEditView.el)
     },
     saved: function() {
         // save the parent too (so it stores the title), but only if the title has changed
@@ -164,6 +164,60 @@ LectureListView = Backbone.View.extend({
     }
 })
 
+DateListView = Backbone.View.extend({
+    tagName: "div",
+    className: "date-list",
+    template: "date-list",
+    render: function() {
+    	var self = this
+        this.renderTemplate({data: {dates: this.dates}})
+        this.$(".scheduled-date").datepicker({
+        	onSelect: function(date) {
+        		self.dates.push(new Date(date))
+        		self.sortDates()
+        		self.setDates(self.dates)
+        	},
+        	showOn: "button",
+			buttonText: "Schedule new date..."
+        })
+        return this
+    },
+    events: {
+        "click .remove-date": "remove"
+    },
+    remove: function(ev) {
+    	this.dates.splice($(ev.srcElement).attr("index"), 1)
+    	window.d = this.dates
+		this.setDates(this.dates)
+    },
+    setDates: function(dates) {
+    	var data = {}
+    	data[this.options.date_attr] = dates
+    	this.model.set(data)
+    },
+    compareDates: function(date1, date2) {
+		if (date1 > date2) return 1
+		if (date1 < date2) return -1
+		return 0
+	},
+	sortDates: function() {
+		this.dates.sort(this.compareDates)
+	},
+    datesChanged: function() {
+        this.dates = this.model.getDate(this.options.date_attr)
+        if (!(this.dates instanceof Array)) this.dates = [this.dates]
+		this.sortDates()
+		this.render()
+    },
+    initialize: function() {
+        this.el = $(this.el)
+        //this.dates = [new Date, new Date, new Date]
+        //this.remove({srcElement: "body"})
+		this.model.bind("change:" + this.options.date_attr, this.datesChanged, this)
+		this.datesChanged()
+    }
+}) 
+
 LectureTopEditView = Backbone.View.extend({
     tagName: "div",
     className: "lecture-edit",
@@ -173,14 +227,23 @@ LectureTopEditView = Backbone.View.extend({
         this.renderTemplate()
         Backbone.ModelBinding.bind(this)
         this.enablePlaceholders()
-        var scheduled = this.model.getDate("scheduled")
-        if (scheduled)
-        	this.$(".scheduled-date").val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
-        this.$(".scheduled-date").datepicker({
-        	onSelect: function(date) {
-        		$(".scheduled-date:visible").val(date)
-        	}
+        
+        console.log("rendering top edit view")
+        //this.date_list_view = new DateListView({model: this.model, date_attr: "scheduled", el: this.$(".scheduled-dates")})
+        this.date_list_view = new DateListView({model: this.model, date_attr: "scheduled"})
+        _.defer(function() {
+        	$(".scheduled-dates").append(self.date_list_view.el) // TODO: why doesn't it work if not deferred or if scoped?
         })
+        
+        
+        //var scheduled = this.model.getDate("scheduled")
+        // if (scheduled)
+        	// this.$(".scheduled-date").val((scheduled.getMonth()+1) + "/" + scheduled.getDate() + "/" + scheduled.getFullYear())
+        // this.$(".scheduled-date").datepicker({
+        	// onSelect: function(date) {
+        		// $(".scheduled-date:visible").val(date)
+        	// }
+        // })
         return this
     },
     events: {
@@ -189,9 +252,9 @@ LectureTopEditView = Backbone.View.extend({
     },
     base: ItemEditInlineView,
     save: function() {
-    	var scheduled = $(".scheduled-date:visible").val() || null // TODO: why does scoping this make it not work?
-    	if (scheduled) scheduled = new Date(scheduled)
-    	this.model.set({scheduled: scheduled})
+    	// var scheduled = $(".scheduled-date:visible").val() || null // TODO: why does scoping this make it not work?
+    	// if (scheduled) scheduled = new Date(scheduled)
+    	// this.model.set({scheduled: scheduled})
         ItemEditInlineView.prototype.save.apply(this)
     },
     saved: function() {
@@ -208,6 +271,6 @@ LectureTopEditView = Backbone.View.extend({
         this.el = $(this.el)
         this.memento = new Backbone.Memento(this.model)
         this.memento.store()
-        //this.render()
+        this.render()
     }
 })

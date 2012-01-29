@@ -31,16 +31,18 @@ ScheduleView = Backbone.View.extend({
             this.addAssignments(this.model.get('assignments').at(i))
     },
     addAssignments: function(model, coll) {
-        var itemView = new ScheduleItemView({model: model, type: "Assignment", url: "assignments/" + model.id})
-        var dateView = this.getOrCreateDateView(model.getDate("due"))
-        if (dateView)
-        	dateView.$(".schedule-items").append(itemView.render().el)
+        this.addScheduleItems({model: model, type: "**Assignment**", url: "assignments/" + model.id}, model.getDate("due"))
     },
     addLectures: function(model, coll) {
-        var itemView = new ScheduleItemView({model: model, type: "Lecture", url: "lectures/" + model.id})
-        var dateView = this.getOrCreateDateView(model.getDate("scheduled"))
-        if (dateView)
-        	dateView.$(".schedule-items").append(itemView.render().el)
+		this.addScheduleItems({model: model, type: "Lecture", url: "lectures/" + model.id}, model.getDate("scheduled"))
+    },
+    addScheduleItems: function(itemViewSettings, dates) {
+        if (!(dates instanceof Array)) dates = [dates] // because the old schema just had a single date
+        for (date in dates) {
+	        var dateView = this.getOrCreateDateView(dates[date])
+	        if (dateView) dateView.$(".schedule-items").append((new ScheduleItemView(itemViewSettings)).el)
+	        itemViewSettings.continued = true
+	    }
     },
     getOrCreateDateView: function(date) {
     	if (!date) return
@@ -66,7 +68,7 @@ ScheduleDateView = Backbone.View.extend({
     className: "date",
     template: "schedule-date",
     render: function() {
-        this.renderTemplate({data: {date: this.options.date.toDateString()}})
+        this.renderTemplate({data: {date: this.options.date}})
         return this
     },
     events: {

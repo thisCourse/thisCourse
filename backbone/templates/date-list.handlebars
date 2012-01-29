@@ -1,0 +1,5 @@
+{{#if dates }}<b>Scheduled dates:</b>{{/if }}
+{{#each_with_index dates }}
+    {{$date this }} (<a index="{{ index }}" class="remove-date">remove</a>)<br/>
+{{/each_with_index }}
+<input type="hidden" class="scheduled-date"/>

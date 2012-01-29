@@ -1,5 +1,5 @@
 <h4 class="schedule-item">
     <span class="label type">{{ options.type }}</span>
-    <a class="title">{{ item.title }}</a>
+    <a class="title">{{ item.title }}{{#if options.continued }} <i>(continued)</i>{{/if}}</a>
 </h4>
 <div class="description">{{ item.description }}</div>

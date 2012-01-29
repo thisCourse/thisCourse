@@ -2,4 +2,13 @@
 
 <div class="description">{{ description }}</div>
 
+{{#if scheduled }}
+<br/>
+<div><b>Scheduled for:</b>
+{{#join_with_commas scheduled }}
+{{$date this }}
+{{/join_with_commas }}
+</div>
+{{/if}}
+
 {{#if _editor }}<button class="item-button edit-button btn success">Edit lecture details</button>{{/if}}

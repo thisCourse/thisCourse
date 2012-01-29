@@ -4,6 +4,30 @@
 // give access to all templates as partials
 Handlebars.partials = Handlebars.templates
 
+Handlebars.registerHelper('$date', function(date) {
+	date = date_from_string(date)
+	return $.datepicker.formatDate('D, M d, yy', date)  
+})
+
+// https://gist.github.com/1048968
+Handlebars.registerHelper("each_with_index", function(array, fn) {
+	var buffer = ""
+	for (var i = 0, j = array.length; i < j; i++) {
+		var item = array[i]
+		item.index = i
+		buffer += fn(item)
+	}
+	return buffer
+})
+
+// https://gist.github.com/1048968
+Handlebars.registerHelper("join_with_commas", function(array, fn) {
+	var buffer = []
+	for (var i = 0, j = array.length; i < j; i++) {
+		buffer.push(fn(array[i]))
+	}
+	return buffer.join(" / ")
+})
 
 /* ----- Backbone ----- */
 
@@ -12,15 +36,23 @@ var Dispatcher = _.extend({}, Backbone.Events)
 // change the id attribute to use Mongo's _id
 Backbone.Model.prototype.idAttribute = "_id";
 
-Backbone.Model.prototype.getDate = function(attr) {
-	var date = this.get(attr)
-	if (!date) return undefined
+function date_from_string(date) {
+	if (date instanceof Date) return date
 	date = new Date(date)
 	date.setHours(0)
 	date.setMinutes(0)
 	date.setSeconds(0)
 	date.setMilliseconds(0)
-    return date
+	return date
+}
+
+Backbone.Model.prototype.getDate = function(attr) {
+	var date = this.get(attr)
+	if (!date) return undefined
+	if (date instanceof Array)
+		return _.map(date, date_from_string)
+	else
+    	return date_from_string(date)
 }
 
 // set default data-binding attribute name to "field", globally
