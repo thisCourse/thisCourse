@@ -27,6 +27,7 @@ Lecture = Backbone.RelationalModel.extend({
     initialize: function() {
         var self = this
         this.bind("change:scheduled", this.scheduleChanged, this)
+        this.scheduleChanged()
         //this.get("page").bind('save', this.save, this)
         //this.get("page").url = function() { return self.url() + "/page" }
         //this.get('sections').url = function() { return self.url() + "/sections" }
