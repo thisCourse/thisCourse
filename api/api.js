@@ -330,7 +330,7 @@ function merge_arrays(dest, src) {
     for (i in src) {
         if (src_is_ids && !id_regex.exec(src[i]))
             src_is_ids = false
-        if (src_is_objects_with_ids && !(typeof(src[i])==='object' && id_regex.exec(src[i]['_id'])))
+        if (src_is_objects_with_ids && (!src[i] || !(typeof(src[i])==='object' && id_regex.exec(src[i]['_id']))))
             src_is_objects_with_ids = false
         if (src_is_literals && (typeof(src[i])==='object'))
             src_is_literals = false
