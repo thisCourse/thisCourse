@@ -15,7 +15,7 @@
             }, this.base.events())
         },
         initialize: function() {
-            this.model.set({width: Math.min(14, this.model.get('parent').get('width'))})
+            this.model.set({width: Math.min(15, this.model.get('parent').get('width'))})
             this.base.initialize.apply(this, arguments)
         },
         close: function() {
