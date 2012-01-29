@@ -37,7 +37,6 @@ ScheduleView = Backbone.View.extend({
 		this.addScheduleItems({model: model, type: "Lecture", url: "lectures/" + model.id}, model.getDate("scheduled"))
     },
     addScheduleItems: function(itemViewSettings, dates) {
-        if (!(dates instanceof Array)) dates = [dates] // because the old schema just had a single date
         for (date in dates) {
 	        var dateView = this.getOrCreateDateView(dates[date])
 	        if (dateView) dateView.$(".schedule-items").append((new ScheduleItemView(itemViewSettings)).el)
