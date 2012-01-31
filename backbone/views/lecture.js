@@ -228,7 +228,7 @@ LectureTopEditView = Backbone.View.extend({
         Backbone.ModelBinding.bind(this)
         this.enablePlaceholders()
         
-        console.log("rendering top edit view")
+        //console.log("rendering top edit view")
         //this.date_list_view = new DateListView({model: this.model, date_attr: "scheduled", el: this.$(".scheduled-dates")})
         this.date_list_view = new DateListView({model: this.model, date_attr: "scheduled"})
         _.defer(function() {

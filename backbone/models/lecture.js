@@ -17,7 +17,6 @@ Lecture = Backbone.RelationalModel.extend({
     },
     scheduleChanged: function() {
         var scheduled = this.get("scheduled")
-        console.log(scheduled) 
     	if (scheduled) {
 	    	if (!(scheduled instanceof Array)) scheduled = [scheduled] // because the old schema just had a single date
 	    	scheduled = _.map(scheduled, function(date) { return new Date(date) })
