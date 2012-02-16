@@ -179,3 +179,39 @@ Backbone.Model.prototype.save = function() {
     this.trigger("save", this)
     return Backbone.Model.prototype.save_original.apply(this, arguments)
 } 
+
+Backbone.SubRouter = Backbone.Router.extend({
+    handlers: [],
+
+    route: function(route, name, callback) {
+        var self = this
+        if (!_.isRegExp(route)) route = this._routeToRegExp(route)
+        this.handlers.unshift({route: route, callback: function(fragment) {
+            var args = self._extractParameters(route, fragment)
+            callback.apply(this, args)
+        }})
+    },
+
+    navigate: function(fragment) {
+        _.any(this.handlers, function(handler) {
+            if (handler.route.test(fragment)) {
+                handler.callback(fragment)
+                return true
+            }
+        })
+        
+    },    
+})
+
+Backbone.TopView = Backbone.View.extend({
+    tagName: "div",
+    url: "",
+    subrouter: new Backbone.SubRouter,
+    navigate: function(fragment) {
+        this.subrouter.navigate(fragment)
+    },
+
+    close: function() {
+        
+    }
+})

@@ -1,0 +1,8 @@
+COURSE_URL/TAB_NAME/TAB_SPECIFIC_SPLAT
+
+
+slugs: avoid [1lo0]
+
+packages can register themselves as content providers
+packages specify their tabs and handlers for splats under those tab urls
+

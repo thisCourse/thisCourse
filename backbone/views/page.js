@@ -42,17 +42,19 @@ PageView = Backbone.View.extend({
         dialog_request_response("Please enter a title:", function(val) {
             var new_content = new Content({title: val, width: 12, _editor: true})
             self.model.get('contents').add(new_content)
-            self.pageNavRowViews[new_content.cid].showContent()
-            new_content.save().success(function() { self.model.save() }) 
+            new_content.save().success(function() {
+                self.pageNavRowViews[new_content.cid].showContent()
+                self.model.save()
+            }) 
         })
     },    
     updateContents: function(model, coll) {
         //alert('update contents')
     },
     addContents: function(model, coll) {
-        this.pageNavRowViews[model.cid] = new PageNavRowView({model: model, parent: this})
+        this.pageNavRowViews[model.cid] = new PageNavRowView({model: model, parent: this, url: this.options.url + "/pages/"})
         this.$('.nav-links').append(this.pageNavRowViews[model.cid].el)
-        if (!this.activeSubpage)
+        if (!this.activeSubpage || this.activeSubpage==model.id)
             this.pageNavRowViews[model.cid].showContent()
     },
     removeContents: function(model, coll) {
@@ -76,6 +78,13 @@ PageView = Backbone.View.extend({
     },
     update: function() {
         
+    },
+    showSubpage: function(page) {
+        this.activeSubpage = page
+        for (var cid in this.pageNavRowViews) {
+            if (this.pageNavRowViews[cid].model.id===page)
+                this.pageNavRowViews[cid].showContent()
+        }
     }
 })
 
@@ -84,10 +93,10 @@ PageNavRowView = Backbone.View.extend({
     tagName: "li",
     template: "page-nav-row",
     events: {
-        "click a": "showContent"
+        "click a": "clicked"
     },
     render: function() {
-        this.renderTemplate()
+        this.renderTemplate({data: {content: this.model.attributes, url: this.options.url}})
         return this
     },
     initialize: function() {
@@ -99,6 +108,10 @@ PageNavRowView = Backbone.View.extend({
         this.model.bind('save', this.saved, this)
         this.el.attr('id', this.model.id)
         this.render()
+    },
+    clicked: function() {
+        app.set({url: this.options.url + this.model.id})
+        return false
     },
     showContent: function() {
         var self = this
@@ -114,7 +127,7 @@ PageNavRowView = Backbone.View.extend({
             if (view.contentView) // hide or show each content block appropriately
                 view.contentView.el.toggle(view===self)
         })
-        this.options.parent.activeSubpage = this
+        this.options.parent.activeSubpage = this.model.id
         return false
     },
     titleChange: function() {

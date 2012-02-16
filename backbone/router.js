@@ -24,8 +24,10 @@ var AppView = Backbone.View.extend({
         this.el.html("").append(app.get("topview").el)
     },
     urlChanged: function(model, new_url) {
-        // if the url starts with a slash, strip that off first
-        if (new_url[0]=="/") return this.model.set({url: new_url.slice(1)})
+        if (new_url.substr(0, base_url.length)===base_url) // if it starts with the base_url, strip it
+            return this.model.set({url: new_url.slice(base_url.length)})
+        if (new_url[0]=="/") // if the url starts with a slash, strip that off first
+            return this.model.set({url: new_url.slice(1)})
         this.model.set({tab: new_url.split("/")[0]})
         ga_track_pageview(base_url + new_url)
         Backbone.history.navigate(new_url, true)
@@ -38,10 +40,10 @@ var MainRouter = Backbone.Router.extend({
         "":                                     "home",
         "lectures":                             "lecture",
         "lectures/:lecture":                    "lecture",
-        "lectures/:lecture/page/:page":         "lecture",
+        "lectures/:lecture/*splat":             "lecture",
         "assignments":                          "assignment",
         "assignments/:assignment":              "assignment",
-        "assignments/:assignment/page/:page":   "assignment"
+        "assignments/:assignment/*splat":       "assignment"
     },
     
     initialize: function() {
@@ -52,24 +54,30 @@ var MainRouter = Backbone.Router.extend({
         app.set({topview: new HomeView({model: app.course})})
     },
     
-    lecture: function(lecture, page) {
-        //$("#content").text("lecture " + lecture + " (page " + page + ")")
-        var topview
+    lecture: function(lecture, splat) {
+        var topview = app.get("topview")
         if (lecture) {
+            if (topview && topview.model && topview.model.id===lecture)
+                return topview.navigate(splat)
             var model = app.course.get('lectures').get(lecture)
             topview = new LectureView({model: model})
+            topview.navigate(splat)
             model.fetch().then(function() { model.fetchRelated() })
         } else {
             topview = new LectureListView({collection: app.course.get('lectures')}) 
         }
+
         app.set({topview: topview})
     },
 
-    assignment: function(assignment, page) {
-        var topview
+    assignment: function(assignment, splat) {
+        var topview = app.get("topview")
         if (assignment) {
+            if (topview && topview.model && topview.model.id===assignment)
+                return topview.navigate(splat)
             var model = app.course.get('assignments').get(assignment)
             topview = new AssignmentView({model: model})
+            topview.navigate(splat)
             model.fetch().then(function() { model.fetchRelated() })
         } else {
             topview = new AssignmentListView({collection: app.course.get('assignments')}) 

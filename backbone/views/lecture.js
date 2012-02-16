@@ -1,5 +1,4 @@
-LectureView = Backbone.View.extend({
-    tagName: "div",
+LectureView = Backbone.TopView.extend({
     className: "lecture",
     template: "lecture",
     render: function() {
@@ -18,6 +17,7 @@ LectureView = Backbone.View.extend({
         "click .lecture-top .edit-button": "edit"
     },
     initialize: function() {
+        var self = this
         this.el = $(this.el)
         this.model.bind('change:page', this.pageChanged, this)
         this.model.bind('change:_id', this.changeId, this)
@@ -25,9 +25,10 @@ LectureView = Backbone.View.extend({
         this.model.bind('change:title', this.titleChange, this)
         this.model.bind('save', this.saved, this)
         this.topView = new LectureTopView({model: this.model})
-        this.pageView = new PageView({model: this.model.get("page")})
+        this.pageView = new PageView({model: this.model.get("page"), url: base_url + "lectures/" + this.model.id})
         this.model.get("page").fetch()
         this.render()
+        this.subrouter.route("pages/:page", "pages", function(page) { self.pageView.showSubpage(page) })
     },
     pageChanged: function() {
         //console.log("page changed")
