@@ -77,6 +77,13 @@ app.get('/ucsd/cogs187a/wi12/*', function(request, response) {
   })
 })
 
+app.get('/ucsd/cogs107c/sp12/*', function(request, response) {
+  fs.readFile(__dirname + '/public/cogs107c.html', function(err,text) {
+      response.end(text)
+  })
+})
+
+
 // TODO: TEMP
 app.get('/', express['static'](__dirname))
 
