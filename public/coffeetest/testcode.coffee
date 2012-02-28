@@ -11,13 +11,26 @@ class window.BaseView extends Backbone.View
         if @visible
             @visible = false
             @$el.hide()
+            
+    navigate: (fragment) =>
+        console.log "further navigating down into: '" + fragment + "'"
 
 
-
-class window.SubRouter extends Backbone.Router
+class window.RouterView extends BaseView
+    
     handlers: []
+    subviews: {}
+    _routeToRegExp: Backbone.Router.prototype._routeToRegExp
 
-    route: (route, name, callback) ->
+    initialize: =>
+        @route(route, callback) for route, callback of @routes
+        super  
+
+    route: (route, callback) =>
+        # if the callback is a string (not a function), look it up as a method of this RouterView
+        if _.isString(callback)
+            callback = @[callback]
+        # if the route isn't a RegExp, turn it into one
         if not _.isRegExp(route)
             route = @_routeToRegExp(route)
         # modify the regex so it will match urls that include trailing splats
@@ -30,21 +43,10 @@ class window.SubRouter extends Backbone.Router
                 route.exec(fragment)[1]
             get_splat: (fragment) ->
                 route.exec(fragment).slice(-1)
-
-
-class window.RouterView extends BaseView
-
-    subviews: {}    
-
-	initialize: ->
-        @subrouter = new SubRouter
-            routes: @routes or {}
-        super
-
+    
     navigate: (fragment) =>
-
         # check if fragment matches any of our routes
-        for handler in @subrouter.handlers
+        for handler in @handlers
 
             if handler.route.test(fragment)
                 
@@ -67,7 +69,7 @@ class window.RouterView extends BaseView
                 subview.navigate(handler.get_splat(fragment))
 
                 # make sure it's visible (hiding all others):
-                view.hide() for view in @subviews when view is not subview
+                view.hide() for route,view of @subviews when not (view is subview)
                 subview.show()
 
                 return true
@@ -76,33 +78,42 @@ class window.RouterView extends BaseView
 
 class LectureRouterView extends RouterView
 
+    render: =>
+        #@$el.text("This is the default.")
+
     routes:
         "lecture/": "create_lecture_list_view"
         "lecture/:lecture_id/": "create_lecture_view"
 
     create_lecture_list_view: =>
+        console.log "create_lecture_list_view"
         return new LectureListView
-            collection: @collection
+            #collection: @collection
 
     create_lecture_view: (lecture_id) =>
+        console.log "create_lecture_view " + lecture_id
         return new LectureView
-            model: @collection.get(lecture_id)
+            id: lecture_id
+            #model: @collection.get(lecture_id)
+
+class LectureListView extends BaseView
+    
+    render: =>
+        @$el.text("This is the lecture list.")
 
 
-class LectureRouter extends SubRouter
+class LectureView extends BaseView
+    
+    render: =>
+        @$el.text("Loading...")
+        setTimeout @actually_render, 500
 
-    routes:
-        "lecture/": "show_lecture_list"
-        "lecture/:lecture_id/": "show_lecture"
-        "lecture/:lecture_id/page/:page_id": "show_lecture"
+    actually_render: =>
+        @$el.text("This is lecture #" + @options.id)
 
-    show_lecture_list: =>
-        #...
+window.v = new LectureRouterView
+    el: $("body")
 
-    show_lecture: (lecture_id, page_id) =>
-        lecture_view = new LectureView({parent: @view, model: @view.model.get("lectures").get(lecture_id)})
+v.render()
 
-
-
-
-
+v.navigate("lecture/")
