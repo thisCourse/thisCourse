@@ -1,5 +1,6 @@
 class window.BaseView extends Backbone.View
 
+    subviews: {}
     visible: true
     
     show: =>
@@ -14,7 +15,17 @@ class window.BaseView extends Backbone.View
             
     navigate: (fragment) =>
         console.log "further navigating down into: '" + fragment + "'"
+        for name, subview of @subviews
+            return true if subview.navigate(fragment)
 
+    add_subview: (name, view) =>
+        # close any pre-existing view at this name
+        @subviews[name].close() if name in @subviews
+        # navigate to the residual splat on the new subview
+        view.navigate @splat
+        # store it in the cache
+        @subviews[name] = view
+        
 
 class window.RouterView extends BaseView
     
@@ -56,6 +67,9 @@ class window.RouterView extends BaseView
                 # get the cached view for this matching fragment (if it exists):
                 subview = @subviews[match]
 
+                # store the residual splat in the view for later propagation:
+                @splat = handler.get_splat(fragment)
+
                 # if we haven't already created a subview for this fragment, then make it so:
                 if not subview
                     subview = handler.callback(fragment) # call the handler to get the new View instance
@@ -63,11 +77,8 @@ class window.RouterView extends BaseView
                     subview.url = @url + match
                     subview.render()
                     @$el.append subview.el # append the subview to the view's container
-                    @subviews[match] = subview
-
-                # propagate remainder of the url down into child view:
-                subview.navigate(handler.get_splat(fragment))
-
+                    @add_subview match, subview
+                                
                 # make sure it's visible (hiding all others):
                 view.hide() for route,view of @subviews when not (view is subview)
                 subview.show()
@@ -110,10 +121,27 @@ class LectureView extends BaseView
 
     actually_render: =>
         @$el.text("This is lecture #" + @options.id)
+        @add_subview("pageview", new PageView)
+        @$el.append @subviews.pageview.el
+
+class PageView extends RouterView
+    
+    routes:
+        "page/:id/": "create_content_view"
+    
+    create_content_view: (content_id) =>
+        console.log "creating content view!!!"
+        new ContentView
+            id: content_id
+
+class ContentView extends BaseView
+    
+    render: =>
+        @$el.text("This is page " + @options.id)
 
 window.v = new LectureRouterView
     el: $("body")
 
 v.render()
 
-v.navigate("lecture/")
+v.navigate("lecture/122/page/16/")
