@@ -1,0 +1,7 @@
+Ubuntu 11.10
+sudo apt-get install nodejs nodejs-dev redis-server mongodb
+Do single-line install of npm
+Clone repo, then in its dir:
+	npm install blah blah blah
+	sudo npm install -g coffee-script less handlebars
+node bundle.js
