@@ -1,0 +1,15 @@
+
+
+Goals:
+	be able to see how much space a user/course is using
+	allow user to browse their uploaded media files, to select one to insert
+	deduplicate multiple uploads of same file, to save space
+	when a file is no longer used/pointed to, delete it?
+	
+
+Ideas:
+	have an /api/file/ collection, which stores metadata, and urls
+	no direct links to the S3 urls, all requests go through a redirect url that generates an expiring S3 link
+	if needed, could have thumbnail generation be server-side, in batch mode (using full image in the interim)
+	deduplication could also be server-side, with renaming happening in batch mode -- and seamless url updating
+

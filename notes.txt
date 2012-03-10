@@ -35,6 +35,8 @@ essentially, a related model has *two* URLs
     one for its partial model location in the parent
     one for its expanded model location in some other collection
 
+_denormed_fields = ['title', 'scheduled']
+_full_url = "lecture/3452432345/"
 
 three kinds of relations
     fully embedded

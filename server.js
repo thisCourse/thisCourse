@@ -76,6 +76,12 @@ app.get('/ucsd/cogs187a/wi12/*', function(request, response) {
       response.end(text)
   })
 })
+ 
+app.get('/coffeetest/*', function(request, response) {
+  fs.readFile(__dirname + '/public/coffeetest/testcode.html', function(err,text) {
+      response.end(text)
+  })
+})
 
 app.get('/ucsd/cogs107c/sp12/*', function(request, response) {
   fs.readFile(__dirname + '/public/cogs107c.html', function(err,text) {
