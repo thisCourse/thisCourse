@@ -1,0 +1,5 @@
+*.sublime-project
+*.sublime-workspace
+node_modules/
+public/base_styles.css
+public/templates.js
