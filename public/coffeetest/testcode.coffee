@@ -26,9 +26,11 @@ class window.BaseView extends Backbone.View
     add_subview: (name, view) =>
         # close any pre-existing view at this name
         @subviews[name].close() if name of @subviews
+        # create a back-reference to the parent view
         view.parent = @
-        view.url or= @url # if the subview doesn't have a url, just use the current view's url
-        # store it in the cache
+        # if the subview doesn't have a url, just use the current view's url:
+        view.url or= @url
+        # store it in the cache:
         @subviews[name] = view
         # now that we've added a new subview, re-navigate to check if the subview matches fragment
         if @visible # TODO: do we want to do this for non-visible views as well? Probably not?
@@ -179,12 +181,12 @@ class BaseRouter extends Backbone.Router
     
     initialize: =>
         @subviews = {}
-        @subviews.courseview = new CourseView(url: "/coffeetest/")
+        @courseview = new CourseView(url: "/coffeetest/")
     
     delegate_navigation: (splat) =>
         if splat.slice(-1) != "/"
             splat += "/"
-        @subviews.courseview.navigate(splat)
+        @courseview.navigate(splat)
 
 window.router = new BaseRouter
 
