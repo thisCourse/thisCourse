@@ -18,19 +18,21 @@ class window.BaseView extends Backbone.View
             
     navigate: (fragment) =>
         #console.log "further navigating down into: '" + fragment + "'"
-        @splat = fragment # TODO: maybe not??
+        @fragment = fragment
         for name, subview of @subviews
-            return true if subview.navigate(fragment)
+            return true if subview.navigate(@fragment)
+        return false
 
     add_subview: (name, view) =>
         # close any pre-existing view at this name
         @subviews[name].close() if name of @subviews
-        # navigate to the residual splat on the new subview
-        console.log "url for", @, ":", @url
-        view.url = @url
-        view.navigate @splat
+        view.parent = @
+        view.url or= @url # if the subview doesn't have a url, just use the current view's url
         # store it in the cache
         @subviews[name] = view
+        # now that we've added a new subview, re-navigate to check if the subview matches fragment
+        if @visible # TODO: do we want to do this for non-visible views as well? Probably not?
+            @navigate @fragment
         
 
 class window.RouterView extends BaseView
@@ -76,21 +78,20 @@ class window.RouterView extends BaseView
                 subview = @subviews[match]
 
                 # store the residual splat in the view for later propagation:
-                @splat = handler.get_splat(fragment)
+                splat = handler.get_splat(fragment)
+
+                @fragment = match + splat
 
                 # if we haven't already created a subview for this fragment, then make it so:
                 if not subview
                     subview = handler.callback(fragment) # call the handler to get the new View instance
-                    subview.parent = @
                     subview.url = @url + match
                     subview.render()
                     @$el.append subview.el # append the subview to the view's container
-                    @add_subview match, subview
-                
-                console.log "hiding ", @subviews
+                    @add_subview match, subview, true
                 
                 # propagate the url fragment down into the subview:
-                subview.navigate(@splat)
+                subview.navigate splat
                 
                 # make sure it's visible (hiding all others):
                 view.hide() for route,view of @subviews when not (view is subview)
@@ -110,12 +111,12 @@ class LectureRouterView extends RouterView
         ":lecture_id/": "create_lecture_view"
 
     create_lecture_list_view: =>
-        console.log "create_lecture_list_view"
+        # console.log "create_lecture_list_view"
         return new LectureListView
             #collection: @collection
 
     create_lecture_view: (lecture_id) =>
-        console.log "create_lecture_view " + lecture_id
+        # console.log "create_lecture_view " + lecture_id
         return new LectureView
             id: lecture_id
             #model: @collection.get(lecture_id)
@@ -129,6 +130,7 @@ class LectureListView extends BaseView
 class LectureView extends BaseView
     
     render: =>
+        console.log "rendering lecture view:", @options.id
         @$el.text "Loading lecture..."
         setTimeout @actually_render, 500
 
@@ -143,13 +145,14 @@ class PageRouterView extends RouterView
         "page/:id/": "create_content_view"
     
     create_content_view: (content_id) =>
-        console.log "creating content view!!!"
+        # console.log "creating content view!!!"
         new ContentView
             id: content_id
 
 class ContentView extends BaseView
     
     render: =>
+        console.log "rendering page view:", @options.id
         @$el.text "Loading subpage..."
         setTimeout @actually_render, 500
 
@@ -162,7 +165,7 @@ class HomeView extends BaseView
         @$el.html "<a href='/coffeetest/lecture/'>Lecture list</a> " + @url
 
 
-class CourseView extends RouterView
+class window.CourseView extends RouterView
     
     el: $("body")
     
