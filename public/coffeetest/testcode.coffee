@@ -5,7 +5,17 @@ class window.BaseView extends Backbone.View
         visible = true
         @url = options.url if options?.url
         super
+        @bind_links()
     
+    bind_links: ->
+        @$el.on "click", "a", (ev) ->
+            if ev.shiftKey or ev.ctrlKey then return true
+            if ev.target.origin != document.location.origin
+                ev.target.target = "_blank"
+                return true
+            navigate ev.target.pathname
+            return false
+
     show: =>
         if not @visible
             @visible = true
@@ -23,18 +33,21 @@ class window.BaseView extends Backbone.View
             return true if subview.navigate(@fragment)
         return false
 
-    add_subview: (name, view) =>
-        # close any pre-existing view at this name
-        @subviews[name].close() if name of @subviews
-        # create a back-reference to the parent view
+    add_subview: (name, view, element) =>
+        # close any pre-existing view at this name/slug
+        @subviews[name].close?() if name of @subviews
+        # create a back-reference to the parent view:
         view.parent = @
         # if the subview doesn't have a url, just use the current view's url:
         view.url or= @url
-        # store it in the cache:
+        # store it in the cache, by name/slug:
         @subviews[name] = view
-        # now that we've added a new subview, re-navigate to check if the subview matches fragment
-        if @visible # TODO: do we want to do this for non-visible views as well? Probably not?
+        # now that we've added a new subview, re-navigate to check if the subview matches fragment:
+        if @visible and @fragment # TODO: do we want to do this for non-visible views as well? Probably not?
             @navigate @fragment
+        # append the view's element either to the specified target element, or to parent's top-level element
+        $(element or @$el).append view.el
+        return view
         
 
 class window.RouterView extends BaseView
@@ -89,8 +102,7 @@ class window.RouterView extends BaseView
                     subview = handler.callback(fragment) # call the handler to get the new View instance
                     subview.url = @url + match
                     subview.render()
-                    @$el.append subview.el # append the subview to the view's container
-                    @add_subview match, subview, true
+                    @add_subview match, subview
                 
                 # propagate the url fragment down into the subview:
                 subview.navigate splat
@@ -101,9 +113,10 @@ class window.RouterView extends BaseView
 
                 return true
             
-        return false
 
 class LectureRouterView extends RouterView
+
+    className: "LectureRouterView"
 
     render: =>
         #@$el.text("This is the default.")
@@ -113,23 +126,31 @@ class LectureRouterView extends RouterView
         ":lecture_id/": "create_lecture_view"
 
     create_lecture_list_view: =>
-        # console.log "create_lecture_list_view"
+        console.log "create_lecture_list_view"
         return new LectureListView
             #collection: @collection
 
     create_lecture_view: (lecture_id) =>
-        # console.log "create_lecture_view " + lecture_id
+        console.log "create_lecture_view " + lecture_id
         return new LectureView
             id: lecture_id
             #model: @collection.get(lecture_id)
 
 class LectureListView extends BaseView
+
+    className: "LectureListView"
     
     render: =>
-        @$el.text "This is the lecture list."
+        html = "<ul>"
+        for num in [3,66,75,139]
+            html += "<li><a href='" + @url + num + "'>Lecture " + num + "</a></li>"
+        html += "</ul>"
+        @$el.html html
 
 
 class LectureView extends BaseView
+
+    className: "LectureView"
     
     render: =>
         console.log "rendering lecture view:", @options.id
@@ -139,19 +160,22 @@ class LectureView extends BaseView
     actually_render: =>
         @$el.text "This is lecture #" + @options.id
         @add_subview "pageview", new PageRouterView
-        @$el.append @subviews.pageview.el
 
 class PageRouterView extends RouterView
+
+    className: "PageRouterView"
     
     routes:
         "page/:id/": "create_content_view"
     
     create_content_view: (content_id) =>
-        # console.log "creating content view!!!"
+        console.log "creating content view!!!"
         new ContentView
             id: content_id
 
 class ContentView extends BaseView
+
+    className: "ContentView"
     
     render: =>
         console.log "rendering page view:", @options.id
@@ -164,30 +188,47 @@ class ContentView extends BaseView
 class HomeView extends BaseView
 
     render: =>
-        @$el.html "<a href='/coffeetest/lecture/'>Lecture list</a> " + @url
+        @$el.html "<a href='/coffeetest/lecture/'>Lecture list</a>"
 
 
 class window.CourseView extends RouterView
-    
-    el: $("body")
+
+    className: "CourseView"
     
     routes:
         "": -> new HomeView
         "lecture/": -> new LectureRouterView
 
+class RootView extends BaseView
+
+    className: "RootView"
+
+    el: $("body")
+
+    render: =>
+        @$el.html "<div class='tabs'></div><div class='contents'></div>"
+        @add_subview "courseview", new CourseView, @$(".contents")
+
+
 class BaseRouter extends Backbone.Router
-    routes:
-        "*splat": "delegate_navigation"
     
-    initialize: =>
+    initialize: (options) =>
         @subviews = {}
-        @courseview = new CourseView(url: "/coffeetest/")
-    
-    delegate_navigation: (splat) =>
-        if splat.slice(-1) != "/"
-            splat += "/"
-        @courseview.navigate(splat)
+        @rootview = new RootView(url: "/" + options.root_url)
+        @rootview.render()
+        @route options.root_url + "*splat", "delegate_navigation", (splat) =>
+            if splat.length > 0 and splat.slice(-1) != "/"
+                navigate options.root_url + splat
+            else
+                @rootview.navigate splat
 
-window.router = new BaseRouter
+window.router = new BaseRouter({root_url: "coffeetest/"})
 
-Backbone.history.start({pushState: true, root: "/coffeetest/"})
+window.navigate = (url) ->
+    console.log "nav to", url
+    if url.slice(-1) != "/"
+        url += "/"    
+    router.navigate(url, true)
+
+Backbone.history.start({pushState: true})
+
