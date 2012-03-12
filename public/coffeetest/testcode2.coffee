@@ -6,11 +6,12 @@ class window.LazyModel extends Backbone.Model
     loading: false
 
     constructor: ->
-        @relations or= {}
+        @relations = @relations?() or @relations or {}
         super
 
     set: (attributes, options) ->
         for key,opts of @relations
+            console.log @, key, opts, attributes
             if opts.collection and _.isArray(attributes[key])
                 attributes[key] = new opts.collection(attributes[key])
             else if opts.model
@@ -20,26 +21,26 @@ class window.LazyModel extends Backbone.Model
                     attributes[key] = new opts.model(attributes[key])
         super attributes, options
 
-
 class Lecture extends LazyModel
-
+    relations: ->
+        content:
+            model: ContentModel
 
 class LectureCollection extends Backbone.Collection
     model: Lecture
 
-class ContentModel extends LazyModel
-
 class CourseModel extends LazyModel
 
-    relations:
+    relations: ->
         lectures:
             collection: LectureCollection
             includeInJSON: ["title", "description", "scheduled", "page"]
         content:
             model: ContentModel
 
+class ContentModel extends LazyModel
 
 window.course = new CourseModel
-    lectures: [{_id: "1"}, {_id: "2"}]
+    lectures: [{_id: "1", content: {_id: "77", data: "Stuff"}}, {_id: "2"}]
     content: {_id: "17"}
 
