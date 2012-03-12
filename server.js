@@ -83,6 +83,12 @@ app.get('/coffeetest/*', function(request, response) {
   })
 })
 
+app.get('/coffeetest2/*', function(request, response) {
+  fs.readFile(__dirname + '/public/coffeetest/testcode2.html', function(err,text) {
+      response.end(text)
+  })
+})
+
 app.get('/ucsd/cogs107c/sp12/*', function(request, response) {
   fs.readFile(__dirname + '/public/cogs107c.html', function(err,text) {
       response.end(text)

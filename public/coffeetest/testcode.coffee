@@ -9,12 +9,12 @@ class window.BaseView extends Backbone.View
     
     bind_links: ->
         @$el.on "click", "a", (ev) ->
-            if ev.shiftKey or ev.ctrlKey then return true
-            if ev.target.origin != document.location.origin
+            if ev.shiftKey or ev.ctrlKey then return true # allow ctrl/shift clicks (new tab/window) to pass
+            if ev.target.origin != document.location.origin # make external links pop up in a new window
                 ev.target.target = "_blank"
                 return true
-            navigate ev.target.pathname
-            return false
+            navigate ev.target.pathname # handle the internal link through Backbone's router, and drop event
+            return false # TODO: do we want to make sure our router found a match, else return true?
 
     show: =>
         if not @visible
@@ -69,6 +69,7 @@ class window.RouterView extends BaseView
             route = @_routeToRegExp(route)
         # modify the regex so it will match urls that include trailing splats
         route = new RegExp("(" + route.source.replace("$", "") + ")(.*)$", "i")
+        # create a handler for the route, and put it at the front of the handlers array
         @handlers.unshift
             route: route
             callback: (fragment) ->
@@ -88,13 +89,14 @@ class window.RouterView extends BaseView
                 # get the portion of the fragment that matched this pattern:
                 match = handler.get_match(fragment)
 
-                # get the cached view for this matching fragment (if it exists):
-                subview = @subviews[match]
-
-                # store the residual splat in the view for later propagation:
+                # get the residual portion of the url
                 splat = handler.get_splat(fragment)
 
+                # store the residual portion of the url in the view for later re-navigation
                 @fragment = match + splat
+
+                # get the cached view for this matching fragment (if it exists):
+                subview = @subviews[match]
 
                 # if we haven't already created a subview for this fragment, then make it so:
                 if not subview
@@ -102,15 +104,17 @@ class window.RouterView extends BaseView
                     subview.url = @url + match
                     subview.render()
                     @add_subview match, subview
-                
-                # propagate the url fragment down into the subview:
-                subview.navigate splat
-                
+                                
                 # make sure it's visible (hiding all others):
                 view.hide() for route,view of @subviews when not (view is subview)
                 subview.show()
 
+                # propagate the url fragment down into the subview:
+                success = subview.navigate(splat)
+
                 return true
+
+        return false
             
 
 class LectureRouterView extends RouterView
@@ -197,7 +201,6 @@ class RootView extends BaseView
 class BaseRouter extends Backbone.Router
     
     initialize: (options) =>
-        @subviews = {}
         @rootview = new RootView(url: "/" + options.root_url)
         @rootview.render()
         @route options.root_url + "*splat", "delegate_navigation", (splat) =>
