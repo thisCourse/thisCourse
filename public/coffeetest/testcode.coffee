@@ -27,7 +27,6 @@ class window.BaseView extends Backbone.View
             @$el.hide()
             
     navigate: (fragment) =>
-        #console.log "further navigating down into: '" + fragment + "'"
         @fragment = fragment
         for name, subview of @subviews
             return true if subview.navigate(@fragment)
@@ -57,8 +56,9 @@ class window.RouterView extends BaseView
     initialize: =>
         @handlers = []
         @subviews = {}
-        @route(route, callback) for route, callback of @routes
-        super  
+        @routes = @routes?() or @routes # if routes is a function, run it now
+        @route(route, callback) for route, callback of @routes # create a handler for each route
+        super
 
     route: (route, callback) =>
         # if the callback is a string, look it up as a method of this RouterView
@@ -79,8 +79,7 @@ class window.RouterView extends BaseView
                 route.exec(fragment).slice(-1)[0]
     
     navigate: (fragment) =>
-                
-        console.log "navigating to", fragment, "in", @
+
         # check if fragment matches any of our routes
         for handler in @handlers
 
@@ -118,23 +117,10 @@ class LectureRouterView extends RouterView
 
     className: "LectureRouterView"
 
-    render: =>
-        #@$el.text("This is the default.")
+    routes: ->
+        "": => new LectureListView
+        ":lecture_id/": (lecture_id) => new LectureView id: lecture_id
 
-    routes:
-        "": "create_lecture_list_view"
-        ":lecture_id/": "create_lecture_view"
-
-    create_lecture_list_view: =>
-        console.log "create_lecture_list_view"
-        return new LectureListView
-            #collection: @collection
-
-    create_lecture_view: (lecture_id) =>
-        console.log "create_lecture_view " + lecture_id
-        return new LectureView
-            id: lecture_id
-            #model: @collection.get(lecture_id)
 
 class LectureListView extends BaseView
 
@@ -153,32 +139,30 @@ class LectureView extends BaseView
     className: "LectureView"
     
     render: =>
-        console.log "rendering lecture view:", @options.id
         @$el.text "Loading lecture..."
         setTimeout @actually_render, 500
 
     actually_render: =>
-        @$el.text "This is lecture #" + @options.id
+        html = "This is lecture #" + @options.id
+        for num in [1,2,3,4,5]
+            html += "<li><a href='" + @url + "page/" + num + "/'>Page " + num + "</a></li>"
+        html += "</ul>"
+        @$el.html html
         @add_subview "pageview", new PageRouterView
 
 class PageRouterView extends RouterView
 
     className: "PageRouterView"
     
-    routes:
-        "page/:id/": "create_content_view"
+    routes: ->
+        "page/:id/": (content_id) => new ContentView id: content_id
     
-    create_content_view: (content_id) =>
-        console.log "creating content view!!!"
-        new ContentView
-            id: content_id
 
 class ContentView extends BaseView
 
     className: "ContentView"
     
     render: =>
-        console.log "rendering page view:", @options.id
         @$el.text "Loading subpage..."
         setTimeout @actually_render, 500
 
@@ -195,7 +179,7 @@ class window.CourseView extends RouterView
 
     className: "CourseView"
     
-    routes:
+    routes: ->
         "": -> new HomeView
         "lecture/": -> new LectureRouterView
 
@@ -222,13 +206,12 @@ class BaseRouter extends Backbone.Router
             else
                 @rootview.navigate splat
 
-window.router = new BaseRouter({root_url: "coffeetest/"})
+window.router = new BaseRouter root_url: "coffeetest/"
 
 window.navigate = (url) ->
-    console.log "nav to", url
     if url.slice(-1) != "/"
         url += "/"    
-    router.navigate(url, true)
+    router.navigate url, true
 
-Backbone.history.start({pushState: true})
+Backbone.history.start pushState: true
 
