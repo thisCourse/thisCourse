@@ -1,10 +1,10 @@
 class window.BaseView extends Backbone.View
 
     constructor: (options) ->
+        super
         @subviews = {}
         visible = true
         @url = options.url if options?.url
-        super
         @bind_links()
     
     bind_links: ->
@@ -25,6 +25,13 @@ class window.BaseView extends Backbone.View
         if @visible
             @visible = false
             @$el.hide()
+
+    close: =>
+        @off() # used to be called "unbind"
+        @remove() # remove the view's DOM element
+        for name, subview of @subviews
+            subview.close?()
+        return @
             
     navigate: (fragment) =>
         @fragment = fragment
