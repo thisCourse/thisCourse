@@ -18,12 +18,15 @@ requirejs.config({
     }
 });
 
-requirejs(["backbone"], function(backbone) {
+global._ = require("underscore")
+global.Backbone = require("backbone")
+
+requirejs(["cs!course/models"], function(coursemodels) {
+	var course = new coursemodels.CourseModel({
+        _id: "999",
+        lectures: [{_id: "1", title: "Tha firsty!", content: {_id: "77", data: "Stuff", html: "yeahhhhhh"}}, {_id: "2"}],
+        content: {_id: "17", html: "ooga booga"}
+    })
+    console.log(course.get("lectures").at(0).toJSON())
 })
 
-requirejs(["cs!content/routes"], function(routes) {
-	console.log("rtoot", routes.initialize)
-})
-
-var q = new Backbone.Model({waaaa: 17})
-console.log(q.get("waaaa"))

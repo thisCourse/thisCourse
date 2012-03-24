@@ -58,7 +58,7 @@ class window.LazyModel extends Backbone.Model
         super
 
 
-class Lecture extends LazyModel
+class LectureModel extends LazyModel
 
     urlRoot: "/api/lecture/"
 
@@ -69,7 +69,7 @@ class Lecture extends LazyModel
 
 class window.LectureCollection extends Backbone.Collection
 
-    model: Lecture
+    model: LectureModel
 
     comparator: (model) ->
         console.log "mod", model
@@ -88,10 +88,6 @@ class window.CourseModel extends LazyModel
         content:
             model: ContentModel
             includeInJSON: ['html']
-
-# _full_url
-# _denormed_fields
-# _is_collection
 
 class ContentModel extends LazyModel
 

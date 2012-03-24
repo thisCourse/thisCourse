@@ -1,3 +1,8 @@
-define [], () ->
+define ["cs!base/models"], (basemodels) ->
 
-    return {}
+    class ContentModel extends basemodels.LazyModel
+
+        apiCollection: "content"
+
+
+    ContentModel: ContentModel
