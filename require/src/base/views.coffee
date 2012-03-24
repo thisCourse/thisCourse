@@ -5,7 +5,6 @@ define [], () ->
     class BaseView extends Backbone.View
 
         constructor: (options) ->
-            console.log @
             @className = @constructor.name
             super
             @subviews = {}
@@ -14,7 +13,6 @@ define [], () ->
             @bind_links()
         
         bind_links: ->
-            console.log @$el
             @$el.on "click", "a", (ev) ->
                 if ev.shiftKey or ev.ctrlKey then return true # allow ctrl/shift clicks (new tab/window) to pass
                 if ev.target.origin != document.location.origin # make external links pop up in a new window

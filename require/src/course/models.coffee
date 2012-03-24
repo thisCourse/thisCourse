@@ -3,7 +3,7 @@ define ["cs!base/models", "cs!lecture/models", "cs!content/models"], \
 
     class CourseModel extends basemodels.LazyModel
 
-        urlRoot: "/api/course/"
+        apiCollection: "course"
 
         relations: ->
             lectures:

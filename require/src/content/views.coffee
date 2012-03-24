@@ -7,6 +7,6 @@ define ["less!./styles", "cs!base/views"], (styles, baseviews) ->
             setTimeout @actually_render, 500
 
         actually_render: =>
-            @$el.text "This is subpage #" + @options.id
+            @$el.text "This is subpage #" + @model.id + ": " + @model.get("title") + " (" + @model.get("html") + ")"
 
     return ContentView: ContentView

@@ -6,16 +6,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views"], (baseviews, models, pa
             "": => new LectureListView collection: @collection
             ":lecture_id/": (lecture_id) => new LectureView model: @collection.get(lecture_id)
 
-
     class LectureListView extends baseviews.BaseView
 
         render: =>
             html = "<ul>"
             for lecture in @collection.models
-                html += "<li><a href='" + @url + lecture.id + "'>Lecture " + lecture.id + "</a></li>"
+                html += "<li><a href='" + @url + lecture.id + "/'>" + lecture.id + ": " + lecture.get("title") + "</a></li>"
             html += "</ul>"
             @$el.html html
-
 
     class LectureView extends baseviews.BaseView
         
@@ -24,13 +22,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views"], (baseviews, models, pa
             setTimeout @actually_render, 500
 
         actually_render: =>
-            html = "This is lecture #" + @model.id
-            console.log @model
+            html = "This is lecture #" + @model.id + ": " + @model.get("title")
             for page in @model.get("pages").models
-                html += "<li><a href='" + @url + "page/" + page.id + "/'>Page " + page.id + "</a></li>"
+                html += "<li><a href='" + @url + "page/" + page.id + "/'>" + page.id + ": " + page.get("title") + "</a></li>"
             html += "</ul>"
             @$el.html html
             @add_subview "pageview", new pageviews.PageRouterView collection: @model.get("pages")
+
 
     LectureRouterView: LectureRouterView
     LectureListView: LectureListView
