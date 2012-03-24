@@ -2,10 +2,16 @@
 var mongoskin = require('mongoskin')
 var mongodb = require('mongodb')
 //var ObjectId = mongodb.BSONPure.ObjectID
-var ObjectId = mongodb.pure().ObjectID
+//var ObjectId = mongodb.pure().ObjectID
 var db = mongoskin.db('127.0.0.1/test?auto_reconnect')
+var ObjectId = db.ObjectID
 var async = require('async')
 var express = require("express")
+
+var nodeStatic = require('node-static');
+var file = new nodeStatic.Server('./public');
+
+var auth = require("../auth")
 
 api = module['exports']
 
@@ -93,10 +99,10 @@ recursively_sanitize_temp = function(obj) {
 api.router = function() {
 
     this.get("/", function(req, res) {
-        file.serveFile('/api_test.html', 200, {}, req, res)
+        file.serveFile('api_test.html', 200, {}, req, res)
     })
     
-    this.use(express["static"](__dirname + '/public'));
+    //this.use(express["static"](__dirname + '/public'));
 
     this.get(routing_pattern, request_handler)
         .post(routing_pattern, request_handler)

@@ -1,11 +1,7 @@
-COURSE_URL/TAB_NAME/TAB_SPECIFIC_SPLAT
-
-
 slugs: avoid [1lo0]
 	no vowels? no tits!
 	
 packages can register themselves as content providers
-packages specify their tabs and handlers for splats under those tab urls
 
 COURSE_URL/lectures
 COURSE_URL/lectures/###/
@@ -20,30 +16,9 @@ COURSE_URL/nuggets/###/quiz/###/
 VIEWS <-> USER URLS
 MODELS <-> API URLS
 
-
-view B contained within view A = url B descendant of url A
-
-view can be hidden/shown
-
-every view is responsible for keeping track of its child views
-	however, central way to, e.g., "close" a view and all children might be good
-
-every view has a url chunk associated with it, as well as a reference to its parent
-	to get the full url, it recursively calls the parents:
-		get_url: => @parent.get_url() + @url
-		(perhaps use path-joining code?)
-
 all views, upon rendering, should bind to listen to all A-HREFs
 	internal urls should be passed through routing
 	external urls should be logged and then opened in a new tab/window
-
-
-
-ViewRouter
-	routes:
-		"urlstuff": "mymethod"
-
-	mymethod: ->
 
 
 
@@ -91,7 +66,30 @@ Unknown:
 		can be done in the Router, upon creation of a View, if desired
 		as a fallback, if a View has no model, it can pull it from its parent view's model, using the default field name (@parent.model.get("page"))
 
+require that parent model be saved before children can be created/saved?
 
 
-perhaps subviews should be a collection; then, we can listen for when a subview is added, and fire off a navigate event on it, in case it cares about the splat
-	however, we only need to do a navigate on a visible subview, so perhaps this could just be done in the subview's init process
+
+save a model to api collection
+sorting: now to be handled by an "order" field, with floats
+	then, when an item is moved, only its own sort_order field needs to be changed
+apiUrl attribute on a model, this can be pulled by the API to make the endpoint, and also used for saving model
+
+
+API Auth functions
+
+	sanityCheck: all requests
+		make sure it's not too big, that the user is logged in/not blocked, etc
+
+	createDocument: POSTing to collection
+		check that the person has permission to create this kind of object
+	filterDocuments: GETting from a collection
+		custom filtering logic based on query parameters
+
+inflate models, following chain of relations
+
+# CourseModel.prototype.relations()['lectures'].collection.prototype.model.prototype.relations()['content'].model
+
+instantiate model
+save its full JSON to its own collection endpoint
+then save its JSON subset to its embedded context's collection

@@ -5,7 +5,8 @@ config = {
         hb: 'libs/requirejs/hb',
         less: 'libs/requirejs/less',
         order: 'libs/requirejs/order',
-        text: 'libs/requirejs/text'
+        text: 'libs/requirejs/text',
+        backbone: 'libs/backbone/backbone'
     },
     waitSeconds: 5,
     baseUrl: "."
@@ -35,9 +36,8 @@ define(
 		"order!libs/fancybox/jquery.fancybox-1.3.4",
 		"order!libs/ckeditor/ckeditor",
 		"order!libs/ckeditor/adapters/jquery",
-		"cs!app"
 	], function() {
-		require("cs!app").initialize()
+		require("cs!app/app")
 	}
 )
     

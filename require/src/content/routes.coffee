@@ -1,5 +1,7 @@
-define [], () ->
-  
+define ["jquery", "backbone"], ($, backbone) ->
+    
+  console.log $.ajax
+
   Router = Backbone.Router.extend
     initialize: (options) ->
       @route "temp", "temp", ->

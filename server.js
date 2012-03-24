@@ -54,6 +54,7 @@ app.use("/check", auth.check)
 
 app.use('/static', express['static'](__dirname + '/public'))
 app.use('/backbone', express['static'](__dirname + '/backbone'))
+app.use('/require', express['static'](__dirname + '/require'))
 
 // express routing
 app.namespace('/api', api.router)
@@ -104,9 +105,9 @@ app.get('/', express['static'](__dirname))
     // res.send(data)
 // })
 
-app.get("*", function(req, res) {
-	res.redirect("/ucsd/cogs187a/wi12/")
-})
+// app.get("*", function(req, res) {
+// 	res.redirect("/ucsd/cogs187a/wi12/")
+// })
 
 var server = express.createServer(
   //express.logger(), // Log responses to the terminal using Common Log Format.

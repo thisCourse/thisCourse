@@ -35,8 +35,10 @@ textarea {
             $('#response_code').html('')
             
             var data = $('#request_data').val()
-            if (data.length > 0)
+            if (data.length > 0 & $(this).val()!="GET")
                 data = JSON.stringify(eval('json = ' + data))
+            else
+                data = ""
         
             $.ajax($('#request_url').val(), {
                 contentType: 'application/json',
