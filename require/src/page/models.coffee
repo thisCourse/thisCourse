@@ -8,6 +8,8 @@ define ["cs!base/models"], (basemodels) ->
 
         model: PageModel
 
+        comparator: (page) -> page.id
+
 
     PageModel: PageModel
     PageCollection: PageCollection

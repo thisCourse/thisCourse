@@ -3,20 +3,11 @@ async = require('async')
 express = require("express")
 nodeStatic = require('node-static');
 utils = require("./utils.coffee")
-requirejs = require('requirejs')
 Backbone = require("backbone")
 fs = require("fs")
 
 db = mongoskin.db('127.0.0.1/test?auto_reconnect')
 ObjectId = db.ObjectID
-
-requirejs.config
-    nodeRequire: require
-    baseUrl: 'require/src'
-    paths:
-        cs: 'libs/requirejs/cs'
-        hb: 'libs/requirejs/hb'
-        backbone: 'libs/backbone/backbone'
 
 id_regex = /[0-9a-fA-F]{24}/
 
@@ -27,23 +18,22 @@ class MongoCollection
     name: "test"
     Model: Backbone.Model
 
-    constructor: (req, res) ->
+    constructor: ->
+        collections[@name] = @
+        @collection = db.collection(@name)
 
     preSanitizeData: (req, res, data) =>
         return data
 
     # handle an api request
-    handle_request = (req, res) ->
+    handle_request: (req, res) ->
 
-	    if req.method != "GET" and not req.session.email # TODO: this will be more robust... :P
-	        return APIError(res, "You must be logged in to do that!", 403)
+        if req.method != "GET" and not req.session.email # TODO: this will be more robust... :P
+            return APIError(res, "You must be logged in to do that!", 403)
 
         console.log req.method, req.url, req.params.path, req.body
 
         req.params.path = req.params.path.split('/').filter((m) -> m.length > 0)
-                
-        #collection = collections[req.params.collection]
-        @collection
         
         data = req.body
         
@@ -54,7 +44,7 @@ class MongoCollection
             delete data._id
 
         # remove fields starting with _ from the data object, except _id fields (which we set to new ObjectId's)
-        recursively_sanitize data
+        # recursively_sanitize data
         
         if req.params.id==undefined # document id was not specified in url (i.e. it references a collection itself)
             
@@ -66,15 +56,15 @@ class MongoCollection
             
             # TODO: check permissions
             
-            collection.save data, (err, obj) ->
+            @collection.save data, (err, obj) ->
                 res.json obj # return the newly created object (or should it just return the _id?)
             
             return
         
-        query = {_id: collection.id(req.params.id)}
+        query = {_id: @collection.id(req.params.id)}
         
         # find the existing object in the database
-        collection.find(query).toArray (err, arr) ->
+        @collection.find(query).toArray (err, arr) ->
 
             if err
                 return APIError(res, "Error while performing query: " + err.toString(), 500)
@@ -83,14 +73,14 @@ class MongoCollection
                 return APIError(res, "Specified '" + req.params.collection + "' document could not be found!", 404)
             
             document = arr[0]
-            object = get_by_path(document, req.params.path)
+            object = utils.get_by_path(document, req.params.path)
             object_ref = req.params.path.join('.')
             
             parent_ref = null
             parent_is_array = false
             if object_ref
                 parent_ref = req.params.path.slice(0,-1).join('.')
-                if (get_by_path(document, req.params.path.slice(0,-1)) instanceof Array)
+                if (utils.get_by_path(document, req.params.path.slice(0,-1)) instanceof Array)
                     parent_is_array = true
             
             if object is null
@@ -101,7 +91,7 @@ class MongoCollection
                 if err
                     return APIError(res, "Error while performing operation: " + err.toString(), 500)
                 if obj instanceof Object
-                    obj = get_by_path(obj, req.params.path)
+                    obj = utils.get_by_path(obj, req.params.path)
                 else if (data instanceof Object && data._id)
                     obj = _id: data._id
                 else
@@ -111,7 +101,7 @@ class MongoCollection
             
             update_and_respond = (update_obj) ->
                 console.log query, update_obj
-                collection.update(query, update_obj, {safe: true, upsert: true}, mongo_json_response)
+                @collection.update(query, update_obj, {safe: true, upsert: true}, mongo_json_response)
                     
             type = req.method + " "
 
@@ -190,11 +180,12 @@ class MongoCollection
 
 routing_pattern = '/:collection([a-z]+)/:id([0-9a-fA-F]{24})?:path(*)'
 
-request_handler: (req, res) ->
-	if req.params.collection not in collections
-		return APIError(res, "Collection '" + req.params.collection + "' does not exist.", 404)
-	collection = collections[req.params.collection]
-	collection.handle_request(req, res)
+request_handler = (req, res) ->
+    console.log collections
+    if req.params.collection not of collections
+        return APIError(res, "Collection '" + req.params.collection + "' does not exist.", 404)
+    collection = collections[req.params.collection]
+    collection.handle_request req, res
 
 
 router = ->
@@ -210,13 +201,32 @@ router = ->
 
 class APIError
 
-	constructor: (res, msg, code=500) ->
-	    console.log "error:", msg
-	    res.json
-	    	_error:
-	    		message: msg
-	    		code: code
-	    	code
+    constructor: (res, msg, code=500) ->
+        console.log "error:", msg
+        res.json
+            _error:
+                message: msg
+                code: code
+            code
+
+
+class CourseMongoCollection extends MongoCollection
+    name: 'course'
+
+class ContentMongoCollection extends MongoCollection
+    name: 'content'
+
+class LectureMongoCollection extends MongoCollection
+    name: 'lecture'
+
+class AssignmentMongoCollection extends MongoCollection
+    name: 'assignment'
+
+class PageMongoCollection extends MongoCollection
+    name: 'page'
+
+for cls in [CourseMongoCollection, ContentMongoCollection, LectureMongoCollection, AssignmentMongoCollection, PageMongoCollection]
+    new cls
 
 module.exports = 
     collections: collections
