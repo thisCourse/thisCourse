@@ -1,18 +1,14 @@
-define ["cs!base/views", "cs!./models"], (baseviews, models) ->
+define ["cs!base/views", "cs!./models", "cs!page/views"], (baseviews, models, pageviews) ->
 
-    class LectureRouterView extends RouterView
-
-        className: "LectureRouterView"
+    class LectureRouterView extends baseviews.RouterView
 
         routes: ->
             "": => new LectureListView
             ":lecture_id/": (lecture_id) => new LectureView id: lecture_id
 
 
-    class LectureListView extends BaseView
+    class LectureListView extends baseviews.BaseView
 
-        className: "LectureListView"
-        
         render: =>
             html = "<ul>"
             for num in [3,66,75,139]
@@ -21,9 +17,7 @@ define ["cs!base/views", "cs!./models"], (baseviews, models) ->
             @$el.html html
 
 
-    class LectureView extends BaseView
-
-        className: "LectureView"
+    class LectureView extends baseviews.BaseView
         
         render: =>
             @$el.text "Loading lecture..."
@@ -35,9 +29,8 @@ define ["cs!base/views", "cs!./models"], (baseviews, models) ->
                 html += "<li><a href='" + @url + "page/" + num + "/'>Page " + num + "</a></li>"
             html += "</ul>"
             @$el.html html
-            @add_subview "pageview", new PageRouterView
+            @add_subview "pageview", new pageviews.PageRouterView
 
-    return
-    	LectureRouterView: LectureRouterView
-    	LectureListView: LectureListView
-    	LectureView: LectureView
+    LectureRouterView: LectureRouterView
+    LectureListView: LectureListView
+    LectureView: LectureView

@@ -1,5 +1,4 @@
-define ["jquery", "backbone"], ($, backbone) ->
-    
+define ["jquery", "backbone"], ($, backbone) ->    
   console.log $.ajax
 
   Router = Backbone.Router.extend

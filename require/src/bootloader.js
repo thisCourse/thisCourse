@@ -12,11 +12,11 @@ config = {
     baseUrl: "."
 }
 
-// if (environ==="DEPLOY") {
-	// config.baseUrl = "build"
-// } else {
-	// config.baseUrl = "src"
-// }
+if (environ==="DEPLOY") {
+	config.baseUrl = "/require/build"
+} else {
+	config.baseUrl = "/require/src"
+}
 
 require.config(config)
 
@@ -36,8 +36,9 @@ define(
 		"order!libs/fancybox/jquery.fancybox-1.3.4",
 		"order!libs/ckeditor/ckeditor",
 		"order!libs/ckeditor/adapters/jquery",
+		"app"
 	], function() {
-		require("cs!app/app")
+		require("app").start()
 	}
 )
     

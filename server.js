@@ -54,11 +54,11 @@ app.use("/check", auth.check)
 
 app.use('/static', express['static'](__dirname + '/public'))
 app.use('/backbone', express['static'](__dirname + '/backbone'))
-app.use('/require', express['static'](__dirname + '/require'))
 
 // express routing
 app.namespace('/api', api.router)
 app.namespace('/s3', s3.router)
+app.use('/require', express['static'](__dirname + '/require'))
 
 app.get('/kirsh/*', function(request, response) {
   fs.readFile(__dirname + '/public/index.html', function(err,text) {
@@ -77,15 +77,21 @@ app.get('/ucsd/cogs187a/wi12/*', function(request, response) {
       response.end(text)
   })
 })
- 
-app.get('/coffeetest/*', function(request, response) {
-  fs.readFile(__dirname + '/public/coffeetest/testcode.html', function(err,text) {
+
+app.get('/coffeetest2/*', function(request, response) {
+  fs.readFile(__dirname + '/public/coffeetest/testcode2.html', function(err,text) {
       response.end(text)
   })
 })
 
-app.get('/coffeetest2/*', function(request, response) {
-  fs.readFile(__dirname + '/public/coffeetest/testcode2.html', function(err,text) {
+app.get('/build/*', function(request, response) {
+  fs.readFile(__dirname + '/require/build/test_build.html', function(err,text) {
+      response.end(text)
+  })
+})
+
+app.get('/src/*', function(request, response) {
+  fs.readFile(__dirname + '/require/src/test_src.html', function(err,text) {
       response.end(text)
   })
 })

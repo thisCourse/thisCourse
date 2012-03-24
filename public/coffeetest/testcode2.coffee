@@ -53,12 +53,6 @@ class window.LazyModel extends Backbone.Model
                             delete model[modelkey]
         return attrs
 
-    saveRelated: (fields) =>
-        fields or= [field for field of @related]
-        if _.isString(fields) then fields = [fields]
-        #for field in fields
-            # should we save specific fields, or just the whole parent?
-
     save: (fields) =>
         console.log "Saving:", @toJSON(), "at", @url?() or @url
         super

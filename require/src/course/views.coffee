@@ -1,7 +1,10 @@
-define ["cs!base/views", "cs!./models"], (baseviews, models) ->
+define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!./models"], \
+        (baseviews, homeviews, lectureviews, models) ->
 
-    class window.CourseView extends RouterView
+    class CourseView extends baseviews.RouterView
 
         routes: ->
-            "": -> new HomeView
-            "lecture/": -> new LectureRouterView
+            "": -> new homeviews.HomeView
+            "lecture/": -> new lectureviews.LectureRouterView
+
+    return CourseView: CourseView

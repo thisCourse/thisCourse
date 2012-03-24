@@ -5,5 +5,4 @@ define ["cs!base/views", "cs!./models", "cs!content/views"], (baseviews, models,
         routes: ->
             "page/:id/": (content_id) => new contentviews.ContentView id: content_id
 
-    return
-        PageRouterView: PageRouterView
+    return PageRouterView: PageRouterView
