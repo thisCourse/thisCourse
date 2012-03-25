@@ -93,3 +93,25 @@ inflate models, following chain of relations
 instantiate model
 save its full JSON to its own collection endpoint
 then save its JSON subset to its embedded context's collection
+
+
+user
+course
+groups (roster, instructors)
+special _fields
+inflating model
+saving related model
+analytics/logging
+ip address
+request method
+path
+field validation
+collection lookups
+custom endpoints
+
+
+
+
+
+
+

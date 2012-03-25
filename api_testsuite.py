@@ -63,20 +63,20 @@ class TestAPI(unittest.TestCase):
         new_array = get(obj["path"] + "/sections").body
         assert len(new_array)==len(old_array)+2, "After adding 2 objects, the length of the array went from %d to %d!" % (len(old_array), len(new_array))
         
-    def test_post_array_onto_array(self):
-        obj = self.objs["complex"]
-        post(obj["path"] + "/sections", ["a", "b"]).status(200)
-        get(obj["path"] + "/sections").status(200).equals(["a", "b"])
+    # def test_post_array_onto_array(self):
+    #     obj = self.objs["complex"]
+    #     post(obj["path"] + "/sections", ["a", "b"]).status(200)
+    #     get(obj["path"] + "/sections").status(200).equals(["a", "b"])
         
-    def test_post_value_onto_array(self):
-        obj = self.objs["complex"]
-        old_array = get(obj["path"] + "/sections").body
-        post(obj["path"] + "/sections", 17).status(200)
-        post(obj["path"] + "/sections", "hello").status(200)
-        get(obj["path"] + "/sections").contains(17).contains("hello")
-        # check that only 2 items have been added
-        new_array = get(obj["path"] + "/sections").body
-        assert len(new_array)==len(old_array)+2, "After adding 2 values, the length of the array went from %d to %d!" % (len(old_array), len(new_array))
+    # def test_post_value_onto_array(self):
+    #     obj = self.objs["complex"]
+    #     old_array = get(obj["path"] + "/sections").body
+    #     post(obj["path"] + "/sections", 17).status(200)
+    #     post(obj["path"] + "/sections", "hello").status(200)
+    #     get(obj["path"] + "/sections").contains(17).contains("hello")
+    #     # check that only 2 items have been added
+    #     new_array = get(obj["path"] + "/sections").body
+    #     assert len(new_array)==len(old_array)+2, "After adding 2 values, the length of the array went from %d to %d!" % (len(old_array), len(new_array))
         
     def test_post_object_onto_object(self):
         obj = self.objs["embedded"]
@@ -182,7 +182,7 @@ class TestAPI(unittest.TestCase):
         obj = self.objs["complex"]
         get(obj["path"] + "/sections").status(200)
         delete(obj["path"] + "/sections").status(200)
-        get(obj["path"] + "/sections").status(200).equals([])
+        get(obj["path"] + "/sections").status(404)
         
     def test_delete_object(self):
         # delete an object at a key

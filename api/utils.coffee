@@ -1,3 +1,5 @@
+id_regex = /[0-9a-fA-F]{24}/
+
 # look through an array and find element (object) with specific _id attribute (optionally replacing id with array index in path)
 get_by_id = (arr, id, path) ->
     if arr not instanceof Array then return null
@@ -18,7 +20,7 @@ get_by_path = (obj, path, index) ->
     if id_regex.exec(path[index]) and obj instanceof Array
     	return get_by_path(get_by_id(obj, path[index], path), path, index+1)
     # if we hit a missing property, abort
-    if not obj or path[index] not in obj then return null
+    if not obj or path[index] not of obj then return null
     # keep traversing
     return get_by_path(obj[path[index]], path, index+1)
 
@@ -51,3 +53,4 @@ module.exports =
     get_by_path: get_by_path
     wrap_in_object: wrap_in_object
     merge: merge
+    id_regex: id_regex

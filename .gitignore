@@ -5,3 +5,4 @@ public/base_styles.css
 public/templates.js
 require/build/
 require-test/build/
+*.pyc
