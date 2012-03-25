@@ -71,6 +71,7 @@ class window.BrowseView extends BaseView
 		@funcNum = @getUrlParam('CKEditorFuncNum')
 		@courseid = @getUrlParam('courseid')
 		@typefilter = @getUrlParam('typefilter')
+		@typefilter?= 'all'
 		@filteredcollection = @collection.filter (file) ->
 			file.get('type') == @typefilter
 		@tagfilter = null
@@ -80,7 +81,7 @@ class window.BrowseView extends BaseView
 	getUrlParam: (paramName) ->
 		reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
 		match = window.location.search.match(reParam)
-		if match and match.length > 1 then match[1] else ''
+		if match and match.length > 1 then match[1] else null
 
 	render: =>
 		@$el.html ""
