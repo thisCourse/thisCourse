@@ -1,0 +1,63 @@
+@borderhighlight: #FFDDAA;
+@backgroundhighlight: #AADDFF;
+
+#filebrowser {
+	max-width: 400px;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #E0F0FF;
+}
+
+#upchoose {
+	margin-right:5px;
+	margin-top:10px;
+}
+
+#select {
+	float:right;
+}
+
+.trash {
+	padding: 4px 6px;
+	float: right;
+	vertical-align:center;
+}
+
+.taglist {
+	min-height: 10px;
+}
+
+.tags {
+	word-wrap:break-word;
+	overflow: hidden;
+	height: 37px;
+}
+.filelist {
+	.file{
+		height:37px;
+		max-width: 370px;
+		border: 2px solid;
+		border-color: #DDDDDD;
+		padding: 5px 10px 5px 10px;
+		background-color: #99CCFF;
+		&:hover {background-color:@backgroundhighlight; border-color: @borderhighlight;}
+		&.active {
+			background-color:lighten(@backgroundhighlight,10%); border-color: lighten(@borderhighlight,10%);
+		}
+
+		.edit {
+			display: none;
+			&.editing{
+				display:block;
+			}
+		.display .editing{
+				display:none;
+			}
+		div {
+			padding: 0px 0px 0px 6px;
+			margin: 5px 0px 0px 0px;
+			}
+		}
+	}
+
+}

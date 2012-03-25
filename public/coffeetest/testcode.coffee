@@ -216,12 +216,12 @@ class BaseRouter extends Backbone.Router
             else
                 @rootview.navigate splat
 
-window.router = new BaseRouter root_url: "coffeetest/"
+# window.router = new BaseRouter root_url: "coffeetest/"
 
-window.navigate = (url) ->
-    if url.slice(-1) != "/"
-        url += "/"    
-    router.navigate url, true
+# window.navigate = (url) ->
+#     if url.slice(-1) != "/"
+#         url += "/"    
+#     router.navigate url, true
 
-Backbone.history.start pushState: true
+# Backbone.history.start pushState: true
 
