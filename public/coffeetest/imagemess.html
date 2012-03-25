@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Image Mess</title>
+	<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+	<script type="text/javascript" src="../libs/ckeditor/ckeditor_source.js"></script>
+	<script type="text/javascript">
+	CKEDITOR.on( 'dialogDefinition', function( ev ) {
+		var dialogName = ev.data.name;
+      	var dialogDefinition = ev.data.definition;
+
+		if ( dialogName =='image' )
+		{
+			dialogDefinition.removeContents('Link');
+		};
+	});
+	</script>
+</head>
+<body>
+	
+			<textarea cols="80" id="editor_v2" name="editor_v2" rows="10">&lt;p&gt;This is some &lt;strong&gt;sample text&lt;/strong&gt;. You are using &lt;a href="http://ckeditor.com/"&gt;CKEditor&lt;/a&gt;.&lt;/p&gt;</textarea>
+			<script type="text/javascript">
+			//<![CDATA[
+
+				CKEDITOR.replace( 'editor_v2',
+					{
+						filebrowserBrowseUrl: './filebrowse.html?typefilter=all&courseid=001',
+						filebrowserImageBrowseUrl : './filebrowse.html?typefilter=picture&courseid=001'
+						//filebrowserUploadUrl : '/uploader/upload.php'
+					});
+
+			//]]>
+			</script>
+	</form>
+	<div id="footer">
+		<hr />
+		<p>
+			CKEditor - The text editor for the Internet - <a class="samples" href="http://ckeditor.com/">http://ckeditor.com</a>
+		</p>
+		<p id="copy">
+			Copyright &copy; 2003-2011, <a class="samples" href="http://cksource.com/">CKSource</a> - Frederico
+			Knabben. All rights reserved.
+		</p>
+	</div>
+</body>
+</html>
