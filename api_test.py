@@ -21,12 +21,12 @@ class Request(object):
         if isinstance(self.body, list):
             assert obj in self.body, "The response array %r did not contain item %r." % (self.body, obj)
         else:
-            assert subset_of(obj, self.body), "The response object %r did not contain %r." % (self.body, obj)
+            assert subset_of(obj, self.body, fields_to_ignore=["_id", "_editor"]), "The response object %r did not contain %r." % (self.body, obj)
         return self
 
     def equals(self, obj):
-        assert subset_of(obj, self.body, fields_to_ignore=["_id"]), "The objects were not equal (response object %r did not contain %r)." % (self.body, obj)
-        assert subset_of(self.body, obj, fields_to_ignore=["_id"]), "The objects were not equal (specified object %r did not contain the response object %r)." % (obj, self.body)
+        assert subset_of(obj, self.body, fields_to_ignore=["_id", "_editor"]), "The objects were not equal (response object %r did not contain %r)." % (self.body, obj)
+        assert subset_of(self.body, obj, fields_to_ignore=["_id", "_editor"]), "The objects were not equal (specified object %r did not contain the response object %r)." % (obj, self.body)
         return self
 
     def status(self, status):

@@ -10,7 +10,8 @@ var fs = require("fs")
 var async = require("async")
 var express = require("express")
     require('express-namespace')
-var api = require('./api/api')
+//var api = require('./api/api')
+var api = require('./api/api.coffee')
 var s3 = require('./api/s3')
 var RedisStore = require('connect-redis')(express)
 
@@ -58,6 +59,7 @@ app.use('/backbone', express['static'](__dirname + '/backbone'))
 // express routing
 app.namespace('/api', api.router)
 app.namespace('/s3', s3.router)
+app.use('/require', express['static'](__dirname + '/require'))
 
 app.get('/kirsh/*', function(request, response) {
   fs.readFile(__dirname + '/public/index.html', function(err,text) {
@@ -76,15 +78,21 @@ app.get('/ucsd/cogs187a/wi12/*', function(request, response) {
       response.end(text)
   })
 })
- 
-app.get('/coffeetest/*', function(request, response) {
-  fs.readFile(__dirname + '/public/coffeetest/testcode.html', function(err,text) {
+
+app.get('/coffeetest2/*', function(request, response) {
+  fs.readFile(__dirname + '/public/coffeetest/testcode2.html', function(err,text) {
       response.end(text)
   })
 })
 
-app.get('/coffeetest2/*', function(request, response) {
-  fs.readFile(__dirname + '/public/coffeetest/testcode2.html', function(err,text) {
+app.get('/build/*', function(request, response) {
+  fs.readFile(__dirname + '/require/build/test_build.html', function(err,text) {
+      response.end(text)
+  })
+})
+
+app.get('/src/*', function(request, response) {
+  fs.readFile(__dirname + '/require/src/test_src.html', function(err,text) {
       response.end(text)
   })
 })
@@ -104,9 +112,9 @@ app.get('/', express['static'](__dirname))
     // res.send(data)
 // })
 
-app.get("*", function(req, res) {
-	res.redirect("/ucsd/cogs187a/wi12/")
-})
+// app.get("*", function(req, res) {
+// 	res.redirect("/ucsd/cogs187a/wi12/")
+// })
 
 var server = express.createServer(
   //express.logger(), // Log responses to the terminal using Common Log Format.

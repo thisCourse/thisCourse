@@ -5,17 +5,18 @@ config = {
         hb: 'libs/requirejs/hb',
         less: 'libs/requirejs/less',
         order: 'libs/requirejs/order',
-        text: 'libs/requirejs/text'
+        text: 'libs/requirejs/text',
+        backbone: 'libs/backbone/backbone'
     },
     waitSeconds: 5,
     baseUrl: "."
 }
 
-// if (environ==="DEPLOY") {
-	// config.baseUrl = "build"
-// } else {
-	// config.baseUrl = "src"
-// }
+if (environ==="DEPLOY") {
+	config.baseUrl = "/require/build"
+} else {
+	config.baseUrl = "/require/src"
+}
 
 require.config(config)
 
@@ -35,9 +36,9 @@ define(
 		"order!libs/fancybox/jquery.fancybox-1.3.4",
 		"order!libs/ckeditor/ckeditor",
 		"order!libs/ckeditor/adapters/jquery",
-		"cs!app"
+		"app"
 	], function() {
-		require("cs!app").initialize()
+		require("app").start()
 	}
 )
     

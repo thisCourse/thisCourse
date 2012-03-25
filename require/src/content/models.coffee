@@ -1,4 +1,8 @@
-define [], () ->
-  class ContentModel extends Backbone.Model
-    initialize: ->
-      alert('content model initialized')
+define ["cs!base/models"], (basemodels) ->
+
+    class ContentModel extends basemodels.LazyModel
+
+        apiCollection: "content"
+
+
+    ContentModel: ContentModel

@@ -1,4 +1,4 @@
-Backbone.Model.prototype.idAttribute = "_id";
+Backbone.Model.prototype.idAttribute = "_id"
 
 class window.LazyModel extends Backbone.Model
 
@@ -53,14 +53,12 @@ class window.LazyModel extends Backbone.Model
                             delete model[modelkey]
         return attrs
 
-    saveRelated: (fields) ->
-        fields or= [field for field of @related]
-        if _.isString(fields) then fields = [fields]
-        #for field in fields
-            # should we save specific fields, or just the whole parent?
+    save: (fields) =>
+        console.log "Saving:", @toJSON(), "at", @url?() or @url
+        super
 
 
-class Lecture extends LazyModel
+class LectureModel extends LazyModel
 
     urlRoot: "/api/lecture/"
 
@@ -69,12 +67,17 @@ class Lecture extends LazyModel
             model: ContentModel
             includeInJSON: ['html']
 
-class LectureCollection extends Backbone.Collection
+class window.LectureCollection extends Backbone.Collection
 
-    model: Lecture
+    model: LectureModel
+
+    comparator: (model) ->
+        console.log "mod", model
+        #alert(model.get("order"))
+        return model.get("order")
 
 
-class CourseModel extends LazyModel
+class window.CourseModel extends LazyModel
 
     urlRoot: "/api/course/"
 
@@ -86,10 +89,6 @@ class CourseModel extends LazyModel
             model: ContentModel
             includeInJSON: ['html']
 
-# _full_url
-# _denormed_fields
-# _is_collection
-
 class ContentModel extends LazyModel
 
     urlRoot: "/api/content/"
@@ -100,5 +99,9 @@ window.course = new CourseModel
     lectures: [{_id: "1", content: {_id: "77", data: "Stuff", html: "yeahhhhhh"}}, {_id: "2"}]
     content: {_id: "17", html: "ooga booga"}
 
+
+
+
 console.log course.get("lectures").at(0).toJSON()
+
 
