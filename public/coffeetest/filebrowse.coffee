@@ -22,6 +22,7 @@ class window.FileView extends BaseView
 	events:
 		'click .trash': 'clear'
 		'click .file': 'select'
+		'dblclick .file': 'selectChoose'
 
 	initialize:=>
 		@model?.bind 'change', @render
@@ -36,7 +37,13 @@ class window.FileView extends BaseView
 	select:->
 		@options.parent.$('.file').not(@$('.file')).removeClass('active')
 		@$('.file').toggleClass('active')
-		@options.parent.selectedId = @model.id
+		@options.parent.selected = @model
+		console.log 'Selected'
+
+	selectChoose: =>
+		console.log 'Double Click!'
+		@select()
+		@options.parent.chooseFile()
 
 	editName:->
 		@$el.find('.file').find('.display,.edit').addClass('editing')
@@ -61,15 +68,16 @@ class window.BrowseView extends BaseView
 		'click button#select': 'chooseFile'
 
 	initialize: =>
-		#@funcNum = @getUrlParam('CKEditorFuncNum')
+		@funcNum = @getUrlParam('CKEditorFuncNum')
+		@courseid = @getUrlParam('courseid')
+		@typefilter = @getUrlParam('typefilter')
 		@filteredcollection = @collection.filter (file) ->
-			true
-		@typefilter = 'all'
+			file.get('type') == @typefilter
 		@tagfilter = null
 		@collection.bind('add',@render)
 		@render()
 
-	getUrlParam: (paramname) ->
+	getUrlParam: (paramName) ->
 		reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
 		match = window.location.search.match(reParam)
 		if match and match.length > 1 then match[1] else ''
@@ -84,6 +92,7 @@ class window.BrowseView extends BaseView
 				if @tagfilter? then @tagfilter in file.get('tags') else true
 			else
 				file.get('type') == @typefilter
+		
 		taglist = []
 
 		for file in @filteredcollection
@@ -97,17 +106,19 @@ class window.BrowseView extends BaseView
 			@$('.taglist').append("<li>No Tags</li>")
 		else
 			for tag in _.uniq(taglist)
-				@$('.taglist').append("<li><a class='tagselectors' tagid='"+tag+"'>"+tag+"</a></li>")
+				@$('.taglist').append("<li><a class='tagselectors' id='"+tag+"'>"+tag+"</a></li>")
 
 	uploadFile: =>
 		file = new File
 			type: ['picture','file','th-large'][Math.floor(Math.random()*3)]
 			_id: Math.random()
+			courseid: @courseid
 			tags: [['file','stuff'],['whatever','dogs','french','early','gandalf','snack','file'],['one','snack']][Math.floor(Math.random()*3)]
 		@collection.add(file)
 
-	chooseFile: =>
-		@selectedId
+	chooseFile: ->
+		window.opener.CKEDITOR.tools.callFunction(@funcNum, @selected.get('fileurl'))
+		self.close()
 
 	filterTypes: (ev) =>
 		@typefilter = ev.target.id
@@ -115,7 +126,7 @@ class window.BrowseView extends BaseView
 		@render()
 
 	filterTags: (ev) =>
-		@tagfilter = ev.target.tagid
+		@tagfilter = ev.target.id
 		@typefilter = 'all'
 		@render()
 
