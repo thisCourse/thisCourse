@@ -5,7 +5,7 @@ dummy_id = "123456781234567812345678"
 
 class TestAPI(unittest.TestCase):
 
-    def setUp(self):        
+    def setUp(self):
         self.objs = {}
         self.objs["complex"] = {"_id": "123456789012345678901234", "sections": [{"_id": "123456789012345678901235", "val": 556}, {"_id": "123456789012345678901236", "val": 443}], "d": {"more": "stuff", "here": "!"}, "type": 54}
         self.objs["simple"] = {"nums": [1,2,3], "name": "Jamie"}

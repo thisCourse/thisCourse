@@ -1,4 +1,5 @@
 mongoskin = require('mongoskin')
+mongojs = require('mongojs')
 async = require('async')
 express = require("express")
 nodeStatic = require('node-static');
@@ -6,8 +7,9 @@ utils = require("./utils.coffee")
 Backbone = require("backbone")
 fs = require("fs")
 
+#db = mongojs.connect("test")
 db = mongoskin.db('127.0.0.1/test?auto_reconnect')
-ObjectId = db.ObjectID
+ObjectId = db.bson_serializer.ObjectID
 
 collections = {}
 
@@ -23,7 +25,7 @@ class MongoCollection
         @datatype = @getDataType()
         @path = @getSplitPath()
         @email = @getUserEmail()
-        @handle_request req, res
+        @handle_request()
 
     getBodyData: => @req.body
 
@@ -33,13 +35,62 @@ class MongoCollection
 
     getDataType: => @data.constructor.name.toLowerCase()
 
+    retrieveDocumentById: (callback) =>
+        console.log "retrieveDocumentById"
+        @query = _id: new ObjectId(@req.params.id)
+        @collection.findOne @query, (err, doc) =>
+            if err
+                err = @getAPIError("Error loading document: " + err)
+            else if not doc
+                err = @getAPIError("Specified '" + @name + "' document could not be found!", 404)
+            @document = doc
+            callback err
+
+    getAPIError: (message, status) =>
+        if message.message
+            message = message.message
+        return new APIError(@res, message.toString?() or message, status)
+
+    findObjectByPath: (callback) =>
+        @object = utils.get_by_path(@document, @path)
+        @object_ref = @path.join('.')
+        @parent_ref = null
+        @parent_is_array = false
+        if @object_ref
+            parent_path = @path.slice(0,-1)
+            @parent_ref = parent_path.join('.')
+            if utils.get_by_path(@document, parent_path) instanceof Array
+                @parent_is_array = true
+        
+        if @object is null
+            callback @getAPIError("Specified path could not be found within document!", 404)
+        else
+            callback()
+
+    # helper function for returning json results
+    mongoJsonResponse: (err, obj) =>
+        if err
+            return @getAPIError("Error while performing operation: " + err.toString())
+        if obj instanceof Object
+            obj = utils.get_by_path(obj, @path)
+        else if (@data instanceof Object && @data._id)
+            obj = _id: @data._id
+        else
+            obj = {}
+        console.log err, obj
+        @res.json obj
+
+    updateDatabaseAndRespond: (update_obj) =>
+        console.log @query, update_obj
+        @collection.update(@query, update_obj, {safe: true, upsert: true}, @mongoJsonResponse)
+
     # handle an api request
-    handle_request: (req, res) ->
+    handle_request: =>
 
-        if req.method != "GET" and not @email and not @name=="test" # TODO: this will be more robust... :P
-            return APIError(res, "You must be logged in to do that!", 403)
+        if @req.method != "GET" and not @email and not @name=="test" # TODO: this will be more robust... :P
+            return @getAPIError("You must be logged in to do that!", 403)
 
-        console.log @method, req.url, @path, @data
+        console.log @req.method, @req.url, @path, @data
         
         if @data.constructor is Object
              # merge the querystring params into the data body
@@ -47,137 +98,103 @@ class MongoCollection
             # we don't want users to be able to provide their own _id, so clear it
             delete @data._id
 
-        # remove fields starting with _ from the data object, except _id fields (which we set to new ObjectId's)
-        # recursively_sanitize data
-        
-        if req.params.id==undefined # document id was not specified in url (i.e. it references a collection itself)
+        if @req.params.id==undefined # document id was not specified in url (i.e. it references a collection itself)
             
-            if @path.lengthq # e.g. /api/courses/title/ (no id, but has sub-path)
-                return APIError(res, "Invalid URL (document ID not specified or in invalid format).", 405)
+            if @path.length # e.g. /api/courses/title/ (no id, but has sub-path)
+                return @getAPIError("Invalid URL (document ID not specified or in invalid format).", 405)
         
-            if req.method isnt 'POST' # we may want to allow GET here too, for querying a collection?
-                return APIError(res, "Only POST (and sometimes GET) requests are allowed directly on collections.", 405)
+            if @req.method isnt 'POST' # we may want to allow GET here too, for querying a collection?
+                return @getAPIError("Only POST (and sometimes GET) requests are allowed directly on collections.", 405)
             
             # TODO: check permissions
             
-            @collection.save @data, (err, obj) ->
-                res.json obj # return the newly created object (or should it just return the _id?)
+            @collection.save @data, (err, obj) =>
+                @res.json obj # return the newly created object (or should it just return the _id?)
             
             return
         
-        query = {_id: @collection.id(req.params.id)}
-        
-        # find the existing object in the database
-        @collection.find(query).toArray (err, arr) =>
 
-            if err
-                return APIError(res, "Error while performing query: " + err.toString(), 500)
-            
-            if arr.length == 0
-                return APIError(res, "Specified '" + req.params.collection + "' document could not be found!", 404)
-            
-            document = arr[0]
-            object = utils.get_by_path(document, @path)
-            object_ref = @path.join('.')
-            
-            parent_ref = null
-            parent_is_array = false
-            if object_ref
-                parent_ref = @path.slice(0,-1).join('.')
-                if (utils.get_by_path(document, @path.slice(0,-1)) instanceof Array)
-                    parent_is_array = true
-            
-            if object is null
-                return APIError(res, "Specified path could not be found within document!", 404)
-                    
-            # helper function for returning json results
-            mongo_json_response = (err, obj) =>
-                if err
-                    return APIError(res, "Error while performing operation: " + err.toString(), 500)
-                if obj instanceof Object
-                    obj = utils.get_by_path(obj, @path)
-                else if (@data instanceof Object && @data._id)
-                    obj = _id: @data._id
-                else
-                    obj = {}
-                console.log err, obj
-                res.json obj
-            
-            update_and_respond = (update_obj) =>
-                console.log query, update_obj
-                @collection.update(query, update_obj, {safe: true, upsert: true}, mongo_json_response)
-                    
-            type = req.method + " "
+        async.series [
+            @retrieveDocumentById
+            @findObjectByPath
+            (callback) =>
+                @finishProcessingRequest()
+                callback null
+        ]#, (err, results) =>
 
-            if object_ref == ""
-                type += "document"
+    finishProcessingRequest: =>
+
+        type = @req.method + " "
+
+        if @object_ref == ""
+            type += "document"
+        else
+            if @object instanceof Array
+                type += "array"
+            else if @object instanceof Object
+                type += "object"
             else
-                if object instanceof Array
-                    type += "array"
-                else if object instanceof Object
-                    type += "object"
-                else
-                    type += "value"
+                type += "value"
+        
+        switch type
+
+            when 'GET document', 'GET array', 'GET object', 'GET value'
+                if @object instanceof Object
+                    if @email
+                        @object._editor = true
+                    else
+                        @object._editor = false
+                console.log @object
+                return @res.json(@object)
+
+            when 'POST document' # replace entire document with new document
+                return @updateDatabaseAndRespond(@data)
+            when 'POST array'  # add new element to array (with generated _id, if object), or replace array (if data is an array)
+                operation = '$push'
+                if @data instanceof Array
+                    operation = '$set'
+                else if @data instanceof Object
+                    @data._id = new ObjectId # new object's _id won't be autogenerated; need to do it manually
+                # build up a $push or $set expression targeting the object path
+                return @updateDatabaseAndRespond(utils.wrap_in_object(operation, utils.wrap_in_object(@object_ref, @data)))
+            when 'POST object', 'POST value' # replace object/value with new data (preserving _id if object has one)
+                if @object._id
+                    @data._id = @object._id
+                # do an in-place update of the field with the new data
+                return @updateDatabaseAndRespond({$set: utils.wrap_in_object(@object_ref, @data)})
             
-            switch type
-
-                when 'GET document', 'GET array', 'GET object', 'GET value'
-                    if object instanceof Object
-                        if req.session.email
-                            object._editor = true
-                        else
-                            object._editor = false
-                    console.log object
-                    return res.json(object)
-
-                when 'POST document' # replace entire document with new document
-                    return update_and_respond(@data)
-                when 'POST array'  # add new element to array (with generated _id, if object), or replace array (if data is an array)
-                    operation = '$push'
-                    if @data instanceof Array
-                        operation = '$set'
-                    else if @data instanceof Object
-                        @data._id = new ObjectId() # new object's _id won't be autogenerated; need to do it manually
-                    # build up a $push or $set expression targeting the object path
-                    return update_and_respond(utils.wrap_in_object(operation, utils.wrap_in_object(object_ref, @data)))
-                when 'POST object', 'POST value' # replace object/value with new data (preserving _id if object has one)
-                    if object._id
-                        @data._id = object._id
-                    # do an in-place update of the field with the new data
-                    return update_and_respond({$set: utils.wrap_in_object(object_ref, @data)})
-                
-                when 'PUT document' # update document fields (merge/extend into existing)
-                    # merge the fields specified in data into the existing object
-                    @data = utils.merge(object, @data)
-                    # save the extended (updated) document back to the database
-                    return update_and_respond(object)
-                when 'PUT array' # hmm... use this spot to change order?
-                    if @data instanceof Array
-                        return update_and_respond(merge_arrays(object, @data))
-                    return APIError(res, "Only arrays can be PUT onto arrays. " +
-                                         "Use POST to add an item to the array, or to overwrite the array with a new one.", 405)
-                when 'PUT object' # update subobject with new data object (merge/extend into existing, preserving _id)                
-                    if (!(@data instanceof Object) || (@data instanceof Array))
-                        return APIError(res, "Cannot PUT a non-object value on top of an object. Use POST if you want to replace the object with this value.", 405)
-                    # merge the fields specified in data into the existing object
-                    @data = utils.merge(object, @data)
-                    # save the extended (updated) object back to the database
-                    return update_and_respond({$set: utils.wrap_in_object(object_ref, @data)})
-                when 'PUT value'
-                    # overwrite the value with the new data
-                    return update_and_respond({$set: utils.wrap_in_object(object_ref, @data)})
-                
-                when 'DELETE document'
-                    @collection.remove(query, {safe: true}, mongo_json_response)
-                when 'DELETE array', 'DELETE object', 'DELETE value'
-                    if (object._id && parent_is_array)
-                        return update_and_respond({$pull: utils.wrap_in_object(parent_ref, {_id: object._id})})
-                    # remove the field from the document
-                    @collection.update query, {$unset: utils.wrap_in_object(object_ref, 1)}, (err, obj) ->
-                        if parent_is_array
-                            return update_and_respond({$pull: utils.wrap_in_object(parent_ref, null)})
-                        else
-                            return mongo_json_response(err, obj)
+            when 'PUT document' # update document fields (merge/extend into existing)
+                # merge the fields specified in data into the existing object
+                @data = utils.merge(@object, @data)
+                # save the extended (updated) document back to the database
+                return @updateDatabaseAndRespond(@object)
+            when 'PUT array' # hmm... use this spot to change order?
+                if @data instanceof Array
+                    return @updateDatabaseAndRespond(merge_arrays(@object, @data))
+                return @getAPIError("Only arrays can be PUT onto arrays. " +
+                                     "Use POST to add an item to the array, or to overwrite the array with a new one.", 405)
+            when 'PUT object' # update subobject with new data object (merge/extend into existing, preserving _id)                
+                if (!(@data instanceof Object) || (@data instanceof Array))
+                    return @getAPIError("Cannot PUT a non-object value on top of an object. Use POST if you want to replace the object with this value.", 405)
+                # merge the fields specified in data into the existing object
+                @data = utils.merge(@object, @data)
+                # save the extended (updated) object back to the database
+                return @updateDatabaseAndRespond({$set: utils.wrap_in_object(@object_ref, @data)})
+            when 'PUT value'
+                # overwrite the value with the new data
+                return @updateDatabaseAndRespond({$set: utils.wrap_in_object(@object_ref, @data)})
+            
+            when 'DELETE document'
+                @collection.remove(@query, {safe: true}, @mongoJsonResponse)
+            when 'DELETE array', 'DELETE object', 'DELETE value'
+                if @object._id and @parent_is_array
+                    return @updateDatabaseAndRespond({$pull: utils.wrap_in_object(@parent_ref, {_id: @object._id})})
+                # remove the field from the document
+                @collection.update @query, {$unset: utils.wrap_in_object(@object_ref, 1)}, (err, obj) =>
+                    if @parent_is_array
+                        return @updateDatabaseAndRespond({$pull: utils.wrap_in_object(@parent_ref, null)})
+                    else
+                        return @mongoJsonResponse(err, obj)
 
 
 routing_pattern = '/:collection([a-z]+)/:id([0-9a-fA-F]{24})?:path(*)'
@@ -185,10 +202,11 @@ routing_pattern = '/:collection([a-z]+)/:id([0-9a-fA-F]{24})?:path(*)'
 request_handler = (req, res) ->
     if req.params.collection not of collections
         return APIError(res, "Collection '" + req.params.collection + "' is not defined.", 404)
-    collection = new collections[req.params.collection](req, res)
+    try
+        collection = new collections[req.params.collection](req, res)
+    catch err
+        new APIError "CAUGHT ERROR: " + err.toString(), 500
     
-    #collection.handle_request req, res
-
 
 router = ->
     @get "/", (req, res) ->
@@ -204,7 +222,7 @@ router = ->
 class APIError
 
     constructor: (res, msg, code=500) ->
-        console.log "error:", msg
+        console.log "Error:", msg
         res.json
             _error:
                 message: msg
