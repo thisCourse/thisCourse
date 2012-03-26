@@ -2,6 +2,7 @@ from api_test import Request, get, post, put, delete
 import unittest
 
 dummy_id = "123456781234567812345678"
+collection_path = "/test/"
 
 class TestAPI(unittest.TestCase):
 
@@ -13,9 +14,9 @@ class TestAPI(unittest.TestCase):
         # create the objects
         for key in self.objs:
             obj = self.objs[key] = {"data": self.objs[key]}
-            obj["response"] = post("/test/", obj["data"])
+            obj["response"] = post(collection_path, obj["data"])
             obj["id"] = obj["response"].body['_id']
-            obj["path"] = "/test/" + obj["id"]
+            obj["path"] = collection_path + obj["id"]
     
     def tearDown(self):
         for obj in self.objs:
@@ -26,11 +27,11 @@ class TestAPI(unittest.TestCase):
 
     def test_get_nonexistent_returns_404(self):
         get("/testingbadcollectionname").status(404)
-        get("/test/001001001001001001001001/").status(404)
+        get(collection_path + "001001001001001001001001/").status(404)
 
     def test_post_nonexistent_returns_404(self):
         post("/testingbadcollectionname", data={}).status(404)
-        post("/test/001001001001001001001001/", data={}).status(404)
+        post(collection_path + "001001001001001001001001/", data={}).status(404)
        
     def test_post_object_onto_collection(self):
         # we've already created objects in setUp, so just make sure they're accurate
@@ -63,20 +64,20 @@ class TestAPI(unittest.TestCase):
         new_array = get(obj["path"] + "/sections").body
         assert len(new_array)==len(old_array)+2, "After adding 2 objects, the length of the array went from %d to %d!" % (len(old_array), len(new_array))
         
-    # def test_post_array_onto_array(self):
-    #     obj = self.objs["complex"]
-    #     post(obj["path"] + "/sections", ["a", "b"]).status(200)
-    #     get(obj["path"] + "/sections").status(200).equals(["a", "b"])
+    def test_post_array_onto_array(self):
+        obj = self.objs["complex"]
+        post(obj["path"] + "/sections", ["a", "b"]).status(200)
+        get(obj["path"] + "/sections").status(200).equals(["a", "b"])
         
-    # def test_post_value_onto_array(self):
-    #     obj = self.objs["complex"]
-    #     old_array = get(obj["path"] + "/sections").body
-    #     post(obj["path"] + "/sections", 17).status(200)
-    #     post(obj["path"] + "/sections", "hello").status(200)
-    #     get(obj["path"] + "/sections").contains(17).contains("hello")
-    #     # check that only 2 items have been added
-    #     new_array = get(obj["path"] + "/sections").body
-    #     assert len(new_array)==len(old_array)+2, "After adding 2 values, the length of the array went from %d to %d!" % (len(old_array), len(new_array))
+    def test_post_value_onto_array(self):
+        obj = self.objs["complex"]
+        old_array = get(obj["path"] + "/sections").body
+        post(obj["path"] + "/sections", 17).status(200)
+        post(obj["path"] + "/sections", "hello").status(200)
+        get(obj["path"] + "/sections").contains(17).contains("hello")
+        # check that only 2 items have been added
+        new_array = get(obj["path"] + "/sections").body
+        assert len(new_array)==len(old_array)+2, "After adding 2 values, the length of the array went from %d to %d!" % (len(old_array), len(new_array))
         
     def test_post_object_onto_object(self):
         obj = self.objs["embedded"]
@@ -116,13 +117,18 @@ class TestAPI(unittest.TestCase):
         # string
         post(obj["path"] + "/name", "Jamie Alexandre").status(200)
         get(obj["path"] + "/name").status(200).equals("Jamie Alexandre")
-
         
-    #def test_put_object_onto_collection(self):
+    def test_put_object_onto_collection(self):
+        put(collection_path, {"hello": "world"}).status(405)
+        put(collection_path, {"hello": "world", "_id": self.objs["simple"]['id']}).status(405)
         
-    #def test_put_array_onto_collection(self):
+    def test_put_array_onto_collection(self):
+        put(collection_path, [1,2,3]).status(405)
+        put(collection_path, [{"hello": "world"}, {"_id": self.objs["simple"]['id']}]).status(405)
         
-    #def test_put_value_onto_collection(self):
+    def test_put_value_onto_collection(self):
+        put(collection_path, "hello world").status(405)
+        put(collection_path, 17).status(405)        
         
     def test_put_object_onto_document(self):
         obj = self.objs["complex"]
@@ -201,7 +207,13 @@ class TestAPI(unittest.TestCase):
         get(obj["path"] + "/sections/" + _id2).status(200)
         
         
-    #def test_delete_value(self):
+    def test_delete_value(self):
+        obj = self.objs["simple"]
+        get(obj["path"] + "/name").status(200)
+        delete(obj["path"] + "/name").status(200)
+        get(obj["path"] + "/name").status(404)
+        get(obj["path"] + "/nums").status(200)
+
         
 if __name__ == '__main__':
     unittest.main()

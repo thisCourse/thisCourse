@@ -6,7 +6,7 @@ define [], () ->
 
         url: => # TODO: test this, and make the api endpoint configurable
             if @apiCollection
-                return "/api/" + @apiCollection + "/" + @id or ""
+                return "/api/" + @apiCollection + "/" + (@id or "")
 
 
     class LazyModel extends BaseModel
@@ -26,17 +26,20 @@ define [], () ->
             idAttribute = Backbone.Model.prototype.idAttribute
             for key,opts of @relations
                 if opts.collection # if it's a "one to many" relation
+                    if key not of attributes then attributes[key] = [] # default to an empty collection
                     collection = attributes[key] = new opts.collection(attributes[key]) # turn array into collection
                     collection.url = (@url?() or @url) + key # TODO: do a better join? what if parent not saved yet?
                     for model in collection.models # add a parent link to each of the collection's models
                         model.parent = {model: @, key: key}
                 else if opts.model # if it's a "one to one" relation
+                    if key not of attributes then attributes[key] = {} # default to an empty model
                     if _.isString(attributes[key]) # if just a string, assume it's an id and put it in an object
                         attributes[key] = {_id: attributes[key]}
                     if _.isObject(attributes[key]) # if it's an object (should be!), then turn it into a model
                         model = attributes[key] = new opts.model(attributes[key])
                         model.parent = {model: @, key: key} # add a parent link to the model
                         model.url = (@url?() or @url) + key # TODO: do a better join? what if parent not saved yet?
+            console.log "setting", attributes, options
             super attributes, options
 
         toJSON: ->
