@@ -47,6 +47,14 @@ merge = (dest, src) ->
     
     return dest
 
+# removes all fields from object not listed in "fields"
+filter_object_fields = (object, fields) ->
+    if not fields or fields==true
+        return
+    for key of object
+        if key not in fields
+            delete object[key]
+
 
 module.exports = 
     get_by_id: get_by_id
@@ -54,3 +62,4 @@ module.exports =
     wrap_in_object: wrap_in_object
     merge: merge
     id_regex: id_regex
+    filter_object_fields: filter_object_fields

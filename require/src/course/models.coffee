@@ -5,13 +5,10 @@ define ["cs!base/models", "cs!lecture/models", "cs!content/models"], \
 
         apiCollection: "course"
 
-        defaults:
-            test: 33
-
         relations: ->
             lectures:
                 collection: lecturemodels.LectureCollection
-                includeInJSON: ["title", "description", "scheduled", "page"]
+                includeInJSON: ["title", "description", "scheduled", "page", "html"]
             content:
                 model: contentmodels.ContentModel
                 includeInJSON: ['html']

@@ -1,3 +1,4 @@
+http = require("http")
 mongoskin = require('mongoskin')
 mongojs = require('mongojs')
 async = require('async')
@@ -42,11 +43,12 @@ class MongoCollection
                 err = new APIError("Specified '" + @name + "' document could not be found!", 404)
             @document = doc
             if @Model
-                @model = new @Model(@document)
-                @document = @model.toJSON()
+                @model = new @Model(@document) # turn the document into an instance of the appropriate Model
+                @document = @model.toJSON() # use the JSON output of the model as our document data
             callback err
 
     findObjectByPath: (callback) =>
+        @rawpath = @path.slice(0)
         @object = utils.get_by_path(@document, @path)
         @object_ref = @path.join('.')
         @parent_ref = null
@@ -56,11 +58,77 @@ class MongoCollection
             @parent_ref = parent_path.join('.')
             @parent = utils.get_by_path(@document, parent_path)
             @parent_type = @parent.constructor.name.toLowerCase()
-        
+
         if @object is null
             callback new APIError("Specified path could not be found within document!", 404)
         else
             callback()
+
+    traceLazyRelations: (callback) =>
+        if @model
+            obj = @model
+            for key,i in @rawpath
+                obj = obj.get(key)
+                if obj instanceof Backbone.Model or obj instanceof Backbone.Collection
+                    @submodel = obj
+                    @subpath = @path.slice(i+1)
+            if @submodel
+                console.log "SUBMODEL", @submodel.constructor.name
+                console.log "SUBPATH", @subpath
+                console.log "INCLUDE", @submodel.includeInJSON
+                if @submodel instanceof Backbone.Model
+                    @fullModelURL = "/api/" + @submodel.apiCollection + "/" + (@submodel.id or "") + @subpath.join("/") + "/"
+                if @submodel instanceof Backbone.Collection
+                    @fullModelURL = "/api/" + @submodel.model.prototype.apiCollection + "/"
+                if @fullModelURL and @submodel.includeInJSON!=true
+                    @isDenormalized = true
+            callback()
+        else
+            callback()
+
+    proxyToFullModel: (callback) =>
+        console.log "proxyToFullModel"
+
+        # this is not a denormalized model we're addressing, so just proceed
+        if not @isDenormalized
+            return callback()
+
+        isCollection = @submodel instanceof Backbone.Collection
+        
+        # don't proxy non-POST requests through to a collection
+        if isCollection and @req.method!="POST"
+            return callback()
+
+        # proxy denormalized model requests to the full collection url
+        proxy = http.createClient(3000) # TODO: include port number in a "settings" file
+        proxy_request = proxy.request(@req.method, @fullModelURL, @req.headers)
+        proxy_request.write JSON.stringify(@data)
+        proxy_request.end()
+        proxy_request.on "response", (response) =>
+            body = ""
+            response.on 'data', (chunk) =>
+                console.log "DATA", chunk
+                body += chunk
+            response.on 'end', =>
+                console.log body
+                body = JSON.parse(body)
+                if response.statusCode != 200
+                    callback new APIError(body._error or body.toString(), response.statusCode)
+                else
+                    if @subpath.length==0
+                        console.log "@subpath.length==0"
+                        # use response from object creation as data (especially so we end up with the same _id)
+                        if isCollection and @req.method=="POST" then @data = body
+                        # we're operating directly on the model (or collection), so filter by includeInJSON
+                        utils.filter_object_fields @data, @submodel.includeInJSON
+                        callback()
+                    else if @req.method=="GET" or @subpath[0] not in @submodel.includeInJSON
+                        console.log '@req.method=="GET" or @subpath[0] not in @submodel.includeInJSON'
+                        # pass right through if it was just a GET request or if subpath isn't inside includeInJSON
+                        callback new JSONResponse(body, response.statusCode)
+                    else # the field *is* in includeInJSON, so just proceed normally
+                        console.log "field *is* in includeInJSON"
+                        callback()
 
     # helper function for building JSON response
     mongoJsonResponse: (err, obj) =>
@@ -120,6 +188,8 @@ class MongoCollection
             @handleDirectCollectionReference # needs to happen before @retrieveDocumentById
             @retrieveDocumentById
             @findObjectByPath
+            @traceLazyRelations
+            @proxyToFullModel
             @determineObjectType
             @finishProcessingRequest
         ], (jsonresponse) =>
@@ -146,15 +216,6 @@ class MongoCollection
     process_DELETE_collection: (callback) =>
         callback new APIError("You cannot DELETE a collection. What would that even mean?", 405)
 
-    process_GET: (callback) =>
-        if @object instanceof Object
-            if @email
-                @object._editor = true
-            else
-                @object._editor = false
-        console.log @object
-        callback new JSONResponse(@object)        
-
     process_GET_document: (callback) => @process_GET(callback)
 
     process_GET_array: (callback) => @process_GET(callback)
@@ -162,6 +223,15 @@ class MongoCollection
     process_GET_object: (callback) => @process_GET(callback)
 
     process_GET_value: (callback) => @process_GET(callback)
+
+    process_GET: (callback) =>
+        if @object instanceof Object
+            if @email
+                @object._editor = true
+            else
+                @object._editor = false
+        console.log @object
+        callback new JSONResponse(@object)
 
     # replace entire document with new document
     process_POST_document: (callback) => @updateDatabase(@data, callback)
@@ -178,8 +248,7 @@ class MongoCollection
 
     # replace object/value with new data (preserving _id if object has one)
     process_POST_object: (callback) => 
-        if @object._id
-            @data._id = @object._id
+        @data._id = @object._id or new ObjectId
         @process_POST_value(callback)
 
     # do an in-place update of the field with the new data
