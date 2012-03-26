@@ -13,5 +13,6 @@ define ["cs!base/models", "cs!lecture/models", "cs!content/models"], \
                 model: contentmodels.ContentModel
                 includeInJSON: ['html']
 
+    class CourseCollection extends basemodels.LazyCollection
 
     CourseModel: CourseModel

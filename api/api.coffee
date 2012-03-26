@@ -16,7 +16,7 @@ collections = {}
 class MongoCollection
 
     name: "test"
-    Model: Backbone.Model
+    #Model: Backbone.Model
 
     constructor: (req, res) ->
         @req = req
@@ -36,7 +36,6 @@ class MongoCollection
     getDataType: => @data.constructor.name.toLowerCase()
 
     retrieveDocumentById: (callback) =>
-        console.log "retrieveDocumentById"
         @query = _id: new ObjectId(@req.params.id)
         @collection.findOne @query, (err, doc) =>
             if err
@@ -44,6 +43,7 @@ class MongoCollection
             else if not doc
                 err = @getAPIError("Specified '" + @name + "' document could not be found!", 404)
             @document = doc
+            @model = new @Model(@document) if @Model
             callback err
 
     getAPIError: (message, status) =>
@@ -84,11 +84,28 @@ class MongoCollection
         console.log @query, update_obj
         @collection.update(@query, update_obj, {safe: true, upsert: true}, @mongoJsonResponse)
 
+    determineObjectType: (callback) =>
+        @type = @req.method + " "
+
+        if @object_ref == ""
+            @type += "document"
+        else
+            if @object instanceof Array
+                @type += "array"
+            else if @object instanceof Object
+                @type += "object"
+            else
+                @type += "value"
+
+        callback()
+
+    permissionCheck: (callback) =>
+        if @req.method != "GET" and not @email and not @name=="test" # TODO: this will be more robust... :P
+            callback @getAPIError("You must be logged in to do that!", 403)
+        callback()
+
     # handle an api request
     handle_request: =>
-
-        if @req.method != "GET" and not @email and not @name=="test" # TODO: this will be more robust... :P
-            return @getAPIError("You must be logged in to do that!", 403)
 
         console.log @req.method, @req.url, @path, @data
         
@@ -113,30 +130,19 @@ class MongoCollection
             
             return
         
-
         async.series [
+            @permissionCheck
             @retrieveDocumentById
             @findObjectByPath
+            @determineObjectType
             (callback) =>
                 @finishProcessingRequest()
                 callback null
         ]#, (err, results) =>
 
     finishProcessingRequest: =>
-
-        type = @req.method + " "
-
-        if @object_ref == ""
-            type += "document"
-        else
-            if @object instanceof Array
-                type += "array"
-            else if @object instanceof Object
-                type += "object"
-            else
-                type += "value"
         
-        switch type
+        switch @type
 
             when 'GET document', 'GET array', 'GET object', 'GET value'
                 if @object instanceof Object
@@ -218,9 +224,7 @@ router = ->
     @put(routing_pattern, request_handler)
     @del(routing_pattern, request_handler)
 
-
 class APIError
-
     constructor: (res, msg, code=500) ->
         console.log "Error:", msg
         res.json
@@ -233,24 +237,11 @@ register_mongo_collection = (cls) ->
     cls.prototype.collection = db.collection(cls.prototype.name) # get the MongoDB collection reference
     collections[cls.prototype.name] = cls # store the collection class by name for later lookup
 
-class CourseMongoCollection extends MongoCollection
-    name: 'course'
-
-class ContentMongoCollection extends MongoCollection
-    name: 'content'
-
-class LectureMongoCollection extends MongoCollection
-    name: 'lecture'
-
-class AssignmentMongoCollection extends MongoCollection
-    name: 'assignment'
-
-class PageMongoCollection extends MongoCollection
-    name: 'page'
-
-for cls in [MongoCollection, CourseMongoCollection, ContentMongoCollection, LectureMongoCollection, AssignmentMongoCollection, PageMongoCollection]
-    register_mongo_collection cls
-
+initialize = ->
+    dir = __dirname + "/collections/"
+    for file in fs.readdirSync(dir)
+        require(dir + file)
+    register_mongo_collection MongoCollection
 
 module.exports = 
     collections: collections
@@ -258,4 +249,4 @@ module.exports =
     router: router
     APIError: APIError
     register_mongo_collection: register_mongo_collection
-
+    initialize: initialize

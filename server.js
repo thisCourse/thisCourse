@@ -122,3 +122,6 @@ var server = express.createServer(
 )
 
 server.use(express.vhost('beta.thiscourse.com', app))
+
+api.initialize()
+
