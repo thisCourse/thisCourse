@@ -1,11 +1,11 @@
-define ["cs!base/views", "cs!course/views"], (baseviews, courseviews) ->
+define ["cs!base/views", "cs!course/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap"], (baseviews, courseviews, templates, bootstrap) ->
 
     class RootView extends baseviews.BaseView
 
         el: "body"
 
         render: =>
-            @$el.html "<div class='tabs'></div><div class='contents'></div>"
-            @add_subview "courseview", new courseviews.CourseView(model: @model), @$(".contents")
+            @$el.html templates.root @context()
+            @add_subview "courseview", new courseviews.CourseView(model: @model), @$("#content")
 
     return RootView: RootView
