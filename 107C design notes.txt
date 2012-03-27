@@ -1,0 +1,5 @@
+blue - glossary links
+green - 'anatomical' glossary links - hover, image, click to persist image
+red - link to pdf
+
+glossary items titled in blue in ppts
