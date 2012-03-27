@@ -35,7 +35,7 @@ class MongoCollection
     splitPath: (path) => path.split('/').filter((m) -> m.length > 0)
 
     retrieveDocumentById: (callback) =>
-        @query = _id: new ObjectId(@req.params.id)
+        @query = _id: new ObjectId(@req.params.id.toString())
         @collection.findOne @query, (err, doc) =>
             if err
                 err = new APIError("Error loading document: " + err)
@@ -77,17 +77,23 @@ class MongoCollection
                 console.log "SUBPATH", @subpath
                 console.log "INCLUDE", @submodel.includeInJSON
                 if @submodel instanceof Backbone.Model
-                    @fullModelURL = "/api/" + @submodel.apiCollection + "/" + (@submodel.id or "") + @subpath.join("/") + "/"
+                    @fullModelParams =
+                        collection: @submodel.apiCollection
+                        id: @submodel.id.toString() or ""
+                        path: "/" + @subpath.join("/")
+                    @fullModelURL = "/api/" + @fullModelParams.collection + "/" + @fullModelParams.id + @fullModelParams.path
                 if @submodel instanceof Backbone.Collection
-                    @fullModelURL = "/api/" + @submodel.model.prototype.apiCollection + "/"
-                if @fullModelURL and @submodel.includeInJSON!=true
+                    @fullModelParams =
+                        collection: @submodel.model.prototype.apiCollection
+                        path: ""
+                    @fullModelURL = "/api/" + @fullModelParams.collection + "/"
+                if @fullModelParams and @submodel.includeInJSON!=true
                     @isDenormalized = true
             callback()
         else
             callback()
 
     proxyToFullModel: (callback) =>
-        console.log "proxyToFullModel"
 
         # this is not a denormalized model we're addressing, so just proceed
         if not @isDenormalized
@@ -99,23 +105,15 @@ class MongoCollection
         if isCollection and @req.method!="POST"
             return callback()
 
-        # proxy denormalized model requests to the full collection url
-        proxy = http.createClient(3000) # TODO: include port number in a "settings" file
-        proxy_request = proxy.request(@req.method, @fullModelURL, @req.headers)
-        proxy_request.write JSON.stringify(@data)
-        proxy_request.end()
-        proxy_request.on "response", (response) =>
-            body = ""
-            response.on 'data', (chunk) =>
-                console.log "DATA", chunk
-                body += chunk
-            response.on 'end', =>
-                console.log body
-                body = JSON.parse(body)
-                if response.statusCode != 200
-                    callback new APIError(body._error or body.toString(), response.statusCode)
+        console.log "proxyToFullModel"
+
+        proxy_res =
+            json: (body, headers, status) =>
+                console.log "GOT BACK DATA", body
+                if status != 200
+                    callback new APIError(body._error or body.toString(), status)
                 else
-                    if @subpath.length==0
+                    if @subpath.length==0 and @req.method!="GET"
                         console.log "@subpath.length==0"
                         # use response from object creation as data (especially so we end up with the same _id)
                         if isCollection and @req.method=="POST" then @data = body
@@ -125,11 +123,16 @@ class MongoCollection
                     else if @req.method=="GET" or @subpath[0] not in @submodel.includeInJSON
                         console.log '@req.method=="GET" or @subpath[0] not in @submodel.includeInJSON'
                         # pass right through if it was just a GET request or if subpath isn't inside includeInJSON
-                        callback new JSONResponse(body, response.statusCode)
+                        callback new JSONResponse(body, status)
                     else # the field *is* in includeInJSON, so just proceed normally
                         console.log "field *is* in includeInJSON"
                         callback()
-
+        
+        @req.params = @fullModelParams
+        @req.url = @fullModelURL
+        
+        request_handler @req, proxy_res
+        
     # helper function for building JSON response
     mongoJsonResponse: (err, obj) =>
         if err
@@ -179,9 +182,6 @@ class MongoCollection
     handle_request: =>
 
         console.log @req.method, @req.url, @path, @data
-
-        if @data._id
-            delete @data._id
                 
         async.series [
             @permissionCheck
@@ -207,6 +207,8 @@ class MongoCollection
         callback new APIError("The '#{ @name }' collection does not support GET queries.", 405)
 
     process_POST_collection: (callback) =>
+        if @data._id
+            delete @data._id
         @collection.save @data, (err, obj) =>
             callback new JSONResponse(obj) # return the newly created object (or should it just return the _id?)
 
@@ -234,7 +236,10 @@ class MongoCollection
         callback new JSONResponse(@object)
 
     # replace entire document with new document
-    process_POST_document: (callback) => @updateDatabase(@data, callback)
+    process_POST_document: (callback) =>
+        if @data._id
+            delete @data._id
+        @updateDatabase(@data, callback)
 
     # add new element to array (with generated _id, if object), or replace array (if data is an array)
     process_POST_array: (callback) =>
@@ -242,7 +247,7 @@ class MongoCollection
         if @data instanceof Array
             operation = '$set'
         else if @data instanceof Object
-            @data._id = new ObjectId # new object's _id won't be autogenerated; need to do it manually
+            @data._id or= new ObjectId # new object's _id won't be autogenerated; need to do it manually
         # build up a $push or $set expression targeting the object path
         return @updateDatabase(utils.wrap_in_object(operation, utils.wrap_in_object(@object_ref, @data)), callback)
 
@@ -257,6 +262,8 @@ class MongoCollection
     
     # update document fields (merge/extend into existing)
     process_PUT_document: (callback) =>
+        if @data._id
+            delete @data._id
         # merge the fields specified in data into the existing object
         @data = utils.merge(@object, @data)
         # save the extended (updated) document back to the database
@@ -307,10 +314,10 @@ routing_pattern = '/:collection([a-z]+)/:id([0-9a-fA-F]{24})?:path(*)'
 request_handler = (req, res) ->
     if req.params.collection not of collections
         return (new APIError("Collection '" + req.params.collection + "' is not defined.", 404)).send(res)
-    try
-        collection = new collections[req.params.collection](req, res)
-    catch err
-        new APIError "CAUGHT ERROR: " + err.toString(), 500
+#    try
+    collection = new collections[req.params.collection](req, res)
+#    catch err
+#        new APIError "CAUGHT ERROR: " + err.toString(), 500
     
 
 router = ->
