@@ -50,6 +50,9 @@ define(function() {
     		})
     	}
     	
+        // if (/\.handlebars$/.test(name)==false)
+        //     name += ".handlebars"
+        
     	if (config.isBuild) {
     		var text = fs.readFileSync(config.appDir + name).toString()
     		process_templates(text)

@@ -1,4 +1,4 @@
-define ["cs!./formatters.coffee"], (formatters) ->
+define ["cs!./formatters"], (formatters) ->
     
     # give access to all templates as partials
     Handlebars.partials = Handlebars.templates

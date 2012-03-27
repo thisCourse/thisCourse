@@ -58,12 +58,25 @@ define ["cs!./modelbinding"], (modelbinding) ->
             $(element or @$el).append view.el
             return view
         
+        # build a context object to be passed to a template for rendering
         context: =>
             data = {}
             data['url'] = @url if @url
             data['model'] = @model if @model
             data['collection'] = @collection if @collection
             return data
+
+        # set a view's Bootstrap grid system width according to its model's "width" property 
+        updateWidth: =>
+            @el.attr "class", @el[0].className.replace(/\w*\bspan\d+\b/g, "")
+            width = Math.max(@model.get("width"), @editView and @editView.minwidth or 4)
+            @el.addClass "span" + width if isFinite(width)
+            require("app").trigger "resized"
+
+        enablePlaceholders: =>
+            @$("[placeholder]").each (ind, el) ->
+                $(el).watermark $(el).attr("placeholder"), {}
+                $(el).attr "title", $(el).attr("placeholder")
 
     class RouterView extends BaseView
         

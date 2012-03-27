@@ -1,4 +1,4 @@
-define ["cs!utils/formatters", "cs!./modelbinding"], (formatters, modelbinding) ->
+define ["cs!utils/formatters"], (formatters) ->
     
     Backbone.Model.prototype.idAttribute = "_id"
 
@@ -16,6 +16,10 @@ define ["cs!utils/formatters", "cs!./modelbinding"], (formatters, modelbinding) 
                 return (formatters.date_from_string(d) for d in date)
             else
                 return formatters.date_from_string date
+                
+        save: =>
+            @trigger("save", @)
+            super
 
     class LazyModel extends BaseModel
 

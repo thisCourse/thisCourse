@@ -9,7 +9,7 @@
         hb: 'libs/requirejs/hb',
         less: 'libs/requirejs/less',
         order: 'libs/requirejs/order',
-        text: 'libs/requirejs/text'
+        text: 'libs/requirejs/text',
     },
     pragmasOnSave: {
         excludeCoffeeScript: true,

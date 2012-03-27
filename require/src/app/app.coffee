@@ -1,4 +1,4 @@
-define ["cs!./router", "cs!course/models"], (router, coursemodels) ->
+define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], (handlebars, router, coursemodels) ->
 
     console.log "starting app"
 

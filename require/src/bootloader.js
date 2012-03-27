@@ -9,7 +9,7 @@ config = {
         backbone: 'libs/backbone/backbone',
         underscore: 'libs/underscore'
     },
-    waitSeconds: 5,
+    waitSeconds: 2,
     baseUrl: "."
 }
 
