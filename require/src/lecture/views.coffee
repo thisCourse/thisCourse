@@ -1,4 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handlebars"], (baseviews, models, pageviews, templates) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handlebars", "less!./styles"], \
+        (baseviews, models, pageviews, templates, styles) ->
 
     class LectureRouterView extends baseviews.RouterView
 
