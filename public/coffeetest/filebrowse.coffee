@@ -133,23 +133,3 @@ class window.BrowseView extends BaseView
 
 window.filebrowse = new BrowseView
 	collection: files
-
-
-
-
-###parseUrl = (url) ->
-	
-
-
-
-getUrlParam = (paramname) ->
-	reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
-	match = window.location.search.match(reParam)
-	return if match and match.length > 1 then match[1] else ''
-
-[CKEditorFuncNum, path] = parseUrl(window.location.href)
-
-funcNum = getUrlParam('CKEditorFuncNum')
-fileUrl = '/file/file.txt'
-window.opener.CKEDITOR.tools.callFunction(funcNum, fileUrl)Syntax###
-
