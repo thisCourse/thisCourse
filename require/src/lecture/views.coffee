@@ -1,4 +1,4 @@
-define ["cs!base/views", "cs!./models", "cs!page/views"], (baseviews, models, pageviews) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handlebars"], (baseviews, models, pageviews, templates) ->
 
     class LectureRouterView extends baseviews.RouterView
 
@@ -9,11 +9,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views"], (baseviews, models, pa
     class LectureListView extends baseviews.BaseView
 
         render: =>
-            html = "<ul>"
-            for lecture in @collection.models
-                html += "<li><a href='" + @url + lecture.id + "/'>" + lecture.id + ": " + lecture.get("title") + "</a></li>"
-            html += "</ul>"
-            @$el.html html
+            @$el.html templates.lecture_list @context()
+            
 
     class LectureView extends baseviews.BaseView
         

@@ -6,7 +6,8 @@ config = {
         less: 'libs/requirejs/less',
         order: 'libs/requirejs/order',
         text: 'libs/requirejs/text',
-        backbone: 'libs/backbone/backbone'
+        backbone: 'libs/backbone/backbone',
+        underscore: 'libs/underscore'
     },
     waitSeconds: 5,
     baseUrl: "."

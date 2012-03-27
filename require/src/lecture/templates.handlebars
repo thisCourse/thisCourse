@@ -1,0 +1,12 @@
+<script id="lecture_list" type="text/x-handlebars-template">
+    
+    <h2>Lectures!</h2>
+
+    <ul>
+        {{#each collection/models }}
+            <li><a href="{{ ../url }}{{ id }}/">{{ attributes/title }}</a></li>
+        {{/each }}
+    </ul>
+
+</script>
+

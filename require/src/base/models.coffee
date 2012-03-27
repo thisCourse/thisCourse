@@ -1,5 +1,5 @@
-define [], () ->
-
+define ["cs!utils/formatters", "cs!./modelbinding"], (formatters, modelbinding) ->
+    
     Backbone.Model.prototype.idAttribute = "_id"
 
     class BaseModel extends Backbone.Model
@@ -8,6 +8,14 @@ define [], () ->
             if @apiCollection
                 return "/api/" + @apiCollection + "/" + (@id or "")
 
+        getDate = (attr) ->
+            date = @get(attr)
+            if not date
+                return undefined
+            else if date instanceof Array
+                return (formatters.date_from_string(d) for d in date)
+            else
+                return formatters.date_from_string date
 
     class LazyModel extends BaseModel
 

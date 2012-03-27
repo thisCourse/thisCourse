@@ -98,7 +98,15 @@ then save its JSON subset to its embedded context's collection
 user
 course
 groups (roster, instructors)
+permissions
 special _fields
+	incoming
+		POST: add __creator
+		PUT: set __updater
+
+
+	outgoing
+		add _editor
 inflating model
 saving related model
 analytics/logging
@@ -110,8 +118,12 @@ collection lookups
 custom endpoints
 
 
-
-
-
-
-
+phases
+	constructor
+		sets data, method, etc
+	initial permission check
+		POST on collection
+		GET on collection
+		POST/PUT/DELETE on document
+		GET document
+		

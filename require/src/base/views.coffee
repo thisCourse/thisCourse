@@ -1,6 +1,4 @@
-define [], () ->
-
-    console.log "starting base views"
+define ["cs!./modelbinding"], (modelbinding) ->
 
     class BaseView extends Backbone.View
 
@@ -59,7 +57,13 @@ define [], () ->
             # append the view's element either to the specified target element, or to parent's top-level element
             $(element or @$el).append view.el
             return view
-            
+        
+        context: =>
+            data = {}
+            data['url'] = @url if @url
+            data['model'] = @model if @model
+            data['collection'] = @collection if @collection
+            return data
 
     class RouterView extends BaseView
         
