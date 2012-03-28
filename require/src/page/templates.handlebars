@@ -1,4 +1,17 @@
-<script id="" type="text/x-handlebars-template">
+<script id="page" type="text/x-handlebars-template">
+
+    <div class="contents"></div>
+    <div class="navigation">
+        <h4>Contents</h4>
+        <ul class="nav-links"></ul>
+        {{#if _editor }}<button class="page-button add-button btn success">Add subpage</button>{{/if}}
+    </div>
     
 </script>
 
+
+<script id="page_nav_rows" type="text/x-handlebars-template">
+
+    <a href="{{ url }}">{{ content.title }}</a>
+    
+</script>

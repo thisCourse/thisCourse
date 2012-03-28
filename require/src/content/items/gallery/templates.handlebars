@@ -1,0 +1,37 @@
+<script id="item_gallery" type="text/x-handlebars-template">
+
+    <h4 class='itemtitle'>{{ title }}</h4>
+    <a href="{{ image_url }}" target="_blank" class="imagelink" rel="gallery_{{ parent.id }}">
+        <img src="{{#if thumb_url}}{{ thumb_url }}{{else}}{{ image_url }}{{/if}}" class="thumb" />
+    </a>
+    <p class="notes">{{ notes }}{{#if url }} (<a target="_blank" href="{{ url }}">link</a>){{/if}}</p>
+    {{> item_buttons }}
+    
+</script>
+
+
+<script id="item_gallery_edit" type="text/x-handlebars-template">
+
+    <input type="text" data="title" placeholder="Title"/>
+    <input type="text" data="image_url" placeholder="Image URL"/>
+    <input type="text" data="thumb_url" placeholder="Thumbnail URL"/>
+    <iframe class="uploader"></iframe>
+    <input type="text" data="url" placeholder="Link URL"/>
+    <textarea data="notes" placeholder="Notes..."/>
+    {{> item_edit_buttons }}
+    
+</script>
+
+
+<script id="item_gallery_title" type="text/x-handlebars-template">
+
+    <b>
+        {{#if title }}{{ title }}: {{/if}}
+        <span class="notes">{{ notes }}</span>
+    </b>
+    {{#if url }}
+        (<a target="_blank" href="{{ url }}">link</a>)
+    {{/if}}
+
+</script>
+

@@ -1,0 +1,27 @@
+<script id="schedule_date" type="text/x-handlebars-template">
+    
+    <th><strong class="date">{{$date date }}</strong></th>
+    <td class="schedule-items"></td>
+
+</script>
+
+
+<script id="schedule_item" type="text/x-handlebars-template">
+
+    <h4 class="schedule-item">
+        <span class="label type">{{ options.type }}</span>
+        <a class="title">{{ item.title }}{{#if options.continued }} <i>(continued)</i>{{/if}}</a>
+    </h4>
+    <div class="description">{{ item.description }}</div>    
+
+</script>
+
+
+<script id="schedule_section" type="text/x-handlebars-template">
+    
+    <div class="span14">
+        <table class="zebra-striped bordered-table schedule-inner">
+        </table>
+    </div>
+
+</script>
