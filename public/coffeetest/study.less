@@ -1,0 +1,36 @@
+@partialcolor: #EEEEAA;
+@claimedcolor: #AAFFCC;
+@nuggetcolor: #AACCFF;
+
+body {
+	background-color:#E0F0FF;
+}
+
+#studyapp {
+	max-width: 600px;
+	padding: 10px;
+	border-radius: 15px;
+	background-color: #FFFFFF;
+	box-shadow: 10px 10px 5px #888;
+}
+
+.nugget {
+	box-shadow: 10px 10px 5px #888;
+	background-color: @nuggetcolor;
+	&:hover {
+		background-color: lighten(@nuggetcolor,10%);
+		box-shadow: 5px 5px 5px #555;
+	}
+	&.claimed {
+		background-color:@claimedcolor;
+		&:hover {
+			background-color: lighten(@claimedcolor,10%);
+		}
+	}
+	&.partial {
+		background-color:@partialcolor;
+		&:hover{
+			background-color:lighten(@partialcolor,10%);
+		}
+	}
+}
