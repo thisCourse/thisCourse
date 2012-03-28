@@ -1,0 +1,45 @@
+<html>
+<head>
+	<script src="/static/coffeetest/jquery-1.7.1.js"></script>
+    <script src="/static/coffeetest/underscore.js"></script>
+    <script src="/static/coffeetest/backbone.js"></script>
+    <script src="/static/libs/js/handlebars.1.0.0.beta.3.js"></script>
+	<script src="/static/bootstrap2/js/bootstrap.js"></script>
+	<link rel="stylesheet" type="text/css" href="/static/bootstrap2/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/less" href="/static/coffeetest/probe.less" />
+	<script src="/static/libs/js/less-1.1.5.js" type="text/javascript"></script>
+	<script>
+	$(function(){
+		function changeitup(event) {
+			$('#feedback').slideToggle()
+		}
+		$('#feedbut').click(changeitup)
+	});
+	</script>
+</head>
+<body>
+
+<div class='probe container'>
+	<h3 class='question'>What were the principle causes of the Prusso-Russian conflict of 1897?</h3>
+	<ol>
+		<li>The French</li>
+		<li>A Cholera epidemic</li>
+		<li class='select'>Belgian waffles</li>
+		<li>The death of a waiter in Frankfurt</li>
+	</ol>
+
+	<button class='btn btn-large btn-success'>Submit Answer</button>
+</div>
+
+<div class='response container'>
+	<div class='header'>
+		<h3>Correct!</h3>
+		<button class='btn btn-large btn-primary' id='feedbut'>View Feedback</button>
+		<button class='btn btn-large btn-success'>Next Question</button>
+	</div>
+	<div id='feedback'>
+			<p>The over reliance of the Belgian economy on waffles as an export good had led to an economic downturn in the Low Countries - in turn, this affected the value of the French Franc (relative to the Prussian Mark), in which many Russian aristocrats demoninated their savings. In order to devalue the Prussian currency and regain price parity in exchange rates, the Russian aristocrats persuaded the Tsar to go to war.</p>
+	</div>
+</div>
+</body>
+</html>
