@@ -40,5 +40,8 @@ define(
 		"app"
 	], function() {
 		require("app").start()
+        window.c = new (require("cs!course/models").CourseModel);
+        c.get("page").get("contents").add({test: 55});
+        c.get("page").get("contents").at(0).save()
 	}
 )

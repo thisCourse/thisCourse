@@ -215,7 +215,7 @@ class MongoCollection
         if @data._id
             delete @data._id
         @collection.save @data, (err, obj) =>
-            callback new JSONResponse(obj) # return the newly created object (or should it just return the _id?)
+            callback new JSONResponse(_id: obj._id) # return the newly created object (or should it just return the _id?)
 
     process_PUT_collection: (callback) =>
         callback new APIError("You cannot PUT on a collection. Please use POST to create an object in the collection.", 405)

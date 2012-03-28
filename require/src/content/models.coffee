@@ -7,3 +7,4 @@ define ["cs!base/models"], (basemodels) ->
         model: ContentModel
 
     ContentModel: ContentModel
+    ContentCollection: ContentCollection

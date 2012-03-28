@@ -1,4 +1,4 @@
-define ["less!./styles", "cs!base/views"], (styles, baseviews) ->
+define ["less!./styles", "cs!base/views", "cs!./models"], (styles, baseviews, models) ->
 
     class ContentView extends baseviews.BaseView
 

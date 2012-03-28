@@ -6,7 +6,7 @@ define ["cs!./modelbinding"], (modelbinding) ->
             @className = @constructor.name
             super
             @subviews = {}
-            visible = true
+            @visible = options?.visible or true
             @url = options.url if options?.url
             @bind_links()
         
@@ -32,6 +32,7 @@ define ["cs!./modelbinding"], (modelbinding) ->
         close: =>
             @off() # used to be called "unbind"
             @remove() # remove the view's DOM element
+            Backbone.ModelBinding.unbind @ # unbind the model bindings
             for name, subview of @subviews
                 subview.close?()
             return @

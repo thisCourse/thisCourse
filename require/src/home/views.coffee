@@ -6,6 +6,6 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars"], (baseviews
             @$el.html templates.home @context()
             @add_subview "schedule", new ScheduleView model: @model, ".schedule"
             @add_subview "content", new ContentView model: @model.get("content"), ".content"
-            (model: app.course.get("content"))
+
 
     HomeView: HomeView
