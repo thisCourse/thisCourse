@@ -13,66 +13,91 @@
 </head>
 <body>
 	<div id='studyapp' class='container'>
-				<div class='tabbable'>
-						<ul class='nav nav-tabs'>
-							<li class ='active'><a href='#1' data-toggle='tab'>Cluster 1</a></li>
-							<li><a href='#2' data-toggle='tab'>Cluster 2</a></li>
-							<li><a href='#3' data-toggle='tab'>Cluster 3</a></li>
-							<li><a href='#4' data-toggle='tab'>Cluster 4</a></li>
-							<li><a href='#5' data-toggle='tab'>Cluster 5</a></li>
-							<li class='lecturelink'><button class='btn btn-large btn-success'>Lecture View</button></li>
+		<div id='clusterview' class='active'>
+		<div class='tabbable'>
+				<ul class='nav nav-tabs'>
+					<li class ='active'><a href='#1' data-toggle='tab'>Cluster 1</a></li>
+					<li><a href='#2' data-toggle='tab'>Cluster 2</a></li>
+					<li><a href='#3' data-toggle='tab'>Cluster 3</a></li>
+					<li><a href='#4' data-toggle='tab'>Cluster 4</a></li>
+					<li><a href='#5' data-toggle='tab'>Cluster 5</a></li>
+					<li class='lecturelink'><button class='btn btn-large btn-success'>Lecture View</button></li>
+				</ul>
+				<div class='btn-group lecturelink'>
+					
+				</div>
+				<div class='tab-content'>
+					<div class='tab-pane active' id='1'>
+						<ul class='nav nav-pills'>
+							<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget claimed'>Nugget 1</a></li>
+							<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget partial'>Nugget 2</a></li>
+							<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget unclaimed'>Nugget 3</a></li>
+							<li><a href='#' rel='tooltip' title='Really long title of a nugget'class='nugget partial'>Nugget 4</a></li> 
+							<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget unclaimed'>Nugget 5</a></li>
 						</ul>
-						<div class='btn-group lecturelink'>
-							
-						</div>
-						<div class='tab-content'>
-							<div class='tab-pane active' id='1'>
-								<ul class='nav nav-pills'>
-									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget claimed'>Nugget 1</a></li>
-									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget partial'>Nugget 2</a></li>
-									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget unclaimed'>Nugget 3</a></li>
-									<li><a href='#' rel='tooltip' title='Really long title of a nugget'class='nugget partial'>Nugget 4</a></li> 
-									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget unclaimed'>Nugget 5</a></li>
-								</ul>
-							</div>
-							<div class='tab-pane' id='2'>
-								<ul class='nav nav-pills'>
-									<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
-									<li><a href='#' class='nugget partial'>Nugget 2</a></li>
-									<li><a href='#' class='nugget unclaimed'>Nugget 3</a></li>
-									<li><a href='#' class='nugget unclaimed'>Nugget 4</a></li>
-									<li><a href='#' class='nugget unclaimed'>Nugget 5</a></li>
-								</ul>
-							</div>
-							<div class='tab-pane' id='3'>
-								<ul class='nav nav-pills'>
-									<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
-									<li><a href='#' class='nugget claimed'>Nugget 2</a></li>
-									<li><a href='#' class='nugget unclaimed'>Nugget 3</a></li>
-									<li><a href='#' class='nugget partial'>Nugget 4</a></li>
-									<li><a href='#' class='nugget partial'>Nugget 5</a></li>
-								</ul>
-							</div>
-							<div class='tab-pane' id='4'>
-								<ul class='nav nav-pills'>
-									<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
-									<li><a href='#' class='nugget partial'>Nugget 2</a></li>
-									<li><a href='#' class='nugget claimed'>Nugget 3</a></li>
-									<li><a href='#' class='nugget unclaimed'>Nugget 4</a></li>
-									<li><a href='#' class='nugget partial'>Nugget 5</a></li>
-								</ul>
-							</div>
-							<div class='tab-pane' id='5'>
-								<ul class='nav nav-pills'>
-									<li><a href='#' class='nugget unclaimed'>Nugget 1</a></li>
-									<li><a href='#' class='nugget partial'>Nugget 2</a></li>
-									<li><a href='#' class='nugget partial'>Nugget 3</a></li>
-									<li><a href='#' class='nugget claimed'>Nugget 4</a></li>
-									<li><a href='#' class='nugget unclaimed'>Nugget 5</a></li>
-								</ul>
-							</div>
-						</div>
+					</div>
+					<div class='tab-pane' id='2'>
+						<ul class='nav nav-pills'>
+							<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
+							<li><a href='#' class='nugget partial'>Nugget 2</a></li>
+							<li><a href='#' class='nugget unclaimed'>Nugget 3</a></li>
+							<li><a href='#' class='nugget unclaimed'>Nugget 4</a></li>
+							<li><a href='#' class='nugget unclaimed'>Nugget 5</a></li>
+						</ul>
+					</div>
+					<div class='tab-pane' id='3'>
+						<ul class='nav nav-pills'>
+							<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
+							<li><a href='#' class='nugget claimed'>Nugget 2</a></li>
+							<li><a href='#' class='nugget unclaimed'>Nugget 3</a></li>
+							<li><a href='#' class='nugget partial'>Nugget 4</a></li>
+							<li><a href='#' class='nugget partial'>Nugget 5</a></li>
+						</ul>
+					</div>
+					<div class='tab-pane' id='4'>
+						<ul class='nav nav-pills'>
+							<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
+							<li><a href='#' class='nugget partial'>Nugget 2</a></li>
+							<li><a href='#' class='nugget claimed'>Nugget 3</a></li>
+							<li><a href='#' class='nugget unclaimed'>Nugget 4</a></li>
+							<li><a href='#' class='nugget partial'>Nugget 5</a></li>
+						</ul>
+					</div>
+					<div class='tab-pane' id='5'>
+						<ul class='nav nav-pills'>
+							<li><a href='#' class='nugget unclaimed'>Nugget 1</a></li>
+							<li><a href='#' class='nugget partial'>Nugget 2</a></li>
+							<li><a href='#' class='nugget partial'>Nugget 3</a></li>
+							<li><a href='#' class='nugget claimed'>Nugget 4</a></li>
+							<li><a href='#' class='nugget unclaimed'>Nugget 5</a></li>
+						</ul>
 					</div>
 				</div>
+			</div>
+		</div>
+
+	<div id='lectureview' class='active'>
+		<ul class='nav nav-pills'>
+			<li><a href='#' class='lecture unclaimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture partial'><p>Theory of Mind</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Motivation and Reward</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture partial'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture unclaimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture unclaimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture unclaimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture unclaimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture partial'><p>Cognition and Emotion</p></a></li>
+			<li><a href='#' class='lecture claimed'><p>Cognition and Emotion</p></a></li>
+		</ul>
+	</div>
+
 </body>
 </html>
