@@ -9,37 +9,70 @@
 	<link rel="stylesheet" type="text/less" href="/static/coffeetest/study.less" />
 	<script src="/static/libs/js/less-1.1.5.js" type="text/javascript"></script>
 	<script src="/static/libs/js/bootstrap/bootstrap-tabs.js" type="text/javascript"></script>
+	<script src="/static/coffeetest/bootstrap-tooltip.js"></script>
 </head>
 <body>
 	<div id='studyapp' class='container'>
-			<div class='tabbable'>
-				<ul class='nav nav-tabs'>
-					<li class ='active'><a href='#1' data-toggle='tab'>Cluster 1</a></li>
-					<li><a href='#2' data-toggle='tab'>Cluster 2</a></li>
-					<li><a href='#3' data-toggle='tab'>Cluster 3</a></li>
-					<li><a href='#4' data-toggle='tab'>Cluster 4</a></li>
-					<li><a href='#5' data-toggle='tab'>Cluster 5</a></li>
-				</ul>
-				<div class='tab-content'>
-					<div class='tab-pane active' id='1'>
-						<ul class='nav nav-pills'>
-							<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
-							<li><a href='#' class='nugget partial'>Nugget 2</a></li>
-							<li><a href='#' class='nugget'>Nugget 3</a></li>
+				<div class='tabbable'>
+						<ul class='nav nav-tabs'>
+							<li class ='active'><a href='#1' data-toggle='tab'>Cluster 1</a></li>
+							<li><a href='#2' data-toggle='tab'>Cluster 2</a></li>
+							<li><a href='#3' data-toggle='tab'>Cluster 3</a></li>
+							<li><a href='#4' data-toggle='tab'>Cluster 4</a></li>
+							<li><a href='#5' data-toggle='tab'>Cluster 5</a></li>
+							<li class='lecturelink'><button class='btn btn-large btn-success'>Lecture View</button></li>
 						</ul>
+						<div class='btn-group lecturelink'>
+							
+						</div>
+						<div class='tab-content'>
+							<div class='tab-pane active' id='1'>
+								<ul class='nav nav-pills'>
+									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget claimed'>Nugget 1</a></li>
+									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget partial'>Nugget 2</a></li>
+									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget unclaimed'>Nugget 3</a></li>
+									<li><a href='#' rel='tooltip' title='Really long title of a nugget'class='nugget partial'>Nugget 4</a></li> 
+									<li><a href='#' rel='tooltip' title='Really long title of a nugget' class='nugget unclaimed'>Nugget 5</a></li>
+								</ul>
+							</div>
+							<div class='tab-pane' id='2'>
+								<ul class='nav nav-pills'>
+									<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
+									<li><a href='#' class='nugget partial'>Nugget 2</a></li>
+									<li><a href='#' class='nugget unclaimed'>Nugget 3</a></li>
+									<li><a href='#' class='nugget unclaimed'>Nugget 4</a></li>
+									<li><a href='#' class='nugget unclaimed'>Nugget 5</a></li>
+								</ul>
+							</div>
+							<div class='tab-pane' id='3'>
+								<ul class='nav nav-pills'>
+									<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
+									<li><a href='#' class='nugget claimed'>Nugget 2</a></li>
+									<li><a href='#' class='nugget unclaimed'>Nugget 3</a></li>
+									<li><a href='#' class='nugget partial'>Nugget 4</a></li>
+									<li><a href='#' class='nugget partial'>Nugget 5</a></li>
+								</ul>
+							</div>
+							<div class='tab-pane' id='4'>
+								<ul class='nav nav-pills'>
+									<li><a href='#' class='nugget claimed'>Nugget 1</a></li>
+									<li><a href='#' class='nugget partial'>Nugget 2</a></li>
+									<li><a href='#' class='nugget claimed'>Nugget 3</a></li>
+									<li><a href='#' class='nugget unclaimed'>Nugget 4</a></li>
+									<li><a href='#' class='nugget partial'>Nugget 5</a></li>
+								</ul>
+							</div>
+							<div class='tab-pane' id='5'>
+								<ul class='nav nav-pills'>
+									<li><a href='#' class='nugget unclaimed'>Nugget 1</a></li>
+									<li><a href='#' class='nugget partial'>Nugget 2</a></li>
+									<li><a href='#' class='nugget partial'>Nugget 3</a></li>
+									<li><a href='#' class='nugget claimed'>Nugget 4</a></li>
+									<li><a href='#' class='nugget unclaimed'>Nugget 5</a></li>
+								</ul>
+							</div>
+						</div>
 					</div>
-					<div class='tab-pane' id='2'>
-						<p>Cluster 2</p>
-					</div>
-					<div class='tab-pane' id='3'>
-						<p>Cluster 3</p>
-					</div>
-					<div class='tab-pane' id='4'>
-						<p>Cluster 4</p>
-					</div>
-					<div class='tab-pane' id='5'>
-						<p>Cluster 5</p>
-					</div>
-			</div>
-		</div>
-	</div>
+				</div>
+</body>
+</html>
