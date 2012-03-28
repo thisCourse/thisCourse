@@ -270,13 +270,16 @@ class MongoCollection
         if @data._id
             delete @data._id
         # merge the fields specified in data into the existing object
+        console.log "PREDATA", @data.page.contents
+        console.log "PREOBJECT", @object.page.contents
         @data = utils.merge(@object, @data)
+        console.log "POST", @data.page.contents
         # save the extended (updated) document back to the database
         return @updateDatabase(@object, callback)
     
     process_PUT_array: (callback) =>
-        if @data instanceof Array
-            return @updateDatabase(merge_arrays(@object, @data), callback)
+        #if @data instanceof Array
+        #    return @updateDatabase(merge_arrays(@object, @data), callback)
         return new APIError("Only arrays can be PUT onto arrays. " +
                              "Use POST to add an item to the array, or to overwrite the array with a new one.", 405)
 

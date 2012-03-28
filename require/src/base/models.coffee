@@ -40,7 +40,8 @@ define ["cs!utils/formatters"], (formatters) ->
                     throw Error("Backbone.Collection class expected but found " + relation.collection.name)
                 relation.includeInJSON or= [] # if it's false or non-existent, this will catch it
                 relation.includeInJSON.push? Backbone.Model.prototype.idAttribute # we always want to include _id
-                if relation.model # TODO: (probably don't want to do the following -- will save too much in parents)
+                # TODO: (probably don't want to do the following -- will save too much in parents; instead, allow POST to absent keys)
+                if relation.model
                     # to make sure saving of related models doesn't break, include related models all the way down
                     relations = relation.model.prototype.relations?() or relation.model.prototype.relations or {}
                     for relatedkey of relations
@@ -85,7 +86,8 @@ define ["cs!utils/formatters"], (formatters) ->
                     apiCollection: @parent.model.apiCollection
                     key: @parent.key
                 if @parent.model.id
-                    attrs.parent.id = @parent.model.id
+                    attrs.parent._id = @parent.model.id
+                    attrs.parent.url = @parent.model.url?() or @parent.model.url or ""
             for key of attrs
                 if key of @relations
                     # convert related collections/models into JSON themselves

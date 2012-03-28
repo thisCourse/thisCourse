@@ -1,3 +1,5 @@
+_ = require("underscore")
+
 id_regex = /[0-9a-fA-F]{24}/
 
 # look through an array and find element (object) with specific _id attribute (optionally replacing id with array index in path)
@@ -36,15 +38,17 @@ merge = (dest, src) ->
     if not dest? then return src
 
     # if either the src or the dest isn't an object, return the dest
-    if typeof src isnt 'object' or typeof dest isnt 'object' then return dest
-
+    if src not instanceof Object or dest not instanceof Object then return dest
+    
     # loop through all the keys in src, and merge (if objects), or else overwrite, into dest
     for key of src
-        if typeof src[key] is 'object' and typeof dest[key] is 'object'
+        if src[key] instanceof Array or dest[key] instanceof Array
+            dest[key] = src[key]
+        if src[key] instanceof Object and dest[key] instanceof Object
             merge dest[key], src[key]
         else
             dest[key] = src[key]
-    
+            
     return dest
 
 # removes all fields from object not listed in "fields"
