@@ -79,15 +79,17 @@ class MongoCollection
                 if @submodel instanceof Backbone.Model
                     @fullModelParams =
                         collection: @submodel.apiCollection
-                        id: @submodel.id.toString() or ""
+                        id: @submodel.id?.toString?() or undefined
                         path: "/" + @subpath.join("/")
-                    @fullModelURL = "/api/" + @fullModelParams.collection + "/" + @fullModelParams.id + @fullModelParams.path
+                    #@fullModelURL = "/api/" + @fullModelParams.collection + "/" + @fullModelParams.id + @fullModelParams.path
                 if @submodel instanceof Backbone.Collection
                     @fullModelParams =
                         collection: @submodel.model.prototype.apiCollection
                         path: ""
-                    @fullModelURL = "/api/" + @fullModelParams.collection + "/"
+                    #@fullModelURL = "/api/" + @fullModelParams.collection + "/"
                 if @fullModelParams and @submodel.includeInJSON!=true
+                    @fullModelURL = "/api/" + @fullModelParams.collection + "/" + (@fullModelParams.id or "") + @fullModelParams.path
+                    @fullModelURL = @fullModelURL.replace("//", "/") # to avoid double-slashes resulting from no ID
                     @isDenormalized = true
             callback()
         else
@@ -102,7 +104,7 @@ class MongoCollection
         isCollection = @submodel instanceof Backbone.Collection
         
         # don't proxy non-POST requests through to a collection
-        if isCollection and @req.method!="POST"
+        if @req.method isnt "POST" and not @fullModelParams.id
             return callback()
 
         console.log "proxyToFullModel"
@@ -117,6 +119,9 @@ class MongoCollection
                         console.log "@subpath.length==0"
                         # use response from object creation as data (especially so we end up with the same _id)
                         if isCollection and @req.method=="POST" then @data = body
+                        # TODO: should go here, or more generally/specifically? needed for POSTing related 1-to-1 models, e.g. course.content
+                        if body._id # copy the id from the proxied response into our object, so we don't overwrite the returned id
+                            @object._id = body._id
                         # we're operating directly on the model (or collection), so filter by includeInJSON
                         utils.filter_object_fields @data, @submodel.includeInJSON
                         callback()
@@ -280,7 +285,9 @@ class MongoCollection
         if (!(@data instanceof Object) || (@data instanceof Array))
             return new APIError("Cannot PUT a non-object value on top of an object. Use POST if you want to replace the object with this value.", 405)
         # merge the fields specified in data into the existing object
+        console.log "about to merge"
         @data = utils.merge(@object, @data)
+        console.log "merged"
         # save the extended (updated) object back to the database
         return @updateDatabase({$set: utils.wrap_in_object(@object_ref, @data)}, callback)
 

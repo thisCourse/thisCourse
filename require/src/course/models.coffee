@@ -11,7 +11,7 @@ define ["cs!base/models", "cs!lecture/models", "cs!content/models"], \
                 includeInJSON: ["title", "description", "scheduled", "page", "html"]
             content:
                 model: contentmodels.ContentModel
-                includeInJSON: ['html']
+                includeInJSON: true
 
     class CourseCollection extends basemodels.LazyCollection
 

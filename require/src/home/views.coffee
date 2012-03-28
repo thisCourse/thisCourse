@@ -1,8 +1,11 @@
-define ["cs!base/views", "cs!./models"], (baseviews, models) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars"], (baseviews, models, templates) ->
 
     class HomeView extends baseviews.BaseView
 
         render: =>
-            @$el.html "<a href='lecture'>Lecture list</a>"
+            @$el.html templates.home @context()
+            @add_subview "schedule", new ScheduleView model: @model, ".schedule"
+            @add_subview "content", new ContentView model: @model.get("content"), ".content"
+            (model: app.course.get("content"))
 
-    return HomeView: HomeView
+    HomeView: HomeView

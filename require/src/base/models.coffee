@@ -31,13 +31,12 @@ define ["cs!utils/formatters"], (formatters) ->
             for key,relation of @relations
                 if not (relation.model or relation.collection)
                     throw "Error: All relations must specify either a model or a collection (key: '" + key + "')"
-                relation.includeInJSON or= []
+                relation.includeInJSON or= [] # if it's false or non-existent, this will catch it
+                relation.includeInJSON.push? Backbone.Model.prototype.idAttribute # we always want to include _id
             super
 
         set: (attributes, options) ->
-            idAttribute = Backbone.Model.prototype.idAttribute
             for key,opts of @relations
-                opts.includeInJSON.push idAttribute
                 if opts.collection # if it's a "one to many" relation
                     if key not of attributes then attributes[key] = [] # default to an empty collection
                     collection = attributes[key] = new opts.collection(attributes[key]) # turn array into collection
@@ -58,21 +57,27 @@ define ["cs!utils/formatters"], (formatters) ->
             super attributes, options
 
         toJSON: ->
+            # first, call the built-in converter in the parent
             attrs = super
-            if @parent
+            # if this object is embedded in a denormalized relation, set parent info
+            if @parent and @includeInJSON isnt true
                 attrs.parent =
                     model: @parent.model.constructor.name
+                    apiCollection: @parent.model.apiCollection
                     key: @parent.key
                 if @parent.model.id
                     attrs.parent.id = @parent.model.id
             for key of attrs
-                if key of @relations and @relations[key].includeInJSON!=true
+                if key of @relations
+                    # convert related collections/models into JSON themselves
                     attrs[key] = attrs[key].toJSON()
                     relation = @relations[key]
-                    if relation.model
-                        models = [attrs[key]]
-                    else if relation.collection
-                        models = attrs[key]
+                    if relation.includeInJSON is true
+                        continue # because nothing to filter out
+                    # loop through all models objects and filter out things not in includeInJSON
+                    models = attrs[key]
+                    if models not instanceof Array
+                        models = [models]
                     for model in models
                         for modelkey of model
                             if modelkey not in relation.includeInJSON

@@ -5,7 +5,7 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
 
         render: =>
             @$el.html templates.item_teacher @context()
-            
+            @updateWidth()            
 
     class TeacherItemEditView extends itemviews.ItemEditInlineView # or ItemEditPopupView
         
