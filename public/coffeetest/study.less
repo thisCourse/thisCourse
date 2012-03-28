@@ -14,23 +14,49 @@ body {
 	box-shadow: 10px 10px 5px #888;
 }
 
+.tab-pane {
+	padding: 10px;
+}
+
+.lecturelink {
+	margin-left:50px;
+}
+
+.tabbable{
+	width:575px;
+}
+
 .nugget {
 	box-shadow: 10px 10px 5px #888;
-	background-color: @nuggetcolor;
-	&:hover {
-		background-color: lighten(@nuggetcolor,10%);
-		box-shadow: 5px 5px 5px #555;
+	&.unclaimed {
+		margin-right:10px;
+		margin-bottom:5px;
+		background-color: @nuggetcolor;
+		&:hover {
+			background-color: lighten(@nuggetcolor,10%);
+		}
 	}
 	&.claimed {
 		background-color:@claimedcolor;
+		margin-right:10px;
+		margin-bottom:5px;
 		&:hover {
 			background-color: lighten(@claimedcolor,10%);
 		}
 	}
 	&.partial {
+		margin-right:10px;
+		margin-bottom:5px;
 		background-color:@partialcolor;
 		&:hover{
 			background-color:lighten(@partialcolor,10%);
 		}
+	}
+	&:hover {
+		box-shadow: 5px 5px 3px #555;
+		margin-top: 5px;
+		margin-left: 5px;
+		margin-right:5px;
+		margin-bottom:0px;
 	}
 }
