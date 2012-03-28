@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handlebars", "less!./styles"], \
-        (baseviews, models, pageviews, templates, styles) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "hb!content/items/views", "hb!./templates.handlebars", "less!./styles"], \
+        (baseviews, models, pageviews, itemviews, templates, styles) ->
 
     class AssignmentRouterView extends baseviews.RouterView
 
@@ -9,9 +9,33 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handleb
 
     class AssignmentListView extends baseviews.BaseView
 
+        events:
+            "click .add-button": "addNewAssignment"
+            "click .delete-button": "addNewAssignment"
+
         render: =>
             @$el.html templates.assignment_list @context()
-            
+            @makeSortable()
+
+        addNewAssignment: =>
+            dialog_request_response "Please enter a title:", (title) =>
+                @collection.create title: title
+
+        deleteAssignment: (ev) ->
+            assignment = @collection.get(ev.target.id)
+            delete_confirmation assignment, "assignment", =>
+                @collection.remove assignment
+
+        makeSortable: ->
+            # @$("ul").sortable
+            #     update: (event, ui) ->
+            #         new_order = self.$("ul").sortable("toArray")
+            #         self.collection.reorder new_order
+            #         app.course.save()
+
+            #     opacity: 0.6
+            #     tolerance: "pointer"
+
     class AssignmentView extends baseviews.BaseView
 
         events:
@@ -36,8 +60,41 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handleb
         render: =>
             @$el.html templates.assignment_top @context()
             Backbone.ModelBinding.bind @
+
+    class AssignmentTopEditView extends baseviews.BaseView
+        
+        render: =>
+            @$el.html templates.assignment_top_edit @context()
+            Backbone.ModelBinding.bind @
+            @enablePlaceholders()
+            due = @model.getDate("due")
+            @$(".due-date").val (due.getMonth() + 1) + "/" + due.getDate() + "/" + due.getFullYear() if due
+            @$(".due-date").datepicker onSelect: (date) ->
+                $(".due-date:visible").val date
+
+        events:
+            "click button.save": "save"
+            "click button.cancel": "cancel"
+
+        save: =>
+            due = $(".due-date:visible").val() or null
+            due = new Date(due) if due
+            @model.set due: due
+            itemviews.ItemEditInlineView::save.apply this
+
+        cancel: itemviews.ItemEditInlineView::cancel # TODO: integrate this code directly in here
+        restore: itemviews.ItemEditInlineView::cancel
+
+        initialize: ->
+            @el = $(@el)
+            @memento = new Backbone.Memento(@model)
+            @memento.store()
+
             
 
     AssignmentRouterView: AssignmentRouterView
     AssignmentListView: AssignmentListView
     AssignmentView: AssignmentView
+    AssignmentTopView: AssignmentTopView
+    AssignmentTopEditView: AssignmentTopEditView
+    
