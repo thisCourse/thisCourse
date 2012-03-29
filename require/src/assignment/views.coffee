@@ -39,13 +39,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     class AssignmentView extends baseviews.BaseView
 
         events:
-            "click .assignment-top .edit-button": "edit"
+            "click .edit-button": "edit"
 
         render: =>
             @$el.html templates.assignment @context()
-            @add_subview "topview", new AssignmentTopView model: @model, ".assignment-top"
-            @add_subview "topeditview", new AssignmentTopEditView model: @model, visible: false, ".assignment-top"
-            @add_subview "pageview", new pageviews.PageRouterView model: @model.get("page"), ".assignment-page"
+            @add_subview "topview", new AssignmentTopView(model: @model), ".assignment-top"
+            @add_subview "topeditview", new AssignmentTopEditView(model: @model, visible: false), ".assignment-top"
+            @add_subview "pageview", new pageviews.PageView(model: @model.get("page")), ".assignment-page"
 
         edit: =>
             @subviews.topview.hide()
@@ -57,9 +57,17 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     class AssignmentTopView extends baseviews.BaseView
         
+        initialize: -> @render()
+
+        events: => _.extend super,
+            "click .edit-button": "edit"
+        
         render: =>
             @$el.html templates.assignment_top @context()
             Backbone.ModelBinding.bind @
+
+        edit: =>
+            @parent.edit()
 
     class AssignmentTopEditView extends baseviews.BaseView
         
@@ -86,10 +94,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         restore: itemviews.ItemEditInlineView::cancel
 
         initialize: ->
-            @el = $(@el)
             @memento = new Backbone.Memento(@model)
             @memento.store()
-
+            @render()
             
     AssignmentRouterView: AssignmentRouterView
     AssignmentListView: AssignmentListView

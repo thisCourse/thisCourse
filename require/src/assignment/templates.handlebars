@@ -14,9 +14,8 @@
     <input class="span12" type="text" data="title" placeholder="Assignment Title"/>
     <textarea class="span12" data="description" placeholder="Assignment Description">{{ description }}</textarea>
     <br/>Due date: <input class="span3 due-date">
-    <br/><br/> 
-    <!--<dd class="span1">Width:</dd><dt class="span4"><input type="text" data="width"/></dt>-->
-    {{>item_edit_buttons}}
+    <br/><br/>
+    {{> item_edit_buttons }}
     
 </script>
 
@@ -25,24 +24,24 @@
     
     <h2>Assignments</h2>
     <ul>
-        {{#each models }}
-            <li><a class="open">{{ attributes/title }}</a>{{#if ../_editor }} (<a class="delete" id="{{ id }}">delete</a>){{/if}}</li>
-        {{/each}}
+        {{#each collection/models }}
+            <li><a href="{{ ../url }}{{ id }}/">{{ attributes/title }}</a></li>
+        {{/each }}
     </ul>
 
-    {{#if _editor }}<button class="add-button btn success">Add assignment</button>{{/if}}
+    <span class="edit"><button class="add-button btn success">Add assignment</button></span>
     
 </script>
 
 
 <script id="assignment_top" type="text/x-handlebars-template">
     
-    <h2 data="title">{{ model/title }}</h2 >
+    <h2 data="title">{{ title }}</h2 >
 
-    <div class="description" data="description">{{ model/description }}</div>
+    <div class="description" data="description">{{ description }}</div>
 
-    {{#if model/due }}<br/><b>Due:</b> {{$date model/due }}<br/>{{/if }}
+    {{#if due }}<br/><b>Due:</b> {{$date due }}<br/>{{/if }}
 
-    {{#if _editor }}<button class="item-button edit-button btn success">Edit assignment details</button>{{/if}}
+    <span class="edit"><button class="item-button edit-button btn success">Edit assignment details</button></span>
     
 </script>

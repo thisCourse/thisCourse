@@ -4,6 +4,12 @@ define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], (handlebars, 
 
     class AppModel extends Backbone.Model
 
+        defaults:
+            tabs:
+                "": "Home"
+                "lectures": "Lectures"
+                "assignments": "Assignments"
+
         constructor: (options) ->
             @router = new router.BaseRouter
                 root_url: options.root_url or "/"
@@ -23,12 +29,14 @@ define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], (handlebars, 
         root_url: window.location.pathname.split("/")[1] + "/"
 
     app.course = new coursemodels.CourseModel
-        lectures: [
+        assignments: [
             {
                 title: "Tha firsty!"
+                _id: 17
             }
             {
                 title: "Tho secondy..."
+                _id: 19
             }
         ]
 

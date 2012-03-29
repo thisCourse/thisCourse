@@ -9,6 +9,7 @@ define(function() {
 		var htmlparser = require.nodeRequire("htmlparser")
 	} else { 
 		var htmlparser = Tautologistics.NodeHtmlParser
+        Handlebars.templates = Handlebars.templates || {};
 	}
     	
     function parse_templates(text, callback) {
@@ -44,7 +45,7 @@ define(function() {
     			cache[name] = templates
     			var compiled_templates = {}
     			for (var i=0; i<templates.length; i++) {
-    				compiled_templates[templates[i].id] = Handlebars.compile(templates[i].text) 
+    				Handlebars.templates[templates[i].id] = compiled_templates[templates[i].id] = Handlebars.compile(templates[i].text) 
     			}
     			callback(compiled_templates)
     		})

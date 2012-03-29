@@ -1,7 +1,7 @@
 define ["cs!./formatters"], (formatters) ->
     
     # give access to all templates as partials
-    Handlebars.partials = Handlebars.templates
+    Handlebars.partials = Handlebars.templates or= {}
     
     Handlebars.registerHelper "$date", (date) ->
         date = formatters.date_from_string(date)

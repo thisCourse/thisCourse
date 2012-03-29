@@ -1,6 +1,6 @@
-define ["cs!base/views", "cs!./models", "cs!content/views"], (baseviews, models, contentviews) ->
+define ["cs!base/views", "cs!./models", "cs!content/views", "hb!./templates.handlebars", "less!./styles"], (baseviews, models, contentviews, templates, styles) ->
 
-    class PageView extends baseviews.RouterView
+    class PageView extends baseviews.BaseView
 
         events: -> _.extend super, # TODO: make them ALL like this... nice idiom
             "click .page-button.add-button": "addNewContent"
@@ -16,13 +16,13 @@ define ["cs!base/views", "cs!./models", "cs!content/views"], (baseviews, models,
             @$el.html templates.page @context()
             @add_subview "pagerouter", new PageRouterView collection: @model.get("contents"), ".contents"
             if @model.get("_editor") then @makeSortable()
-            @update() # TODO: ?
 
         initialize: ->
             @model.bind "change", @update
             @model.bind "add:contents", @addContents
             @model.bind "remove:contents", @removeContents
             @model.bind "change:_editor", @render
+            @render()
 
         addNewContent: =>
             dialog_request_response "Please enter a title:", (title) =>
@@ -87,5 +87,6 @@ define ["cs!base/views", "cs!./models", "cs!content/views"], (baseviews, models,
         changeId: ->
             @el.attr "id", @model.id
 
-
+    PageView: PageView
     PageRouterView: PageRouterView
+    PageNavRowView: PageNavRowView

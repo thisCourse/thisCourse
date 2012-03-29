@@ -2,12 +2,16 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
     class BaseView extends Backbone.View
 
+        events: -> {}
+
         constructor: (options) ->
+            @subviews = {}
             if @events not instanceof Function then @events = => @events
             super
             @$el.addClass @constructor.name
-            @subviews = {}
-            @visible = options?.visible or true
+            @visible = true
+            if options and options.visible==false
+                @hide()
             @url = options.url if options?.url
             @bind_links()
         
@@ -57,7 +61,14 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             if @visible and @fragment # TODO: do we want to do this for non-visible views as well? Probably not?
                 @navigate @fragment
             # append the view's element either to the specified target element, or to parent's top-level element
-            $(element or @$el).append view.el
+            target = @$(element)
+            if not target.length
+                target = $(element)
+            if not target.length
+                target = @$el
+            view.render()
+            target.append view.el
+            console.log "APPENDED TO", @$(element or @$el), element
             return view
         
         close_subview: (name) =>
@@ -65,8 +76,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             delete @subviews[name]
         
         # build a context object to be passed to a template for rendering
-        context: =>
-            data = {}
+        context: (extra) =>
+            data = _.extend {}, @model?.attributes or {} # mix the model fields into the context, for convenience
+            _.extend data, extra
             data['url'] = @url if @url
             data['model'] = @model if @model
             data['collection'] = @collection if @collection
@@ -115,6 +127,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     route.exec(fragment).slice(-1)[0]
         
         navigate: (fragment) =>
+
+            console.log "NAV", @
 
             # check if fragment matches any of our routes
             for handler in @handlers
