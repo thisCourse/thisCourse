@@ -1,13 +1,65 @@
 @import "../../../libs/bootstrap/mixins.less";
 
+
 .GalleryItemView {
+
+    a {
+        color: #333333;
+        font-weight: bold; 
+    }
     
-    
+    img {
+        max-height: 120px;
+        max-width: 190px;
+        margin: 5px 0;
+    }
     
 }
 
 .GalleryItemEditView {
     
+    iframe.uploader {
+        width: 190px;
+        height: 23px;
+        border: none;
+        overflow: auto;
+    }
+
+    input, textarea {
+        width: 180px;
+    }
     
+    input, textarea {
+        margin-bottom: 5px;
+    }
+            
+    textarea {
+        min-height: 65px;
+    }
     
+}
+
+.GalleryItemView, .GalleryItemEditView {
+    
+    .item-inner, .item-edit {
+        padding: 15px;
+        min-height: 210px;
+    }
+
+    h4 {
+        line-height: inherit;
+        padding: 5px;
+        padding-top: 0px;
+        padding-left: 0px;
+    }
+    
+}
+
+.fancybox-title-over .notes {
+    color: #CCC;
+}
+
+.fancybox-title-over a {
+    color: white;
+    font-weight: bold; 
 }

@@ -1,5 +1,5 @@
-define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models"], \
-        (styles, baseviews, dialogviews, models) ->
+define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb!./templates.handlebars"], \
+        (styles, baseviews, dialogviews, models, templates) ->
 
     class ContentView extends baseviews.BaseView
 
@@ -7,7 +7,7 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models"], \
             "click .content-button.add-button": "addNewSection"
 
         render: =>
-            @renderTemplate()
+            @$el.html templates.content @context()
             if @model.get("_editor")
                 @makeEditable()
                 @makeSortable()

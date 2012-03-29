@@ -2,6 +2,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews) ->
 
     class ItemView extends baseviews.BaseView
         tagName: "span"
+        className: "ItemView"
 
         render: ->
             #@renderTemplate target: ".item-inner"

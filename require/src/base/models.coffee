@@ -10,7 +10,7 @@ define ["cs!utils/formatters"], (formatters) ->
             if @apiCollection
                 return "/api/" + @apiCollection + "/" + (@id or "")
 
-        getDate = (attr) ->
+        getDate: (attr) =>
             date = @get(attr)
             if not date
                 return undefined
@@ -72,7 +72,6 @@ define ["cs!utils/formatters"], (formatters) ->
                         #console.log "adding parent to", model, "from", @
                         model.parent = {model: @, key: key}
                         model.includeInJSON = includeInJSON
-                        console.log "includeInJSON", includeInJSON, "for", model
                     for model in collection.models # add a parent link to each of the collection's models
                         collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation

@@ -1,12 +1,11 @@
-define ["cs!./modelbinding"], (modelbinding) ->
+define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
     class BaseView extends Backbone.View
 
         constructor: (options) ->
-            @className = @constructor.name + " " + @className
-            if @events not instanceof Function
-                @events = => @events
+            if @events not instanceof Function then @events = => @events
             super
+            @$el.addClass @constructor.name
             @subviews = {}
             @visible = options?.visible or true
             @url = options.url if options?.url
