@@ -100,6 +100,7 @@ define ["cs!utils/formatters"], (formatters) ->
             for key of attrs
                 if key of @relations
                     # convert related collections/models into JSON themselves
+                    console.log attrs, key
                     attrs[key] = attrs[key].toJSON()
                     relation = @relations[key]
                     if relation.includeInJSON is true
@@ -144,7 +145,7 @@ define ["cs!utils/formatters"], (formatters) ->
         
         unsaved: => # a model is unsaved (needs saving in order to persist) if it has no id
             @id is undefined
-            
+                    
             
     class BaseCollection extends Backbone.Collection
 

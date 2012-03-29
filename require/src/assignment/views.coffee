@@ -44,15 +44,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             @$el.html templates.assignment @context()
             @add_subview "topview", new AssignmentTopView(model: @model), ".assignment-top"
-            @add_subview "topeditview", new AssignmentTopEditView(model: @model, visible: false), ".assignment-top"
             @add_subview "pageview", new pageviews.PageView(model: @model.get("page")), ".assignment-page"
 
         edit: =>
             @subviews.topview.hide()
-            @subviews.topeditview.show()
+            @add_subview "topeditview", new AssignmentTopEditView(model: @model), ".assignment-top"
         
         editDone: =>
-            @subviews.topeditview.hide()
+            @close_subview "topeditview"
             @subviews.topview.show()
 
     class AssignmentTopView extends baseviews.BaseView
@@ -70,6 +69,10 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @parent.edit()
 
     class AssignmentTopEditView extends baseviews.BaseView
+
+        initialize: ->
+            @mementoStore()
+            @render()
         
         render: =>
             @$el.html templates.assignment_top_edit @context()
@@ -80,7 +83,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @$(".due-date").datepicker onSelect: (date) ->
                 $(".due-date:visible").val date
 
-        events:
+        events: #-> _.extend super,
             "click button.save": "save"
             "click button.cancel": "cancel"
 
@@ -88,15 +91,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             due = $(".due-date:visible").val() or null
             due = new Date(due) if due
             @model.set due: due
-            itemviews.ItemEditInlineView::save.apply this
+            @$("input").blur()
+            @$(".save.btn").button "loading"
 
-        cancel: itemviews.ItemEditInlineView::cancel # TODO: integrate this code directly in here
-        restore: itemviews.ItemEditInlineView::cancel
+        cancel: =>
+            @mementoRestore()
+            @parent.editDone()
 
-        initialize: ->
-            @memento = new Backbone.Memento(@model)
-            @memento.store()
-            @render()
             
     AssignmentRouterView: AssignmentRouterView
     AssignmentListView: AssignmentListView

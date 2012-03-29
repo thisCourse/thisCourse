@@ -6,7 +6,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         constructor: (options) ->
             @subviews = {}
-            if @events not instanceof Function then @events = => @events
+            if @events not instanceof Function
+                eventobject = @events
+                @events = => eventobject
             super
             @$el.addClass @constructor.name
             @visible = true
@@ -95,6 +97,18 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             @$("[placeholder]").each (ind, el) ->
                 $(el).watermark $(el).attr("placeholder"), {}
                 $(el).attr "title", $(el).attr("placeholder")
+
+        mementoStore: =>
+            if not @model then return
+            if not @memento
+                # don't store the related models in the memento cache, as it breaks it
+                params = ignore: (key for key of @model.relations if @model.relations) or []
+                @memento = new Backbone.Memento(@model, params)
+            @memento.store()
+
+        mementoRestore: =>
+            @memento?.restore()
+
 
     class RouterView extends BaseView
         

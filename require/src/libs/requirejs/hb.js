@@ -44,9 +44,11 @@ define(function() {
     		parse_templates(text, function(templates) {
     			cache[name] = templates
     			var compiled_templates = {}
-    			for (var i=0; i<templates.length; i++) {
-    				Handlebars.templates[templates[i].id] = compiled_templates[templates[i].id] = Handlebars.compile(templates[i].text) 
-    			}
+                for (var i=0; i<templates.length; i++) {
+                    compiled_templates[templates[i].id] = Handlebars.compile(templates[i].text) 
+                }
+                if (Handlebars.templates)
+                    _.extend(Handlebars.templates, compiled_templates)
     			callback(compiled_templates)
     		})
     	}
@@ -76,7 +78,7 @@ define(function() {
 	    }
 	    
 		for (var i=0; i<templates.length; i++) {
-			output.push('  templates[\'' + templates[i].id + '\'] = Handlebars.templates[\'' + moduleName + ':' + templates[i].id + '\'] = Handlebars.template(' + Handlebars.precompile(templates[i].text, options) + ');\n')
+			output.push('  Handlebars.partials[\'' + templates[i].id + '\'] = templates[\'' + templates[i].id + '\'] = Handlebars.templates[\'' + templates[i].id + '\'] = Handlebars.template(' + Handlebars.precompile(templates[i].text, options) + ');\n')
 		}
 	    
 		output.push('  return templates;\n})')	
