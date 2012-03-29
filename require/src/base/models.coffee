@@ -58,21 +58,21 @@ define ["cs!utils/formatters"], (formatters) ->
                         relation.includeInJSON.push relatedkey
             super
 
-        set: (attributes, options) ->
-            attributes = _.extend({}, attributes)
-            clog "setting", attributes, "on", @
+        set: (attr, options) ->
+            attr = _.extend({}, attr)
+            clog "setting", attr, "on", @
             for key,opts of @relations
                 if opts.collection # if it's a "one to many" relation
-                    if key not of attributes then attributes[key] = [] # default to an empty collection
+                    if key not of attr then attr[key] = [] # default to an empty collection
                     if (collection = @attributes[key]) instanceof opts.collection
-                        for newmodel in attributes[key]
+                        for newmodel in attr[key]
                             if (oldmodel = @attributes[key].get(newmodel[idAttribute]))
                                 oldmodel.set newmodel # update the existing model with the new data
                             else
                                 collection.add newmodel # add this new model to the collection
                             # TODO: also delete models in collection that aren't in the new array?
                     else
-                        collection = attributes[key] = new opts.collection(attributes[key]) # turn array into collection
+                        collection = attr[key] = new opts.collection(attr[key]) # turn array into collection
                         includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
                         collection.includeInJSON = includeInJSON
                         parent = {model: @, key: key}
@@ -84,15 +84,17 @@ define ["cs!utils/formatters"], (formatters) ->
                         for model in collection.models # add a parent link to each of the collection's models
                             collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation
-                    if @attributes[key] instanceof Backbone.Model then continue # TODO: should we really skip out in this case?
-                    if key not of attributes then attributes[key] = {} # default to an empty model
-                    if _.isString(attributes[key]) # if just a string, assume it's an id and put it in an object
-                        attributes[key] = {_id: attributes[key]}
-                    if _.isObject(attributes[key]) # if it's an object (should be!), then turn it into a model
-                        model = attributes[key] = new opts.model(attributes[key])
-                        model.parent = {model: @, key: key} # add a parent link to the model
-                        model.includeInJSON = opts.includeInJSON
-            super attributes, options
+                    if key not of attr then attr[key] = {} # default to an empty model
+                    if _.isString(attr[key]) # if just a string, assume it's an id and put it in an object
+                        attr[key] = {_id: attr[key]}
+                    if _.isObject(attr[key]) # if it's an object (should be!), then turn it into a model
+                        if (oldmodel = @attributes[key]) instanceof opts.model
+                            oldmodel.set attr[key]
+                        else
+                            model = attr[key] = new opts.model(attr[key])
+                            model.parent = {model: @, key: key} # add a parent link to the model
+                            model.includeInJSON = opts.includeInJSON
+            super attr, options
 
         toJSON: =>
             # first, call the built-in converter in the base class

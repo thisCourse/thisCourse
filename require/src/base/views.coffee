@@ -109,7 +109,14 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         mementoRestore: =>
             @memento?.restore()
 
-
+        resolveLazyRefs: =>
+            if @resolved then return false # if it's already been resolved, don't try again
+            if @model instanceof LazyRef and (object = @model.resolve(@parent))
+                @model = object # point our model to the resolved model from the parent
+            else if @collection instanceof LazyRef and (object = @collection.resolve(@parent))
+                @collection = object # point our collection to the resolved collection from the parent
+            @resolved = true # either we didn't find any LazyRefs or we've resolved them; return and set true
+            
     class RouterView extends BaseView
         
         _routeToRegExp: Backbone.Router.prototype._routeToRegExp
@@ -165,8 +172,10 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     if not subview
                         subview = handler.callback(fragment) # call the handler to get the new View instance
                         subview.url = @url + match
-                        subview.render()
                         @add_subview match, subview
+
+                    if subview.resolveLazyRefs() # wait until lazy references are resolved, before rendering
+                        subview.render()
                                     
                     # make sure it's visible (hiding all others):
                     view.hide() for route,view of @subviews when not (view is subview)
@@ -179,9 +188,23 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
             return false
 
-    console.log "base views loaded"
+    class LazyRef
+        constructor: (key) ->
+            @key = key
+        resolve: (parent) =>
+            object = @getObject(parent)
+            if object instanceof Backbone.Model or object instanceof Backbone.Collection
+                return object
+            else
+                return null
+        
+    class LazyModelRef extends LazyRef
+        getObject: (parent) =>
+            return parent.model?.get?(@key) or null
+        
+    class LazyCollectionRef extends LazyRef
+        getObject: (parent) =>
+            return parent.collection?.get?(@key) or null
 
-    return {
-        BaseView: BaseView
-        RouterView: RouterView        
-    }
+    BaseView: BaseView
+    RouterView: RouterView        

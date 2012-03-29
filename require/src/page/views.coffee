@@ -65,6 +65,10 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
 
         initialize: ->
             @render()
+        
+        navigate: =>
+            clog "NAV ON PAAAAGE ROUTER VIEW"
+            super
 
     class PageNavRowView extends baseviews.BaseView
         

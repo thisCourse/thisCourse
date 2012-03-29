@@ -25,7 +25,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handleb
                 html += "<li><a href='" + @url + "page/" + page.id + "/'>" + page.id + ": " + page.get("title") + "</a></li>"
             html += "</ul>"
             @$el.html html
-            @add_subview "pageview", new pageviews.PageRouterView collection: @model.get("pages")
+            #@add_subview "pageview", new pageviews.PageRouterView collection: @model.get("pages")
 
 
     LectureRouterView: LectureRouterView

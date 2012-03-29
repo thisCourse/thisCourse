@@ -60,6 +60,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             @$el.html templates.assignment @context()
             @add_subview "topview", new AssignmentTopView(model: @model), ".assignment-top"
+            clog "model is", @model
             @add_subview "pageview", new pageviews.PageView(model: @model.get("page")), ".assignment-page"
 
         edit: =>
