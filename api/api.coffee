@@ -118,7 +118,7 @@ class MongoCollection
                     if @subpath.length==0 and @req.method!="GET"
                         console.log "@subpath.length==0"
                         # use response from object creation as data (especially so we end up with the same _id)
-                        if isCollection and @req.method=="POST" then @data = body
+                        if isCollection and @req.method=="POST" then utils.merge(@data, body)
                         # TODO: should go here, or more generally/specifically? needed for POSTing related 1-to-1 models, e.g. course.content
                         if body._id # copy the id from the proxied response into our object, so we don't overwrite the returned id
                             @object._id = body._id
@@ -355,6 +355,8 @@ class APIError extends JSONResponse
 register_mongo_collection = (cls) ->
     cls.prototype.collection = db.collection(cls.prototype.name) # get the MongoDB collection reference
     collections[cls.prototype.name] = cls # store the collection class by name for later lookup
+
+global.clog = -> # do nothing! this is a log just for in the browser
 
 initialize = ->
     dir = __dirname + "/collections/"

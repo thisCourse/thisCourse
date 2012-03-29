@@ -1,11 +1,15 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "hb!./templates.handlebars", "less!./styles"], \
-        (baseviews, models, pageviews, itemviews, templates, styles) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
+        (baseviews, models, pageviews, itemviews, dialogviews, templates, styles) ->
 
     class AssignmentRouterView extends baseviews.RouterView
 
         routes: =>
             "": => new AssignmentListView collection: @collection
             ":assignment_id/": (assignment_id) => new AssignmentView model: @collection.get(assignment_id)
+
+        initialize: ->
+            console.log "AssignmentRouterView init"
+            super
 
     class AssignmentListView extends baseviews.BaseView
 
@@ -14,17 +18,29 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .delete-button": "addNewAssignment"
 
         render: =>
+            console.log "rendering AssignmentListView"
             @$el.html templates.assignment_list @context()
             @makeSortable()
+            
+        initialize: ->
+            console.log "init AssignmentListView"
+            @collection.bind "change", @render
+            @collection.bind "remove", @render
+            @collection.bind "add", @render
+            @render()            
 
         addNewAssignment: =>
-            dialog_request_response "Please enter a title:", (title) =>
+            dialogviews.dialog_request_response "Please enter a title:", (title) =>
                 @collection.create title: title
 
-        deleteAssignment: (ev) ->
+        deleteAssignment: (ev) =>
             assignment = @collection.get(ev.target.id)
-            delete_confirmation assignment, "assignment", =>
+            dialogviews.delete_confirmation assignment, "assignment", =>
                 @collection.remove assignment
+
+        # assignmentAdded: (model, coll) =>
+        #     alert "added"
+        #     @$('ul').append("<li>" + model.get("title") + "</li>")
 
         makeSortable: ->
             # @$("ul").sortable

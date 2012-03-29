@@ -36,6 +36,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             , model.getDate("scheduled")
 
         addScheduleItems: (itemViewSettings, dates) ->
+            if not dates then return
             dates = [dates] unless dates instanceof Array
             for date in dates
                 @getOrCreateDateView(date).add_subview itemViewSettings.model.cid, new ScheduleItemView(itemViewSettings), ".schedule-items"

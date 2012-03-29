@@ -1,6 +1,6 @@
 define ["cs!utils/formatters"], (formatters) ->
     
-    Backbone.Model.prototype.idAttribute = "_id"
+    idAttribute = Backbone.Model.prototype.idAttribute = "_id"
 
     slug_fields = ["slug", Backbone.Model.prototype.idAttribute]
 
@@ -21,9 +21,9 @@ define ["cs!utils/formatters"], (formatters) ->
                 
         save: =>
             @trigger("save", @)
-            # console.log "(actual save of", @, "happening in BaseModel)", arguments
+            clog "(actual save of", @, "happening in BaseModel)", arguments
             result = super
-            # console.log "(actual save of", @, "in BaseModel complete)", @id
+            clog "(actual save of", @, "in BaseModel complete)", @id
             return result
         
         slug: =>
@@ -60,20 +60,29 @@ define ["cs!utils/formatters"], (formatters) ->
 
         set: (attributes, options) ->
             attributes = _.extend({}, attributes)
-            #console.log "setting", attributes, "on", @
+            clog "setting", attributes, "on", @
             for key,opts of @relations
                 if opts.collection # if it's a "one to many" relation
-                    if @attributes[key] instanceof Backbone.Collection then continue # TODO: should we really skip out in this case?
                     if key not of attributes then attributes[key] = [] # default to an empty collection
-                    includeInJSON = if opts.includeInJSON instanceof Array then opts.includeInJSON.slice(0) else opts.includeInJSON # slice to make a copy
-                    collection = attributes[key] = new opts.collection(attributes[key]) # turn array into collection
-                    collection.includeInJSON = includeInJSON
-                    collection.bind "add", (model) =>
-                        #console.log "adding parent to", model, "from", @
-                        model.parent = {model: @, key: key}
-                        model.includeInJSON = includeInJSON
-                    for model in collection.models # add a parent link to each of the collection's models
-                        collection.trigger "add", model
+                    if (collection = @attributes[key]) instanceof opts.collection
+                        for newmodel in attributes[key]
+                            if (oldmodel = @attributes[key].get(newmodel[idAttribute]))
+                                oldmodel.set newmodel # update the existing model with the new data
+                            else
+                                collection.add newmodel # add this new model to the collection
+                            # TODO: also delete models in collection that aren't in the new array?
+                    else
+                        collection = attributes[key] = new opts.collection(attributes[key]) # turn array into collection
+                        includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
+                        collection.includeInJSON = includeInJSON
+                        parent = {model: @, key: key}
+                        # TODO: unbind here first, since we may have been through here before?
+                        collection.bind "add", (model) =>
+                            clog "adding parent to", model, "from", @, "at key", key
+                            model.parent = parent
+                            model.includeInJSON = includeInJSON
+                        for model in collection.models # add a parent link to each of the collection's models
+                            collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation
                     if @attributes[key] instanceof Backbone.Model then continue # TODO: should we really skip out in this case?
                     if key not of attributes then attributes[key] = {} # default to an empty model
@@ -87,7 +96,7 @@ define ["cs!utils/formatters"], (formatters) ->
 
         toJSON: =>
             # first, call the built-in converter in the base class
-            attrs = super
+            attrs = _.extend {}, super
             # if this object is embedded in a denormalized relation, set parent info
             if @parent and @includeInJSON isnt true
                 attrs.parent =
@@ -100,7 +109,6 @@ define ["cs!utils/formatters"], (formatters) ->
             for key of attrs
                 if key of @relations
                     # convert related collections/models into JSON themselves
-                    console.log attrs, key
                     attrs[key] = attrs[key].toJSON()
                     relation = @relations[key]
                     if relation.includeInJSON is true
@@ -124,7 +132,7 @@ define ["cs!utils/formatters"], (formatters) ->
             return url
 
         save: =>
-            # console.log "Saving:", @, "at", @url?() or @url, "as", @toJSON(), @id
+            clog "Saving:", @, "at", @url?() or @url, "as", @toJSON(), @id
             if @parent and @parent.model and @parent.model.unsaved()
                 @saveRecursive() # TODO: this won't behave nicely if the caller needs the XHR object back, but what can we do?
             else
@@ -133,12 +141,12 @@ define ["cs!utils/formatters"], (formatters) ->
         saveRecursive: (arguments, callback) =>
             # if the parent is unsaved, save it first
             if @parent and @parent.model and @parent.model.unsaved()
-                # console.log "Parent of", @, "is unsaved, so first saving", @parent.model, @id
+                clog "Parent of", @, "is unsaved, so first saving", @parent.model, @id
                 @parent.model.saveRecursive null, =>
-                    # console.log "Finished saving", @parent.model, "(now we can actually save", @, "at", @url?() or @url, ")", @id
+                    clog "Finished saving", @parent.model, "(now we can actually save", @, "at", @url?() or @url, ")", @id
                     #BaseModel.prototype.save.apply(@, arguments) # TODO: https://github.com/jashkenas/coffee-script/issues/1606
                     BaseModel.prototype.save.apply(@).success =>
-                        # console.log "saving", @, "is complete", @id
+                        clog "saving", @, "is complete", @id
                         callback?()
             else
                 @save.apply(@, arguments).success callback

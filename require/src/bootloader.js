@@ -21,6 +21,10 @@ if (environ==="DEPLOY") {
 
 require.config(config)
 
+function clog() {
+    if (window.document) console.log.apply(console, arguments)
+}
+
 // require all the non-AMD libraries, in order, to be bundled with the AMD modules
 define(
 	[

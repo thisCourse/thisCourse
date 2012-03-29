@@ -1,8 +1,8 @@
 <h2>Assignments</h2>
 <ul>
     {{#each models }}
-        <li id="{{ id }}"><a class="open">{{ attributes/title }}</a>{{#if ../_editor }} (<a class="delete" href="#">delete</a>){{/if}}</li>
+        <li id="{{ id }}"><a class="open">{{ attributes/title }}</a> (<a class="delete" href="#">delete</a>)</li>
     {{/each}}
 </ul>
 
-{{#if _editor }}<button class="add-button btn success">Add assignment</button>{{/if}}
+<button class="add-button btn success">Add assignment</button>

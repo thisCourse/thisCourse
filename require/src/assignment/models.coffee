@@ -8,6 +8,7 @@ define ["cs!base/models", "cs!page/models"], (basemodels, pagemodels) ->
             page:
                 model: pagemodels.PageModel
                 includeInJSON: true # TODO: will this break 187a? used to be just "_id"
+        
 
     class AssignmentCollection extends basemodels.LazyCollection
 

@@ -97,6 +97,12 @@ app.get('/src/*', function(request, response) {
   })
 })
 
+app.get('/jernigan/*', function(request, response) {
+  fs.readFile(__dirname + '/require/src/test_src.html', function(err,text) {
+      response.end(text)
+  })
+})
+
 app.get('/ucsd/cogs107c/sp12/*', function(request, response) {
   fs.readFile(__dirname + '/public/cogs107c.html', function(err,text) {
       response.end(text)

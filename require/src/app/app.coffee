@@ -1,14 +1,9 @@
-define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], (handlebars, router, coursemodels) ->
+define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], \
+        (handlebars, router, coursemodels) ->
 
     console.log "starting app"
 
     class AppModel extends Backbone.Model
-
-        defaults:
-            tabs:
-                "": "Home"
-                "lectures": "Lectures"
-                "assignments": "Assignments"
 
         constructor: (options) ->
             @router = new router.BaseRouter
@@ -29,15 +24,10 @@ define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], (handlebars, 
         root_url: window.location.pathname.split("/")[1] + "/"
 
     app.course = new coursemodels.CourseModel
-        assignments: [
-            {
-                title: "Tha firsty!"
-                _id: 17
-            }
-            {
-                title: "Tho secondy..."
-                _id: 19
-            }
-        ]
-
+        _id: "4f74584da645118708000003"
+    
+    app.course.fetch().success =>
+        console.log "fetched!"
+        app.course.set app.course.attributes
+    
     return app

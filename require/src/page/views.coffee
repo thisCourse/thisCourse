@@ -1,4 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!content/views", "hb!./templates.handlebars", "less!./styles"], (baseviews, models, contentviews, templates, styles) ->
+define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
+        (baseviews, models, contentviews, dialogviews, templates, styles) ->
 
     class PageView extends baseviews.BaseView
 
@@ -25,7 +26,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "hb!./templates.hand
             @render()
 
         addNewContent: =>
-            dialog_request_response "Please enter a title:", (title) =>
+            dialogviews.dialog_request_response "Please enter a title:", (title) =>
                 @model.get("contents").create
                     title: title
                     width: 12
@@ -62,6 +63,8 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "hb!./templates.hand
         routes: =>
             "page/:id/": (content_id) => new contentviews.ContentView model: @collection.get(content_id)
 
+        initialize: ->
+            @render()
 
     class PageNavRowView extends baseviews.BaseView
         
@@ -69,13 +72,13 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "hb!./templates.hand
         
         render: =>
             @$el.html templates.page_nav_row @context()
-            super
 
         initialize: ->
             @model.bind "change:title", @render
             @model.bind "change:_id", @changeId
             @model.bind "change:title", @titleChange
             @el.attr "id", @model.id
+            @render()
 
         navigate: (fragment) =>
             alert fragment
