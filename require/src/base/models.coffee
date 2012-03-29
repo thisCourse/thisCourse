@@ -51,7 +51,7 @@ define ["cs!utils/formatters"], (formatters) ->
                 relation.includeInJSON or= [] # if it's false or non-existent, this will catch it
                 relation.includeInJSON.push? Backbone.Model.prototype.idAttribute # we always want to include _id
                 # TODO: (probably don't want to do the following -- will save too much in parents; instead, allow POST to absent keys)
-                if relation.model
+                if relation.model and relation.includeInJSON isnt true
                     # to make sure saving of related models doesn't break, include related models all the way down
                     relations = relation.model.prototype.relations?() or relation.model.prototype.relations or {}
                     for relatedkey of relations
@@ -65,13 +65,14 @@ define ["cs!utils/formatters"], (formatters) ->
                 if opts.collection # if it's a "one to many" relation
                     if @attributes[key] instanceof Backbone.Collection then continue # TODO: should we really skip out in this case?
                     if key not of attributes then attributes[key] = [] # default to an empty collection
+                    includeInJSON = if opts.includeInJSON instanceof Array then opts.includeInJSON.slice(0) else opts.includeInJSON # slice to make a copy
                     collection = attributes[key] = new opts.collection(attributes[key]) # turn array into collection
-                    collection.includeInJSON = opts.includeInJSON
-                    #collection.url = => (@url?() or @url) + "/" + key # TODO: do a better join? what if parent not saved yet?
+                    collection.includeInJSON = includeInJSON
                     collection.bind "add", (model) =>
                         #console.log "adding parent to", model, "from", @
                         model.parent = {model: @, key: key}
-                        model.includeInJSON = opts.includeInJSON
+                        model.includeInJSON = includeInJSON
+                        console.log "includeInJSON", includeInJSON, "for", model
                     for model in collection.models # add a parent link to each of the collection's models
                         collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation
@@ -83,7 +84,6 @@ define ["cs!utils/formatters"], (formatters) ->
                         model = attributes[key] = new opts.model(attributes[key])
                         model.parent = {model: @, key: key} # add a parent link to the model
                         model.includeInJSON = opts.includeInJSON
-                        #model.url = => (@url?() or @url) + "/" + key # TODO: do a better join? what if parent not saved yet?
             super attributes, options
 
         toJSON: =>

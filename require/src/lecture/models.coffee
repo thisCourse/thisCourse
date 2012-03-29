@@ -4,13 +4,27 @@ define ["cs!base/models", "cs!content/models", "cs!page/models"], (basemodels, c
 
         apiCollection: "lecture"
 
+        defaults:
+            scheduled: []
+
         relations: ->
-            content:
-                model: contentmodels.ContentModel
-                includeInJSON: ['html']
-            pages:
-                collection: pagemodels.PageCollection
-                includeInJSON: ['title']
+            page:
+                model: pagemodels.PageModel
+                includeInJSON: true
+
+        # scheduleChanged: =>
+        #     scheduled = @get("scheduled")
+        #     if scheduled
+        #         scheduled = [ scheduled ]    unless scheduled instanceof Array
+        #         scheduled = _.map(scheduled, (date) ->
+        #             new Date(date)
+        #         )
+        #     @set scheduled: scheduled
+
+        # initialize: ->
+        #     @bind "change:scheduled", @scheduleChanged, this
+        #     @scheduleChanged()
+
 
     class LectureCollection extends basemodels.LazyCollection
 

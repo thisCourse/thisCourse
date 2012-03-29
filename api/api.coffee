@@ -270,10 +270,7 @@ class MongoCollection
         if @data._id
             delete @data._id
         # merge the fields specified in data into the existing object
-        console.log "PREDATA", @data.page.contents
-        console.log "PREOBJECT", @object.page.contents
         @data = utils.merge(@object, @data)
-        console.log "POST", @data.page.contents
         # save the extended (updated) document back to the database
         return @updateDatabase(@object, callback)
     

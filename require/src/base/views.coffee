@@ -3,7 +3,7 @@ define ["cs!./modelbinding"], (modelbinding) ->
     class BaseView extends Backbone.View
 
         constructor: (options) ->
-            @className = @constructor.name
+            @className = @constructor.name + " " + @className
             if @events not instanceof Function
                 @events = => @events
             super

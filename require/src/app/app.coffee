@@ -23,49 +23,12 @@ define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], (handlebars, 
         root_url: window.location.pathname.split("/")[1] + "/"
 
     app.course = new coursemodels.CourseModel
-        _id: "999"
         lectures: [
             {
-                _id: "1"
                 title: "Tha firsty!"
-                pages: [
-                    {
-                        _id: "77"
-                        title: "Stuff"
-                        html: "yeahhhhhh"
-                    }
-                    {
-                        _id: "33"
-                        title: "More"
-                        html: "woooooooooo"
-                    }
-                    {
-                        _id: "99"
-                        title: "Yes"
-                        html: "here it is"
-                    }
-                ]
             }
             {
-                _id: "2"
                 title: "Tho secondy..."
-                pages: [
-                    {
-                        _id: "66"
-                        title: "Mhmmm"
-                        html: "ah yaaa"
-                    }
-                    {
-                        _id: "44"
-                        title: "Tuba"
-                        html: "barruuuuuuuuuum"
-                    }
-                    {
-                        _id: "88"
-                        title: "Angel"
-                        html: "Ah yes"
-                    }
-                ]
             }
         ]
 

@@ -1,4 +1,4 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "hb!content/items/views", "hb!./templates.handlebars", "less!./styles"], \
+define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "hb!./templates.handlebars", "less!./styles"], \
         (baseviews, models, pageviews, itemviews, templates, styles) ->
 
     class AssignmentRouterView extends baseviews.RouterView
@@ -91,7 +91,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "hb!content/items/views
             @memento.store()
 
             
-
     AssignmentRouterView: AssignmentRouterView
     AssignmentListView: AssignmentListView
     AssignmentView: AssignmentView

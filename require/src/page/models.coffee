@@ -7,8 +7,7 @@ define ["cs!base/models", "cs!content/models"], (basemodels, contentmodels) ->
         relations: ->
             contents:
                 collection: contentmodels.ContentCollection
-                includeInJson: ["title"]
-            
+                includeInJSON: ["title"]
 
     class PageCollection extends basemodels.LazyCollection
 
