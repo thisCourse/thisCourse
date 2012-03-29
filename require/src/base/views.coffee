@@ -59,6 +59,10 @@ define ["cs!./modelbinding"], (modelbinding) ->
             $(element or @$el).append view.el
             return view
         
+        close_subview: (name) =>
+            @subviews[name]?.close?()
+            delete @subviews[name]
+        
         # build a context object to be passed to a template for rendering
         context: =>
             data = {}
