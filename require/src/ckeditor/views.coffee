@@ -44,6 +44,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             @$el.html templates.ckeditor html: @options.html
             _.defer => @$(".ckeditor").ckeditor config
 
+        html: => @$(".ckeditor").val()
 
     CKEditorView: CKEditorView
     config: config

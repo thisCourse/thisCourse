@@ -4,6 +4,8 @@ define ["cs!./modelbinding"], (modelbinding) ->
 
         constructor: (options) ->
             @className = @constructor.name
+            if @events not instanceof Function
+                @events = => @events
             super
             @subviews = {}
             @visible = options?.visible or true

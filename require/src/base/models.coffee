@@ -2,6 +2,8 @@ define ["cs!utils/formatters"], (formatters) ->
     
     Backbone.Model.prototype.idAttribute = "_id"
 
+    slug_fields = ["slug", Backbone.Model.prototype.idAttribute]
+
     class BaseModel extends Backbone.Model
 
         url: => # TODO: test this, and make the api endpoint configurable
@@ -23,6 +25,14 @@ define ["cs!utils/formatters"], (formatters) ->
             result = super
             # console.log "(actual save of", @, "in BaseModel complete)", @id
             return result
+        
+        slug: =>
+            for field in slug_fields
+                if field of @attributes
+                    return @get(field)
+            return ""
+        
+        matches: (slug) => slug.replace("/", "") in slug_fields
 
     class LazyModel extends BaseModel
 

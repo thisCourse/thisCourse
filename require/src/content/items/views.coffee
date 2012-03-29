@@ -90,7 +90,34 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews) ->
             super
 
     class ItemEditInlineView extends ItemEditView
-        
+
+        minwidth: 6
+
+        render: =>
+            super
+            _.defer @parent.updateWidth
+
+        events: =>
+            _.extend
+                "keyup input": "keyup"
+            , super
+
+        keyup: (ev) ->
+            switch ev.which
+                when 13 then @save()
+                when 27 then @cancel()
+
+        initialize: ->
+            super
+            @parent.$(".item-inner").hide()
+            @parent.$el.append @$el
+
+        saved: ->
+            @close()
+
+        close: ->
+            super
+            @parent.$(".item-inner").show() # TODO: handle this in parent, with subview stuff
 
         
     class ItemEditPopupView extends ItemEditView
