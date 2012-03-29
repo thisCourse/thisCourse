@@ -26,9 +26,9 @@
 <script id="fileview-template" type="text/x-handlebars-template">
     <div class='row-fluid file'>
         <div class='span2'>
-            <span class='label label-info'>
-                <i class='icon-{{type}} icon-white'></i>
-            </span>
+            {{#if thumburl}}<img class='thumbnail' src='{{thumburl}}' alt='Thumbnail' />
+            {{else}}<span class='label label-info'><i class='icon-{{type}} icon-white'></i></span>
+            {{/if}}
         </div>
         <div class='span6 display'>
             <h3><fn class='filename'>{{name}}</fn>
@@ -70,8 +70,8 @@
         </div>
     </div>
     <div class='btn-group' id='upchoose'>
-        <button class='btn' id='upload'>Upload File</button>
-        <button class='btn' id='select'>Choose File</button>
+        <iframe class='uploader'></iframe>
+        <button class='btn' id='select'>Use This File</button>
     </div>
 </script>
 
