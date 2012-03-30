@@ -50,42 +50,51 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 return true if subview.navigate(@fragment)
             return false
 
-        add_subview: (options={}) =>
+        add_lazy_subview: (options={}, callback) =>
 
-            if not options.datasource then throw Error("You must specify a datasource ('model' or 'collection') when calling add_subview")
+            if not options.datasource then throw Error("You must specify a datasource ('model' or 'collection') when calling add_lazy_subview:", @)
+            
+            if not options.view
+                clog @, options
+                throw Error("You must specify a view class when calling add_lazy_subview:")
             
             if options.datasource is "model" and @model not instanceof Backbone.Model
-                throw Error("The parent view must already have @model instantiated when add_subview called with datasource: 'model'")
+                throw Error("The parent view must already have @model instantiated when add_subview called with datasource 'model':", @)
 
             if options.datasource is "collection" and @collection not instanceof Backbone.Collection
-                throw Error("The parent view must already have @collection instantiated when add_subview called with datasource: 'collection'")
-                        
+                throw Error("The parent view must already have @collection instantiated when add_subview called with datasource 'collection'", @)
+            
             viewoptions = options.viewoptions?.slice?(0) or {}
             
             subview_created = false
             
             create_subview_if_ready = =>
                 if subview_created then return # TODO: could unbind after success, instead of doing this check here            
-                if (obj = @[datasource]?.get?(options.key)) and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
+                if options.key # if a key was specified, we need to descend
+                    obj = @[options.datasource]?.get?(options.key)
+                else # otherwise, we pass the whole model/collection along from the parent view
+                    obj = @[options.datasource]
+                if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
                     if obj instanceof Backbone.Model
                         viewoptions.model = obj
                     else
                         viewoptions.collection = obj
                     subview = new options.view(viewoptions)
                     subview.url = options.url if options.url
-                    @add_completed_subview options.name, subview, options.target
+                    @add_subview options.name, subview, options.target
                     subview_created = true
+                    callback?(subview)
 
             create_subview_if_ready()
             
             if not subview_created
-                if datasource is "model"
+                if options.datasource is "model"
                     @model.bind "change:" + options.key, create_subview_if_ready
-                else if datasource is "collection"
+                else if options.datasource is "collection"
                     @collection.bind "add", create_subview_if_ready
                     @collection.bind "change", create_subview_if_ready
 
-        add_completed_subview: (name, view, element) =>
+        add_subview: (name, view, element) =>
             # close any pre-existing view at this name/slug
             @subviews[name].close?() if name of @subviews
             # create a back-reference to the parent view:
@@ -144,13 +153,13 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         mementoRestore: =>
             @memento?.restore()
 
-        resolveLazyRefs: =>
-            if @resolved then return false # if it's already been resolved, don't try again
-            if @model instanceof LazyRef and (object = @model.resolve(@parent))
-                @model = object # point our model to the resolved model from the parent
-            else if @collection instanceof LazyRef and (object = @collection.resolve(@parent))
-                @collection = object # point our collection to the resolved collection from the parent
-            @resolved = true # either we didn't find any LazyRefs or we've resolved them; return and set true
+        # resolveLazyRefs: =>
+        #     if @resolved then return false # if it's already been resolved, don't try again
+        #     if @model instanceof LazyRef and (object = @model.resolve(@parent))
+        #         @model = object # point our model to the resolved model from the parent
+        #     else if @collection instanceof LazyRef and (object = @collection.resolve(@parent))
+        #         @collection = object # point our collection to the resolved collection from the parent
+        #     @resolved = true # either we didn't find any LazyRefs or we've resolved them; return and set true
             
     class RouterView extends BaseView
         
@@ -203,48 +212,25 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     # get the cached view for this matching fragment (if it exists):
                     subview = @subviews[match]
 
-                    # if we haven't already created a subview for this fragment, then make it so:
-                    if not subview
+                    show_and_navigate = (subview) =>
+                        # make sure it's visible (hiding all others):
+                        view.hide() for route,view of @subviews when not (view is subview)
+                        subview?.show?() # TODO: need to find a way to fire this even with add_lazy_subview...
+                        # propagate the url fragment down into the subview:
+                        success = subview.navigate(splat)
+
+                    if subview
+                        show_and_navigate subview
+                    else # if we haven't already created a subview for this fragment, then make it so:
                         subviewoptions = handler.callback(fragment) # call the handler to get the subview options
                         subviewoptions.url = @url + match
                         subviewoptions.name = match
-                        @add_subview subviewoptions
-
-                    # if subview.resolveLazyRefs() # wait until lazy references are resolved, before rendering
-                    #     subview.render()
-                                    
-                    # make sure it's visible (hiding all others):
-                    view.hide() for route,view of @subviews when not (view is subview)
-                    subview.show()
-
-                    # propagate the url fragment down into the subview:
-                    success = subview.navigate(splat)
-
+                        @add_lazy_subview subviewoptions, show_and_navigate
+                        
                     return true
 
             return false
 
-    class LazyRef extends Backbone.Events
-        constructor: (key) ->
-            @key = key
-        resolve: (parent) =>
-            object = @getObject(parent)
-            if object instanceof Backbone.Model or object instanceof Backbone.Collection
-                @trigger "resolved", object
-                return object
-            else
-                return null
-        
-    class LazyModelRef extends LazyRef
-        getObject: (parent) =>
-            return parent.model?.get?(@key) or null
-        
-    class LazyCollectionRef extends LazyRef
-        getObject: (parent) =>
-            return parent.collection?.get?(@key) or null
 
     BaseView: BaseView
     RouterView: RouterView
-    LazyRef: LazyRef
-    LazyModelRef: LazyModelRef
-    LazyCollectionRef: LazyCollectionRef

@@ -15,7 +15,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
 
         render: =>
             @$el.html templates.page @context()
-            @add_subview "pagerouter", new PageRouterView collection: @model.get("contents"), ".contents"
+            @add_lazy_subview name: "pagerouter", view: PageRouterView, datasource: "model": key: "contents", target: ".contents"
             if @model.get("_editor") then @makeSortable()
 
         initialize: ->
@@ -61,7 +61,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
     class PageRouterView extends baseviews.RouterView
         
         routes: =>
-            "page/:id/": (content_id) => new contentviews.ContentView model: baseviews.LazyCollectionRef(content_id)
+            "page/:id/": (content_id) => view: contentviews.ContentView, datasource: "collection", key: content_id
 
         initialize: ->
             @render()

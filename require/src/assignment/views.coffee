@@ -4,8 +4,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     class AssignmentRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => new AssignmentListView collection: @collection
-            ":assignment_id/": (assignment_id) => new AssignmentView model: new baseviews.LazyCollectionRef(assignment_id)
+            "": => view: AssignmentListView, datasource: "collection"
+            ":assignment_id/": (assignment_id) => view: AssignmentView, datasource: "collection", key: assignment_id
 
         initialize: ->
             console.log "AssignmentRouterView init"
@@ -60,9 +60,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             @$el.html templates.assignment @context()
             @add_subview "topview", new AssignmentTopView(model: @model), ".assignment-top"
-            clog "model is", @model
-            @model.bind "change:page", =>
-                @add_subview "pageview", new pageviews.PageView(model: @model.get("page")), ".assignment-page"
+            @add_lazy_subview name: "pageview", view: pageviews.PageView, datasource: "model", key: "page", target: ".assignment-page"
 
         edit: =>
             @subviews.topview.hide()

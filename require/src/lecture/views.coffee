@@ -4,8 +4,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "hb!./templates.handleb
     class LectureRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => new LectureListView collection: @collection
-            ":lecture_id/": (lecture_id) => new LectureView model: @collection.get(lecture_id)
+            "": => view: LectureListView, datasource: "collection"
+            ":lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", key: lecture_id
 
     class LectureListView extends baseviews.BaseView
 
