@@ -27,9 +27,9 @@ define ["cs!base/models"], (basemodels) ->
         
         model: SectionModel
 
-    class ItemModel extends Backbone.Model
+    class ItemModel extends basemodels.LazyModel
 
-    class ItemCollection extends Backbone.Collection
+    class ItemCollection extends basemodels.LazyCollection
         model: ItemModel
 
 

@@ -5,6 +5,8 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "cs!../../models", 
         
         minwidth: 12
         
+        #class: "item item-freeform"
+        
         render: =>
             super
             @$el.html templates.item_freeform_edit @context()
@@ -24,12 +26,14 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "cs!../../models", 
         EditView: FreeformItemEditView
 
         initialize: ->
-            @model.set width: 14 #Math.min(15, @model.get("parent").get("width"))
+            @model.set width: Math.min(15, @model.parent.model.get("width"))
             super
 
         render: =>
-            @$el.html templates.item_freeform @context()
             super
+            clog "rendering freeform itemview"
+            @$('.item-inner').html templates.item_freeform @context()
+            
 
     
     title: "Freeform"

@@ -6,8 +6,8 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
         minwidth: 4
 
         render: =>
-            @$el.html templates.item_gallery_edit @context()
             super
+            @$el.html templates.item_gallery_edit @context()
             @enablePlaceholders()
             @$("iframe.uploader").load =>
                 response_text = $("body", $("iframe").contents()).text()
@@ -19,6 +19,10 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
                 else if response_json._error
                     self.loadDownloadFrame "Error!"
             @loadDownloadFrame()
+
+        save: =>
+            alert "saving gallery item"
+            super
 
         loadDownloadFrame: (message) =>
             $.get "/s3?" + Math.random(), (policy_params) =>

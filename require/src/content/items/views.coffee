@@ -5,6 +5,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
         className: "ItemView"
 
         render: ->
+            @$el.html templates.item_container @context
             @updateWidth()
 
         events: ->
@@ -15,23 +16,25 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
 
         initialize: ->
             @model.bind "change", @change
-            @$el.html templates.item_container @context
             @change()
 
         showActionButtons: =>
-            return @$(".item-button").not(".drag-button").stop().fadeIn(50) if @model.editing
-            @$(".item-button.drag-button").stop().fadeIn 200
+            if @model.editing then return
+            @$(".item-button").not(".drag-button").stop().hide().fadeIn(50)
+            @$(".item-button.drag-button").stop().hide().fadeIn 200
 
         hideActionButtons: =>
             @$(".item-button").stop().fadeOut 50
 
         edit: => #_.debounce(->
-            @add_subview "editview", new @EditView(model: @model)
+            @add_subview "editview", new @EditView(model: @model), ".item-inner"
             @hideActionButtons()
+            return false
         #, 100)
 
         delete: =>
             @model.destroy()
+            return false
 
         close: =>
             @model.unbind "change", @render
@@ -93,14 +96,12 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
 
         minwidth: 6
 
-        render: =>
+        render: => 
             super
             _.defer @parent.updateWidth
 
-        events: =>
-            _.extend
-                "keyup input": "keyup"
-            , super
+        events: => _.extend super,
+            "keyup input": "keyup"
 
         keyup: (ev) ->
             switch ev.which

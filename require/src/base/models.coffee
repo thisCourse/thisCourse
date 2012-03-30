@@ -34,6 +34,13 @@ define ["cs!utils/formatters"], (formatters) ->
         
         matches: (slug) => slug.replace("/", "") in slug_fields
 
+        toJSON: =>
+            json = super
+            try
+                json._course = require("app").course.id # TODO: something more elegant?
+            catch err
+            return json
+
     class LazyModel extends BaseModel
 
         loaded: false
@@ -122,7 +129,7 @@ define ["cs!utils/formatters"], (formatters) ->
                         models = [models]
                     for model in models
                         for modelkey of model
-                            if modelkey not in relation.includeInJSON
+                            if modelkey not in relation.includeInJSON and modelkey[0] isnt "_" # TODO: include all _ fields like this?
                                 delete model[modelkey]
             return attrs
 
