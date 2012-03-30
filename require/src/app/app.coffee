@@ -12,6 +12,7 @@ define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], \
 
         navigate: (url) =>
             if not url then return
+            if url instanceof Function then url = url()
             if url.slice(-1) != "/"
                 url += "/"    
             @router.navigate url, true

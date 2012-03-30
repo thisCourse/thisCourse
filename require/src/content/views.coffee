@@ -106,7 +106,7 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
 
         initialize: ->
             @model.set _editor: app.get("_editor")
-            @el.attr "id", @model.id
+            @$el.attr "id", @model.id
             @model.bind "change", @update
             @model.bind "add:items", @addItems
             @model.bind "remove:items", @removeItems

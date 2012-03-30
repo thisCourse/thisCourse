@@ -20,10 +20,15 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
 
         initialize: ->
             @model.bind "change", @update
-            @model.bind "add:contents", @addContents
-            @model.bind "remove:contents", @removeContents
+            @model.get("contents").bind "add", @addContents
+            @model.get("contents").bind "remove", @removeContents
             @model.bind "change:_editor", @render
             @render()
+            _.defer @drawAllExistingRows
+
+        drawAllExistingRows: =>
+            for model in @model.get("contents").models
+                @addContents model, @model.get("contents")
 
         addNewContent: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
@@ -33,8 +38,8 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
                     _editor: true
 
         addContents: (model, coll) =>
-            @add_subview model.cid, new PageNavRowView model: model, ".nav-links"
-            require("app").navigate @subviews[model.cid].url()
+            @add_subview model.cid, new PageNavRowView(model: model), @$(".nav-links")
+            #require("app").navigate @subviews[model.cid].url
             
         removeContents: (model, coll) =>
             @close_subview model.cid
@@ -81,18 +86,17 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
             @model.bind "change:title", @render
             @model.bind "change:_id", @changeId
             @model.bind "change:title", @titleChange
-            @el.attr "id", @model.id
+            @$el.attr "id", @model.id
             @render()
 
         navigate: (fragment) =>
-            alert fragment
             @$el.toggleClass "active", @model.matches(fragment)
 
-        titleChange: ->
+        titleChange: =>
             @titleChanged = true
 
-        changeId: ->
-            @el.attr "id", @model.id
+        changeId: =>
+            @$el.attr "id", @model.id
 
     PageView: PageView
     PageRouterView: PageRouterView

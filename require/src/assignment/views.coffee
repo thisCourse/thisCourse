@@ -109,6 +109,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @model.set due: due
             @$("input").blur()
             @$(".save.btn").button "loading"
+            @model.save().success =>
+                @parent.render()
+                @parent.editDone()
 
         cancel: =>
             @mementoRestore()

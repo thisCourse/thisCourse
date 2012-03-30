@@ -132,9 +132,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         # set a view's Bootstrap grid system width according to its model's "width" property 
         updateWidth: =>
-            @el.attr "class", @el[0].className.replace(/\w*\bspan\d+\b/g, "")
+            @$el.attr "class", @$el[0].className.replace(/\w*\bspan\d+\b/g, "")
             width = Math.max(@model.get("width"), @editView and @editView.minwidth or 4)
-            @el.addClass "span" + width if isFinite(width)
+            @$el.addClass "span" + width if isFinite(width)
             require("app").trigger "resized"
 
         enablePlaceholders: =>

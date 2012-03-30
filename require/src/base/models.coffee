@@ -21,9 +21,9 @@ define ["cs!utils/formatters"], (formatters) ->
                 
         save: =>
             @trigger("save", @)
-            clog "(actual save of", @, "happening in BaseModel)", arguments
+            # clog "(actual save of", @, "happening in BaseModel)", arguments
             result = super
-            clog "(actual save of", @, "in BaseModel complete)", @id
+            # clog "(actual save of", @, "in BaseModel complete)", @id
             return result
         
         slug: =>
@@ -40,6 +40,7 @@ define ["cs!utils/formatters"], (formatters) ->
         loading: false
 
         constructor: ->
+            # clog "CREATING LAZYMODEL INSTANCE", @
             @relations = @relations?() or @relations or {}
             for key,relation of @relations
                 if not (relation.model or relation.collection)
@@ -63,9 +64,9 @@ define ["cs!utils/formatters"], (formatters) ->
             clog "setting", attr, "on", @
             for key,opts of @relations
                 if opts.collection # if it's a "one to many" relation
-                    if key not of attr then attr[key] = [] # default to an empty collection
+                    if key not of attr and key not of @attributes then attr[key] = [] # default to an empty collection
                     if (collection = @attributes[key]) instanceof opts.collection
-                        for newmodel in attr[key]
+                        for newmodel in attr[key] or []
                             if (oldmodel = @attributes[key].get(newmodel[idAttribute]))
                                 oldmodel.set newmodel # update the existing model with the new data
                             else
@@ -78,13 +79,13 @@ define ["cs!utils/formatters"], (formatters) ->
                         parent = {model: @, key: key}
                         # TODO: unbind here first, since we may have been through here before?
                         collection.bind "add", (model) =>
-                            clog "adding parent to", model, "from", @, "at key", key
+                            # clog "adding parent to", model, "from", @, "at key", key
                             model.parent = parent
                             model.includeInJSON = includeInJSON
                         for model in collection.models # add a parent link to each of the collection's models
                             collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation
-                    if key not of attr then attr[key] = {} # default to an empty model
+                    if key not of attr and key not of @attributes then attr[key] = {} # default to an empty model
                     if _.isString(attr[key]) # if just a string, assume it's an id and put it in an object
                         attr[key] = {_id: attr[key]}
                     if _.isObject(attr[key]) # if it's an object (should be!), then turn it into a model
@@ -134,11 +135,14 @@ define ["cs!utils/formatters"], (formatters) ->
             return url
 
         save: =>
-            clog "Saving:", @, "at", @url?() or @url, "as", @toJSON(), @id
+            # clog "Saving:", @, "at", @url?() or @url, "as", @toJSON(), @id
             if @parent and @parent.model and @parent.model.unsaved()
                 @saveRecursive() # TODO: this won't behave nicely if the caller needs the XHR object back, but what can we do?
             else
-                super
+                if @includeInJSON isnt true 
+                    super
+                else # we'll skip out on saving this model if it's fully embedded
+                    success: (callback) => callback() # TODO: are there any consequences of skipping out here?
         
         saveRecursive: (arguments, callback) =>
             # if the parent is unsaved, save it first
