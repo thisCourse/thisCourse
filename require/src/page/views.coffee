@@ -61,7 +61,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
     class PageRouterView extends baseviews.RouterView
         
         routes: =>
-            "page/:id/": (content_id) => new contentviews.ContentView model: @collection.get(content_id)
+            "page/:id/": (content_id) => new contentviews.ContentView model: baseviews.LazyCollectionRef(content_id)
 
         initialize: ->
             @render()

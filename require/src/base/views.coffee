@@ -188,12 +188,13 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
             return false
 
-    class LazyRef
+    class LazyRef extends Backbone.Events
         constructor: (key) ->
             @key = key
         resolve: (parent) =>
             object = @getObject(parent)
             if object instanceof Backbone.Model or object instanceof Backbone.Collection
+                @trigger "resolved", object
                 return object
             else
                 return null
@@ -207,4 +208,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             return parent.collection?.get?(@key) or null
 
     BaseView: BaseView
-    RouterView: RouterView        
+    RouterView: RouterView
+    LazyRef: LazyRef
+    LazyModelRef: LazyModelRef
+    LazyCollectionRef: LazyCollectionRef

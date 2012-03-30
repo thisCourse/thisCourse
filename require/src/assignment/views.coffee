@@ -5,7 +5,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         routes: =>
             "": => new AssignmentListView collection: @collection
-            ":assignment_id/": (assignment_id) => new AssignmentView model: @collection.get(assignment_id)
+            ":assignment_id/": (assignment_id) => new AssignmentView model: new baseviews.LazyCollectionRef(assignment_id)
 
         initialize: ->
             console.log "AssignmentRouterView init"
@@ -61,7 +61,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @$el.html templates.assignment @context()
             @add_subview "topview", new AssignmentTopView(model: @model), ".assignment-top"
             clog "model is", @model
-            @add_subview "pageview", new pageviews.PageView(model: @model.get("page")), ".assignment-page"
+            @model.bind "change:page", =>
+                @add_subview "pageview", new pageviews.PageView(model: @model.get("page")), ".assignment-page"
 
         edit: =>
             @subviews.topview.hide()
