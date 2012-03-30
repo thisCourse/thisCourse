@@ -1,0 +1,47 @@
+<script id="nugget" type="text/x-handlebars-template">
+    
+    <div class="nugget-top"></div>
+
+    <hr/>
+
+    <div class="nugget-page"></div>
+    
+</script>
+
+
+<script id="nugget_top_edit" type="text/x-handlebars-template">
+    
+    <input class="span12" type="text" data="title" placeholder="Nugget Title"/>
+    <textarea class="span12" data="description" placeholder="Nugget Description">{{ description }}</textarea>
+    <p>Tags: <input type="text" class="tags" data="tags"/></p>
+    <br/><br/>
+    {{> item_edit_buttons }}
+    
+</script>
+
+
+<script id="nugget_list" type="text/x-handlebars-template">
+    
+    <h2>Nuggets</h2>
+    <ul>
+        {{#each collection/models }}
+            <li><a href="{{ ../url }}{{ id }}/">{{ attributes/title }}</a></li>
+        {{/each }}
+    </ul>
+
+    <span class="edit"><button class="add-button btn success">Add nugget</button></span>
+    
+</script>
+
+
+<script id="nugget_top" type="text/x-handlebars-template">
+    
+    <h2 data="title">{{ title }}</h2 >
+
+    <div class="description" data="description">{{ description }}</div>
+
+    {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{/if }}
+
+    <span class="edit"><button class="item-button edit-button btn success">Edit nugget details</button></span>
+    
+</script>

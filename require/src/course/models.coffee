@@ -1,5 +1,5 @@
-define ["cs!base/models", "cs!lecture/models", "cs!assignment/models", "cs!content/models", "cs!page/models"], \
-        (basemodels, lecturemodels, assignmentmodels, contentmodels, pagemodels) ->
+define ["cs!base/models", "cs!lecture/models", "cs!assignment/models", "cs!nugget/models", "cs!content/models", "cs!page/models"], \
+        (basemodels, lecturemodels, assignmentmodels, nuggetmodels, contentmodels, pagemodels) ->
 
     class CourseModel extends basemodels.LazyModel
 
@@ -14,6 +14,9 @@ define ["cs!base/models", "cs!lecture/models", "cs!assignment/models", "cs!conte
                 includeInJSON: ["title", "description", "due", "page"]
             content:
                 model: contentmodels.ContentModel
+                includeInJSON: true
+            nuggets:
+                collection: nuggetmodels.NuggetCollection
                 includeInJSON: true
 
     class CourseCollection extends basemodels.LazyCollection
