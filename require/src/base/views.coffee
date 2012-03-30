@@ -50,7 +50,42 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 return true if subview.navigate(@fragment)
             return false
 
-        add_subview: (name, view, element) =>
+        add_subview: (options={}) =>
+
+            if not options.datasource then throw Error("You must specify a datasource ('model' or 'collection') when calling add_subview")
+            
+            if options.datasource is "model" and @model not instanceof Backbone.Model
+                throw Error("The parent view must already have @model instantiated when add_subview called with datasource: 'model'")
+
+            if options.datasource is "collection" and @collection not instanceof Backbone.Collection
+                throw Error("The parent view must already have @collection instantiated when add_subview called with datasource: 'collection'")
+                        
+            viewoptions = options.viewoptions?.slice?(0) or {}
+            
+            subview_created = false
+            
+            create_subview_if_ready = =>
+                if subview_created then return # TODO: could unbind after success, instead of doing this check here            
+                if (obj = @[datasource]?.get?(options.key)) and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
+                    if obj instanceof Backbone.Model
+                        viewoptions.model = obj
+                    else
+                        viewoptions.collection = obj
+                    subview = new options.view(viewoptions)
+                    subview.url = options.url if options.url
+                    @add_completed_subview options.name, subview, options.target
+                    subview_created = true
+
+            create_subview_if_ready()
+            
+            if not subview_created
+                if datasource is "model"
+                    @model.bind "change:" + options.key, create_subview_if_ready
+                else if datasource is "collection"
+                    @collection.bind "add", create_subview_if_ready
+                    @collection.bind "change", create_subview_if_ready
+
+        add_completed_subview: (name, view, element) =>
             # close any pre-existing view at this name/slug
             @subviews[name].close?() if name of @subviews
             # create a back-reference to the parent view:
@@ -170,12 +205,13 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
                     # if we haven't already created a subview for this fragment, then make it so:
                     if not subview
-                        subview = handler.callback(fragment) # call the handler to get the new View instance
-                        subview.url = @url + match
-                        @add_subview match, subview
+                        subviewoptions = handler.callback(fragment) # call the handler to get the subview options
+                        subviewoptions.url = @url + match
+                        subviewoptions.name = match
+                        @add_subview subviewoptions
 
-                    if subview.resolveLazyRefs() # wait until lazy references are resolved, before rendering
-                        subview.render()
+                    # if subview.resolveLazyRefs() # wait until lazy references are resolved, before rendering
+                    #     subview.render()
                                     
                     # make sure it's visible (hiding all others):
                     view.hide() for route,view of @subviews when not (view is subview)
