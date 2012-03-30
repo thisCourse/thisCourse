@@ -1,21 +1,21 @@
 define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handlebars", "less!./styles"], \
         (itemviews, baseviews, contentmodels, templates, styles) ->            
 
-    class BoilerItemEditView extends itemviews.ItemEditInlineView # or ItemEditPopupView
+    class ProbeItemEditView extends itemviews.ItemEditInlineView # or ItemEditPopupView
         
         render: =>
-            @$el.html templates.item_boiler_edit @context()
+            @$el.html templates.item_Probe_edit @context()
 
-    class BoilerItemView extends itemviews.ItemView
+    class ProbeItemView extends itemviews.ItemView
 
-        EditView: BoilerItemEditView
+        EditView: ProbeItemEditView
 
         render: =>
-            @$el.html templates.item_boiler @context()
+            @$el.html templates.item_Probe @context()
 
 
-    title: "Boiler"
-    description: "Container for 'Boiler' data"
-    ItemView: BoilerItemView
-    ItemEditView: BoilerItemEditView
+    title: "Probe"
+    description: "Container for 'Probe' data"
+    ItemView: ProbeItemView
+    ItemEditView: ProbeItemEditView
     

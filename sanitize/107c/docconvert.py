@@ -8,6 +8,9 @@ from bs4 import BeautifulSoup, Comment
 import base64
 import re
 from sys import argv, exit
+import imghdr
+import commands
+import glob
 
 
 def openofficeconv(importfile):
@@ -49,13 +52,18 @@ def imagedecode(filename, uri):
 
 	filetype = uri.split(";")[0].split("/")[-1]
 
+	result = base64.decodestring(data)
+
 	if filetype=='*':
-		filetype='png'
+		if imghdr.what(None,result):
+			filetype=imghdr.what(None,result)
+		else:
+			filetype=''
 
 	fileid = filename + "." + filetype
 
 	f = open(fileid, "w")
-	f.write(base64.decodestring(data))
+	f.write(result)
 	f.close()
 	return fileid
 
@@ -68,7 +76,7 @@ def imagestrip(soup,htmlname):
 	images = soup.findAll('img')
 
 	for num, image in enumerate(images):
-		image["src"] = imagedecode(htmlname.split(".")[0]+imagenamemod+str(num),image["src"])
+		image["src"] = imagedecode(htmlname.split('/')[1].split(".")[0]+imagenamemod+str(num),image["src"])
 
 
 
@@ -104,6 +112,10 @@ def divremove(soup):
 
 	while soup.div!=None:
 		soup.div.replace_with_children()
+		
+	for div in soup.findAll('nuggetslide',id=re.compile("Picture")):
+		div.replace_with_children()
+
 
 def styleprune(soup,classname,style):
 	for tag in [x for x in soup.select('[style]') if style in x['style']]:
@@ -157,7 +169,9 @@ if __name__ == "__main__":
 
 	desktop = smgr.createInstanceWithContext( "com.sun.star.frame.Desktop",ctx)
 
-	filename = openofficeconv('COGS107C-L1-EmotionandCognition.ppt')
+	#for filename in glob.glob('*.ppt'): #remove comment and add filename as argument of openofficeconv for batch
+	
+	filename = openofficeconv('COGS107C-L2-Emotion Regulation-CW.ppt')
 
 	#Start HTML Document Manipulation
 
@@ -167,9 +181,13 @@ if __name__ == "__main__":
 
 	htmlsoup = BeautifulSoup(open(filename))
 
+	filepath = re.compile('L[0-9]+').search(filename).group()
+	
+	commands.getstatusoutput('mkdir '+filepath)
+	
 	removecomments(htmlsoup)
 
-	imagestrip(htmlsoup,filename)
+	imagestrip(htmlsoup,filepath+'/'+filename)
 
 	distributecss(htmlsoup)
 
@@ -197,4 +215,8 @@ if __name__ == "__main__":
 
 	output = htmlsoup.prettify()
 	output = output.encode('utf-8')
-	open(filename,'w').write(output)
+	
+	htmllist = output.split('<nuggetslide')
+	
+	for i,slide in enumerate(htmllist):
+		open(filepath+'/'+'slide'+str(i)+'.html','w').write(slide[slide.find('</nuggetslide>')+14:-1])
