@@ -14,6 +14,8 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             #     @makeEditable()
             #     @makeSortable()
             @update()
+            for model in @model.get("sections").models
+                @addSections model, @model.get("sections")
 
         initialize: =>
             @model.bind "change", @update
@@ -32,7 +34,9 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
         addNewSection: =>
             new_section = type: @$(".add-section-type").val()
             new_section.width = @model.get("width") if @model.get("width")
+            # alert "about to create new section"
             @model.get("sections").create new_section
+            clog @model.get("sections")
 
         addSections: (model, coll) =>
             @add_subview model.cid, new SectionView(model: model), ".sections"

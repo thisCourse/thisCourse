@@ -44,8 +44,21 @@ class MongoCollection
             @document = doc
             if @Model
                 @model = new @Model(@document) # turn the document into an instance of the appropriate Model
-                @document = @model.toJSON() # use the JSON output of the model as our document data
+                @document = @model.toJSON(true) # use the JSON output of the model as our document data
+                relations = @model.constructor.prototype.relations
+                relations = relations?() or relations
+                console.log "RELATIONS", relations
+                #model = @model.get("assignments").get("4f75ce9bdc1cc06f40000001").get("page").get("contents").get("4f75cf9cdc1cc06f40000005").toJSON(true)
+                
             callback err
+
+    # expandModelsByPath: (callback) =>
+    #     console.log @path
+    #     mod = @model
+    #     doc = @document
+    #     for p,i in path
+    #         mod = mod.get(p)
+    #         doc = 
 
     findObjectByPath: (callback) =>
         @rawpath = @path.slice(0)

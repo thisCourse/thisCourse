@@ -52,16 +52,16 @@ define ["cs!utils/formatters"], (formatters) ->
                 relation.includeInJSON or= [] # if it's false or non-existent, this will catch it
                 relation.includeInJSON.push? Backbone.Model.prototype.idAttribute # we always want to include _id
                 # TODO: (probably don't want to do the following -- will save too much in parents; instead, allow POST to absent keys)
-                if relation.model and relation.includeInJSON isnt true
-                    # to make sure saving of related models doesn't break, include related models all the way down
-                    relations = relation.model.prototype.relations?() or relation.model.prototype.relations or {}
-                    for relatedkey of relations
-                        relation.includeInJSON.push relatedkey
+                # if relation.model and relation.includeInJSON isnt true
+                #     # to make sure saving of related models doesn't break, include related models all the way down
+                #     relations = relation.model.prototype.relations?() or relation.model.prototype.relations or {}
+                #     for relatedkey of relations
+                #         relation.includeInJSON.push relatedkey
             super
 
         set: (attr, options) ->
             attr = _.extend({}, attr)
-            #clog "setting", attr, "on", @
+            clog "setting", attr, "on", @
             for key,opts of @relations
                 if opts.collection # if it's a "one to many" relation
                     if key not of attr and key not of @attributes then attr[key] = [] # default to an empty collection
@@ -97,7 +97,7 @@ define ["cs!utils/formatters"], (formatters) ->
                             model.includeInJSON = opts.includeInJSON
             super attr, options
 
-        toJSON: =>
+        toJSON: (full) =>
             # first, call the built-in converter in the base class
             attrs = _.extend {}, super
             # if this object is embedded in a denormalized relation, set parent info
@@ -112,9 +112,9 @@ define ["cs!utils/formatters"], (formatters) ->
             for key of attrs
                 if key of @relations
                     # convert related collections/models into JSON themselves
-                    attrs[key] = attrs[key].toJSON()
+                    attrs[key] = attrs[key].toJSON(full)
                     relation = @relations[key]
-                    if relation.includeInJSON is true
+                    if relation.includeInJSON is true or full # TODO: full is to be used on server side for non-filtered json version
                         continue # because nothing to filter out
                     # loop through all models objects and filter out things not in includeInJSON
                     models = attrs[key]
@@ -139,10 +139,10 @@ define ["cs!utils/formatters"], (formatters) ->
             if @parent and @parent.model and @parent.model.unsaved()
                 @saveRecursive() # TODO: this won't behave nicely if the caller needs the XHR object back, but what can we do?
             else
-                if @includeInJSON isnt true 
+                #if @includeInJSON isnt true 
                     super
-                else # we'll skip out on saving this model if it's fully embedded
-                    success: (callback) => callback() # TODO: are there any consequences of skipping out here?
+                #else # we'll skip out on saving this model if it's fully embedded
+                #    success: (callback) => callback() # TODO: are there any consequences of skipping out here?
         
         saveRecursive: (arguments, callback) =>
             # if the parent is unsaved, save it first

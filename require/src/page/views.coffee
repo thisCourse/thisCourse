@@ -101,7 +101,8 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
             @titleChanged = true
 
         changeId: =>
-            @$el.attr "id", @model.id
+            #@$el.attr "id", @model.id
+            @render()
 
     PageView: PageView
     PageRouterView: PageRouterView
