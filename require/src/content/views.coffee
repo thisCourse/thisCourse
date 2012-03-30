@@ -43,7 +43,7 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             # see views/content.js for hack to make sure these are inserted in the right order
 
         removeSections: (model, coll) =>
-            @subviews[model.cid].$el.stop().fadeOut 300, =>
+            @subviews[model.cid].$el.stop().show().fadeOut 300, =>
                 @close_subview model.cid
 
         makeEditable: =>
@@ -94,21 +94,21 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             "click .section-button.delete-button": "delete"
 
         showBottomActionButtons: =>
-            @$(".section-button.add-button").stop().fadeIn @buttonFadeSpeed
+            @$(".section-button.add-button").stop().hide().fadeIn @buttonFadeSpeed
 
         hideBottomActionButtons: =>
-            @$(".section-button.add-button").stop().fadeOut @buttonFadeSpeed
+            @$(".section-button.add-button").stop().show().fadeOut @buttonFadeSpeed
 
         showTopActionButtons: =>
-            @$(".section-button.drag-button").stop().fadeIn @buttonFadeSpeed
-            @$(".section-button.delete-button").stop().fadeIn @buttonFadeSpeed
+            @$(".section-button.drag-button").stop().hide().fadeIn @buttonFadeSpeed
+            @$(".section-button.delete-button").stop().show().fadeIn @buttonFadeSpeed
 
         hideTopActionButtons: =>
-            @$(".section-button.drag-button").stop().fadeOut @buttonFadeSpeed
-            @$(".section-button.delete-button").stop().fadeOut @buttonFadeSpeed
+            @$(".section-button.drag-button").stop().hide().fadeOut @buttonFadeSpeed
+            @$(".section-button.delete-button").stop().show().fadeOut @buttonFadeSpeed
 
         hideAllActionButtons: =>
-            @$(".section-button").stop().fadeOut @buttonFadeSpeed
+            @$(".section-button").stop().show().fadeOut @buttonFadeSpeed
 
         initialize: ->
             #@model.set _editor: app.get("_editor")
@@ -156,7 +156,7 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
                     view.edit()
 
         removeItems: (model, coll) =>
-            @subviews[model.cid].$el.stop().fadeOut 300, =>
+            @subviews[model.cid].$el.stop().show().fadeOut 300, =>
                 @close_subview model.cid
 
         update: =>

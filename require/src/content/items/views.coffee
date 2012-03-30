@@ -24,7 +24,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
             @$(".item-button.drag-button").stop().hide().fadeIn 200
 
         hideActionButtons: =>
-            @$(".item-button").stop().fadeOut 50
+            @$(".item-button").stop().show().fadeOut 50
 
         edit: => #_.debounce(->
             @add_subview "editview", new @EditView(model: @model), ".item-inner"
