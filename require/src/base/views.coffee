@@ -87,6 +87,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
             create_subview_if_ready()
             
+            console.log "subview_created", @, subview_created
+            
             if not subview_created
                 if options.datasource is "model"
                     @model.bind "change:" + options.key, create_subview_if_ready
@@ -114,7 +116,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 target = @$el
             view.render()
             target.append view.el
-            console.log "APPENDED TO", @$(element or @$el), element
+            #console.log "APPENDED TO", target, view
             return view
         
         close_subview: (name) =>
@@ -128,6 +130,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             data['url'] = @url if @url
             data['model'] = @model if @model
             data['collection'] = @collection if @collection
+            data['id'] = @model.get(Backbone.Model.prototype.idAttribute) if @model
             return data
 
         # set a view's Bootstrap grid system width according to its model's "width" property 
@@ -173,6 +176,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             super
 
         route: (route, callback) =>
+            
             # if the callback is a string, look it up as a method of this RouterView
             if _.isString(callback)
                 callback = @[callback]
@@ -190,10 +194,11 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     route.exec(fragment)[1]
                 get_splat: (fragment) ->
                     route.exec(fragment).slice(-1)[0]
+            #alert "handlers on", @, ":", @handlers
         
         navigate: (fragment) =>
 
-            console.log "NAV", @
+            # console.log "NAV", @
 
             # check if fragment matches any of our routes
             for handler in @handlers

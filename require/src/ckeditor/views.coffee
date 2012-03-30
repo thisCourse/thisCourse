@@ -40,8 +40,8 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
     class CKEditorView extends baseviews.BaseView
 
-        render: =>
-            @$el.html templates.ckeditor html: @options.html
+        initialize: =>
+            @$el.html templates.ckeditor {html: @options.html}
             _.defer => @$(".ckeditor").ckeditor config
 
         html: => @$(".ckeditor").val()

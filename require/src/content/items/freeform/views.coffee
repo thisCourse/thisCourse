@@ -1,5 +1,5 @@
-define ["cs!../views", "cs!base/views", "cs!ckeditor/views" "cs!../../models", "hb!./templates.handlebars", "less!./styles"], \
-        (itemviews, baseviews, contentmodels, templates, styles) ->
+define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "cs!../../models", "hb!./templates.handlebars", "less!./styles"], \
+        (itemviews, baseviews, ckeditorviews, contentmodels, templates, styles) ->
 
     class FreeformItemEditView extends itemviews.ItemEditInlineView
         
@@ -8,14 +8,15 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views" "cs!../../models", "
         render: =>
             super
             @$el.html templates.item_freeform_edit @context()
-            @add_subview "ckeditor", ckeditorviews.CKEditorView html: @model.get("html"), ".html"
+            _.defer => $(".ckeditor").ckeditor ckeditorviews.config
+            #@add_subview "ckeditor", new ckeditorviews.CKEditorView(html: @model.get("html")), ".html"
     
         save: =>
-            @model.set html: @subviews.ckeditor.html()
+            @model.set html: @$(".ckeditor").val()
             super
 
         close: =>
-            @$(".ckeditor").ckeditorGet().destroy()
+            #@$(".ckeditor").ckeditorGet().destroy()
             super
 
     class FreeformItemView extends itemviews.ItemView
@@ -23,12 +24,12 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views" "cs!../../models", "
         EditView: FreeformItemEditView
 
         initialize: ->
-            @model.set width: Math.min(15, @model.get("parent").get("width"))
+            @model.set width: 14 #Math.min(15, @model.get("parent").get("width"))
             super
 
         render: =>
-            super
             @$el.html templates.item_freeform @context()
+            super
 
     
     title: "Freeform"

@@ -38,9 +38,7 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
                 hideOnContentClick: true
                 overlayOpacity: 0.2
                 showCloseButton: false
-                title: @renderTemplate
-                    template: "item-gallery-title"
-                    target: null
+                title: templates.item_gallery_title @context
                 titlePosition: "over"
                 onComplete: =>
                     $("#fancybox-wrap").mousemove =>

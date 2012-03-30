@@ -1,11 +1,10 @@
-define ["cs!base/views", "hb!./templates.handlebars"], (baseviews) ->
+define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
 
     class ItemView extends baseviews.BaseView
         tagName: "span"
         className: "ItemView"
 
         render: ->
-            #@renderTemplate target: ".item-inner"
             @updateWidth()
 
         events: ->
@@ -16,7 +15,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews) ->
 
         initialize: ->
             @model.bind "change", @change
-            @renderTemplate template: "item-container"
+            @$el.html templates.item_container @context
             @change()
 
         showActionButtons: =>
@@ -27,7 +26,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews) ->
             @$(".item-button").stop().fadeOut 50
 
         edit: => #_.debounce(->
-            @add_subview "editview", new ItemEditViews[@type] model: @model # TODO
+            @add_subview "editview", new @EditView(model: @model)
             @hideActionButtons()
         #, 100)
 
@@ -110,8 +109,8 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews) ->
 
         initialize: ->
             super
-            @parent.$(".item-inner").hide()
-            @parent.$el.append @$el
+            #@options.parent.$(".item-inner").hide() # TODO
+            #@options.parent.$el.append @$el
 
         saved: ->
             @close()

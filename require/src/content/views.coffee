@@ -3,23 +3,23 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
 
     class ContentView extends baseviews.BaseView
 
+        className: "content"
+        
         events:
             "click .content-button.add-button": "addNewSection"
 
         render: =>
             @$el.html templates.content @context()
-            if @model.get("_editor")
-                @makeEditable()
-                @makeSortable()
+            # if @model.get("_editor")
+            #     @makeEditable()
+            #     @makeSortable()
             @update()
-            this
 
-        initialize: ->
-            @model.bind "change", @update, this
-            @model.bind "add:sections", @addSections, this
-            @model.bind "remove:sections", @removeSections, this
-            @model.bind "change:_editor", @render, this
-            @model.bind "save", @saved, this
+        initialize: =>
+            @model.bind "change", @update
+            @model.get("sections").bind "add", @addSections
+            @model.get("sections").bind "remove", @removeSections
+            @model.bind "save", @saved
             @render()
 
         showActionButtons: =>
@@ -35,7 +35,7 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             @model.get("sections").create new_section
 
         addSections: (model, coll) =>
-            @add_subview model.cid, new SectionView model: model, ".sections"
+            @add_subview model.cid, new SectionView(model: model), ".sections"
             # see views/content.js for hack to make sure these are inserted in the right order
 
         removeSections: (model, coll) =>
@@ -71,6 +71,8 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
 
     class SectionView extends baseviews.BaseView
         
+        className: "section border2"
+        
         buttonFadeSpeed: 60
         
         render: =>
@@ -105,11 +107,11 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             @$(".section-button").stop().fadeOut @buttonFadeSpeed
 
         initialize: ->
-            @model.set _editor: app.get("_editor")
+            #@model.set _editor: app.get("_editor")
             @$el.attr "id", @model.id
             @model.bind "change", @update
-            @model.bind "add:items", @addItems
-            @model.bind "remove:items", @removeItems
+            @model.get('items').bind "add", @addItems
+            @model.get('items').bind "remove", @removeItems
             @model.bind "change:width", @updateWidth
             @updateWidth()
 
@@ -127,9 +129,9 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             #     tolerance: "pointer"
             #     handle: ".drag-button"
 
-        addNewItem: _.throttle =>
+        addNewItem: =>#_.throttle =>   
             @model.get("items").add {}
-        , 500
+        #, 500
         
         edit: =>
             alert "editing! " + @model.attributes
@@ -143,11 +145,11 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
 
         addItems: (model, coll) =>
             type = model.get("type") or @model.get("type") or "freeform"
-            itemviews = require("cs!content/items/" + type + "/views") # TODO: make this automatic, and non-lazy
-            view = new itemviews.ItemView model: model
-            @add_subview model.cid, view, ".items"
-            if not model.id
-                view.edit()
+            require ["cs!content/items/" + type + "/views"], (itemviews) =>            
+                view = new itemviews.ItemView(model: model)
+                @add_subview model.cid, view, ".items"
+                if not model.id
+                    view.edit()
 
         removeItems: (model, coll) =>
             @subviews[model.cid].$el.stop().fadeOut 300, =>

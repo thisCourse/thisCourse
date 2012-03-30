@@ -61,7 +61,7 @@ define ["cs!utils/formatters"], (formatters) ->
 
         set: (attr, options) ->
             attr = _.extend({}, attr)
-            clog "setting", attr, "on", @
+            #clog "setting", attr, "on", @
             for key,opts of @relations
                 if opts.collection # if it's a "one to many" relation
                     if key not of attr and key not of @attributes then attr[key] = [] # default to an empty collection
