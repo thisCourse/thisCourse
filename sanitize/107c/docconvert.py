@@ -183,8 +183,6 @@ if __name__ == "__main__":
 
 	filepath = re.compile('L[0-9]+').search(filename).group()
 	
-	commands.getstatusoutput('mkdir '+filepath)
-	
 	removecomments(htmlsoup)
 
 	imagestrip(htmlsoup,filepath+'/'+filename)
