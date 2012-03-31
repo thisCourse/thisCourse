@@ -40,7 +40,6 @@ class window.FileView extends BaseView
         console.log 'Selected'
 
     selectChoose: =>
-        console.log 'Double Click!'
         @select()
         @options.parent.chooseFile()
 

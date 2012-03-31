@@ -1,0 +1,14 @@
+<script id="glossary_list" type="text/x-handlebars-template">
+    <ul>
+        {{#each GlossaryModel}}
+        <li>{{this.name}}</li>
+        {{/each}} 
+    </ul>
+</script>
+
+<script id="glossary" type="text/x-handlebars-template">
+    <div class='glossaryitem'>
+    {{{GlossaryModel.html}}}
+    </div>
+
+</script>

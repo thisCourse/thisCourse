@@ -1,5 +1,17 @@
+@locale: upper-alpha;
+
 body {
 	background-color:#E0F0FF;
+}
+
+.trash {
+	padding: 4px 6px;
+	margin-right: 6px;
+}
+
+.middlealign {
+	position: absolute;
+	vertical-align:middle;
 }
 
 .probe {
@@ -9,10 +21,17 @@ body {
 	background-color: #FFFFFF;
 	box-shadow: 10px 10px 5px #888;
 	ol {
-		list-style-type: upper-alpha;
+		counter-reset: list;
 		li {
-			padding:1em 0em;
-			font-size:12pt;
+			width: 250px;
+			float:left;
+			padding:16px 0px;
+			font-size:16px;
+			&:before{
+				font-style: italic;
+				content: counter(list, @locale) ". ";
+				counter-increment: list;
+			}
 			&.select {
 				font-weight: bold;
 			}
@@ -21,7 +40,7 @@ body {
 
 }
 
-.response {
+.proberesponse {
 	max-width: 600px;
 	padding: 10px;
 	border-radius: 15px;
@@ -32,4 +51,48 @@ body {
 div #feedback {
 	display: none;
 	
+}
+
+.display {
+	&.editing {
+		display:none;
+	}
+}
+
+.edit {
+	display:none;
+	&.editing {
+		display:block;
+	}
+}
+
+.probeedit {
+	width: 600px;
+	padding: 10px;
+	border-radius: 15px;
+	background-color: #FFFFFF;
+	box-shadow: 10px 10px 5px #888;
+	.question {
+		width: 590px;
+	}
+	textarea.question {
+		font-size: 18px;
+		}
+	h3.question {
+		border: 1px solid #DDDDDD;
+		background-color: #EEEEEE;
+	}
+	div.text {
+		min-height: 50px;
+		padding: 10px 0px;
+		p {
+			font-size: 16px;
+			text-align: justify;
+		}
+		input {
+			height: 30px;
+			font-size: 16px;
+			width: 100%;
+		}
+	}
 }
