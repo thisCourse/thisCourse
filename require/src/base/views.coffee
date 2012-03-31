@@ -130,6 +130,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             data['url'] = @url if @url
             data['model'] = @model if @model
             data['collection'] = @collection if @collection
+            data['models'] = @collection.models if @collection
             data['id'] = @model.get(Backbone.Model.prototype.idAttribute) if @model
             return data
 
