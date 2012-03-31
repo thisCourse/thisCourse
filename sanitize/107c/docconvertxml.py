@@ -1,13 +1,16 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 import re
 import glob
 
+
+alphanum = re.compile('[a-zA-Z0-9]+')
 
 #bash commands for image conversion:
 
 #ls *.wmf|xargs -I {} convert {} {}.png
 
 #rename 's/\.wmf*//g' *.wmf.png
+    
 
 def htmlfromxml(filename,j=0):
 
@@ -19,12 +22,11 @@ def htmlfromxml(filename,j=0):
 
     xmlstring = xmlstring.replace('<p:','<')
     xmlstring = xmlstring.replace('<a:','<')
-    xmlstring = xmlstring.replace('</a','</')
-    xmlstring = xmlstring.replace('</p','</')
+    xmlstring = xmlstring.replace('</a:','</')
+    xmlstring = xmlstring.replace('</p:','</')
+    xmlstring = xmlstring.replace('</:','</')
 
     open(filename,'w').write(xmlstring)
-
-    alphanum = re.compile('[a-zA-Z0-9]+')
 
     soup = BeautifulSoup(open(filename),'xml')
 
@@ -32,38 +34,43 @@ def htmlfromxml(filename,j=0):
     
     glossed = False
     
-    glosstitle = None
+    title = None
     
-    xmljunk = ['14:hiddenLine>','14:hiddenFill>'] #hack to get rid of residual junk from xml processing
+    xmljunk = ['14:hiddenLine>','14:hiddenFill>','style.visibility'] #hack to get rid of residual junk from xml processing
     
-    for i,x in enumerate(soup.findAll(text=alphanum)):
-        if x in xmljunk:
-            None
+     
+    for i,w in enumerate(soup.findAll(lambda tag: tag in list(set([x.parent.parent for x in soup.findAll(text=alphanum)])))):
+    
+        gloss = 0
+        glossy = 0
+        if i+j:
+            htmlout += '<p>'
         else:
-            gloss = 0
-            glossy = 0
-            if i+j:
-                html = '<p style="'
+            htmlout += '<h3>'
+         
+        for x in w.findAll(text=alphanum):
+            if x in xmljunk:
+                None
             else:
-                html = '<h3 style="'
-            for y in x.parent.previous_siblings:
-                for z in y.findAll(lambda tag: tag.has_key('val') or tag.has_key('b')):
-                    if z.has_key('b'):
-                        if z['b']=='1':
-                            html+='font-weight:bold;'
-                    if z.has_key('val'):
-                        html+='color:#'+z['val']
-                        if z['val']=='0000FF':
-                            gloss = 1
-            if i+j:
-                htmlout+=html+'">'+x+'</p>'
-            else:
-                htmlout+=html+'">'+x+'</h3>'
-                glossy = gloss
-                glosstitle = x
-            if glossy:
+                html = '<span style="'
+                for y in x.parent.previous_siblings:
+                    for z in y.findAll(lambda tag: tag.has_key('val') or tag.has_key('b')):
+                        if z.has_key('b'):
+                            if z['b']=='1':
+                                html+='font-weight:bold;'
+                        if z.has_key('val'):
+                            html+='color:#'+z['val']
+                            if z['val']=='0000FF':
+                                gloss = 1
+                htmlout+=html+'">'+x+'</span>'
+        if i+j:
+            htmlout += '</p>'
+        else:
+            htmlout += '</h3>'
+            title = htmlout
+            if gloss:
                 glossed = True
-    return htmlout, glossed, glosstitle
+    return htmlout, glossed, title
 
 
 slides = {}
@@ -117,7 +124,10 @@ for slide in glob.glob('*/notesSlides/*.xml'):
             for i,probe in enumerate(questlist[1:]):
                 paras = paragraph.findall(probe)
                 answers = []
-                probequestion = tagstrip.sub('',paras[0])
+                try:
+                    probequestion = tagstrip.sub('',paras[0])
+                except:
+                    print paras
                 for para in paras[1:]:
                     answer = {}
                     if para.find('font-weight'):
