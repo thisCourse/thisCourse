@@ -80,9 +80,11 @@ for slide in glob.glob('*/slides/*.xml'):
 
 lecnug = re.compile('(?P<lecture>L[0-9]+)\.(?P<cluster>C[0-9]+)\.(?P<nugget>N[0-9]+)\.(?P<subpage>[0-9]+)')
 
-questsplit = 'L[0-9]+\.C[0-9]+\.N[0-9]+\.Q[0-9]+'
+questsplit = 'L(?:<[^>]+>)*[0-9]+(?:<[^>]+>)*\.(?:<[^>]+>)*C(?:<[^>]+>)*[0-9]+(?:<[^>]+>)*\.(?:<[^>]+>)*N(?:<[^>]+>)*[0-9]+(?:<[^>]+>)*\.(?:<[^>]+>)*Q(?:<[^>]+>)*[0-9]+'
 
 question = re.compile(questsplit)
+
+tagstrip = re.compile('<[^>]+>')
 
 paragraph = re.compile('<p[^<]*</p>')
 
@@ -110,22 +112,22 @@ for slide in glob.glob('*/notesSlides/*.xml'):
         tags = tags + [lecture,cluster,nugget]
         nuggetdict['tags'] = tags
         if len(questlist)>1:
+            questkeys = question.findall(markup)
             nuggetqs = []
-            for probe in questlist[1:]:
-                if question.search(probe):
-                    paras = paragraph.findall(probe)
-                    answers = []
-                    probequestion = paras[0]
-                    for para in paras[1:]:
-                        answer = {}
-                        if para.find('font-weight'):
-                            answer['correct'] = True
-                        answer['text'] = para
-                        answers.append(answer)
-                    probedict = {'questiontext':probequestion,'answers':answers}
-                    probekey = question.search(probe).group().replace('.','')
-                    questioncollection[probekey] = probedict
-                    nuggetqs.append(probekey)
+            for i,probe in enumerate(questlist[1:]):
+                paras = paragraph.findall(probe)
+                answers = []
+                probequestion = tagstrip.sub('',paras[0])
+                for para in paras[1:]:
+                    answer = {}
+                    if para.find('font-weight'):
+                        answer['correct'] = True
+                    answer['text'] = tagstrip.sub('',para)
+                    answers.append(answer)
+                probedict = {'questiontext':probequestion,'answers':answers}
+                probekey = tagstrip.sub('',questkeys[i]).replace('.','')
+                questioncollection[probekey] = probedict
+                nuggetqs.append(probekey)
                 
         if nuggetcollection.has_key(nuggetkey):
             nuggetcollection[nuggetkey] = dict(nuggetcollection[nuggetkey].items() + nuggetdict.items())
