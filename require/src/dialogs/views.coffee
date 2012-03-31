@@ -18,7 +18,7 @@ define ["cs!base/views", "hb!./templates.handlebars", "less!./styles"], \
         , options)
 
     delete_confirmation = (model, type, delete_callback, options) ->
-        dialog_from_template "dialog-delete",
+        dialog_from_template "delete_dialog", 
             title: model.get("title")
             type: type
         , _.extend(
