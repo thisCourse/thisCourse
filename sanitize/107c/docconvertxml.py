@@ -17,10 +17,10 @@ def htmlfromxml(filename,j=0):
 
     xmlfile.close()
 
-    xmlstring.replace('<p:','<')
-    xmlstring.replace('<a:','<')
-    xmlstring.replace('</a','</')
-    xmlstring.replace('</p','</')
+    xmlstring = xmlstring.replace('<p:','<')
+    xmlstring = xmlstring.replace('<a:','<')
+    xmlstring = xmlstring.replace('</a','</')
+    xmlstring = xmlstring.replace('</p','</')
 
     open(filename,'w').write(xmlstring)
 
@@ -29,7 +29,9 @@ def htmlfromxml(filename,j=0):
     soup = BeautifulSoup(open(filename),'xml')
 
     htmlout = ''
-
+    
+    glossed = False
+    
     for i,x in enumerate(soup.findAll(text=alphanum)):
         gloss = 0
         glossy = 0
@@ -50,8 +52,10 @@ def htmlfromxml(filename,j=0):
             htmlout+=html+'">'+x+'</p>'
         else:
             htmlout+=html+'">'+x+'</h3>'
-            glossy = 1
-    return htmlout, glossy*gloss
+            glossy = gloss
+        if glossy:
+            glossed = True
+    return htmlout, glossed
 
 
 slidesnotes = {}
