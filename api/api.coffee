@@ -38,27 +38,61 @@ class MongoCollection
         @query = _id: new ObjectId(@req.params.id.toString())
         @collection.findOne @query, (err, doc) =>
             if err
-                err = new APIError("Error loading document: " + err)
+                return callback new APIError("Error loading document: " + err)
             else if not doc
-                err = new APIError("Specified '" + @name + "' document could not be found!", 404)
+                return callback new APIError("Specified '" + @name + "' document could not be found!", 404)
             @document = doc
+            console.log "FOUND DOC:", doc
             if @Model
                 @model = new @Model(@document) # turn the document into an instance of the appropriate Model
-                @document = @model.toJSON(true) # use the JSON output of the model as our document data
-                relations = @model.constructor.prototype.relations
-                relations = relations?() or relations
-                console.log "RELATIONS", relations
-                #model = @model.get("assignments").get("4f75ce9bdc1cc06f40000001").get("page").get("contents").get("4f75cf9cdc1cc06f40000005").toJSON(true)
+                #@document = @model.toJSON(false) # use the JSON output of the model as our document data
                 
-            callback err
+            callback()
 
-    # expandModelsByPath: (callback) =>
-    #     console.log @path
-    #     mod = @model
-    #     doc = @document
-    #     for p,i in path
-    #         mod = mod.get(p)
-    #         doc = 
+    expandModelsByPath: (callback, model, path) =>
+        model or= @model
+        path or= @path
+        for key,i in path
+            newmod = model.get(key)
+            if newmod is undefined # subkey could not be found
+                if model not instanceof Backbone.Model
+                    return callback new APIError("Key not found: could not expand the model to path" + path.slice(0,i+1).join("/"))
+                if not model.apiCollection
+                    return callback new APIError("${model.constructor.name} has no apiCollection: could not expand the model to path" + path.slice(0,i+1).join("/"))
+                if not model.id
+                    return callback new APIError("${model.constructor.name} instance has no id: could not expand the model to path" + path.slice(0,i+1).join("/"))
+                
+                @notEmbeddedInBaseDocument = true # if we got here, it means that when we save, we only need to save to the proxied location
+                
+                query = _id: new ObjectId(model.id.toString())
+                db.collection(model.apiCollection).findOne query, (err, doc) => # TODO: permissions should be checked here; someone could sneak an id in here for someone else's model
+                    if err or not doc
+                        return callback new APIError("Could not find ${model.constructor.name} with id ${model.id}:" + err)
+                    model.set doc
+                    @expandModelsByPath callback, model, path.slice(i) # recursive call to expand further models as needed
+                        
+                return
+            else
+                model = newmod
+        
+        # if we got here, then we've successfully found the target key; no more expanding needed
+        @document = @model.toJSON(true)
+        callback()
+                
+
+    # expandRelationsByPath: (callback) =>
+    #     console.log "EXPANDING", @model.constructor.name, "to", @path
+        
+    #     ref = @model
+    #     for p in @path
+    #         ref = ref.get(p)
+    #         if ref
+    #             console.log "Found", p, ":", ref.constructor.name
+    #         else
+    #             console.log "Did not find", p, "..."
+    #             break
+        
+    #     callback()
 
     findObjectByPath: (callback) =>
         @rawpath = @path.slice(0)
@@ -80,15 +114,13 @@ class MongoCollection
     traceLazyRelations: (callback) =>
         if @model
             obj = @model
-            for key,i in @rawpath
+            for key,i in @rawpath # descend down into the models to find the lowest level
                 obj = obj.get(key)
                 if obj instanceof Backbone.Model or obj instanceof Backbone.Collection
                     @submodel = obj
                     @subpath = @path.slice(i+1)
             if @submodel
-                console.log "SUBMODEL", @submodel.constructor.name
-                console.log "SUBPATH", @subpath
-                console.log "INCLUDE", @submodel.includeInJSON
+                console.log "SUBMODEL", @submodel.constructor.name, "SUBPATH", @subpath, "INCLUDE", @submodel.includeInJSON
                 if @submodel instanceof Backbone.Model
                     @fullModelParams =
                         collection: @submodel.apiCollection
@@ -112,15 +144,18 @@ class MongoCollection
 
         # this is not a denormalized model we're addressing, so just proceed
         if not @isDenormalized
+            console.log "not denormalized, so not proxying"
             return callback()
 
         isCollection = @submodel instanceof Backbone.Collection
+        console.log "isCollection:", isCollection
         
         # don't proxy non-POST requests through to a collection
         if @req.method isnt "POST" and not @fullModelParams.id
+            console.log "@req.method isnt POST and not @fullModelParams.id"
             return callback()
 
-        console.log "proxyToFullModel"
+        console.log "PROXYING"
 
         proxy_res =
             json: (body, headers, status) =>
@@ -129,7 +164,7 @@ class MongoCollection
                     callback new APIError(body._error or body.toString(), status)
                 else
                     if @subpath.length==0 and @req.method!="GET"
-                        console.log "@subpath.length==0"
+                        console.log "doing a write (non-GET) directly onto a model/collection (no subpath)"
                         # use response from object creation as data (especially so we end up with the same _id)
                         if isCollection and @req.method=="POST" then utils.merge(@data, body)
                         # TODO: should go here, or more generally/specifically? needed for POSTing related 1-to-1 models, e.g. course.content
@@ -138,12 +173,12 @@ class MongoCollection
                         # we're operating directly on the model (or collection), so filter by includeInJSON
                         utils.filter_object_fields @data, @submodel.includeInJSON
                         callback()
-                    else if @req.method=="GET" or @subpath[0] not in @submodel.includeInJSON
-                        console.log '@req.method=="GET" or @subpath[0] not in @submodel.includeInJSON'
+                    else if @req.method=="GET" or @subpath[0] not in @submodel.includeInJSON #or @notEmbeddedInBaseDocument
+                        console.log 'passing request through to proxied url directly'
                         # pass right through if it was just a GET request or if subpath isn't inside includeInJSON
                         callback new JSONResponse(body, status)
                     else # the field *is* in includeInJSON, so just proceed normally
-                        console.log "field *is* in includeInJSON"
+                        console.log "field *is* in includeInJSON, so just proceed normally (no proxy)"
                         callback()
         
         @req.params = @fullModelParams
@@ -164,7 +199,7 @@ class MongoCollection
         return new JSONResponse(obj)
 
     updateDatabase: (update_obj, callback) =>
-        console.log @query, update_obj
+        #console.log @query, update_obj
         @collection.update @query, update_obj, {safe: true, upsert: true}, (err, obj) =>
             callback @mongoJsonResponse(err, obj)
 
@@ -193,18 +228,20 @@ class MongoCollection
         if @req.params.id==undefined # document id was not specified in url (i.e. referencing collection itself)
             if @path.length # e.g. /api/courses/title/ (no id, but has sub-path)
                 return callback new APIError("Invalid URL (document ID not specified or in invalid format).", 405)
+            console.log "CALLING process_#{@req.method}_collection"
             return @["process_#{@req.method}_collection"](callback)
         callback()
 
     # handle an api request
     handle_request: =>
 
-        console.log @req.method, @req.url, @path, @data
+        console.log "REQUEST:", @req.method, @req.url, @path, @data
                 
         async.series [
             @permissionCheck
             @handleDirectCollectionReference # needs to happen before @retrieveDocumentById
             @retrieveDocumentById
+            @expandModelsByPath
             @findObjectByPath
             @traceLazyRelations
             @proxyToFullModel
@@ -217,7 +254,7 @@ class MongoCollection
 
 
     finishProcessingRequest: (callback) =>
-        console.log "calling", "process_" + @type
+        console.log "CALLING process_" + @type
         @["process_" + @type](callback) # run the handler for this "type" (method + target field type)
 
 
@@ -228,7 +265,7 @@ class MongoCollection
         if @data._id
             delete @data._id
         @collection.save @data, (err, obj) =>
-            callback new JSONResponse(_id: obj._id) # return the newly created object (or should it just return the _id?)
+            callback new JSONResponse(_id: obj._id) # return the generated _id
 
     process_PUT_collection: (callback) =>
         callback new APIError("You cannot PUT on a collection. Please use POST to create an object in the collection.", 405)
@@ -298,9 +335,7 @@ class MongoCollection
         if (!(@data instanceof Object) || (@data instanceof Array))
             return new APIError("Cannot PUT a non-object value on top of an object. Use POST if you want to replace the object with this value.", 405)
         # merge the fields specified in data into the existing object
-        console.log "about to merge"
         @data = utils.merge(@object, @data)
-        console.log "merged"
         # save the extended (updated) object back to the database
         return @updateDatabase({$set: utils.wrap_in_object(@object_ref, @data)}, callback)
 
@@ -361,12 +396,36 @@ class JSONResponse
 
 class APIError extends JSONResponse
     constructor: (msg, status=500) ->
-        console.log "Error:", msg
+        console.log "ERROR:", msg
         if msg.message then msg = msg.message
         super {_error: msg.toString?() or msg}, status
 
+class CollectionWrapper
+    
+    constructor: (name) ->
+        @name = name
+        @collection = db.collection(name)
+    
+    save: ->
+        console.log "MONGO SAVE:", @name, arguments[0]
+        @collection.save.apply(@collection, arguments)
+    
+    findOne: ->
+        console.log "MONGO FINDONE:", @name, arguments[0]
+        @collection.findOne.apply(@collection, arguments)
+
+    update: ->
+        console.log "MONGO UPDATE:", @name, arguments[0], "TO", arguments[1]
+        @collection.update.apply(@collection, arguments)
+
+    remove: ->
+        console.log "MONGO REMOVE:", @name, arguments[0]
+        @collection.remove.apply(@collection, arguments)
+    
+
 register_mongo_collection = (cls) ->
-    cls.prototype.collection = db.collection(cls.prototype.name) # get the MongoDB collection reference
+    #cls.prototype.collection = db.collection(cls.prototype.name) # get the MongoDB collection reference
+    cls.prototype.collection = new CollectionWrapper(cls.prototype.name) # get the wrapped MongoDB collection reference
     collections[cls.prototype.name] = cls # store the collection class by name for later lookup
 
 global.clog = -> # do nothing! this is a log just for in the browser
@@ -376,6 +435,8 @@ initialize = ->
     for file in fs.readdirSync(dir)
         require(dir + file)
     register_mongo_collection MongoCollection
+
+console.log "\n\n\n\n\n\n\n\n\n\n\n"
 
 module.exports = 
     collections: collections

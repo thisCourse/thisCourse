@@ -25,7 +25,7 @@ define ["cs!utils/handlebars", "cs!./router", "cs!course/models"], \
         root_url: window.location.pathname.split("/")[1] + "/"
 
     app.course = new coursemodels.CourseModel
-        _id: "4f75f3d24a90dd3c2c000001"
+        _id: "4f77e7dcf113cd1914000001" # c = new (require("cs!course/models").CourseModel); c.save().success(function() { console.log(c.id); })
     
     app.course.fetch().success =>
         console.log "fetched!"

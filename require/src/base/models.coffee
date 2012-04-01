@@ -67,7 +67,7 @@ define ["cs!utils/formatters"], (formatters) ->
             super
 
         set: (attr, options) ->
-            attr = _.extend({}, attr)
+            attr = _.clone(attr)
             clog "setting", attr, "on", @
             for key,opts of @relations
                 if opts.collection # if it's a "one to many" relation
@@ -83,12 +83,14 @@ define ["cs!utils/formatters"], (formatters) ->
                         collection = attr[key] = new opts.collection(attr[key]) # turn array into collection
                         includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
                         collection.includeInJSON = includeInJSON
-                        parent = {model: @, key: key}
-                        # TODO: unbind here first, since we may have been through here before?
-                        collection.bind "add", (model) =>
-                            # clog "adding parent to", model, "from", @, "at key", key
-                            model.parent = parent
-                            model.includeInJSON = includeInJSON
+                        bind_to_collection = => # this was wrapped in a closure so that parent doesn't get clobbered in the loop
+                            parent = {model: @, key: key}
+                            # TODO: unbind here first, since we may have been through here before?
+                            collection.bind "add", (model) =>
+                                # clog "adding parent to", model, "from", @, "at key", key
+                                model.parent = parent
+                                model.includeInJSON = includeInJSON
+                        bind_to_collection()
                         for model in collection.models # add a parent link to each of the collection's models
                             collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation
@@ -108,11 +110,12 @@ define ["cs!utils/formatters"], (formatters) ->
             # first, call the built-in converter in the base class
             attrs = _.extend {}, super
             # if this object is embedded in a denormalized relation, set parent info
-            if @parent and @includeInJSON isnt true
+            if @parent and (@includeInJSON isnt true)
                 attrs.parent =
                     model: @parent.model.constructor.name
-                    apiCollection: @parent.model.apiCollection
                     key: @parent.key
+                if @parent.model.apiCollection
+                    attrs.parent.apiCollection = @parent.model.apiCollection
                 if @parent.model.id
                     attrs.parent._id = @parent.model.id
                     attrs.parent.url = @parent.model.url?() or @parent.model.url or ""

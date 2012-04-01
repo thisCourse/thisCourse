@@ -94,19 +94,12 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @$el.html templates.nugget_top_edit @context()
             Backbone.ModelBinding.bind @
             @enablePlaceholders()
-            due = @model.getDate("due")
-            @$(".due-date").val (due.getMonth() + 1) + "/" + due.getDate() + "/" + due.getFullYear() if due
-            @$(".due-date").datepicker onSelect: (date) ->
-                $(".due-date:visible").val date
 
         events: #-> _.extend super,
             "click button.save": "save"
             "click button.cancel": "cancel"
 
         save: =>
-            due = $(".due-date:visible").val() or null
-            due = new Date(due) if due
-            @model.set due: due
             @$("input").blur()
             @$(".save.btn").button "loading"
             @model.save().success =>

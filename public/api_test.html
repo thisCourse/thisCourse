@@ -22,6 +22,11 @@ textarea {
     width: 900px;
     text-align: left;
 }
+iframe {
+    width: 900px;
+    height: 1000px;
+    border: none;
+}
 </style>
 <title>API Test</title>
 </head>
@@ -40,14 +45,18 @@ textarea {
             else
                 data = ""
         
+            var method = $(this).val()
+        
             $.ajax($('#request_url').val(), {
                 contentType: 'application/json',
                 data: data,
                 dataType: "json",
                 cache: false,
-                type: $(this).val(),
+                type: method,
                 success: function(data, textStatus, jqXHR) {
-                    $('#response_data').val(JSON.stringify(data))
+                    var json = JSON.stringify(data)
+                    $('#response_data').val(json)
+                    //$("iframe#json").contents().find('html').html(json)
                 },                
                 error: function(textStatus, jqXHR) {
                     $('#response_data').val(JSON.stringify(JSON.parse(textStatus.responseText)))
@@ -58,11 +67,21 @@ textarea {
             })
             
         })
+
+        $("iframe#json").load(function() {
+            $("iframe#json").contents().find("body").css({"font-size": "8px"})
+            $("iframe#json").height($("iframe#json").contents().find("body").height()+100)
+        })
+
+        $("#show_button").click(function() {
+            $("iframe#json").attr("src", $('#request_url').val())
+        })
         
         $('#request_url').keypress(function(ev) {
-            if (ev.which==13)
+            if (ev.which==13) {
                 $('.submit_button').first().click()
-        
+                $("#show_button").click()
+            }
         })
         
         $('#run_tests').click(run_api_tests)
@@ -87,12 +106,15 @@ JSON to send:<br/>
 <input type="Submit" class="submit_button" value="POST"/>
 <input type="Submit" class="submit_button" value="PUT"/>
 <input type="Submit" class="submit_button" value="DELETE"/>
+<input type="Submit" id="show_button" value="SHOW"/>
 <button id="run_tests">Run tests!</button>
 </p>
 
 <p>JSON response: <span id="response_code"></span><br/>
 <textarea id="response_data"></textarea>
 </p>
+
+<iframe id="json"></iframe>
 
 </div>
 </center>
