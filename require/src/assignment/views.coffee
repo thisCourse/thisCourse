@@ -68,6 +68,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         editDone: =>
             @close_subview "topeditview"
+            @subviews.topview.render()
             @subviews.topview.show()
 
     class AssignmentTopView extends baseviews.BaseView

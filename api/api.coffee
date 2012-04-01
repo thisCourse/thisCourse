@@ -46,7 +46,7 @@ class MongoCollection
             if @Model
                 @model = new @Model(@document) # turn the document into an instance of the appropriate Model
                 #@document = @model.toJSON(false) # use the JSON output of the model as our document data
-                
+            
             callback()
 
     expandModelsByPath: (callback, model, path) =>
@@ -54,6 +54,10 @@ class MongoCollection
         path or= @path
         for key,i in path
             newmod = model.get(key)
+            if model.includeInJSON!=true and model.includeInJSON and key not of model.includeInJSON
+                # skip out here; no point expanding
+                @notEmbeddedInBaseDocument = true
+                return callback()
             if newmod is undefined # subkey could not be found
                 console.log "COULD NOT FIND", key, "in", model.constructor.name, model
                 if model not instanceof Backbone.Model and model not instanceof Backbone.Collection
@@ -101,6 +105,8 @@ class MongoCollection
 
     findObjectByPath: (callback) =>
         @rawpath = @path.slice(0)
+        if @notEmbeddedInBaseDocument
+            return callback()
         @object = utils.get_by_path(@document, @path)
         @object_ref = @path.join('.')
         @parent_ref = null
@@ -123,7 +129,7 @@ class MongoCollection
                 obj = obj.get(key)
                 if (obj instanceof Backbone.Model or obj instanceof Backbone.Collection) and obj.includeInJSON isnt true
                     @submodel = obj
-                    @subpath = @path.slice(i+1)
+                    @subpath = @rawpath.slice(i+1)
                     break
             if @submodel
                 console.log "SUBMODEL", @submodel.constructor.name, "SUBPATH", @subpath, "INCLUDE", @submodel.includeInJSON
@@ -134,9 +140,15 @@ class MongoCollection
                         path: "/" + @subpath.join("/")
                     #@fullModelURL = "/api/" + @fullModelParams.collection + "/" + @fullModelParams.id + @fullModelParams.path
                 if @submodel instanceof Backbone.Collection
+                    subpath = @subpath
+                    id = undefined
+                    if subpath
+                        id = subpath[0]
+                        subpath = subpath.slice(1)
                     @fullModelParams =
                         collection: @submodel.model.prototype.apiCollection
-                        path: ""
+                        id: id
+                        path: "/" + subpath.join("/")
                     #@fullModelURL = "/api/" + @fullModelParams.collection + "/"
                 if @fullModelParams and @submodel.includeInJSON isnt true
                     @fullModelURL = "/api/" + @fullModelParams.collection + "/" + (@fullModelParams.id or "") + @fullModelParams.path
