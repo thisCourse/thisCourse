@@ -77,6 +77,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
                     if obj instanceof Backbone.Model
                         viewoptions.model = obj
+                        if not obj.loaded then obj.fetch() # do the lazy loading of the view we're passing down into the view
                     else
                         viewoptions.collection = obj
                     subview = new options.view(viewoptions)

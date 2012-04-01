@@ -48,6 +48,7 @@ define ["cs!utils/formatters"], (formatters) ->
 
         constructor: ->
             # clog "CREATING LAZYMODEL INSTANCE", @
+            @loaded = (@includeInJSON==true)
             @relations = @relations?() or @relations or {}
             for key,relation of @relations
                 if not (relation.model or relation.collection)
@@ -66,20 +67,37 @@ define ["cs!utils/formatters"], (formatters) ->
                 #         relation.includeInJSON.push relatedkey
             super
 
+        fetch: =>
+            if @loading
+                console.log "Model", @, "is already being loaded; aborting 'fetch()'."
+                return
+            @loading = true
+            super.success =>
+                clog "successfully loaded"
+                @loaded = true
+
         set: (attr, options) ->
             attr = _.clone(attr)
             clog "setting", attr, "on", @
             for key,opts of @relations
+                clog "processing relation at key", key, "with options", opts
                 if opts.collection # if it's a "one to many" relation
+                    clog "it's a collection relation"
                     if key not of attr and key not of @attributes then attr[key] = [] # default to an empty collection
                     if (collection = @attributes[key]) instanceof opts.collection
+                        if attr[key] instanceof opts.collection then attr[key] = attr[key].models # we may have been passed in a collection, but to loop we need an array
+                        clog "collection already exists"
                         for newmodel in attr[key] or []
-                            if (oldmodel = @attributes[key].get(newmodel[idAttribute]))
+                            if (oldmodel = collection.get(newmodel[idAttribute]))
                                 oldmodel.set newmodel # update the existing model with the new data
                             else
+                                clog "ADDING NEW MODEL TO COLLECTION", collection.length
                                 collection.add newmodel # add this new model to the collection
                             # TODO: also delete models in collection that aren't in the new array?
+                        delete attr[key] # delete the incoming array so it doesn't clobber the collection in super
+                        # TODO: does the above delete prevent some change events from firing?
                     else
+                        clog "turning array into collection"
                         collection = attr[key] = new opts.collection(attr[key]) # turn array into collection
                         includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
                         collection.includeInJSON = includeInJSON
@@ -94,13 +112,19 @@ define ["cs!utils/formatters"], (formatters) ->
                         for model in collection.models # add a parent link to each of the collection's models
                             collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation
+                    clog "it's a model relation"
                     if key not of attr and key not of @attributes then attr[key] = {} # default to an empty model
                     if _.isString(attr[key]) # if just a string, assume it's an id and put it in an object
                         attr[key] = {_id: attr[key]}
                     if _.isObject(attr[key]) # if it's an object (should be!), then turn it into a model
                         if (oldmodel = @attributes[key]) instanceof opts.model
+                            if attr[key] instanceof opts.model then attr[key] = attr[key].attributes # we may have been passed in a model, but to loop we need an object
+                            clog "model already exists"
                             oldmodel.set attr[key]
+                            delete attr[key] # delete the incoming object so it doesn't clobber the model in super
+                            # TODO: does the above delete prevent some change events from firing?
                         else
+                            clog "turning object into model"
                             model = attr[key] = new opts.model(attr[key])
                             model.parent = {model: @, key: key} # add a parent link to the model
                             model.includeInJSON = opts.includeInJSON
@@ -174,6 +198,10 @@ define ["cs!utils/formatters"], (formatters) ->
     class BaseCollection extends Backbone.Collection
 
     class LazyCollection extends BaseCollection
+        
+        constructor: ->
+            super
+            @apiCollection = @model::apiCollection
         
         
 

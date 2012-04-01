@@ -18,6 +18,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
             @add_lazy_subview name: "pagerouter", view: PageRouterView, datasource: "model", key: "contents", target: ".contents"
             #@add_subview "pagerouter", new PageRouterView(collection: @model.get("contents")), ".contents"
             if @model.get("_editor") then @makeSortable()
+            _.defer @drawAllExistingRows
 
         initialize: ->
             @model.bind "change", @update
@@ -25,10 +26,10 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", 
             @model.get("contents").bind "remove", @removeContents
             @model.bind "change:_editor", @render
             @render()
-            _.defer @drawAllExistingRows
             super
 
         drawAllExistingRows: =>
+            clog "drawAllExistingRows"
             for model in @model.get("contents").models
                 @addContents model, @model.get("contents")
 

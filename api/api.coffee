@@ -55,12 +55,13 @@ class MongoCollection
         for key,i in path
             newmod = model.get(key)
             if newmod is undefined # subkey could not be found
-                if model not instanceof Backbone.Model
-                    return callback new APIError("Key not found: could not expand the model to path" + path.slice(0,i+1).join("/"))
+                console.log "COULD NOT FIND", key, "in", model.constructor.name, model
+                if model not instanceof Backbone.Model and model not instanceof Backbone.Collection
+                    return callback new APIError("Key not found: could not expand the model to path " + path.slice(0,i+1).join("/"))
                 if not model.apiCollection
-                    return callback new APIError("${model.constructor.name} has no apiCollection: could not expand the model to path" + path.slice(0,i+1).join("/"))
+                    return callback new APIError(model.constructor.name + " has no apiCollection: could not expand the model to path " + path.slice(0,i+1).join("/"))
                 if not model.id
-                    return callback new APIError("${model.constructor.name} instance has no id: could not expand the model to path" + path.slice(0,i+1).join("/"))
+                    return callback new APIError(model.constructor.name + " instance has no id: could not expand the model to path " + path.slice(0,i+1).join("/"))
                 
                 @notEmbeddedInBaseDocument = true # if we got here, it means that when we save, we only need to save to the proxied location
                 
@@ -69,7 +70,11 @@ class MongoCollection
                     if err or not doc
                         return callback new APIError("Could not find ${model.constructor.name} with id ${model.id}:" + err)
                     model.set doc
-                    @expandModelsByPath callback, model, path.slice(i) # recursive call to expand further models as needed
+                    if model.get(key)
+                        console.log "recursively expanding models by path", err, doc
+                        @expandModelsByPath callback, model, path.slice(i) # recursive call to expand further models as needed
+                    else
+                        callback() # expanding the model didn't help; we're going to end up with a 404
                         
                 return
             else
@@ -104,7 +109,7 @@ class MongoCollection
             parent_path = @path.slice(0,-1)
             @parent_ref = parent_path.join('.')
             @parent = utils.get_by_path(@document, parent_path)
-            @parent_type = @parent.constructor.name.toLowerCase()
+            @parent_type = @parent?.constructor?.name.toLowerCase()
 
         if @object is null
             callback new APIError("Specified path could not be found within document!", 404)
@@ -114,11 +119,12 @@ class MongoCollection
     traceLazyRelations: (callback) =>
         if @model
             obj = @model
-            for key,i in @rawpath # descend down into the models to find the lowest level
+            for key,i in @rawpath # descend down into the models to find the first denormalized model (to proxy to)
                 obj = obj.get(key)
-                if obj instanceof Backbone.Model or obj instanceof Backbone.Collection
+                if (obj instanceof Backbone.Model or obj instanceof Backbone.Collection) and obj.includeInJSON isnt true
                     @submodel = obj
                     @subpath = @path.slice(i+1)
+                    break
             if @submodel
                 console.log "SUBMODEL", @submodel.constructor.name, "SUBPATH", @subpath, "INCLUDE", @submodel.includeInJSON
                 if @submodel instanceof Backbone.Model
@@ -132,7 +138,7 @@ class MongoCollection
                         collection: @submodel.model.prototype.apiCollection
                         path: ""
                     #@fullModelURL = "/api/" + @fullModelParams.collection + "/"
-                if @fullModelParams and @submodel.includeInJSON!=true
+                if @fullModelParams and @submodel.includeInJSON isnt true
                     @fullModelURL = "/api/" + @fullModelParams.collection + "/" + (@fullModelParams.id or "") + @fullModelParams.path
                     @fullModelURL = @fullModelURL.replace("//", "/") # to avoid double-slashes resulting from no ID
                     @isDenormalized = true
