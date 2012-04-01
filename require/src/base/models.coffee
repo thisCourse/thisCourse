@@ -43,8 +43,12 @@ define ["cs!utils/formatters"], (formatters) ->
 
     class LazyModel extends BaseModel
 
-        loaded: false
+        _loaded: false
         loading: false
+
+        loaded: =>
+            clog "CHECKING IF LOADED", @, @includeInJSON==true, @_loaded
+            @includeInJSON==true or @_loaded
 
         constructor: ->
             # clog "CREATING LAZYMODEL INSTANCE", @
@@ -71,65 +75,65 @@ define ["cs!utils/formatters"], (formatters) ->
                 console.log "Model", @, "is already being loaded; aborting 'fetch()'."
                 return
             @loading = true
-            super.success =>
-                clog "successfully loaded"
+            xhdr = super
+            xhdr.success =>
+                clog "successfully loaded", @
                 @loading = false
-                @loaded = true
+                @_loaded = true
+            return xhdr
 
         set: (attr, options) ->
             attr = _.clone(attr)
             clog "setting", attr, "on", @
             for key,opts of @relations
-                clog "processing relation at key", key, "with options", opts
+                # clog "processing relation at key", key, "with options", opts
                 if opts.collection # if it's a "one to many" relation
-                    clog "it's a collection relation"
+                    # clog "it's a collection relation"
                     if key not of attr and key not of @attributes then attr[key] = [] # default to an empty collection
                     if (collection = @attributes[key]) instanceof opts.collection
                         if attr[key] instanceof opts.collection then attr[key] = attr[key].models # we may have been passed in a collection, but to loop we need an array
-                        clog "collection already exists"
+                        # clog "collection already exists"
                         for newmodel in attr[key] or []
                             if (oldmodel = collection.get(newmodel[idAttribute]))
                                 oldmodel.set newmodel # update the existing model with the new data
                             else
-                                clog "ADDING NEW MODEL TO COLLECTION", collection.length
+                                # clog "ADDING NEW MODEL TO COLLECTION", collection.length
                                 collection.add newmodel # add this new model to the collection
                             # TODO: also delete models in collection that aren't in the new array?
                         delete attr[key] # delete the incoming array so it doesn't clobber the collection in super
                         # TODO: does the above delete prevent some change events from firing?
                     else
-                        clog "turning array into collection"
-                        collection = attr[key] = new opts.collection(attr[key]) # turn array into collection
-                        includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
-                        collection.includeInJSON = includeInJSON
-                        bind_to_collection = => # this was wrapped in a closure so that parent doesn't get clobbered in the loop
+                        # clog "turning array into collection"
+                        bind_to_collection = => # this was wrapped in a closure so that variables doesn't get clobbered in the loop
+                            collection = attr[key] = new opts.collection(attr[key]) # turn array into collection
+                            includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
+                            collection.includeInJSON = includeInJSON
                             parent = {model: @, key: key}
                             # TODO: unbind here first, since we may have been through here before?
                             collection.bind "add", (model) =>
                                 # clog "adding parent to", model, "from", @, "at key", key
                                 model.parent = parent
                                 model.includeInJSON = includeInJSON
-                                model.loaded = (model.includeInJSON==true)
                         bind_to_collection()
                         for model in collection.models # add a parent link to each of the collection's models
                             collection.trigger "add", model
                 else if opts.model # if it's a "one to one" relation
-                    clog "it's a model relation"
+                    # clog "it's a model relation"
                     if key not of attr and key not of @attributes then attr[key] = {} # default to an empty model
                     if _.isString(attr[key]) # if just a string, assume it's an id and put it in an object
                         attr[key] = {_id: attr[key]}
                     if _.isObject(attr[key]) # if it's an object (should be!), then turn it into a model
                         if (oldmodel = @attributes[key]) instanceof opts.model
                             if attr[key] instanceof opts.model then attr[key] = attr[key].attributes # we may have been passed in a model, but to loop we need an object
-                            clog "model already exists"
+                            # clog "model already exists"
                             oldmodel.set attr[key]
                             delete attr[key] # delete the incoming object so it doesn't clobber the model in super
                             # TODO: does the above delete prevent some change events from firing?
                         else
-                            clog "turning object into model"
+                            # clog "turning object into model"
                             model = attr[key] = new opts.model(attr[key])
                             model.parent = {model: @, key: key} # add a parent link to the model
                             model.includeInJSON = opts.includeInJSON
-                            model.loaded = (model.includeInJSON==true)
             super attr, options
 
         toJSON: (full) =>
@@ -205,7 +209,11 @@ define ["cs!utils/formatters"], (formatters) ->
             super
             @apiCollection = @model::apiCollection
         
-        
+        toJSON: ->
+            models = super
+            # filter out non-embedded models that are unsaved (to prevent extra id-less instances from being created as a result of recursive saving)
+            #models = _.filter models, (model) -> model.includeInJSON or idAttribute of model
+            return models                    
 
 
     BaseModel: BaseModel

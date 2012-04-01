@@ -142,7 +142,7 @@ class MongoCollection
                 if @submodel instanceof Backbone.Collection
                     subpath = @subpath
                     id = undefined
-                    if subpath
+                    if subpath and utils.id_regex.exec(subpath[0])
                         id = subpath[0]
                         subpath = subpath.slice(1)
                     @fullModelParams =

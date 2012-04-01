@@ -73,18 +73,29 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 if options.key # if a key was specified, we need to descend
                     obj = @[options.datasource]?.get?(options.key)
                 else # otherwise, we pass the whole model/collection along from the parent view
-                    obj = @[options.datasource]
+                    obj = @[options.datasource]                
                 if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
+
+                    do_create_subview = =>
+                        subview = new options.view(viewoptions)
+                        subview.url = options.url if options.url
+                        @add_subview options.name, subview, options.target
+                        subview_created = true
+                        callback?(subview)
+                    
                     if obj instanceof Backbone.Model
                         viewoptions.model = obj
-                        if not obj.loaded then obj.fetch() # do the lazy loading of the view we're passing down into the view
-                    else
+                        if not obj.loaded() # do the lazy loading of the view we're passing down into the view
+                            xhdr = obj.fetch()
+                            if xhdr?.success # TODO: fix this stuff up so it doesn't check so many times
+                                xhdr.success do_create_subview
+                            else
+                                do_create_subview()
+                        else
+                            do_create_subview()
+                    else # it's a collection
                         viewoptions.collection = obj
-                    subview = new options.view(viewoptions)
-                    subview.url = options.url if options.url
-                    @add_subview options.name, subview, options.target
-                    subview_created = true
-                    callback?(subview)
+                        do_create_subview()
 
             create_subview_if_ready()
             
