@@ -41,7 +41,7 @@ var app = express.createServer(
     auth.user_middleware()
 )
 
-app.listen(3000)
+app.listen(2000)
 
 app.use(function (req, res, next) {
     res.removeHeader("X-Powered-By")
@@ -97,21 +97,10 @@ app.get('/src/*', function(request, response) {
   })
 })
 
-app.get('/jernigan/*', function(request, response) {
-  fs.readFile(__dirname + '/require/src/test_src.html', function(err,text) {
-      response.end(text)
-  })
-})
-
-app.get('/ucsd/cogs107c/sp12/*', function(request, response) {
-  fs.readFile(__dirname + '/public/cogs107c.html', function(err,text) {
-      response.end(text)
-  })
-})
 
 
 // TODO: TEMP
-app.get('/', express['static'](__dirname))
+//app.get('/', express['static'](__dirname))
 
 // app.all('/', function(req, res){
     // var data = $.extend(true, req.body, req.query)

@@ -212,7 +212,7 @@ define ["cs!utils/formatters"], (formatters) ->
         toJSON: ->
             models = super
             # filter out non-embedded models that are unsaved (to prevent extra id-less instances from being created as a result of recursive saving)
-            #models = _.filter models, (model) -> model.includeInJSON or idAttribute of model
+            models = _.filter models, (model) -> model.includeInJSON or idAttribute of model
             return models                    
 
 

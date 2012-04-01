@@ -1,6 +1,6 @@
 http = require("http")
 mongoskin = require('mongoskin')
-mongojs = require('mongojs')
+#mongojs = require('mongojs')
 async = require('async')
 express = require("express")
 nodeStatic = require('node-static');
@@ -9,7 +9,7 @@ Backbone = require("backbone")
 fs = require("fs")
 
 #db = mongojs.connect("test")
-db = mongoskin.db('127.0.0.1/test?auto_reconnect')
+db = mongoskin.db('127.0.0.1/courses?auto_reconnect')
 ObjectId = db.bson_serializer.ObjectID
 
 collections = {}
