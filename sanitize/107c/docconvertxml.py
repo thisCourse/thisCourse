@@ -54,10 +54,10 @@ def htmlfromxml(filename,j=0):
             else:
                 html = '<span style="'
                 for y in x.parent.previous_siblings:
-                    for z in y.findAll(lambda tag: tag.has_key('val') or tag.has_key('b')):
-                        if z.has_key('b'):
-                            if z['b']=='1':
-                                html+='font-weight:bold;'
+                    if y.has_key('b'):
+                        if y['b']=='1':
+                            html+='font-weight:bold;'
+                    for z in y.findAll(lambda tag: tag.has_key('val')):
                         if z.has_key('val'):
                             html+='color:#'+z['val']
                             if z['val']=='0000FF':
@@ -72,6 +72,7 @@ def htmlfromxml(filename,j=0):
                 glossed = True
     return htmlout, glossed, title
 
+tagstrip = re.compile('<[^>]+>')
 
 slides = {}
 glossaryslides = {}
@@ -80,6 +81,7 @@ for slide in glob.glob('*/slides/*.xml'):
     markup, glossary,glossname = htmlfromxml(slide)
     slidekey = slide.split('/')[0]+slide.split('.')[0].split('/')[2]
     slidedict = {'html':markup}
+    glossname = tagstrip.sub('',glossname)
     if glossary:
         glossaryslides[glossname]=slidedict
     slides[slidekey] = slidedict
@@ -91,9 +93,7 @@ questsplit = 'L(?:<[^>]+>)*[0-9]+(?:<[^>]+>)*\.(?:<[^>]+>)*C(?:<[^>]+>)*[0-9]+(?
 
 question = re.compile(questsplit)
 
-tagstrip = re.compile('<[^>]+>')
-
-paragraph = re.compile('<p[^<]*</p>')
+paragraph = re.compile('<p[^>]*>.*?</p>')
 
 questioncollection = {}
 
@@ -124,16 +124,15 @@ for slide in glob.glob('*/notesSlides/*.xml'):
             for i,probe in enumerate(questlist[1:]):
                 paras = paragraph.findall(probe)
                 answers = []
-                try:
-                    probequestion = tagstrip.sub('',paras[0])
-                except:
-                    print paras
+                probequestion = tagstrip.sub('',paras[0])
                 for para in paras[1:]:
                     answer = {}
-                    if para.find('font-weight'):
+                    if 'font-weight' in para:
                         answer['correct'] = True
-                    answer['text'] = tagstrip.sub('',para)
-                    answers.append(answer)
+                    answertext = tagstrip.sub('',para)
+                    if len(answertext)>0:
+                        answer['text'] = answertext
+                        answers.append(answer)
                 probedict = {'questiontext':probequestion,'answers':answers}
                 probekey = tagstrip.sub('',questkeys[i]).replace('.','')
                 questioncollection[probekey] = probedict
