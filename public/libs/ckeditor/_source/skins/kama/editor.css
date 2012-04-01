@@ -23,3 +23,5 @@ html.cke_skin_kama_container
 {
 	visibility: visible;
 }
+
+.cke_skin_kama a.cke_button_glossary .cke_icon{background-image:url(images/glossary.gif);background-position:center;}
