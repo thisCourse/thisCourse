@@ -10,8 +10,7 @@ body {
 }
 
 .middlealign {
-	position: absolute;
-	vertical-align:middle;
+	margin-top:10px;
 }
 
 .probe {
@@ -75,16 +74,26 @@ div #feedback {
 	.question {
 		width: 590px;
 	}
+	.answerlist {
+		margin-top:20px;
+		.row-fluid {
+			margin-bottom:15px;
+			border-bottom: 5px solid #BBBBBB;
+		}
+	}
+
+	.inline {
+		display:inline;
+	}
 	textarea.question {
 		font-size: 18px;
 		}
-	h3.question {
+	.display {
 		border: 1px solid #DDDDDD;
 		background-color: #EEEEEE;
 	}
 	div.text {
-		min-height: 50px;
-		padding: 10px 0px;
+		padding: 4px 4px;
 		p {
 			font-size: 16px;
 			text-align: justify;
