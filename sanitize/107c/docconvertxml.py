@@ -137,8 +137,39 @@ for slide in glob.glob('*/notesSlides/*.xml'):
                 probekey = tagstrip.sub('',questkeys[i]).replace('.','')
                 questioncollection[probekey] = probedict
                 nuggetqs.append(probekey)
+            nuggetdict['probes']=nuggetqs
                 
         if nuggetcollection.has_key(nuggetkey):
             nuggetcollection[nuggetkey] = dict(nuggetcollection[nuggetkey].items() + nuggetdict.items())
         else:
             nuggetcollection[nuggetkey] = nuggetdict
+            
+#Second pass for questions for Steve's slides:
+
+for slide in glob.glob('*/notesSlides/*.xml'):
+    markup, glossary, glossname = htmlfromxml(slide,j=1)
+    questname = question.search(markup)
+    if questname:
+        questing = questname.group()
+        nuggetkey = ''.join(questing.split('.')[:-1])
+        slidekey = slide.split('/')[0]+slide.split('.')[0].split('/')[2].replace('notesS','s')
+        if not questioncollection.has_key(questname.group().replace('.','')):
+            probe = slides[slidekey]['html']
+            paras = paragraph.findall(probe)
+            answers = []
+            probequestion = tagstrip.sub('',paras[0])
+            for para in paras[1:]:
+                answer = {}
+                if 'font-weight' in para:
+                    answer['correct'] = True
+                answertext = tagstrip.sub('',para)
+                if len(answertext)>0:
+                    answer['text'] = answertext
+                    answers.append(answer)
+            probedict = {'questiontext':probequestion,'answers':answers}
+            probekey = questing.replace('.','')
+            questioncollection[probekey] = probedict
+            if nuggetcollection[nuggetkey].has_key('probes'):
+                nuggetcollection[nuggetkey]['probes'].append(probekey)
+            else:
+                nuggetcollection[nuggetkey]['probes'] = [probekey]
