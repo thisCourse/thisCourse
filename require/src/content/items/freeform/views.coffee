@@ -1,5 +1,5 @@
-define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "cs!../../models", "hb!./templates.handlebars", "less!./styles"], \
-        (itemviews, baseviews, ckeditorviews, contentmodels, templates, styles) ->
+define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.handlebars", "less!./styles"], \
+        (itemviews, baseviews, ckeditorviews, templates, styles) ->
 
     class FreeformItemEditView extends itemviews.ItemEditInlineView
         
@@ -8,6 +8,7 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "cs!../../models", 
         #class: "item item-freeform"
         
         render: =>
+            console.log "rendering freeform itemeditview"
             super
             @$el.html templates.item_freeform_edit @context()
             _.defer => $(".ckeditor").ckeditor ckeditorviews.config
@@ -30,8 +31,8 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "cs!../../models", 
             super
 
         render: =>
+            console.log "rendering freeform itemview"
             super
-            clog "rendering freeform itemview"
             @$('.item-inner').html templates.item_freeform @context()
             
 

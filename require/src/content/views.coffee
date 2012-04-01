@@ -88,27 +88,34 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             "mouseenter .section-inner": "showBottomActionButtons"
             "mouseleave .section-inner": "hideAllActionButtons"
             "mouseenter .sectiontitle": "showTopActionButtons"
-            "mouseout .sectiontitle": "hideTopActionButtons"
+            #"mouseout .sectiontitle": "hideTopActionButtons"
             "mouseenter .items": "hideTopActionButtons"
             "click .section-button.add-button": "addNewItem"
             "click .section-button.delete-button": "delete"
 
         showBottomActionButtons: =>
-            @$(".section-button.add-button").stop().hide().fadeIn @buttonFadeSpeed
+            # @$(".section-button.add-button").stop().hide().fadeIn @buttonFadeSpeed
+            @$(".section-button.add-button").show()
 
         hideBottomActionButtons: =>
-            @$(".section-button.add-button").stop().show().fadeOut @buttonFadeSpeed
+            # @$(".section-button.add-button").stop().show().fadeOut @buttonFadeSpeed
+            @$(".section-button.add-button").hide()
 
         showTopActionButtons: =>
-            @$(".section-button.drag-button").stop().hide().fadeIn @buttonFadeSpeed
-            @$(".section-button.delete-button").stop().show().fadeIn @buttonFadeSpeed
+            # @$(".section-button.drag-button").stop().hide().fadeIn @buttonFadeSpeed
+            # @$(".section-button.delete-button").stop().show().fadeIn @buttonFadeSpeed
+            @$(".section-button.drag-button").show()
+            @$(".section-button.delete-button").show()
 
         hideTopActionButtons: =>
-            @$(".section-button.drag-button").stop().hide().fadeOut @buttonFadeSpeed
-            @$(".section-button.delete-button").stop().show().fadeOut @buttonFadeSpeed
+            # @$(".section-button.drag-button").stop().hide().fadeOut @buttonFadeSpeed
+            # @$(".section-button.delete-button").stop().show().fadeOut @buttonFadeSpeed
+            @$(".section-button.drag-button").hide()
+            @$(".section-button.delete-button").hide()
 
         hideAllActionButtons: =>
-            @$(".section-button").stop().show().fadeOut @buttonFadeSpeed
+            # @$(".section-button").stop().show().fadeOut @buttonFadeSpeed
+            @$(".section-button").hide()
 
         initialize: ->
             #@model.set _editor: app.get("_editor")
@@ -149,7 +156,7 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
 
         addItems: (model, coll) =>
             type = model.get("type") or @model.get("type") or "freeform"
-            require ["cs!content/items/" + type + "/views"], (itemviews) =>            
+            require ["cs!content/items/" + type + "/views"], (itemviews) =>
                 view = new itemviews.ItemView(model: model)
                 @add_subview model.cid, view, ".items"
                 if not model.id
@@ -166,3 +173,5 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
     ContentView: ContentView
     SectionView: SectionView
     
+
+#require ["cs!content/items/freeform/views"], (itemviews) => console.log("got the itemviews", itemviews)

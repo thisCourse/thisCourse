@@ -48,7 +48,6 @@ define ["cs!utils/formatters"], (formatters) ->
 
         constructor: ->
             # clog "CREATING LAZYMODEL INSTANCE", @
-            @loaded = (@includeInJSON==true)
             @relations = @relations?() or @relations or {}
             for key,relation of @relations
                 if not (relation.model or relation.collection)
@@ -74,6 +73,7 @@ define ["cs!utils/formatters"], (formatters) ->
             @loading = true
             super.success =>
                 clog "successfully loaded"
+                @loading = false
                 @loaded = true
 
         set: (attr, options) ->
@@ -108,6 +108,7 @@ define ["cs!utils/formatters"], (formatters) ->
                                 # clog "adding parent to", model, "from", @, "at key", key
                                 model.parent = parent
                                 model.includeInJSON = includeInJSON
+                                model.loaded = (model.includeInJSON==true)
                         bind_to_collection()
                         for model in collection.models # add a parent link to each of the collection's models
                             collection.trigger "add", model
@@ -128,6 +129,7 @@ define ["cs!utils/formatters"], (formatters) ->
                             model = attr[key] = new opts.model(attr[key])
                             model.parent = {model: @, key: key} # add a parent link to the model
                             model.includeInJSON = opts.includeInJSON
+                            model.loaded = (model.includeInJSON==true)
             super attr, options
 
         toJSON: (full) =>

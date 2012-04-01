@@ -20,11 +20,12 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
 
         showActionButtons: =>
             if @model.editing then return
-            @$(".item-button").not(".drag-button").stop().hide().fadeIn(50)
-            @$(".item-button.drag-button").stop().hide().fadeIn 200
+            # @$(".item-button").not(".drag-button").stop().hide().fadeIn(50)
+            # @$(".item-button.drag-button").stop().hide().fadeIn 200
+            @$(".item-button").show()
 
         hideActionButtons: =>
-            @$(".item-button").stop().show().fadeOut 50
+            @$(".item-button").hide()
 
         edit: => #_.debounce(->
             @add_subview "editview", new @EditView(model: @model), ".item-inner"
