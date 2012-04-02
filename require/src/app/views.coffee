@@ -6,7 +6,7 @@ define ["cs!base/views", "cs!course/views", "hb!./templates.handlebars", "less!l
 
         render: =>
             @$el.html templates.root @context()
-            @add_subview "courseview", new courseviews.CourseView(model: @model.course), "#content"
+            @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"
 
 
     return RootView: RootView

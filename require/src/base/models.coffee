@@ -4,6 +4,11 @@ define ["cs!utils/formatters"], (formatters) ->
 
     slug_fields = ["slug", Backbone.Model.prototype.idAttribute]
 
+    get_url = (urlref) ->
+        if not urlref then return ""
+        if urlref instanceof Function then urlref = urlref()
+        return urlref
+
     class BaseModel extends Backbone.Model
 
         url: => # TODO: test this, and make the api endpoint configurable
@@ -37,7 +42,7 @@ define ["cs!utils/formatters"], (formatters) ->
         toJSON: =>
             json = super
             try
-                json._course = require("app").course.id # TODO: something more elegant?
+                json._course = require("app").get("course").id # TODO: something more elegant?
             catch err
             return json
 
@@ -74,10 +79,11 @@ define ["cs!utils/formatters"], (formatters) ->
             if @loading
                 console.log "Model", @, "is already being loaded; aborting 'fetch()'."
                 return
+            if not @id then return
             @loading = true
             xhdr = super
             xhdr.success =>
-                clog "successfully loaded", @
+                console.log "successfully loaded", @
                 @loading = false
                 @_loaded = true
             return xhdr
@@ -148,7 +154,7 @@ define ["cs!utils/formatters"], (formatters) ->
                     attrs.parent.apiCollection = @parent.model.apiCollection
                 if @parent.model.id
                     attrs.parent._id = @parent.model.id
-                    attrs.parent.url = @parent.model.url?() or @parent.model.url or ""
+                    attrs.parent.url = get_url(@parent.model.url)
             for key of attrs
                 if key of @relations
                     # convert related collections/models into JSON themselves
@@ -167,15 +173,15 @@ define ["cs!utils/formatters"], (formatters) ->
             return attrs
 
         url: =>
-            if @parent and @parent.model.url
-                url = (@parent.model.url?() or @parent.model.url) + "/" + @parent.key
+            if (parent_url = get_url(@parent?.model?.url))
+                url = parent_url + "/" + @parent.key
                 if @id and @collection then url += "/" + @id
             else
                 url = super
             return url
 
         save: =>
-            # clog "Saving:", @, "at", @url?() or @url, "as", @toJSON(), @id
+            # clog "Saving:", @, "at", get_url(@url), "as", @toJSON(), @id
             if @parent and @parent.model and @parent.model.unsaved()
                 @saveRecursive() # TODO: this won't behave nicely if the caller needs the XHR object back, but what can we do?
             else
@@ -189,7 +195,7 @@ define ["cs!utils/formatters"], (formatters) ->
             if @parent and @parent.model and @parent.model.unsaved()
                 clog "Parent of", @, "is unsaved, so first saving", @parent.model, @id
                 @parent.model.saveRecursive null, =>
-                    clog "Finished saving", @parent.model, "(now we can actually save", @, "at", @url?() or @url, ")", @id
+                    clog "Finished saving", @parent.model, "(now we can actually save", @, "at", get_url(@url), ")", @id
                     #BaseModel.prototype.save.apply(@, arguments) # TODO: https://github.com/jashkenas/coffee-script/issues/1606
                     BaseModel.prototype.save.apply(@).success =>
                         clog "saving", @, "is complete", @id

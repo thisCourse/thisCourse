@@ -11,7 +11,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
         initialize: ->
             @dateViews = {}
-            @model or= require("app").course
+            @model or= require("app").get("course")
             @model.bind "add:lectures", @addLectures
             @model.bind "add:assignments", @addAssignments
 

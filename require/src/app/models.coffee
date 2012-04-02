@@ -1,23 +1,32 @@
-define ['cs!course/models', "cs!./router"], (coursemodels, router) ->
+define ["cs!base/models", "cs!course/models", "cs!./router"], (basemodels, coursemodels, router) ->
     
-    class AppModel extends Backbone.Model
+    class AppModel extends basemodels.LazyModel
+                
+        relations: ->
+            course:
+                model: coursemodels.CourseModel
+                includeInJSON: false
+            tabs:
+                collection: TabCollection
+                includeInJSON: true
 
-        initialize: (options) ->
+        initialize: (options={}) ->
             @router = new router.BaseRouter
-                root_url: options.root_url or "/"
+                root_url: @get("root_url")
                 app: @
 
         navigate: (url) =>
             if not url then return
             if url instanceof Function then url = url()
-            if url.slice(-1) != "/"
-                url += "/"
-            @router.navigate url, true
+            @set url: url
 
         start: ->
             @router.start()
             Backbone.history.start pushState: true
 
-    #class TabModel extends 
+    class TabModel extends basemodels.LazyModel
+        
+    class TabCollection extends basemodels.LazyCollection
+        model: TabModel
 
     AppModel: AppModel
