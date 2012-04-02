@@ -83,6 +83,9 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             @$el.html templates.section @context
             @makeSortable()
             @update()
+            for model in @model.get("items").models
+                @addItems model, @model.get("items")
+
 
         events: -> _.extend super,
             "mouseenter .section-inner": "showBottomActionButtons"
@@ -126,9 +129,6 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
             @model.bind "change:width", @updateWidth
             @updateWidth()
 
-            for model in @model.get("items").models
-                @addItems model, @model.get("items")
-
         makeSortable: =>
             # @$(".items").sortable
             #     update: (event, ui) ->
@@ -156,11 +156,11 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
 
         addItems: (model, coll) =>
             type = model.get("type") or @model.get("type") or "freeform"
-            require ["cs!content/items/" + type + "/views"], (itemviews) =>
-                view = new itemviews.ItemView(model: model)
-                @add_subview model.cid, view, ".items"
-                if not model.id
-                    view.edit()
+            itemviews = require("cs!content/items/" + type + "/views")
+            view = new itemviews.ItemView(model: model)
+            @add_subview model.cid, view, ".items"
+            if not model.id
+                view.edit()
 
         removeItems: (model, coll) =>
             @subviews[model.cid].$el.stop().show().fadeOut 300, =>
@@ -174,4 +174,4 @@ define ["less!./styles", "cs!base/views", "cs!dialogs/views", "cs!./models", "hb
     SectionView: SectionView
     
 
-#require ["cs!content/items/freeform/views"], (itemviews) => console.log("got the itemviews", itemviews)
+require ["cs!content/items/freeform/views", "cs!content/items/gallery/views"], (itemviews) => console.log("got the itemviews", itemviews)

@@ -22,7 +22,7 @@ get_by_path = (obj, path, index) ->
     if index >= path.length
         console.log "End of path, returning:", obj
         return obj
-    console.log "Descending to key '" + path[index] + "', on object:\n", obj
+    console.log "Descending to key '" + path[index] # + "', on object:\n", obj
     # if the next item in the path is an id, descend into the array by item id
     if id_regex.exec(path[index]) and obj instanceof Array
     	return get_by_path(get_by_id(obj, path[index], path), path, index+1)

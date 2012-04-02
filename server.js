@@ -97,6 +97,10 @@ app.get('/src/*', function(request, response) {
   })
 })
 
+app.get('/', function(request, response) {
+  response.redirect("/src/")
+})
+
 
 
 // TODO: TEMP

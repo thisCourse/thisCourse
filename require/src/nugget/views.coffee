@@ -18,12 +18,12 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .delete-button": "addNewNugget"
 
         render: =>
-            console.log "rendering NuggetListView"
+            # console.log "rendering NuggetListView"
             @$el.html templates.nugget_list @context()
             @makeSortable()
             
         initialize: ->
-            console.log "init NuggetListView"
+            # console.log "init NuggetListView"
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render

@@ -1,0 +1,15 @@
+TODO
+    s3 upload file object creation etc
+    glossary linking in ckeditor
+    hyperlinking interface in ckeditor
+        packages expose a function that returns an object representing the hierarchy of their content
+    cleaner urls, using slugs
+    registration/authentication
+
+    when saving on a parent, add ids to embedded models recursively
+    
+    clean code for handling hover events
+    reduce the number of times things are repeated needlessly
+        setting data on models (use "loading/loaded")
+        rendering view templates
+        

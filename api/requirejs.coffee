@@ -13,6 +13,6 @@ requirejs.config
 
 global._ = require("underscore")
 global.Backbone = require("backbone")
-global.clog = (msg) -> console.log arguments
+global.clog = (msg) -> 
 
 module.exports = requirejs

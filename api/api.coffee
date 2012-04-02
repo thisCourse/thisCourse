@@ -85,7 +85,7 @@ class MongoCollection
                 model = newmod
         
         # if we got here, then we've successfully found the target key; no more expanding needed
-        console.log "FOUND TARGET, converting to JSON:\n", @model
+        #console.log "FOUND TARGET, converting to JSON:\n", @model
         @document = @model.toJSON(true)
         callback()
                 
@@ -306,7 +306,7 @@ class MongoCollection
                 @object._editor = true
             else
                 @object._editor = false
-        console.log @object
+        #console.log @object
         callback new JSONResponse(@object)
 
     # replace entire document with new document
@@ -446,7 +446,7 @@ register_mongo_collection = (cls) ->
     #cls.prototype.collection = db.collection(cls.prototype.name) # get the MongoDB collection reference
     cls.prototype.collection = new CollectionWrapper(cls.prototype.name) # get the wrapped MongoDB collection reference
     collections[cls.prototype.name] = cls # store the collection class by name for later lookup
-    console.log "MODEL REGISTERED:", cls.prototype.Model, collections[cls.prototype.name].name
+    console.log "MODEL REGISTERED:", cls.prototype.Model?.name, "/", collections[cls.prototype.name].name
 
 global.clog = -> # do nothing! this is a log just for in the browser
 

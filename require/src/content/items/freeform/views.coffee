@@ -8,7 +8,7 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
         #class: "item item-freeform"
         
         render: =>
-            console.log "rendering freeform itemeditview"
+            # console.log "rendering freeform itemeditview"
             super
             @$el.html templates.item_freeform_edit @context()
             _.defer => $(".ckeditor").ckeditor ckeditorviews.config
@@ -31,7 +31,7 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
             super
 
         render: =>
-            console.log "rendering freeform itemview"
+            # console.log "rendering freeform itemview"
             super
             @$('.item-inner').html templates.item_freeform @context()
             

@@ -39,7 +39,7 @@ define(
 		"order!libs/handlebars/wrapper",
 		"order!libs/bootstrap/bootstrap-buttons",
 		"order!libs/fancybox/jquery.fancybox-1.3.4",
-		"order!libs/ckeditor/ckeditor",
+		//"order!libs/ckeditor/ckeditor",
 		"order!libs/ckeditor/adapters/jquery",
 		"app"
 	], function() {
