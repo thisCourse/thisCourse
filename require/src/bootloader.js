@@ -19,6 +19,8 @@ if (environ==="DEPLOY") {
 	config.baseUrl = "/require/src"
 }
 
+less.env = "production"
+
 require.config(config)
 
 function clog() {

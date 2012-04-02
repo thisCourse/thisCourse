@@ -10,7 +10,7 @@ define ["cs!./views"], (views) ->
         start: =>
             @rootview = new views.RootView
                 url: "/" + @root_url
-                model: @app.course
+                model: @app
             @rootview.render()
             @route @root_url + "*splat", "delegate_navigation", (splat) =>
 

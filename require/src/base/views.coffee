@@ -181,7 +181,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         
         _routeToRegExp: Backbone.Router.prototype._routeToRegExp
 
-        initialize: =>
+        constructor: ->
             @handlers = []
             @subviews = {}
             @routes = @routes?() or @routes # if routes is a function, run it now
