@@ -84,7 +84,7 @@ define ["cs!utils/formatters"], (formatters) ->
 
         set: (attr, options) ->
             attr = _.clone(attr)
-            clog "setting", attr, "on", @
+            #clog "setting", attr, "on", @
             for key,opts of @relations
                 # clog "processing relation at key", key, "with options", opts
                 if opts.collection # if it's a "one to many" relation

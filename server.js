@@ -91,6 +91,12 @@ app.get('/build/*', function(request, response) {
   })
 })
 
+var base_html = fs.readFileSync(__dirname + '/require/build/test_build.html');
+
+app.get('/course/*', function(request, response) {
+  response.end(base_html)
+})
+
 app.get('/src/*', function(request, response) {
   fs.readFile(__dirname + '/require/src/test_src.html', function(err,text) {
       response.end(text)
@@ -98,7 +104,7 @@ app.get('/src/*', function(request, response) {
 })
 
 app.get('/', function(request, response) {
-  response.redirect("/src/")
+  response.redirect("/course/")
 })
 
 
