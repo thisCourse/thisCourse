@@ -10,3 +10,5 @@ requirejs ['cs!page/models'], (models) =>
 
     api.register_mongo_collection PageMongoCollection
 
+
+    PageMongoCollection: PageMongoCollection

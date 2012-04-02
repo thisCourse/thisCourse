@@ -10,3 +10,5 @@ requirejs ['cs!group/models'], (models) =>
 
     api.register_mongo_collection GroupMongoCollection
 
+    
+    GroupMongoCollection: GroupMongoCollection

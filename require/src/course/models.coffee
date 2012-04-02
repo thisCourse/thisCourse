@@ -23,3 +23,4 @@ define ["cs!base/models", "cs!lecture/models", "cs!assignment/models", "cs!nugge
         model: CourseModel
 
     CourseModel: CourseModel
+    CourseCollection: CourseCollection

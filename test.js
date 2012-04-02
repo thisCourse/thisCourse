@@ -17,6 +17,7 @@ requirejs.config({
 
 global._ = require("underscore")
 global.Backbone = require("backbone")
+global.clog = function(msg) { console.log(arguments.join(" ")); }
 
 requirejs(["cs!course/models"], function(coursemodels) {
 	var course = new coursemodels.CourseModel({

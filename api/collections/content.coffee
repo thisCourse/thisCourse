@@ -10,3 +10,5 @@ requirejs ['cs!content/models'], (models) =>
 
     api.register_mongo_collection ContentMongoCollection
 
+
+    ContentMongoCollection: ContentMongoCollection

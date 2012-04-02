@@ -10,3 +10,5 @@ requirejs ['cs!assignment/models'], (models) =>
 
     api.register_mongo_collection AssignmentMongoCollection
 
+
+    AssignmentMongoCollection: AssignmentMongoCollection

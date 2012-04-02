@@ -10,3 +10,5 @@ requirejs ['cs!lecture/models'], (models) =>
 
     api.register_mongo_collection LectureMongoCollection
 
+    
+    LectureMongoCollection: LectureMongoCollection
