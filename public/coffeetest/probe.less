@@ -19,20 +19,23 @@ body {
 	border-radius: 15px;
 	background-color: #FFFFFF;
 	box-shadow: 10px 10px 5px #888;
-	ol {
-		counter-reset: list;
-		li {
-			width: 250px;
-			float:left;
-			padding:16px 0px;
-			font-size:16px;
-			&:before{
-				font-style: italic;
-				content: counter(list, @locale) ". ";
-				counter-increment: list;
-			}
-			&.select {
-				font-weight: bold;
+	.probequestion {
+		max-width: 600px;
+		ol {
+			counter-reset: list;
+			li {
+				width: 250px;
+				float:left;
+				padding:16px 0px;
+				font-size:16px;
+				&:before{
+					font-style: italic;
+					content: counter(list, @locale) ". ";
+					counter-increment: list;
+				}
+				&.select {
+					font-weight: bold;
+				}
 			}
 		}
 	}
@@ -41,10 +44,6 @@ body {
 
 .proberesponse {
 	max-width: 600px;
-	padding: 10px;
-	border-radius: 15px;
-	background-color: #FFFFFF;
-	box-shadow: 10px 10px 5px #888;
 }
 
 div #feedback {
@@ -81,7 +80,9 @@ div #feedback {
 			border-bottom: 5px solid #BBBBBB;
 		}
 	}
-
+	.hidden {
+		display:none;
+	}
 	.inline {
 		display:inline;
 	}

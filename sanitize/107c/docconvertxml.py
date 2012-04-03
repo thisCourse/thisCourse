@@ -70,7 +70,20 @@ def htmlfromxml(filename,j=0):
             title = htmlout
             if gloss:
                 glossed = True
+    if soup.find('blip')!= None:
+        htmlout+='<img src="placeholder.png" />'
+    htmlout = htmlout.replace(' style=""','')
     return htmlout, glossed, title
+
+
+flies = open('knowstruc1112.csv')
+
+tites = flies.readlines()
+
+titles = {}
+
+for x in tites:
+    titles[x.split(',')[1].strip()] = x.split(',')[0]
 
 tagstrip = re.compile('<[^>]+>')
 
@@ -115,7 +128,8 @@ for slide in glob.glob('*/notesSlides/*.xml'):
         tagsection = lecnug.sub('',questlist[0])
         tagsoup = BeautifulSoup(tagsection)
         for tag in tagsoup.text.split(','):
-            tags.append(tag)
+            if tag!='':
+                tags.append(tag)
         tags = tags + [lecture,cluster,nugget]
         nuggetdict['tags'] = tags
         if len(questlist)>1:
@@ -143,6 +157,8 @@ for slide in glob.glob('*/notesSlides/*.xml'):
             nuggetcollection[nuggetkey] = dict(nuggetcollection[nuggetkey].items() + nuggetdict.items())
         else:
             nuggetcollection[nuggetkey] = nuggetdict
+            nuggetcollection[nuggetkey]['title'] = titles[nuggetkey]
+    
             
 #Second pass for questions for Steve's slides:
 
@@ -151,7 +167,7 @@ for slide in glob.glob('*/notesSlides/*.xml'):
     questname = question.search(markup)
     if questname:
         questing = questname.group()
-        nuggetkey = ''.join(questing.split('.')[:-1])
+        nuggetkey = tagstrip.sub('',''.join(questing.split('.')[:-1]))
         slidekey = slide.split('/')[0]+slide.split('.')[0].split('/')[2].replace('notesS','s')
         if not questioncollection.has_key(questname.group().replace('.','')):
             probe = slides[slidekey]['html']
