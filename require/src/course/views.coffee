@@ -19,6 +19,7 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             title = "thisCourse"
             if @model.has("title") then title += " | " + @model.get("title")
             document.title = title
+            
 
 
     return CourseView: CourseView

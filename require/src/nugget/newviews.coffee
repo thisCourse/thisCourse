@@ -4,10 +4,10 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     class NuggetRouterView extends baseviews.RouterView
 
         routes: =>
-            #"": => view: LectureListView, datasource: "collection"
-            "": => view: NuggetListView, datasource: "collection"
+            "": => view: LectureListView, datasource: "collection"
+            "list/": => view: NuggetListView, datasource: "collection"
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
-            #"lecture/:lectureid": (lectureid) => view: LectureView, datasource: "collection", key: lectureid
+            "lecture/:lectureid": (lectureid) => view: LectureView, datasource: "collection", key: lectureid
 
         initialize: ->
             console.log "NuggetRouterView init"
