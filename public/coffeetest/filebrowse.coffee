@@ -37,7 +37,6 @@ class window.FileView extends BaseView
         @options.parent.$('.file').not(@$('.file')).removeClass('active')
         @$('.file').toggleClass('active')
         @options.parent.selected = @model
-        console.log 'Selected'
 
     selectChoose: =>
         @select()

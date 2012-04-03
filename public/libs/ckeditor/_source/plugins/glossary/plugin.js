@@ -8,7 +8,7 @@ CKEDITOR.plugins.add( 'glossary',
         	
         	exec: function (editor)
         	{
-        		alert('Hello!')
+        		$('<div class="alert alert-info">Is this thing on?</div>').dialog();
         		var style = new CKEDITOR.style( { element : 'a', attributes : {'href':'/glossary/item','rel':'tooltip','title':'Hell Yeah!'} } );
 				style.type = CKEDITOR.STYLE_INLINE;
 				style.apply( editor.document );

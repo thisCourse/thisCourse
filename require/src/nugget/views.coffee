@@ -60,7 +60,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             @$el.html templates.nugget @context()
             @add_subview "topview", new NuggetTopView(model: @model), ".nugget-top"
-            @add_lazy_subview name: "pageview", view: pageviews.PageView, datasource: "model", key: "page", target: ".nugget-page"
+            @add_subview "bottomview", new NuggetBottomRouterView(model: @model), '.nugget-bottom'
 
         edit: =>
             @subviews.topview.hide()
@@ -69,6 +69,16 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         editDone: =>
             @close_subview "topeditview"
             @subviews.topview.show()
+            
+    class NuggetBottomRouterView extends baseviews.RouterView
+        
+        routes: =>
+            "": => name: "pageview", view: pageviews.PageView, datasource: "model", key: "page"
+            "quiz/": => view: ProbeView, datasource: "model", key: "probes"
+
+        initialize: ->
+            console.log "NuggetBottomRouterView init"
+            super
 
     class NuggetTopView extends baseviews.BaseView
         
