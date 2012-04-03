@@ -9,7 +9,7 @@ class window.File extends Backbone.Model
 
 class window.FileCollection extends Backbone.Collection
     model: File
-
+    url: "/api/file/?_course=" + course_id
 
 
 class window.FileView extends BaseView
@@ -45,10 +45,8 @@ class window.FileView extends BaseView
     editName:->
         @$el.find('.file').find('.display,.edit').addClass('editing')
 
-        
-
-
 window.files = new FileCollection
+files.fetch()
 
 class window.BrowseView extends BaseView
 
@@ -74,6 +72,7 @@ class window.BrowseView extends BaseView
         @tagfilter = null
         @collection.bind 'add', @render
         @render()
+        @collection.fetch()
 
     getUrlParam: (paramName) ->
         reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
