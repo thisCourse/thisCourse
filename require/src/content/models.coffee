@@ -16,7 +16,10 @@ define ["cs!base/models"], (basemodels) ->
     class SectionModel extends basemodels.LazyModel
 
         defaults:
-            width: 16
+            width: 12
+
+        initialize: ->
+            @set width: 12 # TODO: temp hack to prevent items from overflowing
 
         relations: ->
             items:

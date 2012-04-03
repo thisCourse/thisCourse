@@ -6,7 +6,9 @@ TODO
     cleaner urls, using slugs
     registration/authentication
 
-    when saving on a parent, add ids to embedded models recursively
+    when saving on a parent (server-side), add ids to embedded models recursively
+    tab system &subpages go bold
+        make all links in a navigated view that are prefixes of the url being navigated get class "active"
     
     clean code for handling hover events
     reduce the number of times things are repeated needlessly

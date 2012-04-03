@@ -9,4 +9,15 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             "assignment/": => view: assignmentviews.AssignmentRouterView, datasource: "model", key: "assignments"
             "study/": => view: nuggetviews.NuggetRouterView, datasource: "model", key: "nuggets"
 
+        initialize: =>
+            @model.bind("change:title", @updateTitle)
+            document.title = "thisCourse"
+            @updateTitle()
+
+        updateTitle: =>
+            title = "thisCourse"
+            if @model.has("title") then title += " | " + @model.get("title")
+            document.title = title
+
+
     return CourseView: CourseView

@@ -47,7 +47,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         navigate: (fragment) =>
             @fragment = fragment
             for name, subview of @subviews
-                return true if subview.navigate(@fragment)
+                #return true if subview.navigate(@fragment)
+                subview.navigate(@fragment) # TODO: test if it's inefficient to navigate on ALL THE THINGS
             return false
 
         add_lazy_subview: (options={}, callback) =>
@@ -82,10 +83,17 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                         @add_subview options.name, subview, options.target
                         subview_created = true
                         callback?(subview)
+                        if @spinner_shown
+                            console.log "hiding spinner for", @
+                            @spinner_shown = false
+                            require("app").router.rootview.subviews.spinner.hide()
                     
                     if obj instanceof Backbone.Model
                         viewoptions.model = obj
                         if not obj.loaded() # do the lazy loading of the view we're passing down into the view
+                            console.log "showing spinner for", @
+                            @spinner_shown = true
+                            require("app").router.rootview.subviews.spinner.show()
                             xhdr = obj.fetch()
                             if xhdr?.success # TODO: fix this stuff up so it doesn't check so many times
                                 xhdr.success do_create_subview
@@ -181,7 +189,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         
         _routeToRegExp: Backbone.Router.prototype._routeToRegExp
 
-        initialize: =>
+        constructor: ->
             @handlers = []
             @subviews = {}
             @routes = @routes?() or @routes # if routes is a function, run it now

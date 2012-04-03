@@ -1,0 +1,100 @@
+@import "../../libs/bootstrap/mixins.less";
+
+@ringcolor: #DDD;
+@ballcolor: #AAA;
+
+#bowlG{
+    position:absolute;
+    width: 64px;
+    height: 64px;
+    top: 50%;
+    left: 50%;
+    margin-top: -32px;
+    margin-left: -32px;
+}
+
+#bowl_ringG{
+    position:absolute;
+    width:64px;
+    height:64px;
+    border:6px solid @ringcolor;
+    -moz-border-radius:64px;
+    -webkit-border-radius:64px;
+    border-radius:64px;
+}
+
+.ball_holderG{
+    position:absolute;
+    width:17px;
+    height:64px;
+    left:23px;
+    top:0px;
+    -webkit-animation-name:ball_moveG;
+    -webkit-animation-duration:1.2s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-timing-function:linear;
+    -moz-animation-name:ball_moveG;
+    -moz-animation-duration:1.2s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-timing-function:linear;
+    -o-animation-name:ball_moveG;
+    -o-animation-duration:1.2s;
+    -o-animation-iteration-count:infinite;
+    -o-animation-timing-function:linear;
+    -ms-animation-name:ball_moveG;
+    -ms-animation-duration:1.2s;
+    -ms-animation-iteration-count:infinite;
+    -ms-animation-timing-function:linear;
+}
+
+.ballG{
+    position:absolute;
+    left:0px;
+    top:-15px;
+    width:26px;
+    height:26px;
+    background:@ballcolor;
+    -moz-border-radius:21px;
+    -webkit-border-radius:21px;
+    border-radius:21px;
+}
+
+@-webkit-keyframes ball_moveG{
+    0% {
+        -webkit-transform:rotate(0deg)
+    }
+
+    100% {
+        -webkit-transform:rotate(360deg)
+    }
+}
+
+@-moz-keyframes ball_moveG{
+    0%{
+        -moz-transform:rotate(0deg)
+    }
+
+    100%{
+        -moz-transform:rotate(360deg)
+    }
+}
+
+@-o-keyframes ball_moveG{
+    0%{
+        -o-transform:rotate(0deg)
+    }
+
+    100%{
+        -o-transform:rotate(360deg)
+    }
+}
+
+@-ms-keyframes ball_moveG{
+    0%{
+        -ms-transform:rotate(0deg)
+    }
+
+    100%{
+        -ms-transform:rotate(360deg)
+    }
+}

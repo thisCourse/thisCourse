@@ -1,4 +1,4 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
+define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
         (baseviews, models, pageviews, itemviews, dialogviews, templates, styles) ->
 
     class AssignmentRouterView extends baseviews.RouterView
