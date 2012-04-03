@@ -85,7 +85,7 @@ class MongoCollection
                 model = newmod
         
         # if we got here, then we've successfully found the target key; no more expanding needed
-        #console.log "FOUND TARGET, converting to JSON:\n", @model
+        console.log "FOUND TARGET, converting to JSON:\n", @Model
         @document = @model.toJSON(true)
         callback()
                 
@@ -440,6 +440,10 @@ class CollectionWrapper
     remove: ->
         console.log "MONGO REMOVE:", @name, arguments[0]
         @collection.remove.apply(@collection, arguments)
+
+    find: ->
+        console.log "MONGO FIND:", @name, arguments[0]
+        @collection.find.apply(@collection, arguments)
     
 
 register_mongo_collection = (cls) ->
@@ -463,5 +467,6 @@ module.exports =
     MongoCollection: MongoCollection
     router: router
     APIError: APIError
+    JSONResponse: JSONResponse
     register_mongo_collection: register_mongo_collection
     initialize: initialize

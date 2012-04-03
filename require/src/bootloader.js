@@ -39,7 +39,7 @@ define(
 		"order!libs/backbone/backbone.memento",
 		"order!libs/backbone/backbone.modelbinding",
 		"order!libs/handlebars/wrapper",
-		"order!libs/bootstrap/bootstrap-buttons",
+		"order!libs/bootstrap/bootstrap-button",
 		"order!libs/fancybox/jquery.fancybox-1.3.4",
 		//"order!libs/ckeditor/ckeditor",
 		"order!libs/ckeditor/adapters/jquery",

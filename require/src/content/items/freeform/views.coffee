@@ -11,7 +11,7 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
             # console.log "rendering freeform itemeditview"
             super
             @$el.html templates.item_freeform_edit @context()
-            _.defer => $(".ckeditor").ckeditor ckeditorviews.config
+            _.defer => $(".ckeditor").ckeditor ckeditorviews.get_config()
             #@add_subview "ckeditor", new ckeditorviews.CKEditorView(html: @model.get("html")), ".html"
     
         save: =>
