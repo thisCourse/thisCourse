@@ -6,10 +6,10 @@ define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "hb!./templat
         el: "body"
 
         render: =>
+            @add_subview "spinner", new spinnerviews.SpinnerView(visible: true)
             @$el.html templates.root @context()
             @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"
             @add_subview "toptabsview", new TopTabsView(collection: @model.get("tabs")), "#toptabs"
-            @add_subview "spinner", new spinnerviews.SpinnerView(visible: false)
 
     class TopTabsView extends baseviews.BaseView
 

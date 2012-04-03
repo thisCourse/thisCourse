@@ -82,12 +82,17 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                         subview.url = options.url if options.url
                         @add_subview options.name, subview, options.target
                         subview_created = true
-                        require("app").router.rootview.subviews.spinner.hide()
                         callback?(subview)
+                        if @spinner_shown
+                            console.log "hiding spinner for", @
+                            @spinner_shown = false
+                            require("app").router.rootview.subviews.spinner.hide()
                     
                     if obj instanceof Backbone.Model
                         viewoptions.model = obj
                         if not obj.loaded() # do the lazy loading of the view we're passing down into the view
+                            console.log "showing spinner for", @
+                            @spinner_shown = true
                             require("app").router.rootview.subviews.spinner.show()
                             xhdr = obj.fetch()
                             if xhdr?.success # TODO: fix this stuff up so it doesn't check so many times
