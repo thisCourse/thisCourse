@@ -148,6 +148,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             data['collection'] = @collection if @collection
             data['models'] = @collection.models if @collection
             data['id'] = @model.get(Backbone.Model.prototype.idAttribute) if @model
+            data['root_url'] = require('app').get('root_url')
             return data
 
         # set a view's Bootstrap grid system width according to its model's "width" property 
@@ -215,7 +216,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         
         navigate: (fragment) =>
 
-            # console.log "NAV", @
+            console.log "NAV", @
 
             # check if fragment matches any of our routes
             for handler in @handlers

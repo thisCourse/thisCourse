@@ -45,3 +45,46 @@
     <span class="edit"><button class="item-button edit-button btn success">Edit nugget details</button></span>
     
 </script>
+
+<script id="nugget_space" type="text/x-handlebars-template">
+
+    <div id='studyapp' class='container'>
+    <div id='clusterview' class='view hidden'></div>
+    <div id='lectureview' class='view'>
+        <ul class='nav nav-pills'>
+            {{#each lecture}}
+            <li id='{{lecture}}'><a id='{{lecture}}' class='lecture {{status}}'><p id='{{lecture}}'>{{title}}</p><p id='{{lecture}}'><strong id='{{lecture}}'>{{points}}</strong></p></a></li>
+            {{/each}}
+        </ul>
+    </div>
+</div>
+
+</script>
+
+<script id='nugget_space_cluster' type="text/x-handlebars-template">
+
+
+        <div class='tabbable'>
+                <ul class='nav nav-tabs'>
+                    {{#each cluster}}
+                    <li id='{{cluster}}'><a href='#{{cluster}}' data-toggle='tab'>{{title}}</a></li>
+                    {{/each}}
+                </ul>
+                <div class='btn-group'>
+                <button class='btn btn-large btn-success lecturelink'>Lecture View</button>    
+                </div>
+                <div class='tab-content'>
+                    {{#each cluster}}
+                    <div class='tab-pane' id='{{cluster}}'>
+                        <ul class='nav nav-pills'>
+                            {{#each nugget}}
+                            <li><a href='/{{../../root_url}}study/{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{title}}</a></li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        
+        
+</script>

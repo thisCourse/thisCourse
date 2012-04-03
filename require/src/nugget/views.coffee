@@ -1,10 +1,11 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "less!./styles"], \
-        (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, styles) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles"], \
+        (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles) ->
 
     class NuggetRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => view: NuggetListView, datasource: "collection"
+            "": => view: NuggetSpaceView, datasource: "collection"
+            "list/": => view: NuggetListView, datasource: "collection"
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
 
         initialize: ->
@@ -51,6 +52,56 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
             #     opacity: 0.6
             #     tolerance: "pointer"
+            
+    class NuggetSpaceView extends baseviews.BaseView
+            
+        events:
+            "click .lecture": "clusterView"
+        
+        
+        render: =>
+            @$el.html templates.nugget_space @context(@lecturelist)
+
+            
+        initialize: =>
+            @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed'} for lecture, lect of hardcode.knowledgestructure)}
+            console.log @lecturelist                  
+            @render
+
+                
+        
+        clusterView: (ev) =>
+            lecture = ev.target.id
+            @$(".view").toggleClass('hidden')
+            @lecturecollection = @collection.filter (model) => 
+                lecture in (model.get('tags') or [])
+            clustercollection = hardcode.knowledgestructure[lecture]
+            console.log hardcode.knowledgestructure
+            console.log clustercollection
+            @add_subview "clusterview", new NuggetSpaceClusterView(collection: @lecturecollection, clusters: clustercollection), ".clusterview"    
+                
+    class NuggetSpaceClusterView extends baseviews.BaseView
+        
+        events:
+            "click .lecturelink" : "lectureView"        
+        
+        render: =>
+            @$el.html templates.nugget_space_cluster @context(@clusterlist)
+            @$('#C01').addClass('active')
+            
+        initialize: =>
+            @clusterlist = {cluster:({title: title, cluster: cluster} for cluster, title of @options.clusters.clusters)}
+            for cluster in @clusterlist.cluster
+                nuggetcollection = @collection.filter (model) => 
+                    cluster.cluster in (model.get('tags') or [])
+                cluster.nugget = nuggetcollection
+            @render
+            
+        lectureView: (ev) =>
+            lecture = ev.target.id
+            @$el.toggleClass('hidden')
+            @parent.$(".view").toggleClass('hidden')
+            
 
     class NuggetView extends baseviews.BaseView
 
