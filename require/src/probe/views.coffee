@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
-        (baseviews, models, pageviews, itemviews, dialogviews, templates, styles) ->
+define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
+        (baseviews, models, dialogviews, templates, styles) ->
 
     class ProbeRouterView extends baseviews.RouterView
 
@@ -58,14 +58,21 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .answerbtn": "submitAnswer"
 
         render: =>
-            console.log "There are four lights!"
+            console.log @collection
             @$el.html templates.probe @context()
-        
+            
         
         initialize: =>
-            
+            @collection.shuffle()
+            @inc = 0
+            @model = @collection[@inc]
+            @model.bind "change", @render
                     
         submitAnswer: =>
+            
+        nextProbe: =>
+            @inc += 1
+            @model = @collection[@inc]
             
             
     class ProbeAnswerView extends baseviews.BaseView

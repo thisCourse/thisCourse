@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
-        (baseviews, models, pageviews, itemviews, dialogviews, templates, styles) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "less!./styles"], \
+        (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, styles) ->
 
     class NuggetRouterView extends baseviews.RouterView
 
@@ -74,7 +74,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         routes: =>
             "": => name: "pageview", view: pageviews.PageView, datasource: "model", key: "page"
-            "quiz/": => view: ProbeView, datasource: "model", key: "probes"
+            "quiz/": => view: probeviews.ProbeView, datasource: "model", key: "probes"
 
         initialize: ->
             console.log "NuggetBottomRouterView init"

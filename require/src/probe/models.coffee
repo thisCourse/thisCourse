@@ -1,26 +1,27 @@
-define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pagemodels, probemodels) ->
+define ["cs!base/models"], (basemodels) ->
 
     class AnswerModel extends basemodels.LazyModel
         
     
-    
+    class AnswerCollection extends basemodels.LazyCollection
+        
+        model: AnswerModel  
+        
     class ProbeModel extends basemodels.LazyModel
-
+        
+        apiCollection: "probe"
+        
         relations: ->
             answers:
-                model: answermodels.AnswerModel
+                collection: AnswerCollection
                 includeInJSON: true
-            probes:
-                collection: probemodels.ProbeCollection
-                includeInJSON: ['_id']
+                
 
     class ProbeCollection extends basemodels.LazyCollection
 
         model: ProbeModel
 
-    class AnswerCollection extends basemodels.LazyCollection
-        
-        model: AnswerModel
+
         
     
     AnswerModel: AnswerModel
