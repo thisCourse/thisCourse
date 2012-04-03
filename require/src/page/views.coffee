@@ -1,4 +1,4 @@
-define ["cs!base/views", "cs!./models", "cs!content/views", "cs!dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
+define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
         (baseviews, models, contentviews, dialogviews, templates, styles) ->
 
     class PageView extends baseviews.BaseView

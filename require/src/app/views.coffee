@@ -1,4 +1,5 @@
-define ["cs!base/views", "cs!course/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], (baseviews, courseviews, templates, bootstrap, styles) ->
+define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], \
+        (baseviews, courseviews, spinnerviews, templates, bootstrap, styles) ->
 
     class RootView extends baseviews.BaseView
 
@@ -8,6 +9,7 @@ define ["cs!base/views", "cs!course/views", "hb!./templates.handlebars", "less!l
             @$el.html templates.root @context()
             @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"
             @add_subview "toptabsview", new TopTabsView(collection: @model.get("tabs")), "#toptabs"
+            @add_subview "spinner", new spinnerviews.SpinnerView(visible: false)
 
     class TopTabsView extends baseviews.BaseView
 
