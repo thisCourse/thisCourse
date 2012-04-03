@@ -5,7 +5,7 @@ define ["cs!base/models"], (basemodels) ->
         apiCollection: "file"
 
     class FileCollection extends basemodels.LazyCollection
-
+        
         model: FileModel
 
 
