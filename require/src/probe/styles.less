@@ -2,27 +2,103 @@
 @import "../libs/bootstrap/variables.less";
 @import "../base/globals.less";
 
-.NuggetView {
+@locale: upper-alpha;
 
-    .nugget-top {
-        
-        position: relative;
-        
-        .edit-button {
-            position: absolute;
-            top: 0;
-            right: 0;
+.trash {
+    padding: 4px 6px;
+    margin-right: 6px;
+}
+
+.middlealign {
+    margin-top:10px;
+}
+
+.probe {
+    .probequestion {
+        max-width: 600px;
+        word-wrap: break-word;
+        ol.answerlist {
+            list-style:none;
+            counter-reset: list;
+            li.answer {
+                width: 600px;
+                padding:16px 0px;
+                font-size:16px;
+                &:before{
+                    font-style: italic;
+                    content: counter(list, @locale) ". ";
+                    counter-increment: list;
+                }
+                &.select {
+                    font-weight:bold;
+                }
+            }
         }
-        
-        textarea {
-            margin: 10px 0;
-        }
-        
     }
+
+}
+
+.proberesponse {
+    max-width: 600px;
+}
+
+div #feedback {
+    display: none;
     
 }
 
-.NuggetTopView {
-    min-height: 30px;
+.display {
+    &.editing {
+        display:none;
+    }
 }
 
+.edit {
+    display:none;
+    &.editing {
+        display:block;
+    }
+}
+
+.probeedit {
+    width: 600px;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: #FFFFFF;
+    box-shadow: 10px 10px 5px #888;
+    .question {
+        width: 590px;
+    }
+    .answerlist {
+        margin-top:20px;
+        .row-fluid {
+            margin-bottom:15px;
+            border-bottom: 5px solid #BBBBBB;
+        }
+    }
+    .hidden {
+        display:none;
+    }
+    .inline {
+        display:inline;
+    }
+    textarea.question {
+        font-size: 18px;
+        }
+    .display {
+        border: 1px solid #DDDDDD;
+        background-color: #EEEEEE;
+    }
+    div.text {
+        padding: 4px 4px;
+        p {
+            font-size: 16px;
+            text-align: justify;
+        }
+        input {
+            height: 30px;
+            font-size: 16px;
+            width: 100%;
+        }
+    }
+}

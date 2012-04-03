@@ -58,41 +58,59 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .answerbtn": "submitAnswer"
 
         render: =>
-            console.log @collection
             @$el.html templates.probe @context()
+            $('.question').html @model.get('questiontext')
+            for answer in @model.get('answers').models
+                @addAnswers answer, @model.get("answers")   
             
         
         initialize: =>
             @collection.shuffle()
             @inc = 0
-            @model = @collection[@inc]
-            @model.bind "change", @render
+            @nextProbe()   
+            @model.get("answers").bind "add", @addAnswers    
+
+
+        addAnswers: (model, coll) =>
+            @add_subview "answerview_"+model.id, new ProbeAnswerView(model: model), ".answerlist"
                     
         submitAnswer: =>
+            alert "Going to the server now!"
+            model = new Backbone.Model
+                'status': 'Correct!'
+                'feedback':'Yes but no but, yes'
+            @add_subview "responseview", new ProbeResponseView(model: model), ".proberesponse"
             
         nextProbe: =>
+            @model = @collection.at(@inc)
+            @model.fetch()
+            @model.bind "change", @render
             @inc += 1
-            @model = @collection[@inc]
             
             
     class ProbeAnswerView extends baseviews.BaseView
-        
-        el: $('.answerlist')
         
         events:
             "click .answer" : "selectAnswer"
         
         render: =>
+            console.log "There are four LIGHTS!"
             @$el.html templates.probe_answer @context()
         
             
         selectAnswer: =>
-            @$('.answer').toggleClass('active')
-            @options.parent.selected = @model
+            @parent.$('.answer').not(@$('.answer')).removeClass('select')
+            @$('.answer').toggleClass('select')
+            if @parent.selected == @model
+                @parent.$('.answerbtn').addClass('disabled')
+                @parent.selected = null
+            else
+                @parent.$('.answerbtn').removeClass('disabled')
+                @parent.selected = @model
 
     class ProbeResponseView extends baseviews.BaseView
         
-        el: $('.proberesponse')
+
         
         initialize: -> @render()
 
@@ -104,7 +122,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             $('#feedback').slideToggle()
             
         nextQuestion: ->
-            #TODO: Callback to parent, next item in collection
+            @parent.nextProbe()
         
         render: =>
             @$el.html templates.probe_response @context()
