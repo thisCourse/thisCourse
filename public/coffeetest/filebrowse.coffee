@@ -72,7 +72,7 @@ class window.BrowseView extends BaseView
         @filteredcollection = @collection.filter (file) ->
             file.get('type') == @typefilter
         @tagfilter = null
-        @collection.bind('add',@render)
+        @collection.bind 'add', @render
         @render()
 
     getUrlParam: (paramName) ->
@@ -81,8 +81,7 @@ class window.BrowseView extends BaseView
         if match and match.length > 1 then match[1] else null
 
     render: =>
-        @$el.html ""
-        @$el.append(template())
+        @$el.html template()
 
         @$('#'+@typefilter).parent().addClass('active')
         @filteredcollection = @collection.filter (file) =>
@@ -94,7 +93,7 @@ class window.BrowseView extends BaseView
         taglist = []
 
         for file in @filteredcollection
-            for tag in file.get('tags')
+            for tag in (file.get('tags') or [])
                 taglist.push(tag)
             fileView = new FileView
                 model: file
@@ -109,28 +108,19 @@ class window.BrowseView extends BaseView
         @$("iframe.uploader").load =>
             response_text = $("body", $("iframe").contents()).text()
             response_json = if response_text then JSON.parse(response_text) else {}
-            if response_json.image
+            if response_json.md5
                 @loadDownloadFrame("Success!")
                 @uploadFile(response_json)
-                if response_json.thumb
-                    response_json.thumb.url
             else if response_json._error
                 @loadDownloadFrame("Error!")
         @loadDownloadFrame()
 
     uploadFile: (upload) =>
-        file = new File
-            type: 'picture'
-            fileurl: upload.image.url
-            thumburl: upload.thumb.url
-            name: upload.image.filename[0...upload.image.filename.indexOf('.')]
-            _id: Math.random()
-            courseid: @courseid
-            tags: [['file','stuff'],['whatever','dogs','french','early','gandalf','snack','file'],['one','snack']][Math.floor(Math.random()*3)]
+        file = new File upload
         @collection.add(file)
 
     chooseFile: ->
-        window.opener.CKEDITOR.tools.callFunction(@funcNum, @selected.get('fileurl'))
+        window.opener.CKEDITOR.tools.callFunction(@funcNum, "/s3/file_redirect?id=" + @selected.id)
         self.close()
 
     filterTypes: (ev) =>

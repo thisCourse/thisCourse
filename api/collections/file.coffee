@@ -11,11 +11,10 @@ requirejs ['cs!file/models'], (models) =>
         process_GET_collection: (callback) =>
             query = @req.query
             delete query._
-            @collection.find(@query).toArray? (err, docs) =>
+            @collection.find(query).toArray? (err, docs) =>
                 console.log docs
                 if err then return callback new api.APIError("No matching documents found", 404)
-                return callback new (api.JSONResponse)({d: "Hello"})
-                #return callback new (api.JSONResponse)(docs)
+                return callback new (api.JSONResponse)(docs)
             #callback new api.JSONResponse({test: 66}, 200)
 
             

@@ -1,29 +1,42 @@
-dummy = ->
-    req = query:
-        image_key: "uploads/Snow Patrol - Eyes Open (Back).jpg"
-        thumb_key: "uploads/thumb-Snow Patrol - Eyes Open (Back).jpg"
+api = require("./api.coffee")
+filecollection = api.db.collection("file")
+ObjectId = api.db.bson_serializer.ObjectID
 
-    res =
-        end: console.log
-        json: console.log
-        write: console.log
-
-    handle_uploaded_image req, res
-handle_uploaded_image = (req, res, next) ->
+handle_uploaded_file = (req, res, next) ->
     image_key = req.query.image_key
     thumb_key = req.query.thumb_key
     tasks = {}
     if image_key
-        return APIError(res, "Bad upload path.", 500)    unless image_key.split("/")[0] is "uploads"
+        if not image_key.split("/")[0] is "uploads" then return APIError(res, "Bad upload path.", 500)
         tasks["image"] = (callback) ->
             move_file_to_md5 encodeURIComponent(image_key), "/images/", callback
     if thumb_key
-        return APIError(res, "Bad upload path.", 500)    unless thumb_key.split("/")[0] is "uploads"
+        if not thumb_key.split("/")[0] is "uploads" then return APIError(res, "Bad upload path.", 500)
         tasks["thumb"] = (callback) ->
             move_file_to_md5 encodeURIComponent(thumb_key), "/images/", callback
     async.parallel tasks, (err, results) ->
-        return APIError(res, err, 500)    if err
-        res.json results
+        if err then return APIError(res, err, 500)
+        console.log results
+        if not (filename = results?.image?.filename) then return APIError(res, "Error uploading file; no filename returned.", 500)
+        fileobj =
+            filename: filename
+            md5: results.image.md5
+            extension: if "." in filename then filename.split(".").pop() else ""
+            uploaded: results.image.uploaded
+            _course: "4f78e9a5e6ef81971e000001" # TODO: make this more general, obviously
+        if results.thumb?.md5 then fileobj.thumbnail_md5 = results.thumb.md5
+        filecollection.save fileobj, (err, obj) ->
+            res.json obj
+
+handle_file_redirect = (req, res, next) ->
+    filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
+        res.redirect("https://thiscourse.s3.amazonaws.com/images/" + obj.md5 + "." + obj.extension)
+
+handle_thumb_redirect = (req, res, next) ->
+    filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
+        res.redirect("https://thiscourse.s3.amazonaws.com/images/" + obj.thumbnail_md5 + "." + obj.extension)
+    
+
 move_file_to_md5 = (key, path, callback) ->
     head_file key, (err, response) ->
         return callback("The file '" + key + "' was not found!")    unless response.success
@@ -38,6 +51,7 @@ move_file_to_md5 = (key, path, callback) ->
                 uploaded: response.headers.date
                 url: client.https(filename)
                 filename: decodeURIComponent(key).split("/").reverse()[0]
+
 APIError = (res, msg, code) ->
     code = code or 500
     console.log "error:", msg
@@ -46,11 +60,14 @@ APIError = (res, msg, code) ->
             message: msg
             code: code
     , code
+
 sign_policy = (policy) ->
     crypto.createHmac("sha1", "7ytH0P+dwSBxlG5nIIiidBQyE3xvm4+OX/DlwiHq").update(policy).digest encoding = "base64"
+
 create_policy = (policy) ->
     policy = JSON.stringify(policy)    if typeof (policy) isnt "string"
     new Buffer(policy).toString "base64"
+
 copy_file = (source, dest, callback) ->
     client.put("/" + dest,
         "Content-Length": "0"
@@ -59,19 +76,22 @@ copy_file = (source, dest, callback) ->
     ).on("response", (res) ->
         callback null, res    if typeof (callback) is "function"
     ).end()
+
 move_file = (source, dest, callback) ->
     copy_file source, dest, (err, res) ->
         if res.statusCode is 200
             del_file source, (err, res_del) ->
-                if res_del.statusCode is 204
+                if res_del.statusCode is 204 # no body returned on delete
                     callback null, res
                 else
                     callback "Error deleting file '" + source + "'!"
         else callback null, res    if typeof (callback) is "function"
+
 del_file = (key, callback) ->
     client.del(key).on("response", (res) ->
         callback null, res    if typeof (callback) is "function"
     ).end()
+
 get_file = (key, callback) ->
     callback = console.log    if typeof (callback) isnt "function"
     data = ""
@@ -81,6 +101,7 @@ get_file = (key, callback) ->
         ).on "end", ->
             callback null, data
     ).end()
+
 head_file = (key, callback) ->
     callback = console.log    if typeof (callback) isnt "function"
     client.head(key).on("response", (res) ->
@@ -92,20 +113,27 @@ head_file = (key, callback) ->
         response.md5 = res.headers.etag.slice(1, -1)    if res.headers.etag
         callback null, response
     ).end()
+
 crypto = require("crypto")
 async = require("async")
 express = require("express")
 knox = require("knox")
 s3 = module["exports"]
+
 client = knox.createClient(
     key: "AKIAJLU4UNM7TIOYH6HA"
     secret: "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"
     bucket: "thiscourse"
 )
+
 s3.client = client
+
+# attach the various HTTP verbs to the api path (for some reason this.all(...) doesn't work with this pattern)
 s3.router = ->
     @get "/", handle_s3_creds
-    @get "/uploaded_image", handle_uploaded_image
+    @get "/uploaded_image", handle_uploaded_file
+    @get "/file_redirect", handle_file_redirect
+    @get "/thumb_redirect", handle_thumb_redirect
 
 policy_params =
     key: "uploads/${filename}"

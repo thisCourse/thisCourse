@@ -1,7 +1,6 @@
 <html>
   <head>
     <title>S3 POST Form</title> 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
 
@@ -73,7 +72,7 @@
             var params = get_params()
             
             $('#message').text(params.message)
-            
+                        
             var uploader_params = {
             	// TODO: only flash is allowed for now, until thumbnail upload can be made to work in HTML5
                 runtimes : 'flash,', // 'html5,flash,silverlight',
@@ -97,7 +96,8 @@
 				container : 'container',
                 
 				filters : [
-					{title : "Image files", extensions : "jpg,gif,png"}
+					{title : "Image files", extensions : "jpg,gif,png"},
+                    {title : "Documents", extensions : "pdf,doc,docx,xls,xlsx,ppt,pptx,txt"}
 				],
 
                 //resize: {width : 800, height : 600, quality : 90},  // Resize images on clientside, if possible
@@ -142,7 +142,7 @@
 		
 			uploader.bind('FileUploaded', function(up, file, response) {
 				
-				try {
+				// try {
 				
 					response = $.parseXML(response.response) 
 					
@@ -151,15 +151,26 @@
 						url: response.getElementsByTagName("Location")[0].textContent,
 						etag: response.getElementsByTagName("ETag")[0].textContent.slice(1,-1)
 					}
-					
+                    
+                    var redirect = false
+                    
 					if (file.already_made_thumbnail) {
 						this.thumb = file_info
-						window.location = "http://beta.thiscourse.com/s3/uploaded_image?image_key=" + this.image.key + "&thumb_key="  + this.thumb.key
-						return
+						redirect = true
 					} else {
 						this.image = file_info
 					}
-					
+
+                    var extension = file_info.key.split(".").pop();
+                    
+                    if (extension !== 'jpg' && extension !== 'gif' && extension !== 'png') redirect = true;
+                    
+                    if (redirect) {
+                        var redirect_url = "http://" + document.referrer.split("/")[2] + "/s3/uploaded_image?image_key=" + this.image.key + (this.thumb ? "&thumb_key="  + this.thumb.key : "");
+                        window.location = redirect_url
+                        return                        
+                    }
+                    					
 					// upload the thumbnail version now, too
 					uploader_params.multipart_params.key = 'uploads/thumb-${filename}'
 					uploader_params.resize.width = 190
@@ -168,10 +179,10 @@
 					
 					uploader.trigger("UploadFile", file)
 				
-				} catch(err) {
-					console.log("Error:", err)
-					display_error(err.message, up)
-				}
+				// } catch(err) {
+				// 	console.log("Error:", err)
+				// 	display_error(err.message, up)
+				// }
 				
 				
 			})
@@ -184,7 +195,7 @@
   <body>  
 
 	<div id="container">
-		<div id="uploader"><span id="message"></span> [<a id="pickfiles" href="#">Upload image</a>]</div>
+		<div id="uploader"><span id="message"></span> [<a id="pickfiles" href="#">Upload file</a>]</div>
 		<div id="progressbar"><div id="progressbar-inner"><div id="progress">0%</div></div></div>
 	</div>
     

@@ -26,12 +26,12 @@
 <script id="fileview-template" type="text/x-handlebars-template">
     <div class='row-fluid file'>
         <div class='span2'>
-            {{#if thumburl}}<img class='thumbnail' src='{{thumburl}}' alt='Thumbnail' />
+            {{#if _id}}<img class='thumbnail' src='/s3/thumb_redirect?id={{ _id }}' alt='Thumbnail' />
             {{else}}<span class='label label-info'><i class='icon-{{type}} icon-white'></i></span>
             {{/if}}
         </div>
         <div class='span6 display'>
-            <h3><fn class='filename'>{{name}}</fn>
+            <h3><fn class='filename'>{{filename}}</fn>
                 <button class='btn btn-danger trash'>
                     <i class='icon-trash icon-white'></i>
                 </button>

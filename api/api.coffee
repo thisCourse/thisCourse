@@ -470,3 +470,4 @@ module.exports =
     JSONResponse: JSONResponse
     register_mongo_collection: register_mongo_collection
     initialize: initialize
+    db: db
