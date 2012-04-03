@@ -47,7 +47,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         navigate: (fragment) =>
             @fragment = fragment
             for name, subview of @subviews
-                return true if subview.navigate(@fragment)
+                #return true if subview.navigate(@fragment)
+                subview.navigate(@fragment) # TODO: test if it's inefficient to navigate on ALL THE THINGS
             return false
 
         add_lazy_subview: (options={}, callback) =>

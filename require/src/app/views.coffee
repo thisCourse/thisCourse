@@ -1,4 +1,4 @@
-define ["cs!base/views", "cs!course/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap"], (baseviews, courseviews, templates, bootstrap) ->
+define ["cs!base/views", "cs!course/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], (baseviews, courseviews, templates, bootstrap, styles) ->
 
     class RootView extends baseviews.BaseView
 
@@ -16,10 +16,14 @@ define ["cs!base/views", "cs!course/views", "hb!./templates.handlebars", "less!l
 
         initialize: ->
             @collection.bind "all", @render
-            # @render()
         
         render: =>
             @$el.html templates.top_tabs @context(root_url: @url)
         
+        navigate: (fragment) =>
+            @$("li.active").removeClass("active")
+            slug = fragment.split("/")[0]
+            @$("#toptab_" + slug).addClass("active")
+            
 
     return RootView: RootView

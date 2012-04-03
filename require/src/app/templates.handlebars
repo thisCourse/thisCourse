@@ -20,6 +20,6 @@
 
 <script id="top_tabs" type="text/x-handlebars-template">
     {{#each models}}
-    <li><a href="{{ ../root_url }}{{ attributes.slug }}">{{ attributes.title }}</a></li>
+    <li id="toptab_{{ attributes.slug }}"><a href="{{ ../root_url }}{{ attributes.slug }}">{{ attributes.title }}</a></li>
     {{/each}}
 </script>

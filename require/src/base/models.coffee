@@ -89,6 +89,7 @@ define ["cs!utils/formatters"], (formatters) ->
             return xhdr
 
         set: (attr, options) ->
+            # TODO: handle other input argument configurations (see backbone.js)
             attr = _.clone(attr)
             #clog "setting", attr, "on", @
             for key,opts of @relations

@@ -18,7 +18,9 @@ define ["cs!base/models", "cs!course/models", "cs!./router"], (basemodels, cours
         navigate: (url) =>
             if not url then return
             if url instanceof Function then url = url()
-            @set url: url
+            if url.slice(-1) isnt "/" then url += "/"
+            @set (url: url), (silent:true) # silent so that we don't trigger twice (see next)
+            @trigger "change:url", @, url # hack to make pushstate work well with back buttons
 
         start: ->
             @router.start()
@@ -27,8 +29,8 @@ define ["cs!base/models", "cs!course/models", "cs!./router"], (basemodels, cours
     class TabModel extends basemodels.LazyModel
         
         initialize: ->
-            if @get("slug") and @get("slug").slice(-1) isnt "/"
-                @set slug: @get("slug") + "/"
+            if @get("slug").slice?(-1) is "/"
+                @set slug: @get("slug").slice(0,-1)
         
     class TabCollection extends basemodels.LazyCollection
         model: TabModel
