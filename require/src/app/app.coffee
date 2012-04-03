@@ -7,7 +7,10 @@ define ["cs!utils/handlebars", "cs!./models", "cs!course/models"], \
         root_url: window.root_url? or (window.location.pathname.split("/")[1] + "/")
 
     # c = new (require("cs!course/models").CourseModel); c.save().success(function() { console.log(c.id); })
-    app.set 'course': new coursemodels.CourseModel(_id: course_id)
+    app.set course: new coursemodels.CourseModel(_id: course_id)
+    
+    app.get("tabs").add title: "Home", slug: "", priority: 0
+    app.get("tabs").add title: "Study", slug: "study", priority: 1
     
     app.get("course").fetch().success =>
         console.log "fetched!"

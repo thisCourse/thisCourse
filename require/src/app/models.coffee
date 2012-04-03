@@ -26,7 +26,13 @@ define ["cs!base/models", "cs!course/models", "cs!./router"], (basemodels, cours
 
     class TabModel extends basemodels.LazyModel
         
+        initialize: ->
+            if @get("slug") and @get("slug").slice(-1) isnt "/"
+                @set slug: @get("slug") + "/"
+        
     class TabCollection extends basemodels.LazyCollection
         model: TabModel
+        
+        comparator: => @get("priority")
 
     AppModel: AppModel
