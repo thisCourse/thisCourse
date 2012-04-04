@@ -46,7 +46,7 @@ class window.FileView extends BaseView
         @$el.find('.file').find('.display,.edit').addClass('editing')
 
 window.files = new FileCollection
-files.fetch()
+# files.fetch()
 
 class window.BrowseView extends BaseView
 
