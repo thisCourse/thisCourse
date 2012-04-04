@@ -9,7 +9,7 @@ class window.File extends Backbone.Model
 
 class window.FileCollection extends Backbone.Collection
     model: File
-    # url: "/api/file/?_course=" + course_id
+    # url: "/api/file/?_course=" + courseid
 
 
 class window.FileView extends BaseView
@@ -72,7 +72,7 @@ class window.BrowseView extends BaseView
         @tagfilter = null
         @collection.bind 'add', @render
         @render()
-        @collection.fetch()
+        # @collection.fetch()
 
     getUrlParam: (paramName) ->
         reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
