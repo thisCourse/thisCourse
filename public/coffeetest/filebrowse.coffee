@@ -9,7 +9,7 @@ class window.File extends Backbone.Model
 
 class window.FileCollection extends Backbone.Collection
     model: File
-    url: "/api/file/?_course=" + course_id
+    # url: "/api/file/?_course=" + course_id
 
 
 class window.FileView extends BaseView
