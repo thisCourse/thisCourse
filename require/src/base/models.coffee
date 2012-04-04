@@ -55,8 +55,14 @@ define ["cs!utils/formatters"], (formatters) ->
             clog "CHECKING IF LOADED", @, @includeInJSON==true, @_loaded
             @includeInJSON==true or @_loaded
 
-        constructor: ->
+        constructor: (attributes, options) ->
             # clog "CREATING LAZYMODEL INSTANCE", @
+            
+            if _.isString(attributes) # if a string is passed instead of an attributes object, assume it's the id and inflate it
+                new_attributes = {}
+                new_attributes[idAttribute] = attributes
+                attributes = new_attributes
+                
             @relations = @relations?() or @relations or {}
             for key,relation of @relations
                 if not (relation.model or relation.collection)
@@ -73,7 +79,7 @@ define ["cs!utils/formatters"], (formatters) ->
                 #     relations = relation.model.prototype.relations?() or relation.model.prototype.relations or {}
                 #     for relatedkey of relations
                 #         relation.includeInJSON.push relatedkey
-            super
+            super attributes, options
 
         fetch: =>
             if @loading
