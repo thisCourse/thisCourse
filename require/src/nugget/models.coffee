@@ -6,9 +6,9 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
             page:
                 model: pagemodels.PageModel
                 includeInJSON: false
-#            probes:
-#                collection: probemodels.ProbeCollection
-#                includeInJSON: ['_id']
+           probes:
+               collection: probemodels.ProbeCollection
+               includeInJSON: false
 
     class NuggetCollection extends basemodels.LazyCollection
 
