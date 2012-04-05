@@ -17,6 +17,8 @@ var RedisStore = require('connect-redis')(express)
 
 var auth = require("./auth")
 
+var analytics = require("./api/analytics.coffee")
+
 var courses = db.collection("courses")
 
 var settings = {
@@ -60,6 +62,8 @@ app.use('/backbone', express['static'](__dirname + '/backbone'))
 app.namespace('/api', api.router)
 app.namespace('/s3', s3.router)
 app.use('/require', express['static'](__dirname + '/require'))
+
+app.all('/analytics/', analytics.request_handler)
 
 app.get('/kirsh/*', function(request, response) {
   fs.readFile(__dirname + '/public/index.html', function(err,text) {

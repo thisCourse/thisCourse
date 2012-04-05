@@ -1,9 +1,8 @@
-http = require("http")
 mongoskin = require('mongoskin')
 #mongojs = require('mongojs')
 async = require('async')
 express = require("express")
-nodeStatic = require('node-static');
+nodeStatic = require('node-static')
 utils = require("./utils.coffee")
 Backbone = require("backbone")
 fs = require("fs")
