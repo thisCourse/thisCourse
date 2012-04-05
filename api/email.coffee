@@ -1,6 +1,6 @@
 postmark = require("postmark")("717c0cea-5b32-4fce-ae41-91cb38aa4f69")
 
-module.exports.send = (options) ->
+module.exports.send = (options, callback) ->
 
     options["From"] or= "help@thiscourse.com"
 
@@ -10,4 +10,4 @@ module.exports.send = (options) ->
     #     "TextBody": "Test Message"
     # }
 
-    postmark.send(options)
+    postmark.send(options, callback)
