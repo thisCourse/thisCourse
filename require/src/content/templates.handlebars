@@ -7,12 +7,14 @@
          <br/>
          <div class='sections row'></div>
          
+         <div class="editor-only">
              <select class="content-button add-section-type">
                  <option value="freeform">Freeform</option>
                  <option value="gallery">Gallery</option>
                  <option value="">Generic</option>
              </select>
              <button class="content-button add-button btn success">Add section</button>
+         </div>
 
          <div class="clearfix"></div>
     </div> 
@@ -23,12 +25,14 @@
 <script id="section" type="text/x-handlebars-template">
 
     <div class="section-inner">
-        <div class="section-button drag-button"></div>
+        <span class="editor-only"><div class="section-button drag-button"></div></span>
         <h3 class='sectiontitle'>{{ title }}</h3>
         <div class='items row'></div>
         
-        <button class="section-button add-button btn success">Add item</button>
-        <button class="section-button delete-button btn danger">X</button>
+        <div class="editor-only">
+            <button class="section-button add-button btn success">Add item</button>
+            <button class="section-button delete-button btn danger">X</button>
+        </div>
         
     </div>
 

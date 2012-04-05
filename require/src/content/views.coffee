@@ -156,11 +156,11 @@ define ["less!./styles", "cs!base/views", "cs!ui/dialogs/views", "cs!./models", 
 
         addItems: (model, coll) =>
             type = model.get("type") or @model.get("type") or "freeform"
-            itemviews = require("cs!content/items/" + type + "/views")
-            view = new itemviews.ItemView(model: model)
-            @add_subview model.cid, view, ".items"
-            if not model.id
-                view.edit()
+            require ["cs!content/items/" + type + "/views"], (itemviews) =>
+                view = new itemviews.ItemView(model: model)
+                @add_subview model.cid, view, ".items"
+                if not model.id
+                    view.edit()
 
         removeItems: (model, coll) =>
             @subviews[model.cid].$el.stop().show().fadeOut 300, =>

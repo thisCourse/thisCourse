@@ -1,8 +1,8 @@
 bcrypt = require "bcrypt"
 
-passwordHashes = {
-  kirsh: "$2a$10$sDH2lO4eiX7Xt7vzw93Qv.IvfCeX3Q2d9WVESPiaf33WaPFTlbSly"
-}
+passwordHashes =
+  admin: "$2a$10$61P6HLPBNICLZ0aszJGQ9u9QXOEP92nPwJ1PnmY3lmxPF0mO831mq"
+  test: "$2a$10$1MgFC7HUDuwKwh.1JNNeiOfYWl9xBR37dZgQyMTn91oFWLL6CM.C2"
 
 hash_password = (password, callback) ->
   bcrypt.gen_salt 10, (err, salt) ->
@@ -33,12 +33,15 @@ user_middleware = (options) ->
 
 hash = (req, res, next) ->
   password = req.body.password or req.query.password
-  hash_password password, (err, hash)->
-    res.end(hash)
+  if password
+    hash_password password, (err, hash)->
+      res.end hash
+  else
+    res.end "Error: password required"
 
 # TODO: require an explicit token for this (and logout) to prevent CSRF
 login = (req, res, next) ->
-  email = req.body.email or req.query.email or "kirsh" # TODO: remove "kirsh"
+  email = req.body.email or req.query.email
   password = req.body.password or req.query.password or ""
   req.session.user = ""
   if email and password
@@ -50,9 +53,9 @@ login = (req, res, next) ->
           req.session.email = email
           res.json {email: email, token: req.sessionID}
       else
-        res.json {error: "Login failed!"}
+        res.json {error: "Login failed!"}, 405
   else
-    res.end "Please specify an email address (and password)!"
+    res.json error: "Please specify an email address (and password)!", 400
 
 check = (req, res, next) ->
   res.json {email: req.session.email, token: req.sessionID}

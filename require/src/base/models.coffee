@@ -94,7 +94,19 @@ define ["cs!utils/formatters"], (formatters) ->
                 @_loaded = true
             return xhdr
 
-        set: (attr, options) ->
+        set: (key, value, options) ->
+
+            # following is taken from Backbone's set method, to allow for 2 or 3 input args
+            if _.isObject(key) or key == null
+                attr = key
+                options = value
+            else
+                attr = {}
+                attr[key] = value
+
+            if options?.unset
+                return super
+                
             # TODO: handle other input argument configurations (see backbone.js)
             attr = _.clone(attr)
             #clog "setting", attr, "on", @

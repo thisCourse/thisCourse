@@ -1,15 +1,25 @@
-define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], \
-        (baseviews, courseviews, spinnerviews, templates, bootstrap, styles) ->
+define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "cs!auth/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], \
+        (baseviews, courseviews, spinnerviews, authviews, templates, bootstrap, styles) ->
 
-    class RootView extends baseviews.BaseView
+    class AppView extends baseviews.BaseView
 
         el: "body"
+
+        initialize: ->
+            @model.get("user").bind "change:loggedIn", @loginChanged
+            @loginChanged()
+
+        loginChanged: =>
+            is_editor = @model.get("user").get("loggedIn") and @model.get("user").get("email")=="admin"
+            @$el.toggleClass "editable", is_editor
+            @$el.toggleClass "uneditable", not is_editor
 
         render: =>
             @$el.html templates.root @context()
             @add_subview "spinner", new spinnerviews.SpinnerView(visible: true)
             @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"
             @add_subview "toptabsview", new TopTabsView(collection: @model.get("tabs")), "#toptabs"
+            @add_subview "loginview", new authviews.LoginView(model: @model.get("user")), "#authbar"
 
     class TopTabsView extends baseviews.BaseView
 
@@ -28,4 +38,4 @@ define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "hb!./templat
             @$("#toptab_" + slug).addClass("active")
             
 
-    return RootView: RootView
+    return AppView: AppView

@@ -237,18 +237,10 @@ class MongoCollection
 
         callback()
 
-    permissionCheck: (callback) =>
-        if @req.method != "GET" and not @email and not @name=="test" # TODO: this will be more robust... :P
+    initialPermissionCheck: (callback) =>
+        console.log @req.method != "GET", not @email, not @name=="test"
+        if @req.method != "GET" and not @email and not (@name=="test") # TODO: this will be more robust... :P
             return callback new APIError("You must be logged in to do that!", 403)
-        callback()
-
-    # if no document is selected, handle the request as an action on the collection itself
-    handleDirectCollectionReference: (callback) =>
-        if @req.params.id==undefined # document id was not specified in url (i.e. referencing collection itself)
-            if @path.length # e.g. /api/courses/title/ (no id, but has sub-path)
-                return callback new APIError("Invalid URL (document ID not specified or in invalid format).", 405)
-            console.log "CALLING process_#{@req.method}_collection"
-            return @["process_#{@req.method}_collection"](callback)
         callback()
 
     # handle an api request
@@ -257,7 +249,7 @@ class MongoCollection
         console.log "REQUEST:", @req.method, @req.url, @path, @data
                 
         async.series [
-            @permissionCheck
+            @initialPermissionCheck
             @handleDirectCollectionReference # needs to happen before @retrieveDocumentById
             @retrieveDocumentById
             @expandModelsByPath
@@ -271,11 +263,19 @@ class MongoCollection
                 jsonresponse = new APIError("The database did not return a response!", 500)
             jsonresponse.send @res
 
+    # if no document is selected, handle the request as an action on the collection itself
+    handleDirectCollectionReference: (callback) =>
+        if @req.params.id==undefined # document id was not specified in url (i.e. referencing collection itself)
+            if @path.length # e.g. /api/courses/title/ (no id, but has sub-path)
+                return callback new APIError("Invalid URL (document ID not specified or in invalid format).", 405)
+            @type = @req.method + "_collection"
+            @finishProcessingRequest callback # TODO: this isn't the best, because if it doesn't call the callback with an object, we'll continue...
+        else
+            callback()
 
     finishProcessingRequest: (callback) =>
         console.log "CALLING process_" + @type
         @["process_" + @type](callback) # run the handler for this "type" (method + target field type)
-
 
     process_GET_collection: (callback) =>
         callback new APIError("The '#{ @name }' collection does not support GET queries.", 405)

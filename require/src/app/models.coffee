@@ -1,4 +1,5 @@
-define ["cs!base/models", "cs!course/models", "cs!./router"], (basemodels, coursemodels, router) ->
+define ["cs!base/models", "cs!course/models", "cs!auth/models", "cs!./router"], \
+        (basemodels, coursemodels, authmodels, router) ->
     
     class AppModel extends basemodels.LazyModel
                 
@@ -9,6 +10,8 @@ define ["cs!base/models", "cs!course/models", "cs!./router"], (basemodels, cours
             tabs:
                 collection: TabCollection
                 includeInJSON: true
+            user:
+                model: authmodels.UserModel
 
         initialize: (options={}) ->
             @router = new router.BaseRouter
