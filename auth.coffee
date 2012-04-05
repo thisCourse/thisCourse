@@ -52,9 +52,9 @@ get_user_password_hash = (email, callback) ->
 create_user = (email, password, callback) ->
     console.log "Creating user", email
     hash_password password, (err, passwordHash) =>
-        console.log "Password hashed:", passwordHash
+        # console.log "Password hashed:", passwordHash
         usercollection.save email: email, passwordHash: passwordHash, (err, user) =>
-            console.log "User saved:", user
+            # console.log "User saved:", user
             callback? err, user
 
 # TODO: require an explicit token for this (and logout) to prevent CSRF

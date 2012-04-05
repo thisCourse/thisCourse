@@ -10,8 +10,7 @@ students.forEach (email) =>
     shasum = crypto.createHash('sha1')
     shasum.update(email)
     password = shasum.digest("hex").slice(5,13)
-    auth.create_user email, password
-    console.log email, password
+    auth.create_user email, password, => console.log "User successfully created:", email, "(password:", password + ")"        
     body = """
         Dear student,
 

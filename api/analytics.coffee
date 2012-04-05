@@ -11,6 +11,7 @@ ObjectId = db.bson_serializer.ObjectID
 request_handler = (req, res) ->
     if not req.session.email then return res.json error: "Must be logged in", 403
     data = req.body
+    data.timestamp = new Date()
     data.email = req.session.email
     db.collection("pretest").save req.body, (err, obj) =>
         res.json obj
