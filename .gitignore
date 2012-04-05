@@ -6,3 +6,4 @@ public/templates.js
 require/build/
 require-test/build/
 *.pyc
+backbone (copy)/
