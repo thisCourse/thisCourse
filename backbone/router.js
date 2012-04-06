@@ -224,7 +224,7 @@ function make_link(el, url) {
 } 
 
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-4950843-5']);
+_gaq.push(['_setAccount', 'UA-4950843-6']);
 
 function ga_initialize() {
 	var ga = document.createElement('script');
