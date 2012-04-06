@@ -53,13 +53,13 @@ create_user = (email, password, callback) ->
     console.log "Creating user", email
     hash_password password, (err, passwordHash) =>
         # console.log "Password hashed:", passwordHash
-        usercollection.save email: email, passwordHash: passwordHash, (err, user) =>
+        usercollection.save email: email.toLowerCase(), passwordHash: passwordHash, (err, user) =>
             # console.log "User saved:", user
             callback? err, user
 
 # TODO: require an explicit token for this (and logout) to prevent CSRF
 login = (req, res, next) ->
-    email = req.body.email or req.query.email
+    email = req.body.email?.toLowerCase() or req.query.email?.toLowerCase()
     password = req.body.password or req.query.password or ""
     req.session.user = ""
     if email and password
