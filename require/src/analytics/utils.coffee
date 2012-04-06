@@ -1,7 +1,7 @@
 define [], () ->
 
     window._gaq = window._gaq || [];
-    _gaq.push(['_setAccount', 'UA-4950843-5']);
+    _gaq.push(['_setAccount', 'UA-4950843-6']);
     
     ga_initialize: ->
         ga = document.createElement("script")
