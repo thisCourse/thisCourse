@@ -125,7 +125,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         routes: =>
             "": => name: "pageview", view: pageviews.PageView, datasource: "model", key: "page"
-            "quiz/": => view: probeviews.ProbeView, datasource: "model", key: "probes"
+            "quiz/": => view: probeviews.ProbeView, datasource: "model", key: "probeset"
 
         initialize: ->
             console.log "NuggetBottomRouterView init"
