@@ -58,9 +58,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .answerbtn": "submitAnswer"
 
         render: =>
+            if not @model then return
             @subviews = {} #TODO: Hack to clear answer subviews on each question. Replace with Question subviews.
             @$el.html templates.probe @context()
-            $('.question').html @model.get('questiontext')
+            @$('.question').html @model.get('questiontext')
             for answer in @model.get('answers').models
                 @addAnswers answer, @model.get("answers")
             @timestamp_load = new Date
@@ -68,9 +69,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         initialize: =>
             # @collection.shuffle()
-            @inc = 0
-            @nextProbe()   
-            @model.get("answers").bind "add", @addAnswers
+            @$el.html "Please make sure you are logged in to continue. Refresh after login."
+            $.get '/analytics/', (inc) =>
+                @inc = parseInt(inc)
+                @nextProbe()   
             # @model.get("answers").bind "change", @toggleButton    
 
         # toggleButton: =>
@@ -84,7 +86,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @add_subview "answerview_"+model.id, new ProbeAnswerView(model: model), ".answerlist"
         
         nextProbe: =>
-            if @inc == @collection.length
+            if @inc >= @collection.length
                 @$el.html "It's over, it's finally over! Thank you for your participation."
                 return
             @model = @collection.at(@inc)
@@ -105,8 +107,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if response.answers.length == 0
                 alert "Please Select at least one answer"
                 return
-            $.post '/analytics/', response
-            @nextProbe()
+            $.post '/analytics/', response, =>
+                @nextProbe()
             
             
             
