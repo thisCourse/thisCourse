@@ -17,7 +17,7 @@ request_handler = (req, res) ->
         db.collection("pretest").save req.body, (err, obj) =>
             res.json obj
     else
-        db.collection("pretest").find(email: req.session.email, {limit:1, sort:[['inc', -1]]}).toArray (err, doc) =>
+        db.collection("pretest").find(email: req.session.email, {limit:1, sort:[['_id', -1]]}).toArray (err, doc) =>
             inc = doc.length and doc[0]?.inc or 0
             res.end inc.toString()
 module.exports =
