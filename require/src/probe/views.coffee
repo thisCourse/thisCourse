@@ -60,7 +60,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         render: =>
             if not @model then return
             @subviews = {} #TODO: Hack to clear answer subviews on each question. Replace with Question subviews.
-            @$el.html templates.probe @context()
+            @$el.html templates.probe @context(increment:@inc,total:@collection.length)
             @$('.question').html @model.get('questiontext')
             for answer in @model.get('answers').models
                 @addAnswers answer, @model.get("answers")
@@ -99,13 +99,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     'status': 'Correct!'
             #     'feedback':'Yes but no but, yes'
             # @add_subview "responseview", new ProbeResponseView(model: model), ".proberesponse"
+            if @$('.answerbtn').attr('disabled') then return
+            @$('.answerbtn').attr('disabled','disabled')
             responsetime = new Date - @timestamp_load
-            console.log responsetime
             response = probe: @model.id, type: "pretestresponse",answers:[],inc:@inc,responsetime:responsetime
             for key,subview of @subviews
                 if subview.$('.answer').hasClass('select') then response.answers.push subview.model.id
             if response.answers.length == 0
                 alert "Please Select at least one answer"
+                @$('.answerbtn').removeAttr('disabled')
                 return
             $.post '/analytics/', response, =>
                 @nextProbe()
