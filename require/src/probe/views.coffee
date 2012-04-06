@@ -58,34 +58,56 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .answerbtn": "submitAnswer"
 
         render: =>
+            @subviews = {} #TODO: Hack to clear answer subviews on each question. Replace with Question subviews.
             @$el.html templates.probe @context()
             $('.question').html @model.get('questiontext')
             for answer in @model.get('answers').models
-                @addAnswers answer, @model.get("answers")   
+                @addAnswers answer, @model.get("answers")
+            @timestamp_load = new Date
             
         
         initialize: =>
-            @collection.shuffle()
+            # @collection.shuffle()
             @inc = 0
             @nextProbe()   
-            @model.get("answers").bind "add", @addAnswers    
+            @model.get("answers").bind "add", @addAnswers
+            # @model.get("answers").bind "change", @toggleButton    
 
-
+        # toggleButton: =>
+        #     for subview of @subviews
+        #         if @$.hasClass('select')
+        #         $('.answerbtn').Class('disabled')
+        #     else:
+        #         $('.answerbtn').removeClass('disabled')
+            
         addAnswers: (model, coll) =>
             @add_subview "answerview_"+model.id, new ProbeAnswerView(model: model), ".answerlist"
-                    
-        submitAnswer: =>
-            alert "Going to the server now!"
-            model = new Backbone.Model
-                'status': 'Correct!'
-                'feedback':'Yes but no but, yes'
-            @add_subview "responseview", new ProbeResponseView(model: model), ".proberesponse"
-            
+        
         nextProbe: =>
+            if @inc == @collection.length
+                @$el.html "It's over, it's finally over! Thank you for your participation."
+                return
             @model = @collection.at(@inc)
             @model.fetch()
             @model.bind "change", @render
             @inc += 1
+                    
+        submitAnswer: =>
+            # model = new Backbone.Model
+            #     'status': 'Correct!'
+            #     'feedback':'Yes but no but, yes'
+            # @add_subview "responseview", new ProbeResponseView(model: model), ".proberesponse"
+            responsetime = new Date - @timestamp_load
+            console.log responsetime
+            response = probe: @model.id, type: "pretestresponse",answers:[],inc:@inc,responsetime:responsetime
+            for key,subview of @subviews
+                if subview.$('.answer').hasClass('select') then response.answers.push subview.model.id
+            if response.answers.length == 0
+                alert "Please Select at least one answer"
+                return
+            $.post '/analytics/', response
+            @nextProbe()
+            
             
             
     class ProbeAnswerView extends baseviews.BaseView
@@ -94,19 +116,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .answer" : "selectAnswer"
         
         render: =>
-            console.log "There are four LIGHTS!"
+            # console.log "There are four LIGHTS!"
             @$el.html templates.probe_answer @context()
         
             
         selectAnswer: =>
-            @parent.$('.answer').not(@$('.answer')).removeClass('select')
             @$('.answer').toggleClass('select')
-            if @parent.selected == @model
-                @parent.$('.answerbtn').addClass('disabled')
-                @parent.selected = null
-            else
-                @parent.$('.answerbtn').removeClass('disabled')
-                @parent.selected = @model
 
     class ProbeResponseView extends baseviews.BaseView
         
