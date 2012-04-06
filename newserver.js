@@ -121,9 +121,9 @@ app.get('/', function(request, response) {
     // res.send(data)
 // })
 
-// app.get("*", function(req, res) {
-// 	res.redirect("/ucsd/cogs187a/wi12/")
-// })
+app.get("/course", function(req, res) {
+ 	res.redirect("/course/")
+})
 
 var server = express.createServer(
   //express.logger(), // Log responses to the terminal using Common Log Format.
