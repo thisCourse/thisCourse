@@ -1,5 +1,10 @@
 Backbone.Model.prototype.idAttribute = "_id"
 
+Handlebars.registerHelper ('ellipsis'), (filename) ->
+    if filename.length < 11 then return filename
+    ellided = filename.substring 0,9
+    ellided += '...'
+
 filetypes =
     "picture": ["jpg", "png", "gif"]
     "file": ["pdf", "txt", "doc", "xls", "ppt", "docx", "xlsx", "pptx", "rtf"]
@@ -27,7 +32,8 @@ class window.FileView extends BaseView
 
     className: 'FileView'
 
-    template = Handlebars.compile($('#fileview-template').html())
+    template = Handlebars.compile $('#fileview-template').html()
+
 
     events:
         'click .trash': 'clear'
