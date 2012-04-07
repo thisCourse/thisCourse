@@ -15,6 +15,7 @@ define ["cs!./views", "cs!analytics/utils"], (views, analyticsutils) ->
                 model: @app
             @appview.render()
             @route @root_url + "*splat", "delegate_navigation", (splat) =>
+                # alert @root_url + splat
                 if splat.length > 0 and splat.slice(-1) isnt "/" # if the trailing slash was omitted, redirect
                     @app.set url: @root_url + splat + "/"
                 else

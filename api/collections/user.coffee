@@ -4,7 +4,7 @@ requirejs = require("../requirejs.coffee")
 requirejs ['cs!auth/models'], (models) =>
 
     class UserMongoCollection extends api.MongoCollection
-        name: 'file'
+        name: 'user'
         Model: models.UserModel
         Collection: models.UserCollection
 

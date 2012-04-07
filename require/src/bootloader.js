@@ -13,6 +13,14 @@ config = {
     baseUrl: "."
 }
 
+// from http://code.google.com/p/fbug/source/browse/branches/firebug1.5/lite/firebugx.js (to prevent cases, e.g. FF, with no console)
+if (!window.console) {
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    window.console = {};
+    for (var i = 0; i < names.length; ++i)
+        window.console[names[i]] = function() {}
+}
+
 if (environ==="DEPLOY") {
 	config.baseUrl = "/require/build"
 } else {
