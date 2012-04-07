@@ -1,16 +1,27 @@
 Backbone.Model.prototype.idAttribute = "_id"
 
-class window.File extends Backbone.Model
-    defaults:
-        name:"file"
-        fileurl: "picture.jpg"
-        type: "picture"
+filetypes =
+    "picture": ["jpg", "png", "gif"]
+    "file": ["pdf", "txt", "doc", "xls", "ppt", "docx", "xlsx", "pptx", "rtf"]
 
+class window.File extends Backbone.Model
+    
+    url: => '/api/file/' + @id
+    
+    initialize: ->
+        for type, extensions of filetypes
+            if @get("extension") in extensions
+                @set type: type
+                break
 
 class window.FileCollection extends Backbone.Collection
     model: File
-    # url: "/api/file/?_course=" + courseid
+    url: => '/api/file?_course=' + getUrlParam('courseid')
 
+getUrlParam = (paramName) ->
+    reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
+    match = window.location.search.match(reParam)
+    if match and match.length > 1 then match[1] else null
 
 class window.FileView extends BaseView
 
@@ -28,7 +39,7 @@ class window.FileView extends BaseView
         @model?.bind 'destroy', @close
 
     render:=>
-        @$el.append(template(@model.toJSON()))
+        @$el.append(template(_.extend @model.toJSON(), is_image: @model.get("type")=="picture"))
 
     clear:=>
         @model.destroy()
@@ -60,23 +71,16 @@ class window.BrowseView extends BaseView
         'click button#select': 'chooseFile'
 
     initialize: =>
-        @funcNum = @getUrlParam('CKEditorFuncNum')
-        @courseid = @getUrlParam('courseid')
-        @typefilter = @getUrlParam('typefilter')
-        @collection = url: '../../api/file?_course='+@courseid
-        # @collection.fetch()
-        @typefilter?= 'all'
+        @funcNum = getUrlParam('CKEditorFuncNum')
+        @typefilter = getUrlParam('typefilter')
+        @collection.bind 'add', @render
+        @typefilter = 'all'
         @filteredcollection = @collection.filter (file) ->
             file.get('type') == @typefilter
         @tagfilter = null
-        @collection.bind 'add', @render
-        @render()
+        @collection.fetch().success =>
+            @render()
         #@collection.fetch()
-
-    getUrlParam: (paramName) ->
-        reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
-        match = window.location.search.match(reParam)
-        if match and match.length > 1 then match[1] else null
 
     render: =>
         @$el.html template()
@@ -138,4 +142,4 @@ class window.BrowseView extends BaseView
                 self.$("iframe.uploader").attr("src", url))
         
 window.filebrowse = new BrowseView
-    # collection: $.get("../../api/file")
+    collection: new FileCollection

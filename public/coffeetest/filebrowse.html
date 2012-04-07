@@ -26,7 +26,7 @@
 <script id="fileview-template" type="text/x-handlebars-template">
     <div class='row-fluid file'>
         <div class='span2'>
-            {{#if _id}}<img class='thumbnail' src='/s3/thumb_redirect?id={{ _id }}' alt='Thumbnail' />
+            {{#if is_image }}<img class='thumbnail' src='/s3/thumb_redirect?id={{ _id }}' alt='Thumbnail' />
             {{else}}<span class='label label-info'><i class='icon-{{type}} icon-white'></i></span>
             {{/if}}
         </div>
