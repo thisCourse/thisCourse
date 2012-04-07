@@ -11,6 +11,7 @@ requirejs ['cs!file/models'], (models) =>
         process_GET_collection: (callback) =>
             query = @req.query
             console.log query
+            delete query._
             @collection.find(query).toArray? (err, docs) =>
                 if err then return callback new api.APIError("No matching documents found", 404)
                 return callback new (api.JSONResponse)(docs)

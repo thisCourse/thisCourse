@@ -45,9 +45,6 @@ class window.FileView extends BaseView
     editName:->
         @$el.find('.file').find('.display,.edit').addClass('editing')
 
-window.files = new FileCollection
-# files.fetch()
-
 class window.BrowseView extends BaseView
 
     className: 'BrowseView'
@@ -66,13 +63,15 @@ class window.BrowseView extends BaseView
         @funcNum = @getUrlParam('CKEditorFuncNum')
         @courseid = @getUrlParam('courseid')
         @typefilter = @getUrlParam('typefilter')
+        @collection = url: '../../api/file?_course='+@courseid
+        # @collection.fetch()
         @typefilter?= 'all'
         @filteredcollection = @collection.filter (file) ->
             file.get('type') == @typefilter
         @tagfilter = null
         @collection.bind 'add', @render
         @render()
-        # @collection.fetch()
+        #@collection.fetch()
 
     getUrlParam: (paramName) ->
         reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i')
@@ -139,4 +138,4 @@ class window.BrowseView extends BaseView
                 self.$("iframe.uploader").attr("src", url))
         
 window.filebrowse = new BrowseView
-    collection: files
+    # collection: $.get("../../api/file")
