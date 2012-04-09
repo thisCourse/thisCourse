@@ -59,8 +59,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         render: =>
             @$el.html "<div class='navigation'></div><div class='body'></div>"
-            @add_subview "nav", (window.nav = new NuggetLectureNavRouterView), ".navigation"
+            @add_subview "nav", new NuggetLectureNavRouterView, ".navigation"
             @add_subview "body", new NuggetTestRouterView, ".body"
+            @subviews.nav.addItem "", "Home"
+            @subviews.nav.addItem "hello"
+            @subviews.nav.addItem "bye"
     
     class NuggetLectureNavRouterView extends baseviews.NavRouterView
         

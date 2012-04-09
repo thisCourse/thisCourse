@@ -289,8 +289,10 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             for model in @collection.models
                 html += "<#{@childTagName} title='#{model.get('tooltip')}'><a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
             @$el.html html
+            @navigate @subfragment
 
         navigate: (fragment) =>
+            @subfragment = fragment
             @$("a").removeClass "active"
             path = @url + fragment
             selected = null
