@@ -1,8 +1,8 @@
 Backbone.Model.prototype.idAttribute = "_id"
 
 Handlebars.registerHelper ('ellipsis'), (filename) ->
-    if filename.length < 11 then return filename
-    ellided = filename.substring 0,9
+    if filename.length < 19 then return filename
+    ellided = filename.substring 0,15
     ellided += '...'
 
 filetypes =
@@ -80,7 +80,7 @@ class window.BrowseView extends BaseView
         @funcNum = getUrlParam('CKEditorFuncNum')
         @typefilter = getUrlParam('typefilter')
         @collection.bind 'add', @render
-        @typefilter = 'all'
+        @typefilter ?= 'all'
         @filteredcollection = @collection.filter (file) ->
             file.get('type') == @typefilter
         @tagfilter = null
