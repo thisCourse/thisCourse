@@ -7,6 +7,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             #"": => view: LectureListView, datasource: "collection"
             "": => view: NuggetListView, datasource: "collection"
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
+            "lecture/": => view: NuggetLectureTestView, datasource: "collection"
             #"lecture/:lectureid": (lectureid) => view: LectureView, datasource: "collection", key: lectureid
 
         initialize: ->
@@ -53,9 +54,30 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
             #     opacity: 0.6
             #     tolerance: "pointer"
+
+    class NuggetLectureTestView extends baseviews.BaseView
+            
+        render: =>
+            @$el.html "<div class='navigation'></div><div class='body'></div>"
+            @add_subview "nav", (window.nav = new NuggetLectureNavRouterView), ".navigation"
+            @add_subview "body", new NuggetTestRouterView, ".body"
+    
+    class NuggetLectureNavRouterView extends baseviews.NavRouterView
+        
+        pattern: ":lecture_id/"
+    
+    class NuggetTestRouterView extends baseviews.RouterView
+        
+        routes: =>
+            "": (lecture_id) => view: NuggetTestView, lecture: "Home"
+            ":lecture_id/": (lecture_id) => view: NuggetTestView, lecture: lecture_id
+        
+    class NuggetTestView extends baseviews.BaseView
+        
+        render: =>
+            @$el.html "I am lecture '#{@options.lecture}'."
             
     class NuggetLectureRouterView extends baseviews.RouterView
-            
         
         render: =>
             @$el.html templates.nugget_space @context(@lecturelist)

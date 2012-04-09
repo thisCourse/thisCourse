@@ -53,11 +53,11 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         add_lazy_subview: (options={}, callback) =>
 
-            if not options.datasource then throw Error("You must specify a datasource ('model' or 'collection') when calling add_lazy_subview:", @)
+            #if not options.datasource then throw Error("You must specify a datasource ('model' or 'collection') when calling add_lazy_subview:", @)
             
             if not options.view
                 clog @, options
-                throw Error("You must specify a view class when calling add_lazy_subview:")
+                throw Error("You must specify a view class when calling add_lazy_subview")
             
             if options.datasource is "model" and @model not instanceof Backbone.Model
                 throw Error("The parent view must already have @model instantiated when add_subview called with datasource 'model':", @)
@@ -65,7 +65,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             if options.datasource is "collection" and @collection not instanceof Backbone.Collection
                 throw Error("The parent view must already have @collection instantiated when add_subview called with datasource 'collection'", @)
             
-            viewoptions = options.viewoptions?.slice?(0) or {}
+            # use any remaining options passed in as options for the view
+            viewoptions = _.clone options
+            delete viewoptions[key] for key in ['datasource', 'view', 'key']
             
             subview_created = false
             
@@ -73,33 +75,35 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 if subview_created then return # TODO: could unbind after success, instead of doing this check here            
                 if options.key # if a key was specified, we need to descend
                     obj = @[options.datasource]?.get?(options.key)
-                else # otherwise, we pass the whole model/collection along from the parent view
+                else if options.datasource # otherwise, we pass the whole model/collection along from the parent view
                     obj = @[options.datasource]                
-                if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
-
-                    do_create_subview = =>
-                        subview = new options.view(viewoptions)
-                        subview.url = options.url if options.url
-                        @add_subview options.name, subview, options.target
-                        subview_created = true
-                        callback?(subview)
-                        $("body").removeClass("wait")
+                else # no datasource specified
+                    obj = null
                     
-                    if obj instanceof Backbone.Model
-                        viewoptions.model = obj
-                        if not obj.loaded() # do the lazy loading of the view we're passing down into the view
-                            console.log "showing spinner for", @
-                            $("body").addClass("wait")
-                            xhdr = obj.fetch()
-                            if xhdr?.success # TODO: fix this stuff up so it doesn't check so many times
-                                xhdr.success do_create_subview
-                            else
-                                do_create_subview()
+                #if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
+
+                do_create_subview = =>
+                    subview = new options.view(viewoptions)
+                    @add_subview options.name, subview, options.target
+                    subview_created = true
+                    callback?(subview)
+                    $("body").removeClass("wait")
+                
+                if obj instanceof Backbone.Model
+                    viewoptions.model = obj
+                    if not obj.loaded() # do the lazy loading of the view we're passing down into the view
+                        console.log "showing spinner for", @
+                        $("body").addClass("wait")
+                        xhdr = obj.fetch()
+                        if xhdr?.success # TODO: fix this stuff up so it doesn't check so many times
+                            xhdr.success do_create_subview
                         else
                             do_create_subview()
-                    else # it's a collection
-                        viewoptions.collection = obj
+                    else
                         do_create_subview()
+                else # it's a collection
+                    viewoptions.collection = obj
+                    do_create_subview()
 
             create_subview_if_ready()
             
@@ -216,7 +220,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         
         navigate: (fragment) =>
 
-            console.log "NAV", @
+            # console.log "NAV", @
 
             # check if fragment matches any of our routes
             for handler in @handlers
@@ -254,6 +258,50 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
             return false
 
+    class NavRouterView extends BaseView
+
+        tagName: "ul"
+        childTagName: "li"
+        
+        initialize: ->
+            @collection or= new Backbone.Collection
+
+        createUrl: (slugs) =>
+            if slugs instanceof Backbone.Model
+                slugs = slugs.get("slug") or slugs.get("slugs") or ""
+            url = @url + @pattern
+            if _.isString(slugs) then slugs = [slugs]
+            for slug in slugs
+                url = url.replace(/:\w+/, slug)
+            url = url.replace(/:\w+\/$/, "") # remove any residual (unmatched) trailing slug
+            url = url.replace("//", "/")
+            return url
+
+        addItem: (slug, title, tooltip="") =>
+            @collection.add
+                slug: slug
+                title: title or (slug.substr(0,1).toUpperCase() + slug.substr(1))
+                tooltip: tooltip
+            @render()
+        
+        render: =>
+            html = ""
+            for model in @collection.models
+                html += "<#{@childTagName} title='#{model.get('tooltip')}'><a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
+            @$el.html html
+
+        navigate: (fragment) =>
+            @$("a").removeClass "active"
+            path = @url + fragment
+            selected = null
+            for a in @$("a")
+                if path.slice(0, a.pathname.length) == a.pathname # link's url is a prefix of path being navigated
+                    if not selected or a.pathname.length > selected.pathname.length # only select link if its url is longer
+                        selected = a
+            if selected
+                $(selected).addClass "active"
+
 
     BaseView: BaseView
     RouterView: RouterView
+    NavRouterView: NavRouterView
