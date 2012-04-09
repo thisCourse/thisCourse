@@ -27,7 +27,7 @@ if (environ==="DEPLOY") {
 	config.baseUrl = "/require/src"
 }
 
-//if (window.less) less.env = "production"
+if (window.less) less.env = "production"
 
 require.config(config)
 
