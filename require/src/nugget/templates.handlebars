@@ -1,9 +1,7 @@
 <script id="nugget" type="text/x-handlebars-template">
     
     <div class="nugget-top"></div>
-
     <hr/>
-
     <div class="nugget-bottom"></div>
     
 </script>
@@ -46,10 +44,9 @@
     
 </script>
 
-<script id="nugget_space" type="text/x-handlebars-template">
+<script id="nugget_lecture_list" type="text/x-handlebars-template">
 
     <div id='studyapp' class='container'>
-    <div id='clusterview' class='view hidden'></div>
     <div id='lectureview' class='view'>
         <ul class='nav nav-pills'>
             {{#each lecture}}
@@ -57,45 +54,17 @@
             {{/each}}
         </ul>
     </div>
+
 </div>
 
 </script>
-
-<script id='nugget_space_cluster' type="text/x-handlebars-template">
-
-
-        <div class='tabbable'>
-                <ul class='nav nav-tabs'>
-                    {{#each cluster}}
-                    <li id='{{cluster}}'><a href='#{{cluster}}' data-toggle='tab'>{{title}}</a></li>
-                    {{/each}}
-                </ul>
-                <div class='btn-group'>
-                <button class='btn btn-large btn-success lecturelink'>Lecture View</button>    
-                </div>
-                <div class='tab-content'>
-                    {{#each cluster}}
-                    <div class='tab-pane' id='{{cluster}}'>
-                        <ul class='nav nav-pills'>
-                            {{#each nugget}}
-                            <li><a href='/course/study/{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{title}}</a></li>
-                            {{/each}}
-                        </ul>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-        
-        
-</script>
-
 
 <script id='filtered_nugget_list' type="text/x-handlebars-template">
 
     <hr/>
     <ul class='nav nav-pills'>
         {{#each nuggets}}
-        <li><a href='../../../../{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{attributes.title}}</a></li>
+        <li><a href='../../../../{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}} unclaimed'>{{attributes.title}}</a></li>
         {{/each}}
     </ul>
 

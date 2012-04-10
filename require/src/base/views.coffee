@@ -178,14 +178,6 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         mementoRestore: =>
             @memento?.restore()
-
-        # resolveLazyRefs: =>
-        #     if @resolved then return false # if it's already been resolved, don't try again
-        #     if @model instanceof LazyRef and (object = @model.resolve(@parent))
-        #         @model = object # point our model to the resolved model from the parent
-        #     else if @collection instanceof LazyRef and (object = @collection.resolve(@parent))
-        #         @collection = object # point our collection to the resolved collection from the parent
-        #     @resolved = true # either we didn't find any LazyRefs or we've resolved them; return and set true
             
     class RouterView extends BaseView
         
@@ -295,7 +287,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         navigate: (fragment) =>
             @subfragment = fragment
-            @$("a").removeClass "active"
+            @$("a, " + @childTagName).removeClass "active"
             console.log @url, fragment
             path = @url + fragment
             if not path then return # TODO: why is this needed? (was getting called with @url and fragment both undefined)
@@ -306,6 +298,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                         selected = a
             if selected
                 $(selected).addClass "active"
+                $(selected).parents(@childTagName).first().addClass "active"
+                
 
 
     BaseView: BaseView

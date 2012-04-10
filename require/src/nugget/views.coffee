@@ -60,7 +60,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
             
         render: =>
-            @$el.html templates.nugget_space @context(@lecturelist)
+            @$el.html templates.nugget_lecture_list @context(@lecturelist)
             
         initialize: =>
             @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed'} for lecture, lect of hardcode.knowledgestructure)}
@@ -82,12 +82,12 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             html = "<h2>Lecture #{Number(@options.lecture.slice(1))}: #{hardcode.knowledgestructure[@options.lecture].title}</h2>"
             @$el.html html + "<div class='navigation'></div><div class='body'></div>"
-            @add_subview "top", new LectureTopView(lecture: @options.lecture), ".navigation"
+            @add_subview "top", new ClusterListView(lecture: @options.lecture), ".navigation"
             @add_subview "bottom", new LectureBottomView(collection: @collection, lecture: @options.lecture), ".body"
     
-    class LectureTopView extends baseviews.NavRouterView
+    class ClusterListView extends baseviews.NavRouterView
         
-        className: "nav nav-tabs"
+        className: "nav"
         
         pattern: "cluster/:cluster_id/"
         
@@ -114,32 +114,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                      @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
 
     
-    class NuggetSpaceClusterView extends baseviews.BaseView
-        
-        events:
-            "click .lecturelink" : "lectureView"        
-        
-        render: =>
-            @$el.html templates.nugget_space_cluster @context(@clusterlist)
-            @$('#C01').addClass('active')
-            
-        initialize: =>
-            @clusterlist = {cluster:({title: title, cluster: cluster} for cluster, title of @options.clusters.clusters)}
-            for cluster in @clusterlist.cluster
-                nuggetcollection = @collection.filter (model) => 
-                    cluster.cluster in (model.get('tags') or [])
-                cluster.nugget = nuggetcollection
-            @render
-            
-        lectureView: (ev) =>
-            lecture = ev.target.id
-            @$el.toggleClass('hidden')
-            @parent.$(".view").toggleClass('hidden')
-            
-
-
-
-
 
 
 
