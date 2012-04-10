@@ -33,7 +33,7 @@
                 }
                 &.select {
                     font-weight:bold;
-                    color: #FF2222;
+                    color: #2222FF;
                 }
                 div.answertext{
                     display:inline;
@@ -42,11 +42,15 @@
                     }
                 }
                 div.checkorcross {
-                    float: right;
+                    float: left;
                     display:inline;
                     font-size: 32px;
+                    margin-left: -32px;
                     .check {
                         color:#22FF22;
+                    }
+                    .cross {
+                        color:#FF2222;
                     }
                 }
             }
@@ -61,6 +65,9 @@
 
 div .feedback {
     display: none;
+    color: #111111;
+    padding-top:10px;
+    font-style:italic;
     
 }
 

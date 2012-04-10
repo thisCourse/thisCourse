@@ -94,7 +94,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 return
             # $.post '/analytics/', response, =>
             @$('.answerbtn').slideToggle()
-            @subviews.probeview.answered()
+            response = new Backbone.Model
+                overallcorrect:'Incorrect'
+                probe:@model
+            @subviews.probeview.answered(response)
                   
     
     
@@ -115,17 +118,19 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         addAnswers: (model, coll) =>
             @add_subview "answerview_"+model.id, new ProbeAnswerView(model: model), ".answerlist"
         
-        answered: =>
-            @$('.questionstatus').append(@model.get('questionstatus'))
+        answered: (response)=>
+            @model = response.get('probe')
+            @$('.questionstatus').append(response.get('overallcorrect'))
             @$('.nextquestion').slideToggle()
-            if @model.get('feedback')
-                @addFeedback()
             for key,subview of @subviews
                 subview.showFeedback()
+            if @model.get('feedback')
+                @feedback = true
+                @addFeedback()
+            if @feedback then @$('#feedbut').slideToggle()
             
         addFeedback: =>
             @$('.feedback').append(@model.get('feedback'))
-            @$('#feedbut').slideToggle()
             
         showFeedback: =>
             @$('.feedback').slideToggle()
@@ -149,22 +154,24 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @selected = not @selected
             
         showFeedback: =>
-            console.log 'Feedback!'
             if @model.get('correct')
                 @$('.answertext').addClass('showing')
-            console.log @selected,@model.get('correct')
+                if @model.get('feedback')
+                    @$('.feedback').append(@model.get('feedback'))
+                    @parent.feedback = true
             if @selected then @addFeedback()
+
         
         addFeedback: =>
-            console.log 'No feedback?',@model.get('correct')
             if @model.get('correct') 
                 checkorcross = '<span class="check">&#10003;</span>'
             else
                 checkorcross = '<span class="cross">&#10005;</span>'
+                if @model.get('feedback')
+                    @$('.feedback').append(@model.get('feedback'))
+                    @parent.feedback = true
             @$('.checkorcross').append(checkorcross)
-            if @model.get('feedback')
-                @$('.feedback').append(@model.get('feedback'))
-                @$('feedback').slideToggle()
+
 
 
     class ProbeEditView extends baseviews.BaseView
