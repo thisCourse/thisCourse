@@ -61,9 +61,9 @@ app.use('/backbone', express['static'](__dirname + '/backbone'))
 // express routing
 app.namespace('/api', api.router)
 app.namespace('/s3', s3.router)
-app.use('/require', express['static'](__dirname + '/require'))
+app.namespace('/analytics', analytics.router)
 
-app.all('/analytics/', analytics.request_handler)
+app.use('/require', express['static'](__dirname + '/require'))
 
 app.get('/kirsh/*', function(request, response) {
   fs.readFile(__dirname + '/public/index.html', function(err,text) {
