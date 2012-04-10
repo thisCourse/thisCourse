@@ -5,10 +5,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         routes: =>
             #"": => view: LectureListView, datasource: "collection"
-            "": => view: NuggetListView, datasource: "collection"
+            "": => view: LectureListView, datasource: "collection"
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
-            "lecture/": => view: NuggetLectureTestView, datasource: "collection"
-            #"lecture/:lectureid": (lectureid) => view: LectureView, datasource: "collection", key: lectureid
+            "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
 
         initialize: ->
             console.log "NuggetRouterView init"
@@ -55,36 +54,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             #     opacity: 0.6
             #     tolerance: "pointer"
 
-    class NuggetLectureTestView extends baseviews.BaseView
-            
-        render: =>
-            @$el.html "<div class='navigation'></div><div class='body'></div>"
-            @add_subview "nav", new NuggetLectureNavRouterView, ".navigation"
-            @add_subview "body", new NuggetTestRouterView, ".body"
-            @subviews.nav.addItem "", "Home"
-            @subviews.nav.addItem "hello"
-            @subviews.nav.addItem "bye"
-    
-    class NuggetLectureNavRouterView extends baseviews.NavRouterView
-        
-        pattern: ":lecture_id/"
-    
-    class NuggetTestRouterView extends baseviews.RouterView
+    class LectureListView extends baseviews.RouterView
         
         routes: =>
-            "": (lecture_id) => view: NuggetTestView, lecture: "Home"
-            ":lecture_id/": (lecture_id) => view: NuggetTestView, lecture: lecture_id
-        
-    class NuggetTestView extends baseviews.BaseView
-        
-        render: =>
-            @$el.html "I am lecture '#{@options.lecture}'."
+            "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
             
-    class NuggetLectureRouterView extends baseviews.RouterView
-        
         render: =>
             @$el.html templates.nugget_space @context(@lecturelist)
-
             
         initialize: =>
             @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed'} for lecture, lect of hardcode.knowledgestructure)}
@@ -101,9 +77,42 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             console.log clustercollection
             @add_subview "clusterview", new NuggetSpaceClusterView(collection: @lecturecollection, clusters: clustercollection), ".clusterview"    
                 
-                
-    class NuggetLectureView extends baseviews.RouterView
+    class LectureView extends baseviews.BaseView
+        
+        render: =>
+            html = "<h2>Lecture #{Number(@options.lecture.slice(1))}: #{hardcode.knowledgestructure[@options.lecture].title}</h2>"
+            @$el.html html + "<div class='navigation'></div><div class='body'></div>"
+            @add_subview "top", new LectureTopView(lecture: @options.lecture), ".navigation"
+            @add_subview "bottom", new LectureBottomView(collection: @collection, lecture: @options.lecture), ".body"
     
+    class LectureTopView extends baseviews.NavRouterView
+        
+        className: "nav nav-tabs"
+        
+        pattern: "cluster/:cluster_id/"
+        
+        initialize: ->
+            for id, name of hardcode.knowledgestructure[@options.lecture].clusters
+                @addItem id, name
+    
+    class LectureBottomView extends baseviews.RouterView
+        
+        routes: =>
+            "cluster/:cluster_id/": (cluster_id) => view: FilteredNuggetListView, datasource: "collection", cluster: cluster_id, lecture: @options.lecture
+
+    class FilteredNuggetListView extends baseviews.BaseView
+        
+        initialize: =>
+            @collection.bind "add", @render # TODO: this is going to be called a LOT
+        
+        render: =>
+            #alert "waaaaa"
+            # @$el.html "Nuggs: " + @collection.length + " " + @options.lecture + " " + @options.cluster
+            @$el.html templates.filtered_nugget_list
+                  nuggets: @collection.models.filter (nugget) =>
+                     if not nugget.attributes.tags then return false
+                     @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
+
     
     class NuggetSpaceClusterView extends baseviews.BaseView
         
@@ -127,6 +136,42 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @$el.toggleClass('hidden')
             @parent.$(".view").toggleClass('hidden')
             
+
+
+
+
+
+
+
+
+    # class NuggetLectureTestView extends baseviews.BaseView
+            
+    #     render: =>
+    #         @$el.html "<div class='navigation'></div><div class='body'></div>"
+    #         @add_subview "nav", new NuggetLectureNavRouterView, ".navigation"
+    #         @add_subview "body", new NuggetTestRouterView, ".body"
+    #         @subviews.nav.addItem "", "Home"
+    #         @subviews.nav.addItem "hello"
+    #         @subviews.nav.addItem "bye"
+                
+    # class NuggetLectureNavRouterView extends baseviews.NavRouterView
+        
+    #     pattern: ":lecture_id/"
+    
+    # class NuggetTestRouterView extends baseviews.RouterView
+        
+    #     routes: =>
+    #         "": (lecture_id) => view: NuggetTestView, lecture: "Home"
+    #         ":lecture_id/": (lecture_id) => view: NuggetTestView, lecture: lecture_id
+        
+    # class NuggetTestView extends baseviews.BaseView
+        
+    #     render: =>
+    #         @$el.html "I am lecture '#{@options.lecture}'."
+
+
+
+
 
     class NuggetView extends baseviews.BaseView
 
