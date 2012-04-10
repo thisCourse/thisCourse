@@ -24,7 +24,7 @@
     
     <h2>Nuggets</h2>
     <ul>
-        {{#each collection/models }}
+        {{#each collection.models }}
             <li><a href="{{ ../url }}{{ id }}/">{{ attributes/title }}</a></li>
         {{/each }}
     </ul>
@@ -53,7 +53,7 @@
     <div id='lectureview' class='view'>
         <ul class='nav nav-pills'>
             {{#each lecture}}
-            <li id='{{lecture}}'><a id='{{lecture}}' class='lecture {{status}}'><p id='{{lecture}}'>{{title}}</p><p id='{{lecture}}'><strong id='{{lecture}}'>{{points}}</strong></p></a></li>
+            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><p id='{{lecture}}'>{{title}}</p><p id='{{lecture}}'><strong id='{{lecture}}'>{{points}}</strong></p></a></li>
             {{/each}}
         </ul>
     </div>
@@ -87,4 +87,16 @@
             </div>
         
         
+</script>
+
+
+<script id='filtered_nugget_list' type="text/x-handlebars-template">
+
+    <hr/>
+    <ul class='nav nav-pills'>
+        {{#each nuggets}}
+        <li><a href='../../../../{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{attributes.title}}</a></li>
+        {{/each}}
+    </ul>
+
 </script>
