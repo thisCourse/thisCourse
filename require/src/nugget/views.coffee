@@ -81,7 +81,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         render: =>
             html = "<h2>Lecture #{Number(@options.lecture.slice(1))}: #{hardcode.knowledgestructure[@options.lecture].title}</h2>"
-            @$el.html html + "<div class='navigation'></div><div class='body'></div>"
+            @$el.html html + "<div class='navigation pagination'></div><div class='body'></div>"
             @add_subview "top", new ClusterListView(lecture: @options.lecture), ".navigation"
             @add_subview "bottom", new LectureBottomView(collection: @collection, lecture: @options.lecture), ".body"
     
@@ -176,6 +176,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             super
 
     class NuggetTopView extends baseviews.BaseView
+        
+        Handlebars.registerHelper ('navlink'), (tags) ->
+            relec = new RegExp('L([0-9]+)')
+            reclus = new RegExp('C([0-9]+)')
+            for tag in tags
+                lec = relec.exec(tag) or lec
+                clus = reclus.exec(tag) or clus
+            out = "<a href='"+@url+"../lecture/"+lec[0]+"/cluster/"+clus[0]+"/'>Return to Lecture "+Number(lec[1])+" Cluster "+Number(clus[1])+"</a>"
         
         initialize: -> @render()
 
