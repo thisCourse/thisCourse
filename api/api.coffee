@@ -404,10 +404,10 @@ router = ->
     @del(routing_pattern, request_handler)
 
 class JSONResponse
-    constructor: (body, status=200) ->
+    constructor: (body={}, status=200, headers={}) ->
+        @body = body
         @status = status
-        @body = body or {}
-        @headers = {}
+        @headers = headers
 
     send: (res) =>
         res.json @body, @headers, @status
@@ -459,7 +459,7 @@ initialize = ->
         require(dir + file)
     register_mongo_collection MongoCollection
 
-console.log "\n\n\n\n\n\n\n\n\n\n\n"
+console.log "\n\n\n\n\n"
 
 module.exports = 
     collections: collections
