@@ -60,10 +60,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         initialize: =>
             @collection.shuffle()
-            @$el.html "Please make sure you are logged in to continue. Refresh after login."
-            # $.get '/analytics/', (inc) =>
-            #     @inc = parseInt(inc)
-            #     @nextProbe()
+            # if not require('app').get('loggedIn')
+            #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
+            #     return
+            @claimed = true
             @inc = 0
             @nextProbe()
         
@@ -73,11 +73,13 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
            
         nextProbe: =>
             if @inc >= @collection.length
-                @$el.html "Nugget Claimed!"
+                nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id
+                console.log nuggetattempt
+                $.post '/analytics/nuggetattempt/', nuggetattempt, =>
+                   if @claimed then @$el.html "Nugget Claimed!" else @$el.html "Practice makes better!"
                 return
             @model = @collection.at(@inc)
             @model.fetch()
-            @model.set questionstatus: 'Correct'
             @model.bind 'change', @render
             @inc += 1
                     
@@ -85,19 +87,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @$('.answerbtn').attr('disabled') then return
             @$('.answerbtn').attr('disabled','disabled')
             responsetime = new Date - @subviews.probeview.timestamp_load
-            response = probe: @model.id, type: "proberesponse",answers:[],inc:@inc,responsetime:responsetime
+            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
                 alert "Please Select at least one answer"
                 @$('.answerbtn').removeAttr('disabled')
                 return
-            # $.post '/analytics/', response, =>
-            @$('.answerbtn').slideToggle()
-            response = new Backbone.Model
-                overallcorrect:'Incorrect'
-                probe:@model
-            @subviews.probeview.answered(response)
+            $.post '/analytics/proberesponse/', response, (data) =>
+                @$('.answerbtn').slideToggle()
+                if not data.correct then @claimed = false
+                @subviews.probeview.answered(data)
                   
     
     
@@ -119,8 +119,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @add_subview "answerview_"+model.id, new ProbeAnswerView(model: model), ".answerlist"
         
         answered: (response)=>
-            @model = response.get('probe')
-            @$('.questionstatus').append(response.get('overallcorrect'))
+            @model.set response.probe
+            @$('.questionstatus').append(response.correct)
             @$('.nextquestion').slideToggle()
             for key,subview of @subviews
                 subview.showFeedback()
