@@ -16,6 +16,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 @hide()
             @url = options.url if options?.url
             @bind_links()
+            #console.log "CONSTRUCTED", @, @model or @collection, @collection and @collection.length
         
         bind_links: ->
             @$el.on "click", "a", (ev) ->
@@ -79,7 +80,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     obj = @[options.datasource]                
                 else # no datasource specified
                     obj = null
-                    
+                                        
                 #if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
 
                 do_create_subview = =>
@@ -101,7 +102,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                             do_create_subview()
                     else
                         do_create_subview()
-                else # it's a collection
+                else if obj instanceof Backbone.Collection
                     viewoptions.collection = obj
                     do_create_subview()
 
