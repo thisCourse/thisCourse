@@ -1,20 +1,32 @@
-<script id="probe" type="text/x-handlebars-template">
+<script id="probe_container" type="text/x-handlebars-template">
     
     <div class='probe container'>
-        <div class='probequestion container'>
-            <h6>Question {{increment}} out of {{total}}</h6>
-            <h3 class='question'>{{question_text}}</h3>
-            <ol class='answerlist'>
-            </ol>
-            <button class='btn btn-large btn-success answerbtn'>Submit Answer</button>
-        </div>
-        <div class='proberesponse container'>
-        </div> 
+        <div class='probequestion container'></div>
+        <button class='btn btn-large btn-success answerbtn'>Submit Answer</button>
     </div>
 </script>
 
+<script id="probe" type="text/x-handlebars-template">
+    <h6>Question {{increment}} out of {{total}}</h6>
+    <h3 class='question'>{{question_text}}</h3>
+    <ol class='answerlist'>
+        </ol>
+    <div class='proberesponse container'>
+        <div class='header'>
+            <h3 class='questionstatus'></h3>
+            <button class='btn btn-large btn-primary' id='feedbut'>View Feedback</button>
+            <button class='btn btn-large btn-success nextquestion'>Next Question</button>
+        </div>
+        <div class='feedback'>
+        </div>
+    </div>
+</script>
+
+
 <script id="probe_answer" type="text/x-handlebars-template">
-    <li class='answer'><a>{{text}}</a></li>
+    <li class='answer'><div class='answertext'><f>{{text}}</f></div><div class='checkorcross'></div>
+    <div class='feedback'></div>
+    </li>
 </script>
 
 
@@ -81,21 +93,6 @@
     
 </script>
 
-
-<script id="probe_response" type="text/x-handlebars-template">
-    
-    <div class='header'>
-        <h3>{{status}}</h3>
-        {{#if feedback}}<button class='btn btn-large btn-primary' id='feedbut'>View Feedback</button>{{/if}}
-        <button class='btn btn-large btn-success nextquestion'>Next Question</button>
-    </div>
-    {{#if feedback}}
-    <div id='feedback'>
-            <p>{{feedback}}</p>
-    </div>
-    {{/if}}
-    
-</script>
 
 <script id="probe_list" type="text/x-handlebars-template">
     

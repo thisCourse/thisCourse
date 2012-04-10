@@ -14,8 +14,9 @@
 }
 
 .probe {
+    max-width: 600px;
     .probequestion {
-        max-width: 600px;
+        max-width:600px;
         word-wrap: break-word;
         ol.answerlist {
             list-style:none;
@@ -24,6 +25,7 @@
                 width: 600px;
                 padding:16px 0px;
                 font-size:16px;
+                cursor:pointer;
                 &:before{
                     font-style: italic;
                     content: counter(list, @locale) ". ";
@@ -31,6 +33,21 @@
                 }
                 &.select {
                     font-weight:bold;
+                    color: #FF2222;
+                }
+                div.answertext{
+                    display:inline;
+                    &.showing {
+                        background-color: #BBFFBB;
+                    }
+                }
+                div.checkorcross {
+                    float: right;
+                    display:inline;
+                    font-size: 32px;
+                    .check {
+                        color:#22FF22;
+                    }
                 }
             }
         }
@@ -42,7 +59,7 @@
     max-width: 600px;
 }
 
-div #feedback {
+div .feedback {
     display: none;
     
 }
@@ -51,6 +68,14 @@ div #feedback {
     &.editing {
         display:none;
     }
+}
+
+.nextquestion {
+    display:none;
+}
+
+#feedbut {
+    display:none;
 }
 
 .edit {

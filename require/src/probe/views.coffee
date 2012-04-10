@@ -5,7 +5,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         routes: =>
             "": => view: ProbeListView, datasource: "collection"
-            ":probe_id/": (probe_id) => view: ProbeView, datasource: "collection", key: probe_id
+            ":probe_id/": (probe_id) => view: ProbeContainerView, datasource: "collection", key: probe_id
 
         initialize: ->
             console.log "ProbeRouterView init"
@@ -52,100 +52,119 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     opacity: 0.6
             #     tolerance: "pointer"
 
-    class ProbeView extends baseviews.BaseView
-
+    class ProbeContainerView extends baseviews.BaseView
+        
         events:
             "click .answerbtn": "submitAnswer"
-
-        render: =>
-            if not @model then return
-            @subviews = {} #TODO: Hack to clear answer subviews on each question. Replace with Question subviews.
-            @$el.html templates.probe @context(increment:@inc,total:@collection.length)
-            @$('.question').html @model.get('questiontext')
-            for answer in @model.get('answers').models
-                @addAnswers answer, @model.get("answers")
-            @timestamp_load = new Date
-            
+            "click .nextquestion" : "nextProbe"
         
         initialize: =>
-            # @collection.shuffle()
+            @collection.shuffle()
             @$el.html "Please make sure you are logged in to continue. Refresh after login."
-            $.get '/analytics/', (inc) =>
-                @inc = parseInt(inc)
-                @nextProbe()   
-            # @model.get("answers").bind "change", @toggleButton    
-
-        # toggleButton: =>
-        #     for subview of @subviews
-        #         if @$.hasClass('select')
-        #         $('.answerbtn').Class('disabled')
-        #     else:
-        #         $('.answerbtn').removeClass('disabled')
-            
-        addAnswers: (model, coll) =>
-            @add_subview "answerview_"+model.id, new ProbeAnswerView(model: model), ".answerlist"
+            # $.get '/analytics/', (inc) =>
+            #     @inc = parseInt(inc)
+            #     @nextProbe()
+            @inc = 0
+            @nextProbe()
         
+        render: =>
+            @$el.html templates.probe_container
+            @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
+           
         nextProbe: =>
             if @inc >= @collection.length
-                @$el.html "It's over, it's finally over! Thank you for your participation."
+                @$el.html "Nugget Claimed!"
                 return
             @model = @collection.at(@inc)
             @model.fetch()
-            @model.bind "change", @render
+            @model.set questionstatus: 'Correct'
+            @model.bind 'change', @render
             @inc += 1
                     
         submitAnswer: =>
-            # model = new Backbone.Model
-            #     'status': 'Correct!'
-            #     'feedback':'Yes but no but, yes'
-            # @add_subview "responseview", new ProbeResponseView(model: model), ".proberesponse"
             if @$('.answerbtn').attr('disabled') then return
             @$('.answerbtn').attr('disabled','disabled')
-            responsetime = new Date - @timestamp_load
-            response = probe: @model.id, type: "pretestresponse",answers:[],inc:@inc,responsetime:responsetime
-            for key,subview of @subviews
-                if subview.$('.answer').hasClass('select') then response.answers.push subview.model.id
+            responsetime = new Date - @subviews.probeview.timestamp_load
+            response = probe: @model.id, type: "proberesponse",answers:[],inc:@inc,responsetime:responsetime
+            for key,subview of @subviews.probeview.subviews
+                if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
                 alert "Please Select at least one answer"
                 @$('.answerbtn').removeAttr('disabled')
                 return
-            $.post '/analytics/', response, =>
-                @nextProbe()
-            
-            
-            
-    class ProbeAnswerView extends baseviews.BaseView
+            # $.post '/analytics/', response, =>
+            @$('.answerbtn').slideToggle()
+            @subviews.probeview.answered()
+                  
+    
+    
+    class ProbeView extends baseviews.BaseView
+              
         
+        events:
+            "click #feedbut" : "showFeedback"
+        
+        render: =>
+            if not @model then return
+            @$el.html templates.probe @context(increment:@parent.inc,total:@parent.collection.length)
+            @$('.question').html @model.get('questiontext')
+            for answer in @model.get('answers').models
+                @addAnswers answer, @model.get("answers")
+            @timestamp_load = new Date
+
+        addAnswers: (model, coll) =>
+            @add_subview "answerview_"+model.id, new ProbeAnswerView(model: model), ".answerlist"
+        
+        answered: =>
+            @$('.questionstatus').append(@model.get('questionstatus'))
+            @$('.nextquestion').slideToggle()
+            if @model.get('feedback')
+                @addFeedback()
+            for key,subview of @subviews
+                subview.showFeedback()
+            
+        addFeedback: =>
+            @$('.feedback').append(@model.get('feedback'))
+            @$('#feedbut').slideToggle()
+            
+        showFeedback: =>
+            @$('.feedback').slideToggle()
+                   
+
+
+    class ProbeAnswerView extends baseviews.BaseView
+
         events:
             "click .answer" : "selectAnswer"
         
+        initialize: =>
+            @selected = false
+        
         render: =>
-            # console.log "There are four LIGHTS!"
             @$el.html templates.probe_answer @context()
         
             
         selectAnswer: =>
             @$('.answer').toggleClass('select')
-
-    class ProbeResponseView extends baseviews.BaseView
-        
-
-        
-        initialize: -> @render()
-
-        events: => _.extend super,
-            "click .nextquestion" : "nextQuestion"
-            "click #feedbut" : "showFeedback"
-                
-        showFeedback: ->
-            $('#feedback').slideToggle()
+            @selected = not @selected
             
-        nextQuestion: ->
-            @parent.nextProbe()
+        showFeedback: =>
+            console.log 'Feedback!'
+            if @model.get('correct')
+                @$('.answertext').addClass('showing')
+            console.log @selected,@model.get('correct')
+            if @selected then @addFeedback()
         
-        render: =>
-            @$el.html templates.probe_response @context()
-            Backbone.ModelBinding.bind @
+        addFeedback: =>
+            console.log 'No feedback?',@model.get('correct')
+            if @model.get('correct') 
+                checkorcross = '<span class="check">&#10003;</span>'
+            else
+                checkorcross = '<span class="cross">&#10005;</span>'
+            @$('.checkorcross').append(checkorcross)
+            if @model.get('feedback')
+                @$('.feedback').append(@model.get('feedback'))
+                @$('feedback').slideToggle()
 
 
     class ProbeEditView extends baseviews.BaseView
@@ -178,6 +197,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     ProbeRouterView: ProbeRouterView
     ProbeListView: ProbeListView
     ProbeView: ProbeView
-    ProbeTopView: ProbeResponseView
+    ProbeContainerView: ProbeContainerView
     ProbeTopEditView: ProbeEditView
     
