@@ -39,9 +39,9 @@
     <div class="description" data="description">{{ description }}</div>
 
     {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{{navlink tags}}}{{/if }}
-    {{#if probeset.length }}<span class="probetoggle"></span>{{/if}}
+    {{#if probeset.length }}{{#if user.loggedIn }}<span class="probetoggle"></span>{{/if}}{{/if}}
 
-    <span class="edit"><button class="item-button edit-button btn success">Edit nugget details</button></span>
+    <span class="editor-only"><button class="item-button edit-button btn success">Edit nugget details</button></span>
     
 </script>
 
