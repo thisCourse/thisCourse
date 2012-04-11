@@ -135,7 +135,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             target = @$(element)
             if not target.length
                 target = $(element)
-            if not target.length
+            if not target.length and not element
                 target = @$el
             view.render()
             target.append view.el
@@ -154,6 +154,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             data['model'] = @model if @model
             data['collection'] = @collection if @collection
             data['models'] = @collection.models if @collection
+            data['course'] = require("app")?.get("course")?.attributes or {}
+            data['user'] = require("app")?.get("user")?.attributes or {}
             data['id'] = @model.get(Backbone.Model.prototype.idAttribute) if @model
             # data['root_url'] = require('app').get('root_url')
             return data
