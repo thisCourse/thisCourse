@@ -38,10 +38,19 @@
 
     <div class="description" data="description">{{ description }}</div>
 
-    {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{{navlink tags}}}{{/if }}<a href='{{url}}quiz/' class='btn quizme'>Quiz Me</a>
+    {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{{navlink tags}}}{{/if }}
+    {{#if probeset.length }}<span class="probetoggle"></span>{{/if}}
 
     <span class="edit"><button class="item-button edit-button btn success">Edit nugget details</button></span>
     
+</script>
+
+<script id="probe_enable" type="text/x-handlebars-template">
+    <a href='{{url}}quiz/' class='btn quizme'>Quiz Me</a>
+</script>
+
+<script id="probe_disable" type="text/x-handlebars-template">
+    <a href='{{url}}../' class='btn quizme'>Exit Quiz</a>
 </script>
 
 <script id="nugget_lecture_list" type="text/x-handlebars-template">

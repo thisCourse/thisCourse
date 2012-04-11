@@ -55,7 +55,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         add_lazy_subview: (options={}, callback) =>
 
             #if not options.datasource then throw Error("You must specify a datasource ('model' or 'collection') when calling add_lazy_subview:", @)
-            
+                                    
             if not options.view
                 clog @, options
                 throw Error("You must specify a view class when calling add_lazy_subview")
@@ -74,14 +74,6 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             
             create_subview_if_ready = =>
                 if subview_created then return # TODO: could unbind after success, instead of doing this check here            
-                if options.key # if a key was specified, we need to descend
-                    obj = @[options.datasource]?.get?(options.key)
-                else if options.datasource # otherwise, we pass the whole model/collection along from the parent view
-                    obj = @[options.datasource]                
-                else # no datasource specified
-                    obj = null
-                                        
-                #if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
 
                 do_create_subview = =>
                     subview = new options.view(viewoptions)
@@ -89,6 +81,15 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     subview_created = true
                     callback?(subview)
                     $("body").removeClass("wait")
+
+                if options.key # if a key was specified, we need to descend
+                    obj = @[options.datasource]?.get?(options.key)
+                else if options.datasource # otherwise, we pass the whole model/collection along from the parent view
+                    obj = @[options.datasource]                
+                else # no datasource specified
+                    do_create_subview()
+                                        
+                #if obj and (obj instanceof Backbone.Model or obj instanceof Backbone.Collection)
                 
                 if obj instanceof Backbone.Model
                     viewoptions.model = obj
@@ -105,6 +106,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 else if obj instanceof Backbone.Collection
                     viewoptions.collection = obj
                     do_create_subview()
+                    
 
             create_subview_if_ready()
             
@@ -178,7 +180,17 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         mementoRestore: =>
             @memento?.restore()
-            
+
+    class GenericTemplateView extends BaseView
+        
+        constructor: (options) ->
+            if options.template not instanceof Function
+                throw "GenericTemplateView's constructor must be passed an options.template."
+            @template = options.template
+            super
+        
+        render: => @$el.html @template @context()
+
     class RouterView extends BaseView
         
         _routeToRegExp: Backbone.Router.prototype._routeToRegExp
@@ -303,5 +315,6 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
 
     BaseView: BaseView
+    GenericTemplateView: GenericTemplateView
     RouterView: RouterView
     NavRouterView: NavRouterView

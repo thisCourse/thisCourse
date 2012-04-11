@@ -145,7 +145,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
 
 
-
+    class ProbeToggleRouterView extends baseviews.RouterView
+        
+        routes: =>
+            "": => view: baseviews.GenericTemplateView, template: templates.probe_enable
+            "quiz/": => view: baseviews.GenericTemplateView, template: templates.probe_disable
 
     class NuggetView extends baseviews.BaseView
 
@@ -171,6 +175,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "": => name: "pageview", view: pageviews.PageView, datasource: "model", key: "page"
             "quiz/": => view: probeviews.ProbeContainerView, datasource: "model", key: "probeset"
 
+
         initialize: ->
             console.log "NuggetBottomRouterView init"
             super
@@ -192,6 +197,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         render: =>
             @$el.html templates.nugget_top @context()
+            @add_subview "probetoggle", new ProbeToggleRouterView, ".probetoggle"
             Backbone.ModelBinding.bind @
 
         edit: =>
