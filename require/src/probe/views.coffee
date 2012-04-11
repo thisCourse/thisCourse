@@ -133,7 +133,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         answered: (response)=>
             @model.set response.probe
-            @$('.questionstatus').append(response.correct)
+            if response.correct
+                @$('.questionstatus').append('Correct')
+            else
+                @$('.questionstatus').append('Incorrect')
             @$('.nextquestion').show()
             for key,subview of @subviews
                 subview.showFeedback()
