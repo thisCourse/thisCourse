@@ -82,6 +82,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
            
         nextProbe: =>
             if @inc >= @collection.length
+                console.log @points
                 nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
                 doPost '/analytics/nuggetattempt/', nuggetattempt, =>
                    if @claimed then @$el.html "Nugget Claimed!" else @$el.html "Practice makes better!"
@@ -142,7 +143,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @feedback then @$('#feedbut').show()
             
         addFeedback: =>
-            @$('.feedback').append(@model.get('feedback'))
+            @$('#qfeedback').append(@model.get('feedback'))
             
         showFeedback: =>
             @$('.feedback').stop().slideDown()
