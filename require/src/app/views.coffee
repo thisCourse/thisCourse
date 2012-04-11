@@ -10,9 +10,13 @@ define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "cs!auth/view
             @loginChanged()
 
         loginChanged: =>
-            is_editor = @model.get("user").get("loggedIn") and @model.get("user").get("email")=="admin"
+            is_logged_in = @model.get("user").get("loggedIn")
+            @$el.toggleClass "logged-in", is_logged_in
+            @$el.toggleClass "logged-out", not is_logged_in
+            is_editor = is_logged_in and @model.get("user").get("email")=="admin"
             @$el.toggleClass "editable", is_editor
             @$el.toggleClass "uneditable", not is_editor
+
 
         render: =>
             @$el.html templates.root @context()
