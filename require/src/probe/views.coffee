@@ -72,6 +72,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
             @claimed = true
+            @points = 0
             @inc = 0
             @nextProbe()
         
@@ -81,7 +82,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
            
         nextProbe: =>
             if @inc >= @collection.length
-                nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id
+                nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
                 doPost '/analytics/nuggetattempt/', nuggetattempt, =>
                    if @claimed then @$el.html "Nugget Claimed!" else @$el.html "Practice makes better!"
                 return
@@ -103,7 +104,11 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 return
             doPost '/analytics/proberesponse/', response, (data) =>
                 @$('.answerbtn').hide()
-                if not data.correct then @claimed = false
+                if not data.correct 
+                    @claimed = false
+                else
+                    for answer in data.probe.answers
+                        @points += answer.correct or 0
                 @subviews.probeview.answered(data)
                   
     
