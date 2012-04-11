@@ -8,7 +8,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             ":probe_id/": (probe_id) => view: ProbeContainerView, datasource: "collection", key: probe_id
 
         initialize: ->
-            console.log "ProbeRouterView init"
+            # console.log "ProbeRouterView init"
             super
 
     class ProbeListView extends baseviews.BaseView
@@ -52,6 +52,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     opacity: 0.6
             #     tolerance: "pointer"
 
+    doPost = (url, data, success) ->
+        $.ajax
+            type: 'POST'
+            url: url
+            data: JSON.stringify(data)
+            success: success
+            contentType: 'application/json'
+
     class ProbeContainerView extends baseviews.BaseView
         
         events:
@@ -74,8 +82,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         nextProbe: =>
             if @inc >= @collection.length
                 nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id
-                console.log nuggetattempt
-                $.post '/analytics/nuggetattempt/', nuggetattempt, =>
+                doPost '/analytics/nuggetattempt/', nuggetattempt, =>
                    if @claimed then @$el.html "Nugget Claimed!" else @$el.html "Practice makes better!"
                 return
             @model = @collection.at(@inc)
@@ -94,8 +101,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 alert "Please Select at least one answer"
                 @$('.answerbtn').removeAttr('disabled')
                 return
-            $.post '/analytics/proberesponse/', response, (data) =>
-                @$('.answerbtn').slideToggle()
+            doPost '/analytics/proberesponse/', response, (data) =>
+                @$('.answerbtn').hide()
                 if not data.correct then @claimed = false
                 @subviews.probeview.answered(data)
                   
@@ -121,19 +128,19 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         answered: (response)=>
             @model.set response.probe
             @$('.questionstatus').append(response.correct)
-            @$('.nextquestion').slideToggle()
+            @$('.nextquestion').show()
             for key,subview of @subviews
                 subview.showFeedback()
             if @model.get('feedback')
                 @feedback = true
                 @addFeedback()
-            if @feedback then @$('#feedbut').slideToggle()
+            if @feedback then @$('#feedbut').show()
             
         addFeedback: =>
             @$('.feedback').append(@model.get('feedback'))
             
         showFeedback: =>
-            @$('.feedback').slideToggle()
+            @$('.feedback').stop().slideDown()
                    
 
 

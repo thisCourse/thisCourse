@@ -41,7 +41,7 @@ class MongoCollection
             else if not doc
                 return callback new APIError("Specified '" + @name + "' document could not be found!", 404)
             @document = doc
-            console.log "FOUND DOC:", doc
+            # console.log "FOUND DOC:", doc
             if @Model
                 @model = new @Model(@document) # turn the document into an instance of the appropriate Model
                 #@document = @model.toJSON(false) # use the JSON output of the model as our document data

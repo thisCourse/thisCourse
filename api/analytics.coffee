@@ -93,7 +93,7 @@ class ProbeResponse extends AnalyticsHandler
             probe = probes[0]
             correct = true
             for answer in probe.answers
-                console.log answer.correct, (answer._id in data.answers), data.answers, answer._id.toString()
+                # console.log answer.correct, (answer._id in data.answers), data.answers, answer._id.toString()
                 correct and= ((answer.correct or false) == (answer._id.toString() in data.answers)) # TODO: ahahahahaha
             data.correct = correct
             @save_analytics_object data, (response) =>

@@ -30,11 +30,13 @@ handle_uploaded_file = (req, res, next) ->
 
 handle_file_redirect = (req, res, next) ->
     filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
+        if not obj then return res.json _error: "The file could not be found", 404
         res.redirect("https://thiscourse.s3.amazonaws.com/images/" + obj.md5 + "." + obj.extension)
 
 handle_thumb_redirect = (req, res, next) ->
     filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
-        res.redirect("https://thiscourse.s3.amazonaws.com/images/" + obj.thumbnail_md5 + "." + obj.extension)
+        if not obj then return res.json _error: "The file could not be found", 404
+        res.redirect("https://thiscourse.s3.amazonaws.com/images/" + obj.thumbnail_md5 or obj.md5 + "." + obj.extension)
     
 
 move_file_to_md5 = (key, path, callback) ->
@@ -147,7 +149,7 @@ policy =
         bucket: "thiscourse"
     , [ "starts-with", "$key", "uploads/" ],
         acl: policy_params.acl
-    , [ "content-length-range", 0, 1048576 ], [ "starts-with", "$name", "" ], [ "starts-with", "$Filename", "" ], [ "starts-with", "$success_action_status", "" ] ]
+    , [ "content-length-range", 0, 10000000 ], [ "starts-with", "$name", "" ], [ "starts-with", "$Filename", "" ], [ "starts-with", "$success_action_status", "" ] ]
 
 policy_params.policy = create_policy(policy)
 policy_params.signature = sign_policy(policy_params.policy)

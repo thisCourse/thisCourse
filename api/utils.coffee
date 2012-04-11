@@ -20,7 +20,7 @@ get_by_path = (obj, path, index) ->
         index = 0
     # if we've reached the end of the path, return result
     if index >= path.length
-        console.log "End of path, returning:", obj
+        # console.log "End of path, returning:", obj
         return obj
     console.log "Descending to key '" + path[index] # + "', on object:\n", obj
     # if the next item in the path is an id, descend into the array by item id
