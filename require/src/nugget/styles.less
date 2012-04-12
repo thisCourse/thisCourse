@@ -72,6 +72,11 @@
         margin: 10px 25px 23px 10px;
         padding-bottom:8px;
         padding-right:8px;
+        &>div {
+            width:@lecturesquare;
+            height:@lecturesquare;
+            position:relative;            
+        }
         &.claimed {
             background-color: @claimedcolor;
             &:hover {
@@ -91,7 +96,7 @@
             }
         }
         .points {
-            color:#FF00FF;
+            color:#888822;
             bottom:0;
             position: absolute;
         }

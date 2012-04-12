@@ -68,7 +68,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         initialize: =>
             @collection = new Backbone.Collection(@collection.shuffle())
-            console.log @collection
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
