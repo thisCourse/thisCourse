@@ -5,7 +5,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         routes: =>
             #"": => view: LectureListView, datasource: "collection"
-            "": => view: LectureListView, datasource: "collection"
+            "": => view: LectureListView, datasource: "collection", nonpersistent: true
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id, nonpersistent: true
 
@@ -66,27 +66,29 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
             
         render: =>
+            @$el.html templates.nugget_lecture_list @context(@lecturelist)
+            
+        initialize: =>
+            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}                
             for lecture in @lecturelist.lecture
                 lecture.points = 0
                 lecture.status = 'unclaimed'
             relec = new RegExp('(L[0-9]+)')
             require('app').get('user').getKeyWhenReady 'claimed', (claimed) =>
-                for nuggetitem in claimed.models
-                    lec = ''
-                    if not require('app').get('course').loaded() then continue
-                    for tag in require('app').get('course').get('nuggets').get(nuggetitem.id).get('tags')
-                        lec = relec.exec(tag)?[0] or lec
-                    if not lec then continue
-                    _.find(@lecturelist.lecture, (lect) -> lect.lecture==lec).points += nuggetitem.get('points')
-                @lecturelist.totalpoints = 0
-                for lecture in @lecturelist.lecture
-                    @lecturelist.totalpoints += lecture.points
-                    if lecture.points > lecture.minpoints then lecture.status = 'claimed'
-                @$el.html templates.nugget_lecture_list @context(@lecturelist)
+                require('app').get("course").whenLoaded =>
+                    for nuggetitem in claimed.models
+                        lec = ''
+                        for tag in require('app').get('course').get('nuggets').get(nuggetitem.id).get('tags')
+                            lec = relec.exec(tag)?[0] or lec
+                        if not lec then continue
+                        _.find(@lecturelist.lecture, (lect) -> lect.lecture==lec).points += nuggetitem.get('points')
+                    @lecturelist.totalpoints = 0
+                    for lecture in @lecturelist.lecture
+                        @lecturelist.totalpoints += lecture.points
+                        if lecture.points > lecture.minpoints then lecture.status = 'claimed'
+                    @$el.html templates.nugget_lecture_list @context(@lecturelist)
+                    @render()
             
-        initialize: =>
-            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}                
-            @render()
         
         clusterView: (ev) =>
             lecture = ev.target.id
@@ -172,11 +174,15 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     #         @$el.html "I am lecture '#{@options.lecture}'."
 
 
+    class ProbeToggleEnableView extends baseviews.BaseView
+        
+        render: =>
+            @$el.html templates.probe_enable @context(status:require('app').get('user').get('claimed').get(@model.id))
 
     class ProbeToggleRouterView extends baseviews.RouterView
         
         routes: =>
-            "": => view: baseviews.GenericTemplateView, template: templates.probe_enable
+            "": => view: ProbeToggleEnableView, datasource: "model", nonpersistent: true
             "quiz/": => view: baseviews.GenericTemplateView, template: templates.probe_disable
 
     class NuggetView extends baseviews.BaseView
@@ -224,8 +230,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .edit-button": "edit"
         
         render: =>
-            @$el.html templates.nugget_top @context(status:require('app').get('user').get('claimed').get(@model.id))
-            @add_subview "probetoggle", new ProbeToggleRouterView, ".probetoggle"
+            @$el.html templates.nugget_top @context()
+            @add_subview "probetoggle", new ProbeToggleRouterView(model: @model), ".probetoggle"
             Backbone.ModelBinding.bind @
 
         edit: =>
