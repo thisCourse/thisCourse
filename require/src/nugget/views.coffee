@@ -191,6 +191,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     class ProbeToggleEnableView extends baseviews.BaseView
         
+        initialize: ->
+            require('app').bind "nuggetAnalyticsChanged", @render
+        
         render: =>
             @$el.html templates.probe_enable @context(status:require('app').get('user').get('claimed')?.get(@model.id))
 
