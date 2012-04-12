@@ -45,6 +45,14 @@ define ["cs!utils/formatters"], (formatters) ->
                 json._course = require("app").get("course").id # TODO: something more elegant?
             catch err
             return json
+            
+        getKeyWhenReady: (key, callback) =>
+            if @has(key) then return callback @get(key)
+            performCallback = =>
+                if @has(key)
+                    @unbind "change:" + key, performCallback
+                    callback @get(key)
+            @bind "change:" + key, performCallback
 
     class LazyModel extends BaseModel
 

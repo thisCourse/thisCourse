@@ -58,7 +58,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         partial = nuggetattempt.attempted
         claimed = nuggetattempt.claimed
         
-        require('app').get('user').set claimed: new Backbone.Collection(claimed),partial: new Backbone.Collection(partial)
+        require('app').get('user').set claimed: new Backbone.Collection(claimed), partial: new Backbone.Collection(partial)
 
     class LectureListView extends baseviews.RouterView
         
@@ -70,17 +70,21 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 lecture.points = 0
                 lecture.status = 'unclaimed'
             relec = new RegExp('(L[0-9]+)')
-            for nuggetitem in require('app').get('user').get('claimed')
-                lec = ''
-                for tag in require('app').get('nuggets').get(nuggetitem.id).get('taglist')
-                    lec = relec.exec(tag)[0] or lec
-                if not lec then continue
-                @lecturelist[lec].points += nuggetitem.get('points')
-            @lecturelist.totalpoints = 0
-            for lecture in @lecturelist
-                @lecturelist.totalpoints += lecture.points
-                if lecture.points > lecture.minpoints then lecture.status = 'claimed'
-            @$el.html templates.nugget_lecture_list @context(@lecturelist)
+            require('app').get('user').getKeyWhenReady 'claimed', (claimed) =>
+                for nuggetitem in claimed.models
+                    lec = ''
+                    console.log nuggetitem.id
+                    if not require('app').get('course').loaded() then continue
+                    for tag in require('app').get('course').get('nuggets').get(nuggetitem.id).get('tags')
+                        lec = relec.exec(tag)?[0] or lec
+                    if not lec then continue
+                    console.log @lecturelist, lec
+                    @lecturelist[lec].points += nuggetitem.get('points')
+                @lecturelist.totalpoints = 0
+                for lecture in @lecturelist
+                    @lecturelist.totalpoints += lecture.points
+                    if lecture.points > lecture.minpoints then lecture.status = 'claimed'
+                @$el.html templates.nugget_lecture_list @context(@lecturelist)
             
         initialize: =>
             @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure),totalpoints: 0}
