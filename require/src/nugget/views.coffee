@@ -173,7 +173,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         routes: =>
             "": => name: "pageview", view: pageviews.PageView, datasource: "model", key: "page"
-            "quiz/": => view: probeviews.ProbeContainerView, datasource: "model", key: "probeset"
+            "quiz/": => view: probeviews.ProbeContainerView, datasource: "model", key: "probeset", nonpersistent: true
 
 
         initialize: ->

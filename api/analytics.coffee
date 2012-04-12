@@ -65,8 +65,17 @@ class NuggetAttempt extends AnalyticsHandler
     handle_GET: (callback) =>
         @collection.find(email: @req.session.email).toArray (err, attempts) =>
             if err then return callback new api.APIError(err)
-            claimed = (attempt.nugget for attempt in attempts when attempt.claimed)
-            attempted = (attempt.nugget for attempt in attempts when not attempt.claimed and attempt.nugget not in claimed)
+            claimed_ids = []
+            attempted_ids = []
+            claimed = []
+            attempted = []
+            for attempt in attempts
+                if attempt.claimed and attempt.nugget not in claimed_ids
+                    claimed_ids.push attempt.nugget
+                    claimed.push _id: attempt.nugget, points: attempt.points
+                else if not attempt.claimed and attempt.nugget not in attempted_ids
+                    attempted_ids.push attempt.nugget
+                    attempted.push _id: attempt.nugget
             callback new api.JSONResponse(claimed: claimed, attempted: attempted)
     
 
