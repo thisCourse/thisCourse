@@ -132,6 +132,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             nuggetlist = nuggets: @collection.models.filter (nugget) =>
                      if not nugget.attributes.tags then return false
                      @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
+            nuggetlist.nuggets = _.sortBy nuggetlist.nuggets, (nugget) ->
+                nug=''
+                renug = new RegExp('N([0-9]+)')
+                for tag in nugget.attributes.tags
+                    nug = renug.exec(tag)?[1] or nug
+                Number(nug)
+            console.log nuggetlist.nuggets
             for nugget in nuggetlist.nuggets
                 if require('app').get('user').get('claimed').get(nugget.id)
                     nugget.status = 'claimed'
