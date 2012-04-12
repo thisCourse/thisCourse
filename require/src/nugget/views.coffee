@@ -7,7 +7,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             #"": => view: LectureListView, datasource: "collection"
             "": => view: LectureListView, datasource: "collection"
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
-            "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
+            "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id, nonpersistent: true
 
         initialize: ->
             console.log "NuggetRouterView init"
@@ -54,16 +54,36 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             #     opacity: 0.6
             #     tolerance: "pointer"
 
+    $.get '/analytics/nuggetattempt/', (nuggetattempt) =>
+        partial = nuggetattempt.attempted
+        claimed = nuggetattempt.claimed
+        
+        require('app').get('user').set claimed: new Backbone.Collection(claimed),partial: new Backbone.Collection(partial)
+
     class LectureListView extends baseviews.RouterView
         
         routes: =>
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
             
         render: =>
+            for lecture in @lecturelist
+                lecture.points = 0
+                lecture.status = 'unclaimed'
+            relec = new RegExp('(L[0-9]+)')
+            for nuggetitem in require('app').get('user').get('claimed')
+                lec = ''
+                for tag in require('app').get('nuggets').get(nuggetitem.id).get('taglist')
+                    lec = relec.exec(tag)[0] or lec
+                if not lec then continue
+                @lecturelist[lec].points += nuggetitem.get('points')
+            @lecturelist.totalpoints = 0
+            for lecture in @lecturelist
+                @lecturelist.totalpoints += lecture.points
+                if lecture.points > lecture.minpoints then lecture.status = 'claimed'
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
             
         initialize: =>
-            @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed'} for lecture, lect of hardcode.knowledgestructure)}
+            @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure),totalpoints = 0}
             console.log @lecturelist                  
             @render
         
@@ -108,10 +128,17 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             #alert "waaaaa"
             # @$el.html "Nuggs: " + @collection.length + " " + @options.lecture + " " + @options.cluster
-            @$el.html templates.filtered_nugget_list
-                  nuggets: @collection.models.filter (nugget) =>
+            nuggetlist = nuggets: @collection.models.filter (nugget) =>
                      if not nugget.attributes.tags then return false
                      @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
+            for nugget in nuggetlist
+                if require('app').get('user').get('claimed').get(nugget.id)
+                    nugget.status = 'claimed'
+                else if require('app').get('user').get('partial').get(nugget.id)
+                    nugget.status = 'claimed'
+                else
+                    nugget.status = 'unclaimed'
+            @$el.html templates.filtered_nugget_list
 
     
 
@@ -196,7 +223,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .edit-button": "edit"
         
         render: =>
-            @$el.html templates.nugget_top @context()
+            @$el.html templates.nugget_top @context(status:require('app').get('user').get('claimed').get(@model.id))
             @add_subview "probetoggle", new ProbeToggleRouterView, ".probetoggle"
             Backbone.ModelBinding.bind @
 
