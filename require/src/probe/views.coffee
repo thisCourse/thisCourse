@@ -89,7 +89,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
                     else
                         @$el.html "Practice makes better!"
-                        require('app').get('user').get('partial').add _id: @model.parent.model.id, points: @points
+                        require('app').get('user').get('partial').add _id: @model.parent.model.id
                 return
             @model = @collection.at(@inc)
             @model.fetch()
