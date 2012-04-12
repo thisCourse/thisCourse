@@ -40,7 +40,6 @@
 
     {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{{navlink tags}}}{{/if }}
     {{#if probeset.length }}<span class="probetoggle logged-in-only"></span>{{/if }}
-    {{#if status }}<br/><h4>Claimed</h4>{{/if }}
 
     <span class="editor-only"><button class="item-button edit-button btn success">Edit nugget details</button></span>
     
@@ -48,6 +47,7 @@
 
 <script id="probe_enable" type="text/x-handlebars-template">
     <a href='{{url}}quiz/' class='btn quizme'>Quiz Me</a>
+    {{#if status }}<br/><b>&nbsp;&nbsp;&nbsp;Claimed!</b>{{/if }}
 </script>
 
 <script id="probe_disable" type="text/x-handlebars-template">

@@ -202,7 +202,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             @template = options.template
             super
         
-        render: => @$el.html @template @context()
+        render: =>
+            @$el.html @template @context()
 
     class RouterView extends BaseView
         
