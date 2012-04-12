@@ -4,18 +4,20 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         events: -> {}
 
-        constructor: (options) ->
+        constructor: (options={}) ->
             @subviews = {}
             if @events not instanceof Function
                 eventobject = @events
                 @events = => eventobject
             super
             @$el.addClass @constructor.name
+            @nonpersistent = options.nonpersistent or false
             @visible = true
             if options and options.visible==false
                 @hide()
             @url = options.url if options?.url
             @bind_links()
+            @closed = false
             #console.log "CONSTRUCTED", @, @model or @collection, @collection and @collection.length
         
         bind_links: ->
@@ -35,9 +37,10 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         hide: =>
             if @visible
                 @visible = false
-                @$el.hide()
+                if @nonpersistent then @close() else @$el.hide()
 
         close: =>
+            @closed = true
             @off() # used to be called "unbind"
             @remove() # remove the view's DOM element
             Backbone.ModelBinding.unbind @ # unbind the model bindings
@@ -94,7 +97,6 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 if obj instanceof Backbone.Model
                     viewoptions.model = obj
                     if not obj.loaded() # do the lazy loading of the view we're passing down into the view
-                        console.log "showing spinner for", @
                         $("body").addClass("wait")
                         xhdr = obj.fetch()
                         if xhdr?.success # TODO: fix this stuff up so it doesn't check so many times
@@ -120,25 +122,34 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     @collection.bind "change", create_subview_if_ready
 
         add_subview: (name, view, element) =>
+            
             # close any pre-existing view at this name/slug
             @subviews[name].close?() if name of @subviews
+            
             # create a back-reference to the parent view:
             view.parent = @
+            
             # if the subview doesn't have a url, just use the current view's url:
             view.url or= @url
+            
             # store it in the cache, by name/slug:
             @subviews[name] = view
+            
+            # TODO: commented out the following, and it all seemed to work; hurrr?
             # now that we've added a new subview, re-navigate to check if the subview matches fragment:
-            if @visible and @fragment # TODO: do we want to do this for non-visible views as well? Probably not?
-                @navigate @fragment
+            #if @visible and @fragment # TODO: do we want to do this for non-visible views as well? Probably not?
+                #@navigate @fragment
+            
             # append the view's element either to the specified target element, or to parent's top-level element
-            target = @$(element)
-            if not target.length
-                target = $(element)
-            if not target.length and not element
+            if element
+                target = @$(element)
+                if not target.length then target = $(element)                
+            else
                 target = @$el
+            
             view.render()
             target.append view.el
+            
             #console.log "APPENDED TO", target, view
             return view
         
@@ -245,7 +256,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
                     # get the cached view for this matching fragment (if it exists):
                     subview = @subviews[match]
-
+                    
                     show_and_navigate = (subview) =>
                         # make sure it's visible (hiding all others):
                         view.hide() for route,view of @subviews when not (view is subview)
@@ -253,7 +264,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                         # propagate the url fragment down into the subview:
                         success = subview.navigate(splat)
 
-                    if subview
+                    if subview and not subview.closed
                         show_and_navigate subview
                     else # if we haven't already created a subview for this fragment, then make it so:
                         subviewoptions = handler.callback(fragment) # call the handler to get the subview options
