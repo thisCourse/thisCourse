@@ -21,7 +21,6 @@ router = ->
 
 
 request_handler = (req, res) ->
-    if not req.session.email then return res.json error: "Must be logged in", 403
     handler = new (collections[req.params.collection])
     handler.handle_request(req, res)
 
@@ -30,8 +29,15 @@ class AnalyticsHandler
     handle_request: (req, res) =>
         @req = req
         @res = res
+        if not @checkPermissions() then return
         @["handle_" + req.method] (json) =>
             json?.send(res)
+    
+    checkPermissions: =>
+        if not @req.session.email
+            @res.json error: "Must be logged in", 403
+            return false
+        return true
     
     handle_GET: (callback) =>
         callback new api.APIError("Analytics endpoint does not support GET requests.")
@@ -59,10 +65,16 @@ class AnalyticsHandler
 class NuggetAttempt extends AnalyticsHandler
     collection: db.collection("nuggetattempt")
 
+    checkPermissions: =>
+        if @req.method == "GET" then return true
+        super
+
     handle_POST: (callback) =>
         @save_analytics_object @req.body, callback
 
     handle_GET: (callback) =>
+        if not @req.session.email
+            return callback new api.JSONResponse(claimed: [], attempted: [])
         @collection.find(email: @req.session.email).toArray (err, attempts) =>
             if err then return callback new api.APIError(err)
             claimed_ids = []

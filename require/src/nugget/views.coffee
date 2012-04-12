@@ -1,6 +1,18 @@
 define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles"], \
         (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles) ->
 
+    refreshNuggetAnalytics = =>
+        $.get '/analytics/nuggetattempt/', (nuggetattempt) =>
+            partial = nuggetattempt.attempted
+            claimed = nuggetattempt.claimed
+            
+            require('app').get('user').set claimed: new Backbone.Collection(claimed), partial: new Backbone.Collection(partial)
+            require('app').trigger "nuggetAnalyticsChanged" # TODO: hackish
+
+    refreshNuggetAnalytics()
+
+    _.defer => require("app").bind "loginChanged", refreshNuggetAnalytics
+
     class NuggetRouterView extends baseviews.RouterView
 
         routes: =>
@@ -29,6 +41,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
+            require('app').bind "nuggetAnalyticsChanged", @render
             @render()            
 
         addNewNugget: =>
@@ -54,12 +67,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             #     opacity: 0.6
             #     tolerance: "pointer"
 
-    $.get '/analytics/nuggetattempt/', (nuggetattempt) =>
-        partial = nuggetattempt.attempted
-        claimed = nuggetattempt.claimed
-        
-        require('app').get('user').set claimed: new Backbone.Collection(claimed), partial: new Backbone.Collection(partial)
-
     class LectureListView extends baseviews.RouterView
                 
         routes: =>
@@ -67,8 +74,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         render: =>
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
-            
-        initialize: =>
             @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}                
             for lecture in @lecturelist.lecture
                 lecture.points = 0
@@ -87,7 +92,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                         @lecturelist.totalpoints += lecture.points
                         if lecture.points > lecture.minpoints then lecture.status = 'claimed'
                     @$el.html templates.nugget_lecture_list @context(@lecturelist)
-                    @render()
+                    
+        initialize: =>
+            require('app').bind "nuggetAnalyticsChanged", @render
             
         
         clusterView: (ev) =>
@@ -127,6 +134,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         initialize: =>
             @collection.bind "add", @render # TODO: this is going to be called a LOT
+            require('app').bind "nuggetAnalyticsChanged", @render
         
         render: =>
             #alert "waaaaa"
@@ -142,9 +150,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 Number(nug)
             console.log nuggetlist.nuggets
             for nugget in nuggetlist.nuggets
-                if require('app').get('user').get('claimed').get(nugget.id)
+                if require('app').get('user').get('claimed')?.get(nugget.id)
                     nugget.status = 'claimed'
-                else if require('app').get('user').get('partial').get(nugget.id)
+                else if require('app').get('user').get('partial')?.get(nugget.id)
                     nugget.status = 'partial'
                 else
                     nugget.status = 'unclaimed'
@@ -184,7 +192,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     class ProbeToggleEnableView extends baseviews.BaseView
         
         render: =>
-            @$el.html templates.probe_enable @context(status:require('app').get('user').get('claimed').get(@model.id))
+            @$el.html templates.probe_enable @context(status:require('app').get('user').get('claimed')?.get(@model.id))
 
     class ProbeToggleRouterView extends baseviews.RouterView
         
