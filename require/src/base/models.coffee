@@ -100,7 +100,12 @@ define ["cs!utils/formatters"], (formatters) ->
                 console.log "successfully loaded", @
                 @loading = false
                 @_loaded = true
+                @trigger "loaded"
             return xhdr
+
+        whenLoaded: (callback) =>
+            if @loaded() then return callback()
+            @bind "loaded", callback # TODO: unbind?
 
         set: (key, value, options) ->
 
