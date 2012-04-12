@@ -142,7 +142,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                     nugget.status = 'partial'
                 else
                     nugget.status = 'unclaimed'
-                console.log nugget.status
             @$el.html templates.filtered_nugget_list nuggetlist
 
     

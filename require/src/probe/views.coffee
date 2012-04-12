@@ -67,7 +67,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .nextquestion" : "nextProbe"
         
         initialize: =>
-            @collection.shuffle()
+            @collection = new Backbone.Collection(@collection.shuffle())
+            console.log @collection
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
@@ -92,8 +93,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         require('app').get('user').get('partial').add _id: @model.parent.model.id
                 return
             @model = @collection.at(@inc)
-            @model.fetch()
-            @model.bind 'change', @render
+            @model.fetch success: @render
             @inc += 1
                     
         submitAnswer: =>
@@ -128,7 +128,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if not @model then return
             @$el.html templates.probe @context(increment:@parent.inc,total:@parent.collection.length)
             @$('.question').html @model.get('questiontext')
-            for answer in @model.get('answers').models
+            for answer in _.shuffle(@model.get('answers').models)
                 @addAnswers answer, @model.get("answers")
             @timestamp_load = new Date
 
