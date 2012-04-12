@@ -9,8 +9,12 @@ define ["cs!base/views", "cs!./models", "cs!./utils", "hb!./templates.handlebars
             "click .logout-button": "submitLogout"
 
         initialize: ->
-            @model.bind "change:loggedIn", @render
+            @model.bind "change:loggedIn", @loginStatusChanged
             @checkLoginStatus()
+        
+        loginStatusChanged: =>
+            @render()
+            require("app").trigger "loginChanged"
         
         render: =>
             if @model.get("loggedIn")==true
