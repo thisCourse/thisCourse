@@ -131,14 +131,15 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             nuggetlist = nuggets: @collection.models.filter (nugget) =>
                      if not nugget.attributes.tags then return false
                      @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
-            for nugget in nuggetlist
+            for nugget in nuggetlist.nuggets
                 if require('app').get('user').get('claimed').get(nugget.id)
                     nugget.status = 'claimed'
                 else if require('app').get('user').get('partial').get(nugget.id)
-                    nugget.status = 'claimed'
+                    nugget.status = 'partial'
                 else
                     nugget.status = 'unclaimed'
-            @$el.html templates.filtered_nugget_list
+                console.log nugget.status
+            @$el.html templates.filtered_nugget_list nuggetlist
 
     
 
