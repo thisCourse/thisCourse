@@ -83,7 +83,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
             
         initialize: =>
-            @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure),totalpoints = 0}
+            @lecturelist = {lecture:({title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure),totalpoints: 0}
             console.log @lecturelist                  
             @render
         
