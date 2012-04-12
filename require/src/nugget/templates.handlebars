@@ -47,7 +47,7 @@
 
 <script id="probe_enable" type="text/x-handlebars-template">
     <a href='{{url}}quiz/' class='btn quizme'>Quiz Me</a>
-    {{#if status }}<br/><b>&nbsp;&nbsp;&nbsp;Claimed!</b>{{/if }}
+    {{#if status }}<div class="claimed">Claimed!</div>{{/if }}
 </script>
 
 <script id="probe_disable" type="text/x-handlebars-template">
@@ -60,11 +60,11 @@
     <div id='lectureview' class='view'>
         <ul class='nav nav-pills'>
             {{#each lecture}}
-            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><div><p id='{{lecture}}'>{{title}}</p><div class='points'><p id='{{lecture}}'><strong id='{{lecture}}'>{{points}}</strong></p></div></div></a></li>
+            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><div><p id='{{lecture}}'>{{title}}</p><div class='points'><p id='{{lecture}}'><strong id='{{lecture}}'>{{#if points}}{{points}}{{/if}}</strong></p></div></div></a></li>
             {{/each}}
         </ul>
     </div>
-    <h2>Total Points: {{totalpoints}}</h2>
+    {{#if totalpoints}}<h2>Total Points: {{totalpoints}}</h2>{{/if}}
 </div>
 
 </script>
