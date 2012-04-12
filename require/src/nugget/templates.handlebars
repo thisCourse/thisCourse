@@ -60,11 +60,11 @@
     <div id='lectureview' class='view'>
         <ul class='nav nav-pills'>
             {{#each lecture}}
-            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><p id='{{lecture}}'>{{title}}</p><p id='{{lecture}}'><strong id='{{lecture}}'>{{points}}</strong></p></a></li>
+            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><div><p id='{{lecture}}'>{{title}}</p><div class='points'><p id='{{lecture}}'><strong id='{{lecture}}'>{{points}}</strong></p></div></div></a></li>
             {{/each}}
         </ul>
     </div>
-    <p>Total Points: {{totalpoints}}</p>
+    <h2>Total Points: {{totalpoints}}</h2>
 </div>
 
 </script>
