@@ -1,5 +1,6 @@
 define [], ->
 
+
    knowledgestructure =
       'L01':
          'clusters':
@@ -9,6 +10,7 @@ define [], ->
             'C04': 'Feeling States'
             'C05': 'Decision Making'
          'title': 'Emotion and Cognition'
+         'minpoints': 10
       'L02':
          'clusters':
             'C01': 'Model'
@@ -16,6 +18,7 @@ define [], ->
             'C03': 'Production'
             'C04': 'Regulation'
          'title': 'Emotion Regulation'
+         'minpoints': 10
       'L03':
          'clusters':
             'C01': 'Prediction Error Theory'
@@ -24,6 +27,7 @@ define [], ->
             'C04': 'Predicting Value'
             'C05': 'Decisions'
          'title': 'Reward Representation and Learning'
+         'minpoints': 10
       'L04':
          'clusters':
             'C01': 'Public Health'
@@ -31,6 +35,7 @@ define [], ->
             'C03': 'Genetic Risk'
             'C04': 'Addiction'
          'title': 'Depression and Addiction'
+         'minpoints': 10
       'L05':
          'clusters':
             'C01': 'What Attentions'
@@ -39,6 +44,7 @@ define [], ->
             'C04': 'Salience Maps'
             'C05': 'Attention Networks'
          'title': 'Attention Networks'
+         'minpoints': 10
       'L06':
          'clusters':
             'C01': 'Two Systems'
@@ -49,6 +55,7 @@ define [], ->
             'C06': 'Blindsight'
             'C07': 'Inattention'
          'title': 'Attention Control & Inattention'
+         'minpoints': 10
       'L07':
          'clusters':
             'C01': 'Behavioral Models'
@@ -58,6 +65,7 @@ define [], ->
             'C05': 'Top Down'
             'C06': 'Summary'
          'title': 'Working Memory'
+         'minpoints': 10
       'L08':
          'clusters':
             'C01': 'Neural Circuit'
@@ -69,6 +77,7 @@ define [], ->
             'C07': 'Functional Overlap'
             'C08': 'Age & Gender'
          'title': 'Response Inhibition'
+         'minpoints': 10
       'L09':
          'clusters':
             'C01': 'Overview'
@@ -76,6 +85,7 @@ define [], ->
             'C03': 'Object Properties'
             'C04': 'Object Categories'
          'title': 'Object Concepts'
+         'minpoints': 10
 
 
    knowledgestructure: knowledgestructure
