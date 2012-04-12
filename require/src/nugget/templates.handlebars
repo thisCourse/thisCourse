@@ -39,7 +39,8 @@
     <div class="description" data="description">{{ description }}</div>
 
     {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{{navlink tags}}}{{/if }}
-    {{#if probeset.length }}<span class="probetoggle logged-in-only"></span>{{/if}}
+    {{#if status }}<br/><h4>Claimed</h4>{{/if }}
+    {{#if probeset.length }}<span class="probetoggle logged-in-only"></span>{{/if }}
 
     <span class="editor-only"><button class="item-button edit-button btn success">Edit nugget details</button></span>
     
@@ -59,11 +60,11 @@
     <div id='lectureview' class='view'>
         <ul class='nav nav-pills'>
             {{#each lecture}}
-            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><p id='{{lecture}}'>{{title}}</p><p id='{{lecture}}'><strong id='{{lecture}}'></strong></p></a></li>
+            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><p id='{{lecture}}'>{{title}}</p><p id='{{lecture}}'><strong id='{{lecture}}'>{{points}}</strong></p></a></li>
             {{/each}}
         </ul>
     </div>
-
+    <p>Total Points: {{totalpoints}}</p>
 </div>
 
 </script>
@@ -73,7 +74,7 @@
     <hr/>
     <ul class='nav nav-pills'>
         {{#each nuggets}}
-        <li><a href='../../../../{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}} unclaimed'>{{attributes.title}}</a></li>
+        <li><a href='../../../../{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{attributes.title}}</a></li>
         {{/each}}
     </ul>
 
