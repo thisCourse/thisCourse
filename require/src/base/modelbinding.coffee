@@ -24,6 +24,7 @@ define [], () ->
                     element.val val
 
             setModelValue = (attr_name, value) ->
+                # alert "setting " + attr_name + " to " + value
                 data = {}
                 data[attr_name] = value
                 model.set data

@@ -29,7 +29,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
             super
 
         drawAllExistingRows: =>
-            clog "drawAllExistingRows"
+            # clog "drawAllExistingRows"
             for model in @model.get("contents").models
                 @addContents model, @model.get("contents")
 

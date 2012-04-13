@@ -13,23 +13,32 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     _.defer => require("app").bind "loginChanged", refreshNuggetAnalytics
 
-    class NuggetRouterView extends baseviews.RouterView
+    class StudyRouterView extends baseviews.RouterView
 
         routes: =>
-            #"": => view: LectureListView, datasource: "collection"
             "": => view: LectureListView, datasource: "collection", nonpersistent: true
-            ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
+            ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id # TODO: here for legacy purposes only
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id, nonpersistent: true
 
         initialize: ->
-            console.log "NuggetRouterView init"
+            # console.log "StudyRouterView init"
+            super
+
+    class NuggetRouterView extends baseviews.RouterView
+
+        routes: =>
+            "": => view: NuggetListView, datasource: "collection", nonpersistent: true
+            ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
+
+        initialize: ->
+            # console.log "NuggetRouterView init"
             super
 
     class NuggetListView extends baseviews.BaseView
 
         events:
             "click .add-button": "addNewNugget"
-            "click .delete-button": "addNewNugget"
+            "click .delete-button": "deleteNugget"
 
         render: =>
             # console.log "rendering NuggetListView"
@@ -41,7 +50,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
-            require('app').bind "nuggetAnalyticsChanged", @render
             @render()            
 
         addNewNugget: =>
@@ -148,7 +156,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 for tag in nugget.attributes.tags
                     nug = renug.exec(tag)?[1] or nug
                 Number(nug)
-            console.log nuggetlist.nuggets
             for nugget in nuggetlist.nuggets
                 if require('app').get('user').get('claimed')?.get(nugget.id)
                     nugget.status = 'claimed'
@@ -229,7 +236,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
 
         initialize: ->
-            console.log "NuggetBottomRouterView init"
+            # console.log "NuggetBottomRouterView init"
             super
 
     class NuggetTopView extends baseviews.BaseView
@@ -240,7 +247,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             for tag in tags
                 lec = relec.exec(tag) or lec
                 clus = reclus.exec(tag) or clus
-            out = "<a href='"+@url+"../lecture/"+lec[0]+"/cluster/"+clus[0]+"/'>Return to Lecture "+Number(lec[1])+" Cluster "+Number(clus[1])+"</a>"
+            out = "<a href='"+@url+"../../study/lecture/"+lec[0]+"/cluster/"+clus[0]+"/'>Return to Lecture "+Number(lec[1])+" Cluster "+Number(clus[1])+"</a>"
         
         initialize: -> @render()
 
@@ -273,6 +280,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         save: =>
             @$("input").blur()
             @$(".save.btn").button "loading"
+            if _.isString(@model.get("tags")) then @model.set tags: @model.get("tags").split(",")
             @model.save().success =>
                 @parent.render()
                 @parent.editDone()
@@ -282,6 +290,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @parent.editDone()
 
             
+    StudyRouterView: StudyRouterView
     NuggetRouterView: NuggetRouterView
     NuggetListView: NuggetListView
     NuggetView: NuggetView

@@ -21,13 +21,16 @@
 <script id="nugget_list" type="text/x-handlebars-template">
     
     <h2>Nuggets</h2>
+    
+    <p><i>Note: this is the full list of content nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
+    
     <ul>
         {{#each collection.models }}
-            <li><a href="{{ ../url }}{{ id }}/">{{ attributes/title }}</a></li>
+            {{#if attributes.title }}<li><a href="{{ id }}/">{{ attributes.title }}</a></li>{{/if}}
         {{/each }}
     </ul>
 
-    <span class="edit"><button class="add-button btn success">Add nugget</button></span>
+    <span class="editor-only"><button class="add-button btn success">Add nugget</button></span>
     
 </script>
 
@@ -74,7 +77,7 @@
     <hr/>
     <ul class='nav nav-pills'>
         {{#each nuggets}}
-        <li><a href='../../../../{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{attributes.title}}</a></li>
+        <li><a href='../../../../../study/{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{attributes.title}}</a></li>
         {{/each}}
     </ul>
 

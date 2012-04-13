@@ -11,6 +11,7 @@ define ["cs!utils/handlebars", "cs!./models", "cs!course/models"], \
     
     app.get("tabs").add title: "Home", slug: "", priority: 0
     app.get("tabs").add title: "Study", slug: "study", priority: 1
+    app.get("tabs").add title: "Nuggets", slug: "nuggets", priority: 2
     
     app.get("course").fetch().success =>
         console.log "fetched!"
