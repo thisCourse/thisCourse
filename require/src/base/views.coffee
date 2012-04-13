@@ -112,7 +112,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
             create_subview_if_ready()
             
-            console.log "subview_created", @, subview_created
+            # console.log "subview_created", @, subview_created
             
             if not subview_created
                 if options.datasource is "model"
@@ -168,7 +168,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             data['course'] = require("app")?.get("course")?.attributes or {}
             data['user'] = require("app")?.get("user")?.attributes or {}
             data['id'] = @model.get(Backbone.Model.prototype.idAttribute) if @model
-            # data['root_url'] = require('app').get('root_url')
+            # data['root_url'] or= require('app').get('root_url')
             return data
 
         # set a view's Bootstrap grid system width according to its model's "width" property 
@@ -314,7 +314,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         navigate: (fragment) =>
             @subfragment = fragment
             @$("a, " + @childTagName).removeClass "active"
-            console.log @url, fragment
+            # console.log @url, fragment
             path = @url + fragment
             if not path then return # TODO: why is this needed? (was getting called with @url and fragment both undefined)
             selected = null

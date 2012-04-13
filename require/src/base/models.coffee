@@ -60,7 +60,7 @@ define ["cs!utils/formatters"], (formatters) ->
         loading: false
 
         loaded: =>
-            clog "CHECKING IF LOADED", @, @includeInJSON==true, @_loaded
+            # clog "CHECKING IF LOADED", @, @includeInJSON==true, @_loaded
             @includeInJSON==true or @_loaded
 
         constructor: (attributes, options) ->

@@ -174,4 +174,4 @@ define ["less!./styles", "cs!base/views", "cs!ui/dialogs/views", "cs!./models", 
     SectionView: SectionView
     
 
-require ["cs!content/items/freeform/views", "cs!content/items/gallery/views"], (itemviews) => console.log("got the itemviews", itemviews)
+require ["cs!content/items/freeform/views", "cs!content/items/gallery/views"], (itemviews) => # console.log("got the itemviews", itemviews)

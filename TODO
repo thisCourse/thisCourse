@@ -9,6 +9,7 @@ TODO
 
     s3 upload: show existing files
 
+    allow & in uploaded filenames (escape file keys)
 
     glossary linking in ckeditor
     hyperlinking interface in ckeditor

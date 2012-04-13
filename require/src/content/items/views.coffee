@@ -49,7 +49,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
         render: =>
             Backbone.ModelBinding.bind @
 
-        events: ->
+        events: =>
             "click .save": "save"
             "click .cancel": "cancel"
             "change input": "change"
@@ -62,6 +62,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
             _.defer -> @$("input:first").focus()
 
         save: =>
+            # alert @model.get("title")
             @$("input").blur()
             @$(".save.btn").button "loading"
             @model.save {},

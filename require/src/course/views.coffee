@@ -7,7 +7,8 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             "": => view: homeviews.HomeView, datasource: "model"
             "lecture/": => view: lectureviews.LectureRouterView, datasource: "model", key: "lectures"
             "assignment/": => view: assignmentviews.AssignmentRouterView, datasource: "model", key: "assignments"
-            "study/": => view: nuggetviews.NuggetRouterView, datasource: "model", key: "nuggets"
+            "study/": => view: nuggetviews.StudyRouterView, datasource: "model", key: "nuggets"
+            "nuggets/": => view: nuggetviews.NuggetRouterView, datasource: "model", key: "nuggets"
             "filebrowse/": => new fileviews.FileBrowserView
 
         initialize: =>
