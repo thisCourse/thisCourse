@@ -24,11 +24,6 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
                 else if response_json._error
                     self.loadDownloadFrame "Error!"
             @loadDownloadFrame()
-            
-
-        save: =>
-            alert "saving gallery item"
-            super
 
         loadDownloadFrame: (message) =>
             $.get "/s3?" + Math.random(), (policy_params) =>

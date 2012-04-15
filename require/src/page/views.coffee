@@ -38,7 +38,6 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
                 @model.get("contents").create
                     title: title
                     width: 12
-                    _editor: true
 
         addContents: (model, coll) =>
             @add_subview model.cid, new PageNavRowView(model: model), @$(".nav-links")

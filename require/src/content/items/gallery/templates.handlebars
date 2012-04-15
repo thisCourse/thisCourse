@@ -4,7 +4,7 @@
     <a href="{{ image_url }}" target="_blank" class="imagelink" rel="gallery_{{ parent.id }}">
         <img src="{{#if thumb_url}}{{ thumb_url }}{{else}}{{ image_url }}{{/if}}" class="thumb" />
     </a>
-    <p class="notes">{{ notes }}{{#if url }} (<a target="_blank" href="{{ url }}">link</a>){{/if}}</p>
+    <p class="notes">{{ notes }}{{#if model.attributes.url }} (<a target="_blank" href="{{ model.attributes.url }}">link</a>){{/if}}</p>
     {{> item_buttons }}
     
 </script>
@@ -18,7 +18,6 @@
     <iframe class="uploader"></iframe>
     <input type="text" data="url" placeholder="Link URL"/>
     <textarea data="notes" placeholder="Notes..."/>
-    <div data="title"></div>
     {{> item_edit_buttons }}
     
 </script>

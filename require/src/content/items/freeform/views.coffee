@@ -16,7 +16,7 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
             super
 
         close: =>
-            #@$(".ckeditor").ckeditorGet().destroy()
+            @$(".ckeditor").ckeditorGet().destroy()
             super
 
     class FreeformItemDisplayView extends itemviews.ItemDisplayView

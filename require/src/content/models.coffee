@@ -4,6 +4,8 @@ define ["cs!base/models"], (basemodels) ->
         
         apiCollection: "content"
         
+        getWidth: => Math.min(@get("width") or 16, @parent?.model?.getWidth?() or 16)
+        
         relations: ->
             sections:
                 collection: SectionCollection
@@ -15,11 +17,10 @@ define ["cs!base/models"], (basemodels) ->
 
     class SectionModel extends basemodels.LazyModel
 
-        defaults:
-            width: 12
-
         initialize: ->
-            @set width: 12 # TODO: temp hack to prevent items from overflowing
+            # @set width: @parent?.model?.get("width") or 12 # TODO: temp hack to prevent items from overflowing
+
+        getWidth: => Math.min(@get("width") or 16, @parent?.model?.getWidth())
 
         relations: ->
             items:
@@ -31,6 +32,8 @@ define ["cs!base/models"], (basemodels) ->
         model: SectionModel
 
     class ItemModel extends basemodels.LazyModel
+        
+        getWidth: => Math.min(@get("width") or 16, @parent?.model?.getWidth() or 16)
 
     class ItemCollection extends basemodels.LazyCollection
         model: ItemModel
