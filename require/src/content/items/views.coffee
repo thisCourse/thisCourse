@@ -5,51 +5,63 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
         className: "ItemView"
 
         render: ->
-            @$el.html templates.item_container @context
+            @$el.html ""
+            @add_subview "displayview", new @DisplayView(model: @model)
+            @$el.append templates.item_buttons()
             @updateWidth()
 
         events: ->
             "click .edit-button": "edit"
             "click .delete-button": "delete"
-            "mouseenter .item-inner": "showActionButtons"
-            "mouseleave .item-inner": "hideActionButtons"
+            "mouseenter": "showActionButtons"
+            "mouseleave": "hideActionButtons"
 
         initialize: ->
-            @model.bind "change", @change
-            @change()
+            if not @DisplayView
+                throw new Error @constructor.name + " does not have a DisplayView specified (must be a subclass of ItemDisplayView)."
+            if not @EditView
+                throw new Error @constructor.name + " does not have an EditView specified (must be a subclass of ItemEditView)."
+            
 
         showActionButtons: =>
-            if @model.editing then return
-            # @$(".item-button").not(".drag-button").stop().hide().fadeIn(50)
-            # @$(".item-button.drag-button").stop().hide().fadeIn 200
+            if @subviews.editview and not @subviews.editview.closed then return
             @$(".item-button").show()
 
         hideActionButtons: =>
             @$(".item-button").hide()
 
-        edit: => #_.debounce(->
-            @add_subview "editview", new @EditView(model: @model), ".item-inner"
+        edit: =>
             @hideActionButtons()
+            @add_subview "editview", new @EditView(model: @model)
+            if @subviews.editview instanceof ItemEditInlineView
+                @subviews.displayview.hide()
             return false
-        #, 100)
-
+            
         delete: =>
             @model.destroy()
             return false
+
+
+    class ItemDisplayView extends baseviews.BaseView
+        className: "ItemDisplayView"
+
+        render: =>
+            
+
+        initialize: ->
+            @model.bind "change", @render
 
         close: =>
             @model.unbind "change", @render
             super
 
-        change: =>
-            @render()
 
     class ItemEditView extends baseviews.BaseView
         
         render: =>
             Backbone.ModelBinding.bind @
 
-        events: =>
+        events: -> _.extend super,
             "click .save": "save"
             "click .cancel": "cancel"
             "change input": "change"
@@ -95,6 +107,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
             super
 
     class ItemEditInlineView extends ItemEditView
+        className: "ItemEditView ItemEditInlineView"
 
         minwidth: 6
 
@@ -110,42 +123,36 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
                 when 13 then @save()
                 when 27 then @cancel()
 
-        initialize: ->
-            super
-            #@options.parent.$(".item-inner").hide() # TODO
-            #@options.parent.$el.append @$el
-
         saved: ->
             @close()
 
         close: ->
             super
-            @parent.$(".item-inner").show() # TODO: handle this in parent, with subview stuff
+            @parent.subviews.displayview.show() # TODO: handle this in parent, with subview stuff
 
         
     class ItemEditPopupView extends ItemEditView
+        className: "ItemEditView ItemEditPopupView"
 
         render: ->
             super
 
-        events: ->
+        events: -> _.extend super,
             "focus input": "scrollToShow"
             "keyup input": "keyup"
             "mouseenter": "bringToTop"
 
         initialize: ->
             super
-            @reposition()
             @scrollToShow()
             require("app").bind "resized", @reposition
 
-        close: ->
+        close: =>
             require("app").unbind "resized", @reposition
             super
 
         change: =>
             super
-            @reposition()
 
         keyup: (ev) =>
             $(ev.target).change() # trigger a change event for every keypress, for the sake of the data binding
@@ -160,27 +167,32 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
         saved: =>
             @$el.animate opacity: 0, 300, @close
 
-        reposition: (duration) =>
-            duration or= 0
-            pos = @parent.$el.offset()
-            top = pos.top + @parent.$el.height()
-            left = pos.left
-            @$el.stop().animate left: left, top: top, duration, "swing", @scrollToShow
-
         scrollToShow: =>
             $("html, body").stop()
             _.defer =>
-                target_scroll_offset = $("body").scrollTop()
-                if $(window).height() + $("body").scrollTop() < @$el.offset().top + @$el.height() + 30
-                    target_scroll_offset = @$el.offset().top + @$el.height() - $(window).height() + 30
-                if $("body").scrollTop() > @$el.offset().top
-                    target_scroll_offset = @$el.offset().top
-                if target_scroll_offset > 0 and target_scroll_offset != $("body").scrollTop()
+                
+                current_scroll = $("body").scrollTop()
+                
+                # start by assuming we'll leave the offset where it is
+                target_scroll_offset = current_scroll
+
+                # if we're scrolled down too far, or the element is taller than the viewport, then scroll up until the element's top is visible
+                if current_scroll > @$el.offset().top or @$el.height() > $(window).height()
+                    console.log "scroll up"
+                    target_scroll_offset = @$el.offset().top                                
+                # if we're scrolled up too far and the element's bottom is cut off, scroll down to show the element's bottom
+                else if current_scroll + $(window).height() < @$el.offset().top + @$el.height() #+ 30
+                    console.log "scroll down", @$el.offset().top, @$el.height(), $(window).height()
+                    target_scroll_offset = @$el.offset().top + @$el.height() - $(window).height() #+ 30
+                
+                # smoothly scroll to the target offset
+                if target_scroll_offset > 0 and target_scroll_offset != current_scroll
+                    console.log "scrolling to " + target_scroll_offset
                     $("html, body").stop().animate scrollTop: target_scroll_offset, 400
 
 
     ItemView: ItemView
-    ItemEditView: ItemEditView
+    ItemDisplayView: ItemDisplayView
     ItemEditInlineView: ItemEditInlineView
     ItemEditPopupView: ItemEditPopupView
     
