@@ -5,10 +5,7 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
         
         minwidth: 12
         
-        #class: "item item-freeform"
-        
         render: =>
-            # console.log "rendering freeform itemeditview"
             super
             @$el.html templates.item_freeform_edit @context()
             _.defer => $(".ckeditor").ckeditor ckeditorviews.get_config()
@@ -22,9 +19,7 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
             #@$(".ckeditor").ckeditorGet().destroy()
             super
 
-    class FreeformItemView extends itemviews.ItemView
-
-        EditView: FreeformItemEditView
+    class FreeformItemDisplayView extends itemviews.ItemDisplayView
 
         initialize: ->
             @model.set width: Math.min(15, @model.parent.model.get("width"))
@@ -33,12 +28,14 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
         render: =>
             # console.log "rendering freeform itemview"
             super
-            @$('.item-inner').html templates.item_freeform @context()
+            @$el.html templates.item_freeform @context()
             
-
+    class FreeformItemView extends itemviews.ItemView    
+        EditView: FreeformItemEditView
+        DisplayView: FreeformItemDisplayView
+    
     
     title: "Freeform"
     description: "Arbitrary content in an editor (visual, or HTML source)"
     ItemView: FreeformItemView
-    ItemEditView: FreeformItemEditView
     

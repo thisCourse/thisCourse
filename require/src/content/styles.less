@@ -8,9 +8,9 @@
     position: relative;
     
     .SectionView {
-        overflow: hidden;
+        // overflow: hidden;
         margin-bottom: 20px;
-        border: @content-border-width solid #CCC;
+        border: @content-border-width solid #EEE;
         .border-radius(5px);
         position: relative;
         
@@ -29,17 +29,27 @@
             display: inline-block;
             vertical-align: top;
             float: none;
-            overflow: hidden;
+            // overflow: hidden;
             position: relative;
         } 
-        
-    }
 
-    .item-inner, .item-edit-inline {
-        background-color: #f2f2f2;
-        padding: 10px;
-        .border-radius(5px);
-        min-height: 40px;
+        .ItemDisplayView, .ItemEditInlineView {
+            background-color: #f5f5f5;
+            padding: 10px;
+            .border-radius(5px);
+            min-height: 40px;
+        }
+
+        .ItemEditPopupView {
+            position: absolute;
+            // float: left;
+            .border-radius(5px);
+            padding: 15px;
+            background-color: #f6f6f6;
+            border: 1px #ccc solid;
+            z-index: 100000;
+        }
+        
     }
 
     .edit-button {
@@ -83,14 +93,6 @@
         cursor: pointer;
     }
 
-}
-
-.item-edit-popup {
-    position: absolute;
-    .border-radius(5px);
-    padding: 15px;
-    background-color: #f6f6f6;
-    border: 1px #ccc solid;
 }
 
 .item-edit {

@@ -6,14 +6,17 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
         minwidth: 4
 
         render: =>
-            Backbone.ModelBinding.bind @
             @$el.html templates.item_gallery_edit @context()
+            @bind_data()
             
             # super
             @enablePlaceholders()
             @$("iframe.uploader").load =>
                 response_text = $("body", $("iframe").contents()).text()
-                response_json = if response_text then JSON.parse(response_text) else {}
+                try
+                    response_json = JSON.parse(response_text)
+                catch err
+                    response_json = {}
                 if response_json.image
                     self.loadDownloadFrame "Success!"
                     $("input[data=image_url]").val(response_json.image.url).change()
@@ -33,13 +36,14 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
                 if message then url += ",message:" + message
                 @$("iframe.uploader").attr "src", url
 
-    class GalleryItemView extends itemviews.ItemView
+    class GalleryItemDisplayView extends itemviews.ItemDisplayView
 
         EditView: GalleryItemEditView
 
         render: =>
             super
-            @$('.item-inner').html templates.item_gallery @context()
+            @$el.html templates.item_gallery @context()
+            @bind_data()
             @$(".imagelink").fancybox
                 cyclic: true
                 hideOnContentClick: true
@@ -58,9 +62,12 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
             @model.attributes.width = 4
             super
 
+    class GalleryItemView extends itemviews.ItemView    
+        EditView: GalleryItemEditView
+        DisplayView: GalleryItemDisplayView
+
     
     title: "Gallery"
     description: "A gallery of photos, with expandable thumbnails"
     ItemView: GalleryItemView
-    ItemEditView: GalleryItemEditView
     

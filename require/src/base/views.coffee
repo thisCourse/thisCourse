@@ -20,7 +20,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             @closed = false
             #console.log "CONSTRUCTED", @, @model or @collection, @collection and @collection.length
         
-        bind_links: ->
+        bind_links: =>
             @$el.on "click", "a", (ev) ->
                 if ev.shiftKey or ev.ctrlKey then return true # allow ctrl/shift clicks (new tab/window) to pass
                 if ev.currentTarget.origin != document.location.origin or ev.currentTarget.pathname.split("/")[1] not in ["course", "src"] # make external links pop up in a new window
@@ -28,6 +28,29 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     return true
                 require("app").navigate ev.currentTarget.pathname # handle the internal link through Backbone's router, and drop event
                 return false # TODO:  do we want to make sure our router found a match, else return true?
+
+        bind_data: =>
+            if @model not instanceof Backbone.Model then throw new Error "View must have a model attached before you can bind_data"
+            @$("[data][data!='']").each (ind, el) =>
+                $el = $(el)
+                attr = $el.attr("data")
+                switch el.tagName.toLowerCase()
+                    when "input", "textarea", "select"
+                        $el.val @model.get(attr)
+                        elChanged = =>
+                            newdata = {}
+                            newdata[attr] = $(el).val()
+                            console.log "newdata", newdata
+                            @model.set newdata
+                        $(el).change elChanged
+                        $(el).keypress elChanged
+                        @model.bind "change:" + attr, =>
+                            if not $el.is(":focus")
+                                $el.val @model.get(attr)
+                    else
+                        $(el).text @model.get(attr)
+                        @model.bind "change:" + attr, =>
+                            $el.text @model.get(attr)
 
         show: =>
             if not @visible

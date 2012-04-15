@@ -212,9 +212,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     class NuggetView extends baseviews.BaseView
 
-        events:
-            "click .edit-button": "edit"
-
         render: =>
             @$el.html templates.nugget @context()
             @add_subview "topview", new NuggetTopView(model: @model), ".nugget-top"
