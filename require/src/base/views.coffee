@@ -40,7 +40,6 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                         elChanged = =>
                             newdata = {}
                             newdata[attr] = $(el).val()
-                            console.log "newdata", newdata
                             @model.set newdata
                         $(el).change elChanged
                         $(el).keypress elChanged
@@ -194,10 +193,10 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             # data['root_url'] or= require('app').get('root_url')
             return data
 
-        # set a view's Bootstrap grid system width according to its model's "width" property 
+        # set a view's Bootstrap grid system width according to its model's "width" attribute
         updateWidth: =>
             @$el.attr "class", @$el[0].className.replace(/\w*\bspan\d+\b/g, "")
-            width = Math.max(@model.get("width"), @editView and @editView.minwidth or 4)
+            width = Math.max(@model.getWidth?() or @model.get("width") or 4, @minwidth or 2)
             @$el.addClass "span" + width if isFinite(width)
             require("app").trigger "resized"
 

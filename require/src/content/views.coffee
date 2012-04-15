@@ -10,9 +10,6 @@ define ["less!./styles", "cs!base/views", "cs!ui/dialogs/views", "cs!./models", 
 
         render: =>
             @$el.html templates.content @context()
-            # if @model.get("_editor")
-            #     @makeEditable()
-            #     @makeSortable()
             @update()
             for model in @model.get("sections").models
                 @addSections model, @model.get("sections")
@@ -33,7 +30,7 @@ define ["less!./styles", "cs!base/views", "cs!ui/dialogs/views", "cs!./models", 
 
         addNewSection: =>
             new_section = type: @$(".add-section-type").val()
-            new_section.width = @model.get("width") if @model.get("width")
+            # new_section.width = @model.get("width") if @model.get("width")
             # alert "about to create new section"
             @model.get("sections").create new_section
             clog @model.get("sections")
@@ -81,6 +78,7 @@ define ["less!./styles", "cs!base/views", "cs!ui/dialogs/views", "cs!./models", 
         
         render: =>
             @$el.html templates.section @context
+            @updateWidth()
             @makeSortable()
             @update()
             for model in @model.get("items").models

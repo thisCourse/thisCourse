@@ -21,7 +21,7 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
                 throw new Error @constructor.name + " does not have a DisplayView specified (must be a subclass of ItemDisplayView)."
             if not @EditView
                 throw new Error @constructor.name + " does not have an EditView specified (must be a subclass of ItemEditView)."
-            
+            @model.bind "change:width", @updateWidth
 
         showActionButtons: =>
             if @subviews.editview and not @subviews.editview.closed then return
@@ -119,6 +119,8 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
             "keyup input": "keyup"
 
         keyup: (ev) ->
+            if ev.metaKey or ev.shiftKey or ev.altKey or ev.ctrlKey
+                return # we don't want to confuse, e.g., ALT-ESC with a canceling action
             switch ev.which
                 when 13 then @save()
                 when 27 then @cancel()
