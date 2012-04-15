@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "cs!auth/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], \
-        (baseviews, courseviews, spinnerviews, authviews, templates, bootstrap, styles) ->
+define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], \
+        (baseviews, courseviews, authviews, templates, bootstrap, styles) ->
 
     class AppView extends baseviews.BaseView
 
@@ -20,7 +20,6 @@ define ["cs!base/views", "cs!course/views", "cs!ui/spinner/views", "cs!auth/view
 
         render: =>
             @$el.html templates.root @context()
-            @add_subview "spinner", new spinnerviews.SpinnerView(visible: true)
             @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"
             @add_subview "toptabsview", new TopTabsView(collection: @model.get("tabs")), "#toptabs"
             @add_subview "loginview", new authviews.LoginView(model: @model.get("user")), "#authbar"
