@@ -2,6 +2,19 @@ api = require("./api.coffee")
 filecollection = api.db.collection("file")
 ObjectId = api.db.bson_serializer.ObjectID
 
+crypto = require("crypto")
+async = require("async")
+express = require("express")
+knox = require("knox")
+s3 = module["exports"]
+
+knoxClient = knox.createClient
+    key: "AKIAJLU4UNM7TIOYH6HA"
+    secret: "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"
+    bucket: "thiscourse"
+
+s3.knoxClient = knoxClient
+
 handle_uploaded_file = (req, res, next) ->
     image_key = req.query.image_key
     thumb_key = req.query.thumb_key
@@ -31,7 +44,26 @@ handle_uploaded_file = (req, res, next) ->
 handle_file_redirect = (req, res, next) ->
     filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
         if not obj then return res.json _error: "The file could not be found", 404
-        res.redirect("https://thiscourse.s3.amazonaws.com/images/" + obj.md5 + "." + obj.extension)
+        key = "/images/" + obj.md5 + "." + obj.extension
+        filename = obj.filename
+        signed_url = temporary_download_link(key, filename)
+        res.redirect(signed_url)
+
+temporary_download_link = (key, filename, headers={}) ->
+    resource = "/#{knoxClient.bucket}#{key}"
+    expiry = parseInt((new Date).getTime() / 1000) + 60 # expires in 60 seconds
+    string = 'GET\n\n\n' +
+        expiry + '\n' +
+        resource +
+        '?response-content-disposition=attachment;filename=' + filename
+    console.log "'" + string + "'"
+    sig = crypto.createHmac('sha1',knoxClient.secret).update(string).digest('base64')
+    url = "http://#{knoxClient.bucket}.s3.amazonaws.com" + key +
+        "?Expires=" + expiry +
+        "&AWSAccessKeyId=" + knoxClient.key +
+        "&Signature=" + sig +
+        "&response-content-disposition=attachment;" +
+        "filename=" + filename
 
 handle_thumb_redirect = (req, res, next) ->
     filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
@@ -51,7 +83,7 @@ move_file_to_md5 = (key, path, callback) ->
                 md5: response.md5
                 size: response.headers["content-length"]
                 uploaded: response.headers.date
-                url: client.https(filename)
+                url: knoxClient.https(filename)
                 filename: decodeURIComponent(key).split("/").reverse()[0]
 
 APIError = (res, msg, code) ->
@@ -71,7 +103,7 @@ create_policy = (policy) ->
     new Buffer(policy).toString "base64"
 
 copy_file = (source, dest, callback) ->
-    client.put("/" + dest,
+    knoxClient.put("/" + dest,
         "Content-Length": "0"
         "x-amz-copy-source": "/thiscourse/" + source
         "x-amz-metadata-directive": "REPLACE"
@@ -90,14 +122,14 @@ move_file = (source, dest, callback) ->
         else callback null, res    if typeof (callback) is "function"
 
 del_file = (key, callback) ->
-    client.del(key).on("response", (res) ->
+    knoxClient.del(key).on("response", (res) ->
         callback null, res    if typeof (callback) is "function"
     ).end()
 
 get_file = (key, callback) ->
     callback = console.log    if typeof (callback) isnt "function"
     data = ""
-    client.get(key).on("response", (res) ->
+    knoxClient.get(key).on("response", (res) ->
         res.on("data", (chunk) ->
             data += chunk
         ).on "end", ->
@@ -106,7 +138,7 @@ get_file = (key, callback) ->
 
 head_file = (key, callback) ->
     callback = console.log    if typeof (callback) isnt "function"
-    client.head(key).on("response", (res) ->
+    knoxClient.head(key).on("response", (res) ->
         response =
             headers: res.headers
             statusCode: res.statusCode
@@ -115,20 +147,6 @@ head_file = (key, callback) ->
         response.md5 = res.headers.etag.slice(1, -1)    if res.headers.etag
         callback null, response
     ).end()
-
-crypto = require("crypto")
-async = require("async")
-express = require("express")
-knox = require("knox")
-s3 = module["exports"]
-
-client = knox.createClient(
-    key: "AKIAJLU4UNM7TIOYH6HA"
-    secret: "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"
-    bucket: "thiscourse"
-)
-
-s3.client = client
 
 # attach the various HTTP verbs to the api path (for some reason this.all(...) doesn't work with this pattern)
 s3.router = ->
