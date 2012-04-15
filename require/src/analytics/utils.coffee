@@ -12,4 +12,5 @@ define [], () ->
         s.parentNode.insertBefore ga, s
 
     ga_track_pageview: (url) ->
-        _gaq.push ["_trackPageview", url]
+        if environ=="DEPLOY"
+            _gaq.push ["_trackPageview", url]

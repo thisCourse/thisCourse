@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/views", "cs!nugget/views", "cs!file/views", "cs!./models"], \
-        (baseviews, homeviews, lectureviews, assignmentviews, nuggetviews, fileviews, models) ->
+define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/views", "cs!nugget/views", "cs!chat/views", "cs!file/views", "cs!./models"], \
+        (baseviews, homeviews, lectureviews, assignmentviews, nuggetviews, chatviews, fileviews, models) ->
 
     class CourseView extends baseviews.RouterView
 
@@ -9,6 +9,7 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             "assignment/": => view: assignmentviews.AssignmentRouterView, datasource: "model", key: "assignments"
             "study/": => view: nuggetviews.StudyRouterView, datasource: "model", key: "nuggets"
             "nuggets/": => view: nuggetviews.NuggetRouterView, datasource: "model", key: "nuggets"
+            "chat/": => view: chatviews.ChatView
             "filebrowse/": => new fileviews.FileBrowserView
 
         initialize: =>
