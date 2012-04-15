@@ -18,7 +18,7 @@ define [], () ->
 
     logout: (user) ->
         xhdr = $.post "/logout", =>
-            user.set loggedIn: false
+            user.set loggedIn: false, email: undefined
         return xhdr
             
     
