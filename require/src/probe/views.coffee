@@ -202,6 +202,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @mementoStore()
             @render()
             @model.bind "change", @render
+            @newans = 0
         
         render: =>
             @$el.html templates.probe_edit @context()
@@ -266,9 +267,11 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         createAnswer: =>
             answer = @model.get('answers').create {}
             @addAnswers answer,@model.get('answers')
+            @newans += 1
             
         addAnswers: (model, coll) =>
-            @add_subview "answerview_"+model.id, new ProbeAnswerEditView(model: model), ".answerlist"
+            viewid = model.id or @newans
+            @add_subview "answerview_"+viewid, new ProbeAnswerEditView(model: model), ".answerlist"
             
         
     class ProbeAnswerEditView extends baseviews.BaseView
@@ -285,33 +288,37 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         initialize: =>
             @model.bind "change", @render
             @model.bind "destroy", @close
+            @editing = ''
 
         render: =>
             @$el.html templates.probe_answer_edit @context()
 
         delete: =>
             @model.destroy()
-            console.log 'deleted'
 
         edit: (aclass) =>
             @$(aclass).addClass('editing')
+            @editing = aclass
         
         stopEdit: (aclass) =>
             @$(aclass).removeClass('editing')
+            @editing = ''
         
         editAnswer: =>
+            if @editing then @finish(@editing)
             @edit('.answer')
         
         editFeedback: =>
+            if @editing then @finish(@editing)
             @edit('.feedback')
         
         finish: (aclass) =>
             if aclass=='.answer'
+                @stopEdit(aclass)
                 @model.set text:@$('.answertext')[0].value
-                @stopEdit(aclass)
             else if aclass=='.feedback'
-                @model.set feedback:@$('.answerfeedbacktext')[0].value
                 @stopEdit(aclass)
+                @model.set feedback:@$('.answerfeedbacktext')[0].value
         
         updateAnswerOnEnter: (event) =>
             @updateOnEnter(event,'.answer')
@@ -323,6 +330,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if event.keyCode == 13 then @finish(aclass)
                 
         toggleFeedback: (event) =>
+            if @editing then @finish(@editing)
             @$('.feedback_text').toggleClass('hidden')
             if @$(event.target).is(':checked')
                 @finish('.feedback')
@@ -330,6 +338,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @model.set feedback:''
                 
         toggleCorrect: =>
+            if @editing then @finish(@editing)
             @model.set correct:not @model.get('correct')
             
     ProbeRouterView: ProbeRouterView
