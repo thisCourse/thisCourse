@@ -77,6 +77,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 subview.navigate(@fragment) # TODO: test if it's inefficient to navigate on ALL THE THINGS
             return false
 
+        navigateToShow: =>
+            require("app").navigate @url?() or @url if @url
+
         add_lazy_subview: (options={}, callback) =>
 
             #if not options.datasource then throw Error("You must specify a datasource ('model' or 'collection') when calling add_lazy_subview:", @)
