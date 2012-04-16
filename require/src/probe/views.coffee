@@ -201,28 +201,71 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         initialize: ->
             @mementoStore()
             @render()
+            @model.bind "change", @render
         
         render: =>
             @$el.html templates.probe_edit @context()
-            Backbone.ModelBinding.bind @
-            @enablePlaceholders()
+            # Backbone.ModelBinding.bind @
+            # @enablePlaceholders()
             for answer in @model.get('answers').models
                 @addAnswers answer, @model.get("answers")
 
         events: #-> _.extend super,
             "click button.save": "save"
             "click button.cancel": "cancel"
+            "dblclick .question" : "editQuestion"
+            "dblclick .questionfeedback": "editFeedback"
+            "keypress .question_text" : "updateQuestionOnEnter"
+            "keypress .feedback_text" : "updateFeedbackOnEnter"
+            "click .addanswer"  : "createAnswer"
 
         save: =>
             @$("input").blur()
             @$(".save.btn").button "loading"
             @model.save().success =>
-                @parent.render()
-                @parent.editDone()
+                console.log @url
+                @return()
 
         cancel: =>
             @mementoRestore()
-            @parent.editDone()
+            @return()
+        
+        edit: (aclass) =>
+            @$(aclass).addClass('editing')
+        
+        stopEdit: (aclass) =>
+            @$(aclass).removeClass('editing')
+        
+        editQuestion: =>
+            @edit('.question')
+        
+        editFeedback: =>
+            @edit('.questionfeedback')
+        
+        finish: (aclass) =>
+            if aclass=='.question'
+                @model.set question_text:@$('.question_text')[0].value
+                @stopEdit(aclass)
+            else if aclass=='.questionfeedback'
+                @model.set feedback:@$('.feedback_text')[0].value
+                @stopEdit(aclass)
+        
+        updateQuestionOnEnter: (event) =>
+            @updateOnEnter(event,'.question')
+            
+        updateFeedbackOnEnter: (event) =>
+            @updateOnEnter(event,'.questionfeedback')
+        
+        updateOnEnter: (event,aclass) =>
+            if event.keyCode == 13 then @finish(aclass)
+        
+            
+        return: =>
+            require("app").navigate @url + ".."
+            
+        createAnswer: =>
+            answer = @model.get('answers').create {}
+            @addAnswers answer,@model.get('answers')
             
         addAnswers: (model, coll) =>
             @add_subview "answerview_"+model.id, new ProbeAnswerEditView(model: model), ".answerlist"
@@ -235,12 +278,20 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "dblclick .feedback": "editFeedback"
             "keypress .answertext" : "updateAnswerOnEnter"
             "keypress .answerfeedbacktext" : "updateFeedbackOnEnter"
+            "click .answerfeedback" : "toggleFeedback"
+            "click .delete-button" : "delete"
+            "click .check_correct" : "toggleCorrect"
         
         initialize: =>
+            @model.bind "change", @render
+            @model.bind "destroy", @close
 
-        
         render: =>
             @$el.html templates.probe_answer_edit @context()
+
+        delete: =>
+            @model.destroy()
+            console.log 'deleted'
 
         edit: (aclass) =>
             @$(aclass).addClass('editing')
@@ -256,11 +307,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         finish: (aclass) =>
             if aclass=='.answer'
-                console.log @$('.answertext').value
-                @model.set text:@$('.answertext').value
+                @model.set text:@$('.answertext')[0].value
                 @stopEdit(aclass)
             else if aclass=='.feedback'
-                @model.set feedback:@$('.answerfeedback').value
+                @model.set feedback:@$('.answerfeedbacktext')[0].value
                 @stopEdit(aclass)
         
         updateAnswerOnEnter: (event) =>
@@ -271,6 +321,16 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         updateOnEnter: (event,aclass) =>
             if event.keyCode == 13 then @finish(aclass)
+                
+        toggleFeedback: (event) =>
+            @$('.feedback_text').toggleClass('hidden')
+            if @$(event.target).is(':checked')
+                @finish('.feedback')
+            else
+                @model.set feedback:''
+                
+        toggleCorrect: =>
+            @model.set correct:not @model.get('correct')
             
     ProbeRouterView: ProbeRouterView
     ProbeListView: ProbeListView

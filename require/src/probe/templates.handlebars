@@ -34,18 +34,18 @@
     
 <div class='probeedit container'>
     <h5>Question:</h5>
-    <div class='display'>
-        <h3 class='question question_text'>{{question_text}}</h3>
+    <div class='display question'>
+        <h3>{{question_text}}</h3>
     </div>
-    <div class='edit'>
-        <textarea class='input-xlarge question question_text' type='text' rows='3'>{{question_text}}</textarea>
+    <div class='question edit'>
+        <textarea class='input-xlarge question_text' type='text' rows='3'>{{question_text}}</textarea>
     </div>
     <h5>Feedback:</h5>
-    <div class='display'>
-        <p class='question feedback_text'>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</p>
+    <div class='display questionfeedback'>
+        <p>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</p>
     </div>
-    <div class='edit'>
-        <textarea class='input-xlarge question feedback_text' type='text' rows='3'>{{feedback}}</textarea>
+    <div class='edit questionfeedback'>
+        <textarea class='input-xlarge feedback_text' type='text' rows='3'>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</textarea>
     </div>
     <div class='row'>
     <ul class='answerlist'>
@@ -65,14 +65,15 @@
     </li>
     </ul>
     </div>
-    <button class='item-button btn primary addanswer'>Add Answer</button><br/><br/>
-    {{> item_edit_buttons }}
+    <button class='btn primary addanswer'>Add Answer</button><br/><br/>
+    <button class='btn success save'>Save</button>
+    <button class='btn danger cancel'>Cancel</button>
 </div>
 
 </script>
 
 <script id="probe_answer_edit" type="text/x-handlebars-template">
-<li><div class='row answer'>
+<li><div class='row'>
             <div class='span8'>
                 <div class='text answer display'>
                     <p>{{text}}</p>
@@ -80,16 +81,16 @@
                 <div class='text answer edit'>
                     <input class='answertext' type='text' value='{{text}}'></input>
                 </div>
-                <h6 class='inline'>Answer Feedback?</h6><input class='answerfeedback' type='checkbox' {{#if feedback}}checked='yes'{{/if}}value='answerfeedback'></input>
-                <div class='text display feedback{{#if feedback}} {{else}} hidden {{/if}}'>
-                    <p>{{feedback}}</p>
+                <h6 class='inline'>Answer Feedback?</h6><input class='answerfeedback' type='checkbox' {{#if feedback}}checked='checked'{{/if}}value='answerfeedback'></input>
+                <div class='text display feedback feedback_text{{#if feedback}} {{else}} hidden {{/if}}'>
+                    <p>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</p>
                 </div>
                 <div class='text edit feedback'>
                     <textarea class='input answerfeedbacktext' type='text' rows='2'>{{feedback}}</textarea>
                 </div>
             </div>
             <div class='span1 middlealign'>
-                <input class='check_correct' type='checkbox' value='correct' {{#if correct}}checked='yes'{{/if}}></input>
+                <input class='check_correct' type='checkbox' value='correct' {{#if correct}}checked='checked'{{/if}}></input>
             </div>
             <div class='span1 middlealign'>
                 <button class="section-button delete-button btn danger">X</button>

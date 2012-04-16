@@ -18,6 +18,13 @@
     .probequestion {
         max-width:600px;
         word-wrap: break-word;
+        div .feedback {
+            display: none;
+            color: #111111;
+            padding-top:10px;
+            font-style:italic;
+            
+        }
         ol.answerlist {
             list-style:none;
             counter-reset: list;
@@ -41,6 +48,7 @@
                         background-color: #BBFFBB;
                     }
                 }
+
                 div.checkorcross {
                     float: left;
                     display:inline;
@@ -63,13 +71,6 @@
     max-width: 600px;
 }
 
-div .feedback {
-    display: none;
-    color: #111111;
-    padding-top:10px;
-    font-style:italic;
-    
-}
 
 .display {
     &.editing {
@@ -114,8 +115,13 @@ div .feedback {
     .inline {
         display:inline;
     }
-    textarea.question {
+    textarea.question_text {
         font-size: 18px;
+        font-weight:bold;
+        line-height: 36px;
+        }
+    textarea {
+        width:100%;
         }
     .display {
         border: 1px solid #DDDDDD;
@@ -123,6 +129,7 @@ div .feedback {
     }
     div.text {
         padding: 4px 4px;
+        margin-bottom: 4px;
         p {
             font-size: 16px;
             text-align: justify;
