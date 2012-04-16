@@ -42,7 +42,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                             newdata[attr] = $(el).val()
                             @model.set newdata
                         $(el).change elChanged
-                        $(el).keypress elChanged
+                        $(el).keyup elChanged
                         @model.bind "change:" + attr, =>
                             if not $el.is(":focus")
                                 $el.val @model.get(attr)
@@ -109,6 +109,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
                 if options.key # if a key was specified, we need to descend
                     obj = @[options.datasource]?.get?(options.key)
+                else if _.isNumber(options.index)
+                    obj = @[options.datasource]?.at?(options.index)
                 else if options.datasource # otherwise, we pass the whole model/collection along from the parent view
                     obj = @[options.datasource]                
                 else # no datasource specified
@@ -262,7 +264,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         navigate: (fragment) =>
 
             # console.log "NAV", @
-
+            
             # check if fragment matches any of our routes
             for handler in @handlers
 
@@ -310,7 +312,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         createUrl: (slugs) =>
             if slugs instanceof Backbone.Model
-                slugs = slugs.get("slug") or slugs.get("slugs") or ""
+                slugs = slugs.slug?() or slugs.get("slug") or slugs.get("slugs") or ""
             url = @url + @pattern
             if _.isString(slugs) then slugs = [slugs]
             for slug in slugs
@@ -325,6 +327,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 title: title or (slug.substr(0,1).toUpperCase() + slug.substr(1))
                 tooltip: tooltip
             @render()
+
+        removeItem: (slug) =>
+            @render()            
         
         render: =>
             html = ""
@@ -340,10 +345,14 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             path = @url + fragment
             if not path then return # TODO: why is this needed? (was getting called with @url and fragment both undefined)
             selected = null
-            for a in @$("a")
-                if path.slice(0, a.pathname.length) == a.pathname # link's url is a prefix of path being navigated
-                    if not selected or a.pathname.length > selected.pathname.length # only select link if its url is longer
-                        selected = a
+            links = @$("a")
+            if fragment=="" and @autoSelectFirst and links.length # if no fragment, and desired, highlight first link
+                selected = links[0]
+            else
+                for a in links
+                    if path.slice(0, a.pathname.length) == a.pathname # link's url is a prefix of path being navigated
+                        if not selected or a.pathname.length > selected.pathname.length # only select link if its url is longer
+                            selected = a
             if selected
                 $(selected).addClass "active"
                 $(selected).parents(@childTagName).first().addClass "active"
