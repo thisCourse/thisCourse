@@ -56,12 +56,11 @@ temporary_download_link = (key, filename, headers={}) ->
         expiry + '\n' +
         resource +
         '?response-content-disposition=attachment;filename=' + filename
-    console.log "'" + string + "'"
     sig = crypto.createHmac('sha1',knoxClient.secret).update(string).digest('base64')
     url = "http://#{knoxClient.bucket}.s3.amazonaws.com" + key +
         "?Expires=" + expiry +
         "&AWSAccessKeyId=" + knoxClient.key +
-        "&Signature=" + sig +
+        "&Signature=" + encodeURIComponent(sig) +
         "&response-content-disposition=attachment;" +
         "filename=" + filename
 
