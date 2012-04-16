@@ -4,8 +4,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => view: ProbeListView, datasource: "collection"
-            ":probe_id/": (probe_id) => view: ProbeContainerView, datasource: "collection", key: probe_id
+            "": => view: ProbeContainerView, datasource: "collection"
+            "edit/": => view: ProbeListView, datasource: "collection"
+            "edit/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "collection", key: probe_id
 
         initialize: ->
             # console.log "ProbeRouterView init"
@@ -24,6 +25,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
         initialize: ->
             # console.log "init ProbeListView"
+            for model in @collection.models
+                model.fetch()
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
@@ -203,6 +206,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$el.html templates.probe_edit @context()
             Backbone.ModelBinding.bind @
             @enablePlaceholders()
+            for answer in @model.get('answers').models
+                @addAnswers answer, @model.get("answers")
 
         events: #-> _.extend super,
             "click button.save": "save"
@@ -218,7 +223,54 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         cancel: =>
             @mementoRestore()
             @parent.editDone()
+            
+        addAnswers: (model, coll) =>
+            @add_subview "answerview_"+model.id, new ProbeAnswerEditView(model: model), ".answerlist"
+            
+        
+    class ProbeAnswerEditView extends baseviews.BaseView
 
+        events:
+            "dblclick .answer" : "editAnswer"
+            "dblclick .feedback": "editFeedback"
+            "keypress .answertext" : "updateAnswerOnEnter"
+            "keypress .answerfeedbacktext" : "updateFeedbackOnEnter"
+        
+        initialize: =>
+
+        
+        render: =>
+            @$el.html templates.probe_answer_edit @context()
+
+        edit: (aclass) =>
+            @$(aclass).addClass('editing')
+        
+        stopEdit: (aclass) =>
+            @$(aclass).removeClass('editing')
+        
+        editAnswer: =>
+            @edit('.answer')
+        
+        editFeedback: =>
+            @edit('.feedback')
+        
+        finish: (aclass) =>
+            if aclass=='.answer'
+                console.log @$('.answertext').value
+                @model.set text:@$('.answertext').value
+                @stopEdit(aclass)
+            else if aclass=='.feedback'
+                @model.set feedback:@$('.answerfeedback').value
+                @stopEdit(aclass)
+        
+        updateAnswerOnEnter: (event) =>
+            @updateOnEnter(event,'.answer')
+            
+        updateFeedbackOnEnter: (event) =>
+            @updateOnEnter(event,'.feedback')
+        
+        updateOnEnter: (event,aclass) =>
+            if event.keyCode == 13 then @finish(aclass)
             
     ProbeRouterView: ProbeRouterView
     ProbeListView: ProbeListView
