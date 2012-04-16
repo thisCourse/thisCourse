@@ -15,23 +15,23 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
 
         render: =>
             @$el.html templates.page @context()
-            @add_lazy_subview name: "pagerouter", view: PageRouterView, datasource: "model", key: "contents", target: ".contents"
-            #@add_subview "pagerouter", new PageRouterView(collection: @model.get("contents")), ".contents"
-            if @model.get("_editor") then @makeSortable()
+            #@add_lazy_subview name: "pagerouter", view: PageRouterView, datasource: "model", key: "contents", target: ".contents"
+            @add_subview "pagerouter", new PageRouterView(collection: @model.get("contents")), ".contents"
+            @add_subview "pagenavrouter", new PageNavRouterView(collection: @model.get("contents")), ".nav-links"
+            #if @model.get("_editor") then @makeSortable()
             _.defer @drawAllExistingRows
 
         initialize: ->
             @model.bind "change", @update
-            @model.get("contents").bind "add", @addContents
-            @model.get("contents").bind "remove", @removeContents
+            # @model.get("contents").bind "add", @addContents
+            # @model.get("contents").bind "remove", @removeContents
             @model.bind "change:_editor", @render
             @render()
             super
 
         drawAllExistingRows: =>
-            # clog "drawAllExistingRows"
-            for model in @model.get("contents").models
-                @addContents model, @model.get("contents")
+            # for model in @model.get("contents").models
+            #     @addContents model, @model.get("contents")
 
         addNewContent: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
@@ -40,11 +40,11 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
                     width: 12
 
         addContents: (model, coll) =>
-            @add_subview model.cid, new PageNavRowView(model: model), @$(".nav-links")
+            @subviews.pagenavrouter.addItem model.id, model.get("title")
             #require("app").navigate @subviews[model.cid].url
             
         removeContents: (model, coll) =>
-            @close_subview model.cid
+            @subviews.pagenavrouter.removeItem model.id
 
         makeSortable: ->
             # @$(".navigation ul").sortable
@@ -68,6 +68,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
     class PageRouterView extends baseviews.RouterView
         
         routes: =>
+            "": @showFirst
             "page/:id/": @handlePageNavigation
 
         initialize: ->
@@ -76,6 +77,9 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
         
         handlePageNavigation: (content_id) =>
             view: contentviews.ContentView, datasource: "collection", key: content_id
+        
+        showFirst: =>
+            view: contentviews.ContentView, datasource: "collection", index: 0
         
         navigate: =>
             super
@@ -103,6 +107,11 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
         changeId: =>
             #@$el.attr "id", @model.id
             @render()
+
+    class PageNavRouterView extends baseviews.NavRouterView
+        pattern: "page/:page_id/"
+        autoSelectFirst: true
+        
 
     PageView: PageView
     PageRouterView: PageRouterView
