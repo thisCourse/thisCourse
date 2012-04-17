@@ -35,7 +35,7 @@
 <div class='probeedit container'>
     <h5>Question:</h5>
     <div class='display question'>
-        <h3>{{question_text}}</h3>
+        <h3>{{#if question_text}}{{question_text}}{{else}}&nbsp;{{/if}}</h3>
     </div>
     <div class='question edit'>
         <textarea class='input-xlarge question_text' type='text' rows='3'>{{question_text}}</textarea>
@@ -106,7 +106,7 @@
     <h2>Probes</h2>
     <ul>
         {{#each collection/models }}
-            <li><a href='{{id}}'>{{ attributes/question_text }}</a></li>
+            <li><a href='{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
         {{/each }}
     </ul>
 
