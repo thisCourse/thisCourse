@@ -33,8 +33,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @render()            
 
         addNewProbe: =>
-            dialogviews.dialog_request_response "Please enter a question:", (questiontext) => #TODO: Actually make this useable for adding probe questions
-                @collection.create questiontext: questiontext
+            @collection.create {},
+                success: (model) => require("app").navigate model.id
+            
 
         deleteProbe: (ev) =>
             probe = @collection.get(ev.target.id)
@@ -140,10 +141,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         answered: (response)=>
             @model.set response.probe
             if response.correct
-                @$('.questionstatus').append('Correct')
+                @$('.questionstatus').append('<h3 style="color:#22FF22">Correct</h3>')
             else
-                @$('.questionstatus').append('Incorrect')
+                @$('.questionstatus').append('<h3 style="color:#FF2222">Incorrect</h3>')
             @$('.nextquestion').show()
+            if @parent.inc == @parent.collection.length
+                if @parent.claimed == true
+                    @$('.nextquestion').text('Claim Nugget!')
+                else
+                    @$('.nextquestion').text('Finish Quiz')
             for key,subview of @subviews
                 subview.showFeedback()
             if @model.get('feedback')
