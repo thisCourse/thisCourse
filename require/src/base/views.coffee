@@ -186,7 +186,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         
         # build a context object to be passed to a template for rendering
         context: (extra) =>
-            data = _.extend {}, @model?.attributes or {} # mix the model fields into the context, for convenience
+            data = _.extend {}, @ # mix the view into the context, for convenience
+            data = _.extend data, @model? if @model # mix the model into the context, for convenience
+            data = _.extend data, @model?.attributes if @model # mix the model fields into the context, for convenience
             _.extend data, extra
             data['url'] = @url if @url
             data['model'] = @model if @model
