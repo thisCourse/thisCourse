@@ -7,6 +7,8 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
 
         render: =>
             @$el.html templates.item_gallery_edit @context()
+            @$el.toggleClass "nofile", not @model.get("file")
+            @$el.toggleClass "hasfile", not not @model.get("file")
             @bind_data()
             
             # super
@@ -17,12 +19,15 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
                     response_json = JSON.parse(response_text)
                 catch err
                     response_json = {}
-                if response_json.image
-                    self.loadDownloadFrame "Success!"
-                    $("input[data=image_url]").val(response_json.image.url).change()
-                    $("input[data=thumb_url]").val(response_json.thumb.url).change() if response_json.thumb
+                if response_json.md5
+                    @loadDownloadFrame "Success!"
+                    # $("input[data=image_url]").val("/s3/file_redirect?id=" + response_json._id).change()
+                    # $("input[data=thumb_url]").val("/s3/thumb_redirect?id=" + response_json._id).change()
+                    @$("input[data=file]").val(response_json._id).change()
+                    @$("input[data=thumb_url],input[data=image_url]").val("")
+                    @$el.removeClass("nofile").addClass("hasfile")
                 else if response_json._error
-                    self.loadDownloadFrame "Error!"
+                    @loadDownloadFrame "Error!"
             @loadDownloadFrame()
 
         loadDownloadFrame: (message) =>
@@ -56,6 +61,12 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
         initialize: =>
             @model.attributes.width = 4
             super
+
+        get_image_url: =>
+            @model.get("file") and ("/s3/file_redirect?id=" + @model.get("file")) or @model.get("image_url") or ""
+        
+        get_thumb_url: =>
+            @model.get("file") and ("/s3/thumb_redirect?id=" + @model.get("file")) or @model.get("thumb_url") or ""
 
     class GalleryItemView extends itemviews.ItemView    
         EditView: GalleryItemEditView

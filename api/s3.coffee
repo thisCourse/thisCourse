@@ -63,12 +63,14 @@ temporary_download_link = (key, filename, headers={}) ->
         "&Signature=" + encodeURIComponent(sig) +
         "&response-content-disposition=attachment;" +
         "filename=" + filename
-
+    
 handle_thumb_redirect = (req, res, next) ->
     filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
         if not obj then return res.json _error: "The file could not be found", 404
-        res.redirect("https://thiscourse.s3.amazonaws.com/images/" + obj.thumbnail_md5 or obj.md5 + "." + obj.extension)
-    
+        key = "/images/" + (obj.thumbnail_md5 or obj.md5) + "." + obj.extension
+        filename = obj.filename
+        signed_url = temporary_download_link(key, filename)
+        res.redirect(signed_url)
 
 move_file_to_md5 = (key, path, callback) ->
     head_file key, (err, response) ->

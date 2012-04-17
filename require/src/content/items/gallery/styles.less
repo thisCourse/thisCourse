@@ -37,6 +37,16 @@
         min-height: 65px;
     }
     
+    &.hasfile {
+        .hasfile-only { display: block; }
+        .nofile-only { display: none; }
+    }
+
+    &.nofile {
+        .nofile-only { display: block; }
+        .hasfile-only { display: none; }
+    }
+    
 }
 
 .GalleryItemView, .GalleryItemEditView {
