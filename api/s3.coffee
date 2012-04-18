@@ -68,7 +68,7 @@ handle_thumb_redirect = (req, res, next) ->
     filecollection.findOne {_id: new ObjectId(req.query.id)}, (err, obj) ->
         if not obj then return res.json _error: "The file could not be found", 404
         key = "/images/" + (obj.thumbnail_md5 or obj.md5) + "." + obj.extension
-        filename = obj.filename
+        filename = "thumb-" + obj.filename
         signed_url = temporary_download_link(key, filename)
         res.redirect(signed_url)
 

@@ -1,5 +1,5 @@
-define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handlebars", "less!./styles"], \
-        (itemviews, baseviews, contentmodels, templates, styles) ->
+define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handlebars", "less!./styles", 'less!libs/fancybox/jquery.fancybox-1.3.4', 'libs/fancybox/jquery.fancybox-1.3.4'], \
+        (itemviews, baseviews, contentmodels, templates, styles, fancyboxstyles, fancybox) ->
 
     class GalleryItemEditView extends itemviews.ItemEditInlineView
         
@@ -38,14 +38,13 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
 
     class GalleryItemDisplayView extends itemviews.ItemDisplayView
 
-        EditView: GalleryItemEditView
-
         render: =>
             super
             @$el.html templates.item_gallery @context()
             @bind_data()
             @$(".imagelink").fancybox
                 cyclic: true
+                type: "image"
                 hideOnContentClick: true
                 overlayOpacity: 0.2
                 showCloseButton: false
