@@ -3,9 +3,8 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
 
     class AppView extends baseviews.BaseView
 
-        el: "body"
-
         initialize: ->
+            $("body").append @$el
             @model.get("user").bind "change:loggedIn", @loginChanged
             @loginChanged()
 

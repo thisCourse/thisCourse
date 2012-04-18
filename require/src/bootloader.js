@@ -38,6 +38,7 @@ function clog() {
 // require all the non-AMD libraries, in order, to be bundled with the AMD modules
 define(
 	[
+        // "order!libs/fancybox/jquery.fancybox-1.3.4",
 		"order!libs/jquery/jquery-ui",
 		"order!libs/jquery/jquery.jeditable",
 		"order!libs/jquery/jquery.watermark",
@@ -49,7 +50,6 @@ define(
 		"order!libs/handlebars/wrapper",
 		//"order!libs/bootstrap/bootstrap-button",
         // "order!libs/bootstrap/bootstrap-tab",
-		"order!libs/fancybox/jquery.fancybox-1.3.4",
 		//"order!libs/ckeditor/ckeditor",
 		"order!libs/ckeditor/adapters/jquery",
 		"app"

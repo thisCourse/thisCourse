@@ -1,7 +1,7 @@
 <script id="item_gallery" type="text/x-handlebars-template">
 
     <h4 class='itemtitle' data="title"></h4>
-    <a href="{{ get_image_url }}" target="_blank" class="imagelink" rel="gallery_{{ parent.id }}">
+    <a href="{{ get_image_url }}" target="_blank" class="imagelink" rel="gallery_{{ model.parent.model.id }}">
         <img src="{{ get_thumb_url }}" class="thumb" />
     </a>
     <p class="notes">{{ notes }}{{#if model.attributes.url }} (<a target="_blank" href="{{ model.attributes.url }}">link</a>){{/if}}</p>
