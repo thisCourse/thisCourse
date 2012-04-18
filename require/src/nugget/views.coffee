@@ -244,6 +244,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             for tag in tags
                 lec = relec.exec(tag) or lec
                 clus = reclus.exec(tag) or clus
+            if not lec or not clus then return ''
             out = "<a href='"+@url+"../../study/lecture/"+lec[0]+"/cluster/"+clus[0]+"/'>Return to Lecture "+Number(lec[1])+" Cluster "+Number(clus[1])+"</a>"
         
         initialize: -> @render()
