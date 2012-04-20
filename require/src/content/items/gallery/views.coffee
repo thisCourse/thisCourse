@@ -41,14 +41,13 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
         render: =>
             super
             @$el.html templates.item_gallery @context()
-            @bind_data()
-            @$(".imagelink").fancybox
+            @bind_data()            
+            settings =
                 cyclic: true
                 type: "image"
                 hideOnContentClick: true
                 overlayOpacity: 0.2
                 showCloseButton: false
-                title: templates.item_gallery_title @context
                 titlePosition: "over"
                 onComplete: =>
                     $("#fancybox-wrap").mousemove =>
@@ -56,7 +55,10 @@ define ["cs!../views", "cs!base/views", "cs!../../models", "hb!./templates.handl
                     $("#fancybox-wrap").mouseleave =>
                         $("#fancybox-title").stop().fadeOut 200
                     $("#fancybox-title").hide()
-
+            if @model.get("title") or @model.get("url") or @model.get("notes")
+                settings.title = templates.item_gallery_title @context()
+            @$(".imagelink").fancybox settings
+            
         initialize: =>
             @model.attributes.width = 4
             super
