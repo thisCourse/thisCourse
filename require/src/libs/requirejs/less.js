@@ -17,7 +17,10 @@ define(function() {
 					throw err
 				}
 				var file = fs.openSync(config.dir + "styles.css", 'a')
-				css = css.replace(/\/\*(.|\W)*?\*\//g, " ").replace("  ", " ").trim()
+				// remove comments and double spaces
+                css = css.replace(/\/\*(.|\W)*?\*\//g, " ").replace("  ", " ").trim()
+                // convert "relative" paths (ones starting with ".") into CSS-file-relative paths
+                css = css.replace(/url\((['"]?)\./g, "url($1" + name.split("/").slice(0,-1).join("/") + "/.");
 				fs.writeSync(file, "/* " + name + ".less */  " + css + "\n")
 				callback()
 			})
