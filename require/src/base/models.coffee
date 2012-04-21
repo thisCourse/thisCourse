@@ -1,9 +1,25 @@
 define ["cs!utils/formatters"], (formatters) ->
     
-    idAttribute = Backbone.Model.prototype.idAttribute = "_id"
+    idAttribute = Backbone.Model::idAttribute = "_id"
 
-    slug_fields = ["slug", Backbone.Model.prototype.idAttribute]
-
+    # q = (hash_id(nug.id) for nug in app.get("course").get("nuggets").models)
+    
+    hash_chars = ['b','c','d','f','g','h','j','k','m','n','p','q','r','s','t','v','w','x','z','0','1','2','3','4','5','6','7','8','9']
+    
+    # hash 12-byte mongodb id down to 4-byte slug; see http://www.mongodb.org/display/DOCS/Object+IDs
+    hash_id = (id) ->
+        # reverse to put high-variability bytes to left, so they are offset from high-var inc bytes:
+        revtime = parseInt(id[0..7].split("").reverse().join(""), 16)
+        machpid = parseInt(id[8..15], 16)
+        pidinc = parseInt(id[16..23], 16)
+        hash = Math.abs(revtime ^ machpid ^ pidinc)
+        slug = ""
+        base = hash_chars.length
+        while (hash)
+            slug += hash_chars[hash % base]
+            hash = parseInt(hash / base)
+        return slug            
+            
     get_url = (urlref) ->
         if not urlref then return ""
         if urlref instanceof Function then urlref = urlref()
@@ -32,10 +48,10 @@ define ["cs!utils/formatters"], (formatters) ->
             return result
         
         slug: =>
-            for field in slug_fields
-                if field of @attributes
-                    return @get(field)
-            return ""
+            if not @get("slug") and @get(idAttribute)
+                # console.log "filling empty slug"
+                @set slug: hash_id(@get(idAttribute)), {silent: true}
+            return @get("slug") or ""
         
         matches: (slug) => slug.replace("/", "") in slug_fields
 
@@ -80,11 +96,11 @@ define ["cs!utils/formatters"], (formatters) ->
                 if relation.collection and (new relation.collection) not instanceof Backbone.Collection # TODO: " "
                     throw Error("Backbone.Collection class expected but found " + relation.collection.name)
                 relation.includeInJSON or= [] # if it's false or non-existent, this will catch it
-                relation.includeInJSON.push? Backbone.Model.prototype.idAttribute # we always want to include _id
+                relation.includeInJSON.push? Backbone.Model::idAttribute # we always want to include _id
                 # TODO: (probably don't want to do the following -- will save too much in parents; instead, allow POST to absent keys)
                 # if relation.model and relation.includeInJSON isnt true
                 #     # to make sure saving of related models doesn't break, include related models all the way down
-                #     relations = relation.model.prototype.relations?() or relation.model.prototype.relations or {}
+                #     relations = relation.model::relations?() or relation.model::relations or {}
                 #     for relatedkey of relations
                 #         relation.includeInJSON.push relatedkey
             super attributes, options
@@ -97,7 +113,7 @@ define ["cs!utils/formatters"], (formatters) ->
             @loading = true
             xhdr = super
             xhdr.success =>
-                console.log "successfully loaded", @
+                # console.log "successfully loaded", @
                 @loading = false
                 @_loaded = true
                 @trigger "loaded"
@@ -214,7 +230,7 @@ define ["cs!utils/formatters"], (formatters) ->
 
         save: =>
             # clog "Saving:", @, "at", get_url(@url), "as", @toJSON(), @id
-            if @parent and @parent.model and @parent.model.unsaved()
+            if @parent and @parent.model and @parent.model.unsaved() and @parent.url
                 @saveRecursive() # TODO: this won't behave nicely if the caller needs the XHR object back, but what can we do?
             else
                 #if @includeInJSON isnt true 
@@ -224,12 +240,12 @@ define ["cs!utils/formatters"], (formatters) ->
         
         saveRecursive: (arguments, callback) =>
             # if the parent is unsaved, save it first
-            if @parent and @parent.model and @parent.model.unsaved()
+            if @parent and @parent.model and @parent.model.unsaved() and @parent.url
                 clog "Parent of", @, "is unsaved, so first saving", @parent.model, @id
                 @parent.model.saveRecursive null, =>
                     clog "Finished saving", @parent.model, "(now we can actually save", @, "at", get_url(@url), ")", @id
-                    #BaseModel.prototype.save.apply(@, arguments) # TODO: https://github.com/jashkenas/coffee-script/issues/1606
-                    BaseModel.prototype.save.apply(@).success =>
+                    #BaseModel::save.apply(@, arguments) # TODO: https://github.com/jashkenas/coffee-script/issues/1606
+                    BaseModel::save.apply(@).success =>
                         clog "saving", @, "is complete", @id
                         callback?()
             else
@@ -240,6 +256,50 @@ define ["cs!utils/formatters"], (formatters) ->
                     
             
     class BaseCollection extends Backbone.Collection
+        
+        constructor: ->
+            @_bySlug = {}
+            super
+        
+        _addToSlugIndex: (model) =>
+            id = model.id or model[idAttribute] or ""
+            if not id then return
+            slug = model.slug or hash_id(id)
+            if _.isFunction(slug) then slug = slug()
+            # if slug of @_bySlug
+                #console.log "Warning: model with slug", slug, "already existed in collection", @, "(overwriting)"
+            if not slug
+                console.log "missing", @, slug
+                return
+            @_bySlug[slug] = id
+        
+        add: (models, options) =>
+            models = if _.isArray(models) then models.slice() else [models]
+            for model in models
+                @_addToSlugIndex model
+            super
+
+        remove: (models, options) =>
+            models = if _.isArray(models) then models.slice() else [models]
+            for model in models
+                delete @_bySlug[model.slug()]
+            super
+
+        get: (idOrSlug) =>
+            if idOrSlug of @_bySlug then return @get(@_bySlug[idOrSlug])
+            super
+
+        _onModelEvent: (event, model, collection, options) =>
+            if model
+                if event == 'change:'+model.idAttribute and not model.get("slug")
+                    # console.log "id changed"
+                    @set slug: model.slug(), {silent: true}
+                    @_addToSlugIndex model
+                else if event == 'change:slug'
+                    delete @_bySlug[model.previous("slug")]
+                    # console.log "slug changed", model.previous("slug"), model.slug()
+                    @_addToSlugIndex model
+            super
 
     class LazyCollection extends BaseCollection
         
