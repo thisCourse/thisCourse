@@ -2,12 +2,9 @@ TODO
 
     auth & reg
     analytics for pretest
-    pretest app ("quiz")
 
-    tab system &subpages go bold
-        make all links in a navigated view that are prefixes of the url being navigated get class "active"
-
-    s3 upload: show existing files
+    histogram of claimed points
+    after editing item once, need to refresh before re-editing
 
     allow & in uploaded filenames (escape file keys)
 
