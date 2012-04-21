@@ -75,6 +75,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             #     opacity: 0.6
             #     tolerance: "pointer"
 
+    class TagSelectorView extends baseviews.BaseView
+        
+        initialize: =>
+            @claimed = 0
+            
+    
+    
+    
     class LectureListView extends baseviews.RouterView
                 
         routes: =>
@@ -83,12 +91,12 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
             @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}                
-            for lecture in @lecturelist.lecture
-                lecture.points = 0
-                lecture.status = 'unclaimed'
             relec = new RegExp('(L[0-9]+)')
             require('app').get('user').getKeyWhenReady 'claimed', (claimed) =>
                 require('app').get("course").whenLoaded =>
+                    for lecture in @lecturelist.lecture
+                        lecture.points = 0
+                        lecture.status = 'unclaimed'
                     for nuggetitem in claimed.models
                         lec = ''
                         for tag in require('app').get('course').get('nuggets').get(nuggetitem.id).get('tags')
