@@ -287,6 +287,8 @@ define ["cs!utils/formatters"], (formatters) ->
 
         get: (idOrSlug) =>
             if idOrSlug of @_bySlug then return @get(@_bySlug[idOrSlug])
+            replacedSlug = idOrSlug.toLowerCase().replace(/o/g,"0").replace(/i|l/g, "1")
+            if replacedSlug of @_bySlug then return @get(@_bySlug[replacedSlug])
             super
 
         _onModelEvent: (event, model, collection, options) =>
