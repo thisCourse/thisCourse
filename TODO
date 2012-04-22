@@ -1,23 +1,19 @@
-TODO
+auth & reg
 
-    auth & reg
-    analytics for pretest
+histogram of claimed points
+after editing item once, need to refresh before re-editing
 
-    histogram of claimed points
-    after editing item once, need to refresh before re-editing
+allow & in uploaded filenames (escape file keys)
 
-    allow & in uploaded filenames (escape file keys)
+glossary linking in ckeditor
+hyperlinking interface in ckeditor
+    packages expose a function that returns an object representing the hierarchy of their content
 
-    glossary linking in ckeditor
-    hyperlinking interface in ckeditor
-        packages expose a function that returns an object representing the hierarchy of their content
-    cleaner urls, using slugs
+when saving on a parent (server-side), add ids to embedded models recursively
 
-    when saving on a parent (server-side), add ids to embedded models recursively
+clean code for handling hover events
+reduce the number of times things are repeated needlessly
+    setting data on models (use "loading/loaded")
+    rendering view templates
     
-    clean code for handling hover events
-    reduce the number of times things are repeated needlessly
-        setting data on models (use "loading/loaded")
-        rendering view templates
         
-            
