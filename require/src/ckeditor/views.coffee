@@ -41,8 +41,8 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
         config.autoGrow_onStartup = true
         
         # TODO: use the following, with a built-in view, instead of the coffeetest one
-        #config.filebrowserBrowseUrl = "/" + require("app").get("root_url") + 'filebrowse/all/'
-        #config.filebrowserImageBrowseUrl = "/" + require("app").get("root_url") + 'filebrowse/picture/'
+        #config.filebrowserBrowseUrl = require("app").get("root_url") + 'filebrowse/all/'
+        #config.filebrowserImageBrowseUrl = require("app").get("root_url") + 'filebrowse/picture/'
     
         config.filebrowserBrowseUrl = '/static/coffeetest/filebrowse.html?typefilter=all&courseid=' + course_id
         config.filebrowserImageBrowseUrl = '/static/coffeetest/filebrowse.html?typefilter=picture&courseid=' + course_id        
