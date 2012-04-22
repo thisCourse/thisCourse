@@ -11,6 +11,7 @@ define ["cs!base/views", "cs!./models", "cs!./utils", "hb!./templates.handlebars
         initialize: ->
             @model.bind "change:loggedIn", @loginStatusChanged
             @checkLoginStatus()
+            setInterval @checkLoginStatus, 60000
         
         loginStatusChanged: =>
             @render()

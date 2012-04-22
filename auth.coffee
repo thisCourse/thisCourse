@@ -77,6 +77,7 @@ login = (req, res, next) ->
         res.json error: "Please specify an email address (and password)!", 400
 
 check = (req, res, next) ->
+    req.session.touch()
     res.json {email: req.session.email, token: req.sessionID}
 
 logout = (req, res, next) ->
