@@ -24,6 +24,11 @@
 
 .NuggetTopView {
     min-height: 30px;
+
+    .quizme {
+        float:right;
+    }
+
 }
 
 @partialcolor: #EEEEAA;
@@ -38,7 +43,7 @@
 .hovershadowbox (@thecolor,@vert,@horiz,@blur,@shadowcolor,@mtop,@mright,@mbot,@mleft,@pbot,@pright) {
     @upshift: @vert/2;
     @leftshift: @horiz/2;
-    background-color:lighten(@thecolor,10%);
+    background-color:lighten(@thecolor,8%);
     box-shadow: @upshift @leftshift @blur @shadowcolor;
     @mtopa: @mtop + @upshift;
     @mrighta: @mright - @leftshift;
@@ -61,18 +66,22 @@
     
 }
 
-.quizme {
-    float:right;
-}
-
 .LectureListView {
+    
+    ul {
+        margin: 0;
+    }
+    
+    li {
+        width: 134px;
+        height: 134px;
+    }
+    
     .lecture{
         box-shadow: 5px 5px 3px #888;
-        width:@lecturesquare;
-        height:@lecturesquare;
-        margin: 10px 25px 23px 10px;
-        padding-bottom:8px;
-        padding-right:8px;
+        width: @lecturesquare;
+        height: @lecturesquare;
+        margin: 10px;
         &>div {
             width:@lecturesquare;
             height:@lecturesquare;
