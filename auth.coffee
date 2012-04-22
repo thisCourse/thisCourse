@@ -1,7 +1,13 @@
 bcrypt = require "bcrypt"
-api = require("./api/api.coffee")
+api = require("./api/api")
 usercollection = api.db.collection("user")
 ObjectId = api.db.bson_serializer.ObjectID
+
+usercollection.ensureIndex {email: 1}, unique: true, dropDups: true, (err, index_name) =>
+    if err
+        console.log "Error creating index:", err
+    else
+        console.log "Index created/ensured:", index_name
 
 passwordHashes =
     admin: "$2a$10$61P6HLPBNICLZ0aszJGQ9u9QXOEP92nPwJ1PnmY3lmxPF0mO831mq"
@@ -53,7 +59,7 @@ create_user = (email, password, callback) ->
     console.log "Creating user", email
     hash_password password, (err, passwordHash) =>
         # console.log "Password hashed:", passwordHash
-        usercollection.save email: email.toLowerCase(), passwordHash: passwordHash, (err, user) =>
+        usercollection.save email: email.toLowerCase(), passwordHash: passwordHash, {safe:true}, (err, user) =>
             # console.log "User saved:", user
             callback? err, user
 

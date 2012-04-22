@@ -1,7 +1,6 @@
 auth & reg
 
 histogram of claimed points
-after editing item once, need to refresh before re-editing
 
 allow & in uploaded filenames (escape file keys)
 
@@ -16,4 +15,3 @@ reduce the number of times things are repeated needlessly
     setting data on models (use "loading/loaded")
     rendering view templates
     
-        
