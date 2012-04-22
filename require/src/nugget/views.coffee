@@ -106,7 +106,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                     @lecturelist.totalpoints = 0
                     for lecture in @lecturelist.lecture
                         @lecturelist.totalpoints += lecture.points
-                        if lecture.points > lecture.minpoints then lecture.status = 'claimed'
+                        if lecture.points >= lecture.minpoints then lecture.status = 'claimed'
                     @$el.html templates.nugget_lecture_list @context(@lecturelist)
                     
         initialize: =>
