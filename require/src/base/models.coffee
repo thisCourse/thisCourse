@@ -8,6 +8,7 @@ define ["cs!utils/formatters"], (formatters) ->
     
     # hash 12-byte mongodb id down to 4-byte slug; see http://www.mongodb.org/display/DOCS/Object+IDs
     hash_id = (id) ->
+        if id not instanceof String then id = id.toString()
         # reverse to put high-variability bytes to left, so they are offset from high-var inc bytes:
         revtime = parseInt(id[0..7].split("").reverse().join(""), 16)
         machpid = parseInt(id[8..15], 16)
