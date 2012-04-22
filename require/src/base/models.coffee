@@ -39,6 +39,8 @@ define ["cs!utils/formatters"], (formatters) ->
                 return (formatters.date_from_string(d) for d in date)
             else
                 return formatters.date_from_string date
+
+        getClassName: => @constructor.name or @constructor.toString().match(/^function\s(.+)\(/)[1]
                 
         save: =>
             @trigger("save", @)
@@ -196,7 +198,7 @@ define ["cs!utils/formatters"], (formatters) ->
             # if this object is embedded in a denormalized relation, set parent info
             if @parent and (@includeInJSON isnt true)
                 attrs.parent =
-                    model: @parent.model.constructor.name
+                    model: @parent.model.getClassName()
                     key: @parent.key
                 if @parent.model.apiCollection
                     attrs.parent.apiCollection = @parent.model.apiCollection
