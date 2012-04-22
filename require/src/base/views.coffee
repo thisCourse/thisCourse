@@ -23,7 +23,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         bind_links: =>
             @$el.on "click", "a", (ev) ->
                 if ev.shiftKey or ev.ctrlKey then return true # allow ctrl/shift clicks (new tab/window) to pass
-                if ev.currentTarget.origin != document.location.origin or ev.currentTarget.pathname.split("/")[1] not in ["course", "src"] # make external links pop up in a new window
+                if ev.currentTarget.origin != document.location.origin or ev.currentTarget.pathname.replace(/^\/+/,"").split("/")[0] not in ["course", "src"] # make external links pop up in a new window
                     ev.target.target = "_blank"
                     return true
                 require("app").navigate ev.currentTarget.pathname # handle the internal link through Backbone's router, and drop event
