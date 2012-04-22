@@ -1,6 +1,8 @@
 define ["cs!utils/handlebars", "cs!./models", "cs!course/models"], \
         (handlebars, models, coursemodels) ->
 
+    $.ajaxSetup cache: false
+
     console.log "starting app"
 
     window.app = new models.AppModel
