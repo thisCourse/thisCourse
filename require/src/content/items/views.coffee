@@ -18,9 +18,9 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
 
         initialize: ->
             if not @DisplayView
-                throw new Error @constructor.name + " does not have a DisplayView specified (must be a subclass of ItemDisplayView)."
+                throw new Error @getClassName() + " does not have a DisplayView specified (must be a subclass of ItemDisplayView)."
             if not @EditView
-                throw new Error @constructor.name + " does not have an EditView specified (must be a subclass of ItemEditView)."
+                throw new Error @getClassName() + " does not have an EditView specified (must be a subclass of ItemEditView)."
             @model.bind "change:width", @updateWidth
 
         showActionButtons: =>

@@ -10,7 +10,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 eventobject = @events
                 @events = => eventobject
             super
-            @$el.addClass @constructor.name
+            @$el.addClass @getClassName()
             @nonpersistent = options.nonpersistent or false
             @visible = true
             if options and options.visible==false
@@ -19,6 +19,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             @bind_links()
             @closed = false
             #console.log "CONSTRUCTED", @, @model or @collection, @collection and @collection.length
+        
+        getClassName: => @constructor.name or @constructor.toString().match(/^function\s(.+)\(/)[1]
         
         bind_links: =>
             @$el.on "click", "a", (ev) ->
