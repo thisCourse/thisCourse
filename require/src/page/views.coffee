@@ -19,32 +19,18 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
             @add_subview "pagerouter", new PageRouterView(collection: @model.get("contents")), ".contents"
             @add_subview "pagenavrouter", new PageNavRouterView(collection: @model.get("contents")), ".nav-links"
             #if @model.get("_editor") then @makeSortable()
-            _.defer @drawAllExistingRows
 
         initialize: ->
             @model.bind "change", @update
-            # @model.get("contents").bind "add", @addContents
-            # @model.get("contents").bind "remove", @removeContents
             @model.bind "change:_editor", @render
             @render()
             super
-
-        drawAllExistingRows: =>
-            # for model in @model.get("contents").models
-            #     @addContents model, @model.get("contents")
 
         addNewContent: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
                 @model.get("contents").create
                     title: title
                     width: 12
-
-        addContents: (model, coll) =>
-            @subviews.pagenavrouter.addItem model.id, model.get("title")
-            #require("app").navigate @subviews[model.cid].url
-            
-        removeContents: (model, coll) =>
-            @subviews.pagenavrouter.removeItem model.id
 
         makeSortable: ->
             # @$(".navigation ul").sortable
@@ -59,8 +45,6 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
 
         close: ->
             @model.unbind "change", @update
-            @model.unbind "add:contents", @addContents
-            @model.unbind "remove:contents", @removeContents
             @model.unbind "change:_editor", @render
             super
 
@@ -111,6 +95,13 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
     class PageNavRouterView extends baseviews.NavRouterView
         pattern: "page/:page_id/"
         autoSelectFirst: true
+        
+        initialize: ->
+            @collection.bind "add", @addItem
+            
+        addItem: (model, collection) =>
+            @render()
+            @$("a").last().click()
         
 
     PageView: PageView
