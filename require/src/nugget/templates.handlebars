@@ -41,7 +41,7 @@
 
     <div class="description" data="description">{{ description }}</div>
 
-    {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{{navlink tags}}}{{/if }}
+    {{#if tags }}<br/><b>Tags:</b> {{comma_join tags}}<br/>{{{navlink tags}}}{{/if }}
     <span class="probetoggle logged-in-only"></span>
 
     <span class="editor-only"><button class="item-button edit-button btn success">Edit nugget details</button></span>
