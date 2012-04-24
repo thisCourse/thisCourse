@@ -298,7 +298,7 @@ define ["cs!utils/formatters"], (formatters) ->
             if model
                 if event == 'change:'+model.idAttribute and not model.get("slug")
                     # console.log "id changed"
-                    @set slug: model.slug(), {silent: true}
+                    model.set slug: model.slug(), {silent: true}
                     @_addToSlugIndex model
                 else if event == 'change:slug'
                     delete @_bySlug[model.previous("slug")]

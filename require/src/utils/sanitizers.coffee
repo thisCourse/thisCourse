@@ -8,15 +8,30 @@ define [], () ->
             a:
                 href: http_only
                 target: initial_underscore
-            b: true
+            b: {}
+            h1: {}
+            h2: {}
+            h3: {}
+            span: {}
+            p: {}
         styles:
             background: true
             color: true
-        classes: ['test', 'bigger']
+        classes:
+            test: true
+            bigger: true
     
     evaluate = (func_or_val, arg) ->
         if _.isFunction(func_or_val) then return func_or_val(arg) 
         return func_or_val
+    
+    sanitize_classname = (classname) ->
+        classname = classname.trim()
+        if not /^[_a-z]+[_a-z0-9-]*$/i.test(classname) then return ""
+        return classname
+    
+    sanitize_attribute_value = (attrval) ->
+        return CKEDITOR.tools.htmlEncode(attrval)
     
     sanitize = (html, options=strict_options) ->
 
@@ -38,14 +53,15 @@ define [], () ->
                     styles = []
                     for style in attrs[attr].split(";")
                         [stylename, styleval] = style.split(":")
-                        if evaluate(options.styles[stylename.trim()], styleval)
-                            styles.push style
+                        if evaluate(options.styles[stylename.trim()], styleval) then styles.push style
                     if not styles.length then continue
                     attrs[attr] = styles.join(";")
                 
                 # include only whitelisted classes
                 if attr is "class"
-                    classes = (cls for cls in attrs[attr].split(" ") when cls in options.classes)
+                    classes = []
+                    for cls in attrs[attr].split(" ")                        
+                        if evaluate(options.classes[cls], tag) then classes.push cls
                     if not classes.length then continue
                     attrs[attr] = classes.join(" ")
                 
@@ -71,4 +87,4 @@ define [], () ->
     
     sanitize: sanitize
     strict_options: strict_options
-    
+    sanitize_classname: sanitize_classname
