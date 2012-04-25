@@ -1,10 +1,12 @@
 define ["cs!utils/handlebars", "cs!./models", "cs!course/models"], \
         (handlebars, models, coursemodels) ->
 
+    $.ajaxSetup cache: false
+
     console.log "starting app"
 
     window.app = new models.AppModel
-        root_url: window.root_url? or (window.location.pathname.split("/")[1] + "/")
+        root_url: window.root_url? or ("/" + window.location.pathname.split("/")[1] + "/")
 
     # c = new (require("cs!course/models").CourseModel); c.save().success(function() { console.log(c.id); })
     app.set course: new coursemodels.CourseModel(_id: course_id)

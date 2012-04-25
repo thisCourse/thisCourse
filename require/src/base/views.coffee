@@ -10,7 +10,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 eventobject = @events
                 @events = => eventobject
             super
-            @$el.addClass @constructor.name
+            @$el.addClass @getClassName()
             @nonpersistent = options.nonpersistent or false
             @visible = true
             if options and options.visible==false
@@ -20,13 +20,16 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             @closed = false
             #console.log "CONSTRUCTED", @, @model or @collection, @collection and @collection.length
         
+        getClassName: => @constructor.name or @constructor.toString().match(/^function\s(.+)\(/)[1]
+        
         bind_links: =>
             @$el.on "click", "a", (ev) ->
+                pathname = "/" + ev.currentTarget.pathname.replace(/^\/+/,"")
                 if ev.shiftKey or ev.ctrlKey then return true # allow ctrl/shift clicks (new tab/window) to pass
-                if ev.currentTarget.origin != document.location.origin or ev.currentTarget.pathname.split("/")[1] not in ["course", "src"] # make external links pop up in a new window
+                if ev.currentTarget.origin != document.location.origin or pathname.split("/")[1] not in ["course", "src"] # make external links pop up in a new window
                     ev.target.target = "_blank"
                     return true
-                require("app").navigate ev.currentTarget.pathname # handle the internal link through Backbone's router, and drop event
+                require("app").navigate pathname # handle the internal link through Backbone's router, and drop event
                 return false # TODO:  do we want to make sure our router found a match, else return true?
 
         bind_data: =>
@@ -355,7 +358,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 selected = links[0]
             else
                 for a in links
-                    if path.slice(0, a.pathname.length) == a.pathname # link's url is a prefix of path being navigated
+                    pathname = "/" + a.pathname.replace(/^\//, "")
+                    if path.slice(0, pathname.length) == pathname # link's url is a prefix of path being navigated
                         if not selected or a.pathname.length > selected.pathname.length # only select link if its url is longer
                             selected = a
             if selected

@@ -1,26 +1,17 @@
-TODO
+auth & reg
 
-    auth & reg
-    analytics for pretest
-    pretest app ("quiz")
+histogram of claimed points
 
-    tab system &subpages go bold
-        make all links in a navigated view that are prefixes of the url being navigated get class "active"
+allow & in uploaded filenames (escape file keys)
 
-    s3 upload: show existing files
+glossary linking in ckeditor
+hyperlinking interface in ckeditor
+    packages expose a function that returns an object representing the hierarchy of their content
 
-    allow & in uploaded filenames (escape file keys)
+when saving on a parent (server-side), add ids to embedded models recursively
 
-    glossary linking in ckeditor
-    hyperlinking interface in ckeditor
-        packages expose a function that returns an object representing the hierarchy of their content
-    cleaner urls, using slugs
-
-    when saving on a parent (server-side), add ids to embedded models recursively
+clean code for handling hover events
+reduce the number of times things are repeated needlessly
+    setting data on models (use "loading/loaded")
+    rendering view templates
     
-    clean code for handling hover events
-    reduce the number of times things are repeated needlessly
-        setting data on models (use "loading/loaded")
-        rendering view templates
-        
-            

@@ -16,7 +16,6 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
             @$el.toggleClass "editable", is_editor
             @$el.toggleClass "uneditable", not is_editor
 
-
         render: =>
             @$el.html templates.root @context()
             @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"

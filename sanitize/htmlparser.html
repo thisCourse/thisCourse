@@ -22,34 +22,54 @@ function sanitize(html) {
     var results = "";
 
     var parser = new CKEDITOR.htmlParser();
+    
+    var ignore_until_end_tag = "";
+    
     parser.onTagOpen = function(tag, attrs, unary) {
+        if (ignore_until_end_tag) return;
+        
+        if (tag=="script") {
+            ignore_until_end_tag = "script";
+            return;
+        }
+        
         results += "<" + tag;
 
         for (var a in attrs) {
           if (!attrs.hasOwnProperty(a)) continue
-          if (a.length >= 2 && a.slice(0,2)==="on") continue
-          results += " " + a + '="' + attrs[i] + '"';
+          if (a.slice(0,2)==="on") continue
+          results += " " + a + '="' + attrs[a] + '"';
         }
 
         results += (unary ? "/" : "") + ">";
     }
     
     parser.onTagClose = function(tag) {
+        if (tag==ignore_until_end_tag) {
+            ignore_until_end_tag = "";
+            return;
+        }
+        if (ignore_until_end_tag) return;
         results += "</" + tag + ">";
     }
     
     parser.onText = function(text) {
+        if (ignore_until_end_tag) return;
         results += text;
     }
 
     parser.onCDATA = function(cdata) {
+        if (ignore_until_end_tag) return;
         results += cdata;
+        alert(cdata)
     }
     
     parser.parse(html);
 
     return results;
 }
+
+
 
 </script>
 <div style="float:left;width:50%">
@@ -66,7 +86,7 @@ function sanitize(html) {
 While this library doesn't cover the full gamut of possible weirdness that HTML provides, it does handle a lot of the most obvious stuff. All of the following are accounted for:
 
 <ul>
-<li>Unclosed Tags: <pre>HTMLtoXML("&lt;p>&lt;b>Hello") == '&lt;p>&lt;b>Hello&lt;/b>&lt;/p>'</pre></li>
+<li style="background: url('javascript:alert(window)');">Unclosed Tags: <pre>HTMLtoXML("&lt;p>&lt;b>Hello") == '&lt;p>&lt;b>Hello&lt;/b>&lt;/p>'</pre></li>
 <li>Empty Elements: <pre>HTMLtoXML("&lt;img src=test.jpg>") == '&lt;img src="test.jpg"/>'</pre></li>
 <li>Block vs. Inline Elements: <pre>HTMLtoXML("&lt;b>Hello &lt;p>John") == '&lt;b>Hello &lt;/b>&lt;p>John&lt;/p>'</pre></li>
 <li>Self-closing Elements: <pre>HTMLtoXML("&lt;p>Hello&lt;p>World") == '&lt;p>Hello&lt;/p>&lt;p>World&lt;/p>'</pre></li>
