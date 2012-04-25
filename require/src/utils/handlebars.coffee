@@ -1,4 +1,4 @@
-define ["cs!./formatters"], (formatters) ->
+define ["cs!./formatters", "cs!./sanitizers"], (formatters, sanitizers) ->
     
     # give access to all templates as partials
     Handlebars.partials = Handlebars.templates or= {}
@@ -16,4 +16,8 @@ define ["cs!./formatters"], (formatters) ->
 
     Handlebars.registerHelper "join_with_commas", (array, fn) ->
         return (fn(val) for val in array).join " / "
+
+    Handlebars.registerHelper "sanitize", (html) ->
+        html = sanitizers.sanitize(html)
+        return new Handlebars.SafeString(html)
     

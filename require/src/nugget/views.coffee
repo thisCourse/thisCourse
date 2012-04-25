@@ -50,7 +50,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
-            @render()            
 
         addNewNugget: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
@@ -116,7 +115,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                     @lecturelist.totalpoints = 0
                     for lecture in @lecturelist.lecture
                         @lecturelist.totalpoints += lecture.points
-                        if lecture.points > lecture.minpoints then lecture.status = 'claimed'
+                        if lecture.points >= lecture.minpoints then lecture.status = 'claimed'
                     @$el.html templates.nugget_lecture_list @context(@lecturelist)
                     
         initialize: =>
@@ -264,8 +263,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 clus = reclus.exec(tag) or clus
             if not lec or not clus then return ''
             out = "<a href='"+@url+"../../study/lecture/"+lec[0]+"/cluster/"+clus[0]+"/'>Return to Lecture "+Number(lec[1])+" Cluster "+Number(clus[1])+"</a>"
+
+        Handlebars.registerHelper ('comma_join'), (tags) -> tags.join?(",") or ""
         
-        initialize: -> @render()
+        initialize: ->
+            # @model.bind "change", @render
 
         events: => _.extend super,
             "click .edit-button": "edit"
@@ -273,7 +275,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             @$el.html templates.nugget_top @context()
             @add_subview "probetoggle", new ProbeToggleRouterView(model: @model), ".probetoggle"
-            Backbone.ModelBinding.bind @
+            @bind_data()
 
         edit: =>
             @parent.edit()
@@ -282,7 +284,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         initialize: ->
             @mementoStore()
-            @render()
         
         render: =>
             @$el.html templates.nugget_top_edit @context()
@@ -298,7 +299,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @$(".save.btn").button "loading"
             if _.isString(@model.get("tags")) then @model.set tags: @model.get("tags").split(",")
             @model.save().success =>
-                @parent.render()
+                # @parent.render()
                 @parent.editDone()
 
         cancel: =>
