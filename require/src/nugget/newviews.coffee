@@ -133,7 +133,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     class NuggetTopView extends baseviews.BaseView
         
-        initialize: -> @render()
+        # initialize: -> @render()
 
         events: => _.extend super,
             "click .edit-button": "edit"
@@ -149,7 +149,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         initialize: ->
             @mementoStore()
-            @render()
+            # @render()
         
         render: =>
             @$el.html templates.nugget_top_edit @context()
