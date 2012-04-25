@@ -54,7 +54,7 @@ define ["cs!utils/formatters"], (formatters) ->
             if not @get("slug") and @get(idAttribute)
                 # console.log "filling empty slug"
                 @set slug: hash_id(@get(idAttribute)), {silent: true}
-            return @get("slug") or ""
+            return @get("slug") or @get(idAttribute) or ""
         
         matches: (slug) => slug.replace("/", "") in slug_fields
 
