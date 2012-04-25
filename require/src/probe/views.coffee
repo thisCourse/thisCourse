@@ -30,7 +30,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
-            @render()            
 
         addNewProbe: =>
             @collection.create {},
@@ -206,7 +205,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         initialize: ->
             @mementoStore()
-            @render()
             @model.bind "change", @render
             @newans = 0
         

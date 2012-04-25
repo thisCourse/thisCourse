@@ -19,7 +19,6 @@ define ["less!./styles", "cs!base/views", "cs!ui/dialogs/views", "cs!./models", 
             @model.get("sections").bind "add", @addSections
             @model.get("sections").bind "remove", @removeSections
             @model.bind "save", @saved
-            @render()
 
         showActionButtons: =>
             @$(".content-button").show()

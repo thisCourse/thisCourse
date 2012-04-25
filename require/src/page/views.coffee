@@ -21,16 +21,20 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
             #if @model.get("_editor") then @makeSortable()
 
         initialize: ->
-            @model.bind "change", @update
-            @model.bind "change:_editor", @render
-            @render()
             super
 
         addNewContent: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
-                @model.get("contents").create
-                    title: title
-                    width: 12
+                if @model.isNew()
+                    @model.save().success => @createNewContent(title)
+                else
+                    @createNewContent(title)
+
+        createNewContent: (title) =>
+            @model.get("contents").create
+                title: title
+                width: 12
+                {wait: true}
 
         makeSortable: ->
             # @$(".navigation ul").sortable
@@ -68,29 +72,6 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
         navigate: =>
             super
 
-    class PageNavRowView extends baseviews.BaseView
-        
-        tagName: "li"
-        
-        render: =>
-            @$el.html templates.page_nav_row @context()
-
-        initialize: ->
-            @model.bind "change:title", @render
-            @model.bind "change:_id", @changeId
-            @model.bind "change:title", @titleChange
-            @$el.attr "id", @model.id
-            @render()
-
-        navigate: (fragment) =>
-            @$el.toggleClass "active", @model.matches(fragment)
-
-        titleChange: =>
-            @titleChanged = true
-
-        changeId: =>
-            #@$el.attr "id", @model.id
-            @render()
 
     class PageNavRouterView extends baseviews.NavRouterView
         pattern: "page/:page_id/"
@@ -103,7 +84,5 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
             @render()
             @$("a").last().click()
         
-
     PageView: PageView
     PageRouterView: PageRouterView
-    PageNavRowView: PageNavRowView

@@ -27,7 +27,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
-            @render()            
 
         addNewAssignment: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
@@ -73,8 +72,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     class AssignmentTopView extends baseviews.BaseView
         
-        initialize: -> @render()
-
         events: => _.extend super,
             "click .edit-button": "edit"
         
@@ -89,8 +86,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         initialize: ->
             @mementoStore()
-            @render()
-        
+            super
+                    
         render: =>
             @$el.html templates.assignment_top_edit @context()
             Backbone.ModelBinding.bind @
