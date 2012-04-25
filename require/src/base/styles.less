@@ -1,4 +1,5 @@
 @import "../libs/bootstrap/bootstrap.less";
+@import "../libs/bootstrap/mixins.less";
 @import "globals.less";
 
 body {
@@ -8,6 +9,17 @@ body {
 a {
     cursor:pointer;
 }
+
+.clearfix {
+    *zoom: 1;
+}
+
+.clearfix:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
 
 /*.innercolumns(@columnSpan: 1) {
     width: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan - 1));

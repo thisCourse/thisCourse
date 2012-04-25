@@ -26,7 +26,7 @@
     
     <ul>
         {{#each collection.models }}
-            {{#if attributes.title }}<li><a href="{{ id }}/">{{ attributes.title }}</a></li>{{/if}}
+            {{#if attributes.title }}<li><a href="{{ ../../url }}{{ slug }}/">{{ attributes.title }}</a></li>{{/if}}
         {{/each }}
     </ul>
 
@@ -37,11 +37,17 @@
 
 <script id="nugget_top" type="text/x-handlebars-template">
     
-    <h2 data="title">{{ title }}</h2 >
+    <h2 data="title"></h2 >
 
-    <div class="description" data="description">{{ description }}</div>
+    <div class="description" data="description"></div>
 
-    {{#if tags }}<br/><b>Tags:</b> {{ tags }}<br/>{{{navlink tags}}}{{/if }}
+    {{#if tags }}
+        <br/>
+        <b>Tags:</b>
+        <span data="tags">{{comma_join tags}}</span>
+        <br/>{{{navlink tags}}}
+    {{/if }}
+    
     <span class="probetoggle logged-in-only"></span>
 
     <span class="editor-only"><button class="item-button edit-button btn success">Edit nugget details</button></span>
@@ -60,11 +66,13 @@
 
 <script id="nugget_lecture_list" type="text/x-handlebars-template">
 
+    <h1>Lectures</h1>
+
     <div id='studyapp' class='container'>
     <div id='lectureview' class='view'>
         <ul class='nav nav-pills'>
             {{#each lecture}}
-            <li id='{{lecture}}'><a href='lecture/{{lecture}}/' class='lecture {{status}}'><div><p id='{{lecture}}'>{{title}}</p><div class='points'><p id='{{lecture}}'><strong id='{{lecture}}'>{{#if points}}{{points}}{{/if}}</strong></p></div></div></a></li>
+            <li id='{{lecture}}'><a href='{{ ../url }}lecture/{{lecture}}/' class='lecture {{status}}'><div><p id='{{lecture}}'>{{title}}</p><div class='points'><p id='{{lecture}}'><strong id='{{lecture}}'>{{#if points}}{{points}}{{/if}}</strong></p></div></div></a></li>
             {{/each}}
         </ul>
     </div>
@@ -78,7 +86,7 @@
     <hr/>
     <ul class='nav nav-pills'>
         {{#each nuggets}}
-        <li><a href='../../../../../study/{{attributes._id}}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{attributes.title}}</a></li>
+        <li><a href='{{ root_url }}nuggets/{{ slug }}/' rel='tooltip' title='{{attributes.title}}' class='nugget {{status}}'>{{attributes.title}}</a></li>
         {{/each}}
     </ul>
 
