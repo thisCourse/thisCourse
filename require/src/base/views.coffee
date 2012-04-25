@@ -145,6 +145,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             # console.log "subview_created", @, subview_created
             
             if not subview_created
+                @add_subview options.name, new LoadingView, options.target
                 if options.datasource is "model"
                     @model.bind "change:" + options.key, create_subview_if_ready
                 else if options.datasource is "collection"
@@ -225,6 +226,11 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
 
         mementoRestore: =>
             @memento?.restore()
+
+    class LoadingView extends BaseView
+        
+        render: =>
+            @$el.html "<b>Loading...</b>"
 
     class GenericTemplateView extends BaseView
         
