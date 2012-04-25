@@ -77,11 +77,21 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     class TagSelectorView extends baseviews.BaseView
         
+        events:
+            "click .claimedButton": "claimSelect"
+        
         initialize: =>
-            @claimed = 0
-            
-    
-    
+            @claimed = 1
+            @taglist = []
+        
+        render: =>
+        
+        filter: =>
+            @filteredcollection = @collection.models.filter (nugget) =>
+                tag in nugget.tags for tag in taglist 
+        
+        claimSelect: =>
+            @claimed = @claimed % 3 + 1
     
     class LectureListView extends baseviews.RouterView
                 
