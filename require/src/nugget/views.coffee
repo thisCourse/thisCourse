@@ -66,10 +66,12 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             # console.log "init NuggetListView"
             @collection.bind "change", @render
             @collection.bind "remove", @render
-            @collection.bind "add", @render
-            @tagre = new RegExp('tags=(.*)')
-            @claimre = new RegExp('claimed=([0-9]+)')
+            @collection.bind "add", @render # TODO: this gets fired a kazillion times!
 
+        navigate: (fragment, query) =>
+            if not _.isEqual query, @query then _.defer @render # re-render the view if the query changed
+            super
+            
         addNewNugget: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
                 @collection.create title: title
