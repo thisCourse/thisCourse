@@ -74,9 +74,14 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
         
         render: =>
             super
+            
+
+        navigate: (fragment) =>
             links = @$("a")
-            if links.length and not @subfragment
-                _.defer => require("app").navigate @$("a")[0].pathname, replace: true
+            if links.length and fragment is ""
+                require("app").navigate links[0].pathname, replace: true
+            else
+                super
         
         initialize: ->
             @collection.bind "add", @addItem
