@@ -86,9 +86,15 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
         
         filter: =>
-            @filteredcollection = @collection.models.filter (nugget) =>
-                tag in nugget.tags for tag in taglist 
-        
+            filteredlist = @collection.models.filter (nugget) =>
+                switch @claimed
+                    when 1 then select = 1
+                    when 2 then select = 1 if require('app').get('user').get('claimed').has nugget.id
+                    when 3 then select = 1 if not require('app').get('user').get('claimed').has nugget.id
+                _.any(tag in nugget.tags for tag in @taglist) and select
+            @collection.reset()
+            @collection.add(filteredlist) #TODO: Make this silent then trigger change event after all are added
+            
         claimSelect: =>
             @claimed = @claimed % 3 + 1
     
