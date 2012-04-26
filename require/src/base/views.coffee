@@ -73,11 +73,12 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                 subview.close?()
             return @
                 
-        navigate: (fragment) =>
+        navigate: (fragment, query={}) =>
             @fragment = fragment
+            @query = query
             for name, subview of @subviews
                 #return true if subview.navigate(@fragment)
-                subview.navigate(@fragment) # TODO: test if it's inefficient to navigate on ALL THE THINGS
+                subview.navigate fragment, query # TODO: test if it's inefficient to navigate on ALL THE THINGS
             return false
 
         navigateToShow: =>
@@ -275,9 +276,9 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                     route.exec(fragment).slice(-1)[0]
             #alert "handlers on", @, ":", @handlers
         
-        navigate: (fragment) =>
+        navigate: (fragment, query={}) =>
 
-            # console.log "NAV", @
+            @query = query
             
             # check if fragment matches any of our routes
             for handler in @handlers
@@ -301,7 +302,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
                         view.hide() for route,view of @subviews when not (view is subview)
                         subview?.show?() # TODO: need to find a way to fire this even with add_lazy_subview...
                         # propagate the url fragment down into the subview:
-                        success = subview.navigate(splat)
+                        success = subview.navigate(splat, query)
 
                     if subview and not subview.closed
                         show_and_navigate subview
@@ -350,10 +351,11 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             for model in @collection.models
                 html += "<#{@childTagName} title='#{model.get('tooltip')}'><a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
             @$el.html html
-            @navigate @subfragment
+            @navigate @subfragment, @query
 
-        navigate: (fragment) =>
+        navigate: (fragment, query={}) =>
             @subfragment = fragment
+            @query = query
             @$("a, " + @childTagName).removeClass "active"
             # console.log @url, fragment
             path = @url + fragment
