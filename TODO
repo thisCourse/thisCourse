@@ -12,4 +12,4 @@ when saving on a parent (server-side), add ids to embedded models recursively
 
 clean code for handling hover events
 
-    
+when deleting ("destroy()") a denormed child model, don't just delete the full model, also remove from parent and save parent (e.g. deleting a content from a page, shouldn't have to save page after)
