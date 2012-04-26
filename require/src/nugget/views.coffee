@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles"], \
-        (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles","cs!utils/urls"], \
+        (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles, geturlparam) ->
 
     refreshNuggetAnalytics = =>
         $.get '/analytics/nuggetattempt/', (nuggetattempt) =>
@@ -42,6 +42,23 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         render: =>
             # console.log "rendering NuggetListView"
+            # for param in geturlparam(@url)
+            console.log geturlparam('?tags=L01;C02&claimed=2')
+            for param in geturlparam('?tags=L01;C02&claimed=2')
+                console.log @tagre.test(param)
+                console.log @claimre.test(param)
+                @taglist ?= if @tagre.test(param) then param.match(@tagre)[1].split(';') else []
+                @claimed ?= if @claimre.test(param) then Number(param.match(@claimre)[1])
+            console.log @taglist,@claimed
+            if @taglist or @claimed
+                filteredlist = @collection.models.filter (nugget) =>
+                    switch @claimed
+                        when 2 then select = 1 if require('app').get('user').get('claimed').has nugget.id
+                        when 3 then select = 1 if not require('app').get('user').get('claimed').has nugget.id
+                        else select = 1
+                    _.any(tag in nugget.tags for tag in @taglist) and select
+                @collection.reset()
+                @collection.add(filteredlist)
             @$el.html templates.nugget_list @context()
             @makeSortable()
             
@@ -50,6 +67,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
+            @tagre = new RegExp('tags=(.*)')
+            @claimre = new RegExp('claimed=([0-9]+)')
 
         addNewNugget: =>
             dialogviews.dialog_request_response "Please enter a title:", (title) =>
@@ -86,14 +105,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
         
         filter: =>
-            filteredlist = @collection.models.filter (nugget) =>
-                switch @claimed
-                    when 1 then select = 1
-                    when 2 then select = 1 if require('app').get('user').get('claimed').has nugget.id
-                    when 3 then select = 1 if not require('app').get('user').get('claimed').has nugget.id
-                _.any(tag in nugget.tags for tag in @taglist) and select
-            @collection.reset()
-            @collection.add(filteredlist) #TODO: Make this silent then trigger change event after all are added
+ #TODO: Make this silent then trigger change event after all are added
             
         claimSelect: =>
             @claimed = @claimed % 3 + 1
