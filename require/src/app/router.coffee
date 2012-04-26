@@ -1,4 +1,4 @@
-define ["cs!./views", "cs!analytics/utils"], (views, analyticsutils) ->
+define ["cs!./views", "cs!analytics/utils", "cs!utils/urls"], (views, analyticsutils, urlutils) ->
 
     class BaseRouter extends Backbone.Router
         
@@ -17,12 +17,14 @@ define ["cs!./views", "cs!analytics/utils"], (views, analyticsutils) ->
                 model: @app
             @appview.render()
             @route "*splat", "delegate_navigation", (splat) =>
-                # alert @root_url + splat
-                if splat.length > 0 and splat.slice(-1) isnt "/" # if the trailing slash was omitted, redirect
-                    @app.set url: splat + "/"
+                splitsplat = splat.split("?")
+                path = splitsplat[0]
+                query = urlutils.getUrlParams(splitsplat[1..].join("?") or "")
+                if path.length > 0 and path.slice(-1) isnt "/" # if the trailing slash was omitted, redirect
+                    @app.set url: splat.replace(/(\?|$)/, "/$1")
                 else
                     analyticsutils.ga_track_pageview()
-                    @appview.navigate splat
+                    @appview.navigate path, query
 
 
     BaseRouter: BaseRouter
