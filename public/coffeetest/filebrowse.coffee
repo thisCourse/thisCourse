@@ -1,8 +1,8 @@
 Backbone.Model.prototype.idAttribute = "_id"
 
 Handlebars.registerHelper ('ellipsis'), (filename) ->
-    if filename.length < 19 then return filename
-    ellided = filename.substring 0,15
+    if filename.length < 50 then return filename
+    ellided = filename.substring 0,50
     ellided += '...'
 
 filetypes =
@@ -48,7 +48,9 @@ class window.FileView extends BaseView
         @$el.append(template(_.extend @model.toJSON(), is_image: @model.get("type")=="picture"))
 
     clear:=>
-        @model.destroy()
+        if confirm "Are you sure you want to permanently DELETE this file from the server?"
+            @model.destroy()
+        return false
 
     select:->
         @options.parent.$('.file').not(@$('.file')).removeClass('active')
