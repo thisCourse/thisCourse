@@ -11,7 +11,5 @@ hyperlinking interface in ckeditor
 when saving on a parent (server-side), add ids to embedded models recursively
 
 clean code for handling hover events
-reduce the number of times things are repeated needlessly
-    setting data on models (use "loading/loaded")
-    rendering view templates
+
     
