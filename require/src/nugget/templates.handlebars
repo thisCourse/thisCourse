@@ -24,6 +24,8 @@
     
     <p><i>Note: this is the full list of content nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
     
+    {{#if query.tags }}<p><b>Tags:</b> {{ query.tags }}</p>{{/if}}
+    
     <ul>
         {{#each collection.models }}
             {{#if attributes.title }}<li><a href="{{ ../../url }}{{ slug }}/">{{ attributes.title }}</a></li>{{/if}}
