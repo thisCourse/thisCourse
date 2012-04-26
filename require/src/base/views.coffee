@@ -360,14 +360,11 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             if not path then return # TODO: why is this needed? (was getting called with @url and fragment both undefined)
             selected = null
             links = @$("a")
-            if fragment=="" and @autoSelectFirst and links.length # if no fragment, and desired, highlight first link
-                selected = links[0]
-            else
-                for a in links
-                    pathname = "/" + a.pathname.replace(/^\//, "")
-                    if path.slice(0, pathname.length) == pathname # link's url is a prefix of path being navigated
-                        if not selected or a.pathname.length > selected.pathname.length # only select link if its url is longer
-                            selected = a
+            for a in links
+                pathname = "/" + a.pathname.replace(/^\//, "")
+                if path.slice(0, pathname.length) == pathname # link's url is a prefix of path being navigated
+                    if not selected or a.pathname.length > selected.pathname.length # only select link if its url is longer
+                        selected = a
             if selected
                 $(selected).addClass "active"
                 $(selected).parents(@childTagName).first().addClass "active"

@@ -6,7 +6,8 @@ define ["cs!./views", "cs!analytics/utils"], (views, analyticsutils) ->
             @root_url = options.root_url
             Handlebars.registerHelper 'root_url', => @root_url
             @app = options.app
-            @app.bind "change:url", (app, url) => @navigate url, true
+            @app.bind "change:url", (app, url, navoptions) =>
+                @navigate url, _.extend trigger: true, (navoptions or {})
             analyticsutils.ga_initialize()
             super
 

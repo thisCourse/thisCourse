@@ -56,7 +56,6 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
     class PageRouterView extends baseviews.RouterView
         
         routes: =>
-            "": @showFirst
             "page/:id/": @handlePageNavigation
 
         initialize: ->
@@ -65,17 +64,19 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
         
         handlePageNavigation: (content_id) =>
             view: contentviews.ContentView, datasource: "collection", key: content_id
-        
-        showFirst: =>
-            view: contentviews.ContentView, datasource: "collection", index: 0
-        
+                
         navigate: =>
             super
 
 
     class PageNavRouterView extends baseviews.NavRouterView
         pattern: "page/:page_id/"
-        autoSelectFirst: true
+        
+        render: =>
+            super
+            links = @$("a")
+            if links.length and not @subfragment
+                _.defer => require("app").navigate @$("a")[0].pathname, replace: true
         
         initialize: ->
             @collection.bind "add", @addItem
