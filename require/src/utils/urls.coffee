@@ -1,6 +1,12 @@
 define [], () ->
-
-    getUrlParam = (Url) ->
-        reParam = new RegExp('[?&]([^?&]*)', 'gi')
-        match = Url.split(reParam)
-        if match and match.length > 1 then get for get in match when get else null
+    
+    getUrlParams = (url) ->
+        query = /(^[^?]*\?)?(.*)/g.exec(url)?[2] or ""
+        params = {}
+        for param in query.split("&")
+            [key, val] = param.split("=")
+            params[key] = val or ""
+        return params
+    
+    
+    getUrlParams: getUrlParams
