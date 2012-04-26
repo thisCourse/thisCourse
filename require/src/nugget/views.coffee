@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles","cs!utils/urls"], \
-        (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles, geturlparam) ->
+define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles"], \
+        (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles) ->
 
     refreshNuggetAnalytics = =>
         $.get '/analytics/nuggetattempt/', (nuggetattempt) =>
@@ -43,22 +43,20 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             # console.log "rendering NuggetListView"
             # for param in geturlparam(@url)
-            console.log geturlparam('?tags=L01;C02&claimed=2')
-            for param in geturlparam('?tags=L01;C02&claimed=2')
-                console.log @tagre.test(param)
-                console.log @claimre.test(param)
-                @taglist ?= if @tagre.test(param) then param.match(@tagre)[1].split(';') else []
-                @claimed ?= if @claimre.test(param) then Number(param.match(@claimre)[1])
-            console.log @taglist,@claimed
+            if @query
+                @taglist = (@query.tags or '').split(';')
+                @claimed = @query.claimed or ''
             if @taglist or @claimed
                 filteredlist = @collection.models.filter (nugget) =>
                     switch @claimed
-                        when 2 then select = 1 if require('app').get('user').get('claimed').has nugget.id
-                        when 3 then select = 1 if not require('app').get('user').get('claimed').has nugget.id
+                        when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
+                        when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
                         else select = 1
-                    _.any(tag in nugget.tags for tag in @taglist) and select
+                    console.log _.isEqual(_.intersection(nugget.get('tags'),@taglist),@taglist)
+                    tagged = if @taglist then _.isEqual(_.intersection(nugget.get('tags'),@taglist),@taglist) else true
+                    tagged and select
                 @collection.reset()
-                @collection.add(filteredlist)
+                @collection.add(filteredlist,silent:true)
             @$el.html templates.nugget_list @context()
             @makeSortable()
             
