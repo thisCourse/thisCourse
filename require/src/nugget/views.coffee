@@ -42,36 +42,26 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         render: =>
             # console.log "rendering NuggetListView"
-            @collectionbackup = if (@collectionbackup or []).length < @collection.models.length then @collection.models.filter (nugget) => true else @collectionbackup
             if @query
                 if @query.tags 
                     @taglist = decodeURIComponent(@query.tags).split(';')
                 else
                     @taglist = []
                 @claimed = @query.claimed or ''
-                filteredlist = @collectionbackup.filter (nugget) =>
+                filteredlist = @collection.filter (nugget) =>
                     switch @claimed
                         when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
                         when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
                         else select = 1
-                    tagged = if @taglist then _.isEqual(_.intersection(nugget.get('tags'),@taglist),@taglist) else true
+                    tagged = if @taglist then _.isEqual(_.intersection(nugget.get('tags'),@taglist).sort(),@taglist.sort()) else true
                     tagged and select
-                @collection.reset()
-                @collection.add(filteredlist,silent:true)
-            console.log @collection
-            console.log @collectionbackup
-            @$el.html templates.nugget_list @context()
+                @filteredcollection = new Backbone.Collection filteredlist
+            @$el.html templates.nugget_list collection: @filteredcollection
             @makeSortable()
-            @add_subview "tagselectorview", new TagSelectorView(collection: @collection), ".tagselectorview"
+            @add_subview "tagselectorview", new TagSelectorView(collection: @filteredcollection), ".tagselectorview"
             
         initialize: ->
             # console.log "init NuggetListView"
-            if @collection.models.length>0
-                console.log @collection.models
-                @collectionbackup = @collection.models.filter (nugget) => true
-                console.log "Backup Set"
-            else
-                @collectionbackup ?= []
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", _.debounce @render, 50 # TODO: this gets fired a kazillion times!
