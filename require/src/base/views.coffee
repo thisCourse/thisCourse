@@ -172,6 +172,10 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             #if @visible and @fragment # TODO: do we want to do this for non-visible views as well? Probably not?
                 #@navigate @fragment
             
+            # TODO: doing this instead of the above...
+            view.fragment = @fragment
+            view.query = @query
+            
             # append the view's element either to the specified target element, or to parent's top-level element
             if element
                 target = @$(element)
