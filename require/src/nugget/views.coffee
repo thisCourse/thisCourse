@@ -41,29 +41,33 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .delete-button": "deleteNugget"
 
         render: =>
-            # console.log "rendering NuggetListView"
+            console.log "rendering NuggetListView"
             if @query
                 if @query.tags 
-                    @taglist = @query.tags.split(';')
+                    @taglist = decodeURIComponent(@query.tags).split(';')
                 else
                     @taglist = []
                 @claimed = @query.claimed or ''
-            if @taglist or @claimed
-                filteredlist = @collection.models.filter (nugget) =>
+                filteredlist = @collectionbackup.filter (nugget) =>
                     switch @claimed
-                        when 'Claimed' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
-                        when 'Unclaimed' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
+                        when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
+                        when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
                         else select = 1
                     tagged = if @taglist then _.isEqual(_.intersection(nugget.get('tags'),@taglist),@taglist) else true
                     tagged and select
                 @collection.reset()
                 @collection.add(filteredlist,silent:true)
+            # console.log @collection
+            # console.log @collectionbackup
             @$el.html templates.nugget_list @context()
             @makeSortable()
             @add_subview "tagselectorview", new TagSelectorView(collection: @collection), ".tagselectorview"
             
         initialize: ->
             # console.log "init NuggetListView"
+            console.log @collection
+            @collectionbackup = @collection.models.filter (nugget) => true
+            console.log "Backup Set"
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", _.debounce @render, 50 # TODO: this gets fired a kazillion times!
@@ -104,23 +108,35 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @taglist = []
             tags = []
             if @query
+                if @query.claimed
+                    @claimfilter = if @query.claimed=='1' then text:'Claimed',url:@claimedUrl('0') else text:'Unclaimed', url: @claimedUrl('')
+                else
+                    @claimfilter = text:'All',url:@claimedUrl('1')
                 for nugget in @collection.models
                     for tag in (nugget.get('tags') or [])
                         tags.push tag
                 tags = _.uniq(tags)
                 for tag in tags
-                    console.log @query.tags
-                    if tag in (@query.tags or '').split(';')
-                        url = @url+'?tags=L01;C01'
-                        console.log url
-                        @taglist.push tagname: tag, selected: true, url: url
-                        console.log "SELECTED!", tag
+                    if tag in (decodeURIComponent(@query.tags) or '').split(';')
+                        @taglist.push tagname: tag, selected: true, url: @tagUrl(tag,true)
                     else
-                        url = @url+'?tags=L02;C02'
-                        console.log url
-                        @taglist.push tagname: tag, url: url
+                        @taglist.push tagname: tag, url: @tagUrl(tag,false)
             @$el.html templates.tag_selector @context(@taglist)
+            
+        claimedUrl: (argument) =>
+            claimed = if argument then 'claimed='+argument else ''
+            tags = if @query.tags then 'tags='+@query.tags else ''
+            url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
         
+        tagUrl: (tagname,selected) =>
+            claimed = if @query.claimed then 'claimed='+@query.claimed else ''
+            taglist = if @query.tags then (tag for tag in @query.tags.split(';')) else []
+            if selected
+                taglist = _.without(taglist,tagname)
+            else
+                taglist.push tagname
+            tags = if taglist.join(';') then 'tags='+taglist.join(';') else ''
+            url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
     
     class LectureListView extends baseviews.RouterView
                 
