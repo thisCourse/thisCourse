@@ -42,6 +42,23 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         render: =>
             # console.log "rendering NuggetListView"
+            # for param in geturlparam(@url)
+            if @query
+                if @query.tags 
+                    @taglist = @query.tags.split(';')
+                else
+                    @taglist = []
+                @claimed = @query.claimed or ''
+            if @taglist or @claimed
+                filteredlist = @collection.models.filter (nugget) =>
+                    switch @claimed
+                        when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
+                        when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
+                        else select = 1
+                    tagged = if @taglist then _.isEqual(_.intersection(nugget.get('tags'),@taglist),@taglist) else true
+                    tagged and select
+                @collection.reset()
+                @collection.add(filteredlist,silent:true)
             @$el.html templates.nugget_list @context()
             @makeSortable()
             
@@ -90,14 +107,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
         
         filter: =>
-            filteredlist = @collection.models.filter (nugget) =>
-                switch @claimed
-                    when 1 then select = 1
-                    when 2 then select = 1 if require('app').get('user').get('claimed').has nugget.id
-                    when 3 then select = 1 if not require('app').get('user').get('claimed').has nugget.id
-                _.any(tag in nugget.tags for tag in @taglist) and select
-            @collection.reset()
-            @collection.add(filteredlist) #TODO: Make this silent then trigger change event after all are added
+ #TODO: Make this silent then trigger change event after all are added
             
         claimSelect: =>
             @claimed = @claimed % 3 + 1
