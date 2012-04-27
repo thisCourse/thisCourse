@@ -22,6 +22,8 @@
     
     <h2>Nuggets</h2>
     
+    <div class="tagselectorview"></div>
+    
     <p><i>Note: this is the full list of content nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
     
     {{#if query.tags }}<p><b>Tags:</b> {{ query.tags }}</p>{{/if}}
@@ -36,6 +38,13 @@
     
 </script>
 
+<script id="tag_selector" type="text/x-handlebars-template">
+    
+<h5>All/Claimed/Unclaimed:&nbsp;<button class='btn primary'>{{#if query.claimed }}{{ query.claimed }}{{else}}All{{/if}}</button></h5>
+
+    {{#each taglist}}<a href='{{url}}'><span class='label {{#if selected}}notice{{/if}}'>{{tagname}}</span></a>{{/each}}
+    
+</script>
 
 <script id="nugget_top" type="text/x-handlebars-template">
     
