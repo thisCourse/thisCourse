@@ -24,7 +24,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
         
         bind_links: =>
             @$el.on "click", "a", (ev) ->
-                pathname = "/" + ev.currentTarget.pathname.replace(/^\/+/,"")
+                pathname = "/" + ev.currentTarget.pathname.replace(/^\/+/,"") + ev.currentTarget.search
                 if ev.shiftKey or ev.ctrlKey then return true # allow ctrl/shift clicks (new tab/window) to pass
                 if ev.currentTarget.origin != document.location.origin or pathname.split("/")[1] not in ["course", "src"] # make external links pop up in a new window
                     ev.target.target = "_blank"

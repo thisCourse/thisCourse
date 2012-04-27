@@ -21,8 +21,10 @@ define ["cs!base/models", "cs!course/models", "cs!auth/models", "cs!./router"], 
         navigate: (url, options) =>
             if not url then return
             if url instanceof Function then url = url()
-            url = "/" + $("<a href='" + url + "'>")[0].pathname.replace(/^\/+/,"") # hack (?) to resolve relative paths (e.g. "..")
-            if url.slice(-1) isnt "/" then url += "/"
+            link = $("<a href='" + url + "'>")[0]
+            pathname = link.pathname.replace(/^\/+/,"")
+            if pathname.slice(-1) isnt "/" then pathname += "/"
+            url = "/" + pathname + link.search # hack (?) to resolve relative paths (e.g. "..")
             root = @get("root_url")
             if url[0...root.length]==root then url = url[root.length...] # trim off the leading root url, if present
             @set (url: url), (silent:true) # silent so that we don't trigger twice (see next)
