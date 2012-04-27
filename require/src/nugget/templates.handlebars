@@ -40,9 +40,12 @@
 
 <script id="tag_selector" type="text/x-handlebars-template">
     
-<h5>All/Claimed/Unclaimed:&nbsp;<a href='{{claimfilter.url}}'><button class='btn primary'>{{ claimfilter.text }}</button></a></h5>
-
-    {{#each taglist}}<a href='{{url}}'><span class='label {{#if selected}}notice{{/if}}'>{{tagname}}</span></a>{{/each}}
+<div class="pagination">
+    <ul>
+        {{#each claimfilter}}<li {{#if selected}}class='active'{{/if}}><a href='{{url}}'>{{ text }}</a></li>{{/each}}
+    </ul>
+</div> 
+    {{#each taglist}}<a href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
     
 </script>
 

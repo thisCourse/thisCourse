@@ -102,31 +102,32 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @taglist = []
             tags = []
             if @query
-                if @query.claimed
-                    @claimfilter = if @query.claimed=='1' then text:'Claimed',url:@claimedUrl('0') else text:'Unclaimed', url: @claimedUrl('')
-                else
-                    @claimfilter = text:'All',url:@claimedUrl('1')
+                @claimfilter = @claimedUrl()
+                console.log @claimfilter
                 for nugget in @collection.models
                     for tag in (nugget.get('tags') or [])
                         tags.push tag
                 tags = _.uniq(tags)
+                tags.sort()
                 for tag in tags
                     if tag in (decodeURIComponent(@query.tags) or '').split(';')
                         @taglist.push tagname: tag, selected: true, url: @tagUrl(tag,true)
                     else
                         @taglist.push tagname: tag, url: @tagUrl(tag,false)
-            @$el.html templates.tag_selector @context(@taglist)
+            @$el.html templates.tag_selector @context(@taglist,@claimfilter)
             
-        claimedUrl: (argument) =>
-            claimed = if argument then 'claimed='+argument else ''
+        claimedUrl: () =>
             tags = if @query.tags then 'tags='+@query.tags else ''
-            url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
+            all = text: 'All',selected: not @query.claimed, url: if tags then @url + '?' + tags else @url
+            claimed = text: 'Claimed',selected: @query.claimed=='1', url: if tags then @url + '?' + tags + '&' + 'claimed=1' else @url + '?' + 'claimed=1'
+            unclaimed = text: 'Unclaimed',selected: @query.claimed=='0', url: if tags then @url + '?' + tags + '&' + 'claimed=0' else @url + '?' + 'claimed=0'
+            claimfilter = [all,claimed,unclaimed]
         
         tagUrl: (tagname,selected) =>
             claimed = if @query.claimed then 'claimed='+@query.claimed else ''
             taglist = if @query.tags then (tag for tag in @query.tags.split(';')) else []
             if selected
-                taglist = _.without(taglist,tagname)
+                taglist = _.without(taglist,encodeURIComponent(tagname))
             else
                 taglist.push tagname
             tags = if taglist.join(';') then 'tags='+taglist.join(';') else ''
