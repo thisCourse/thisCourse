@@ -42,7 +42,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         render: =>
             # console.log "rendering NuggetListView"
-            # for param in geturlparam(@url)
             if @query
                 if @query.tags 
                     @taglist = @query.tags.split(';')
@@ -52,8 +51,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if @taglist or @claimed
                 filteredlist = @collection.models.filter (nugget) =>
                     switch @claimed
-                        when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
-                        when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
+                        when 'Claimed' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
+                        when 'Unclaimed' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
                         else select = 1
                     tagged = if @taglist then _.isEqual(_.intersection(nugget.get('tags'),@taglist),@taglist) else true
                     tagged and select
@@ -61,12 +60,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 @collection.add(filteredlist,silent:true)
             @$el.html templates.nugget_list @context()
             @makeSortable()
+            @add_subview "tagselectorview", new TagSelectorView(collection: @collection), ".tagselectorview"
             
         initialize: ->
             # console.log "init NuggetListView"
             @collection.bind "change", @render
             @collection.bind "remove", @render
-            @collection.bind "add", @render # TODO: this gets fired a kazillion times!
+            @collection.bind "add", _.debounce @render, 50 # TODO: this gets fired a kazillion times!
 
         navigate: (fragment, query) =>
             if not _.isEqual query, @query then _.defer @render # re-render the view if the query changed
@@ -97,20 +97,30 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
     class TagSelectorView extends baseviews.BaseView
         
-        events:
-            "click .claimedButton": "claimSelect"
-        
         initialize: =>
-            @claimed = 1
-            @taglist = []
+            
         
         render: =>
+            @taglist = []
+            tags = []
+            if @query
+                for nugget in @collection.models
+                    for tag in (nugget.get('tags') or [])
+                        tags.push tag
+                tags = _.uniq(tags)
+                for tag in tags
+                    console.log @query.tags
+                    if tag in (@query.tags or '').split(';')
+                        url = @url+'?tags=L01;C01'
+                        console.log url
+                        @taglist.push tagname: tag, selected: true, url: url
+                        console.log "SELECTED!", tag
+                    else
+                        url = @url+'?tags=L02;C02'
+                        console.log url
+                        @taglist.push tagname: tag, url: url
+            @$el.html templates.tag_selector @context(@taglist)
         
-        filter: =>
- #TODO: Make this silent then trigger change event after all are added
-            
-        claimSelect: =>
-            @claimed = @claimed % 3 + 1
     
     class LectureListView extends baseviews.RouterView
                 
