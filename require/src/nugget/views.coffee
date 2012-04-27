@@ -71,7 +71,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 @collectionbackup = @collection.models.filter (nugget) => true
                 console.log "Backup Set"
             else
-                @collectionbackup = []
+                @collectionbackup ?= []
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", _.debounce @render, 50 # TODO: this gets fired a kazillion times!
