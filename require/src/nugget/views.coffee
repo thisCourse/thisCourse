@@ -41,7 +41,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .delete-button": "deleteNugget"
 
         render: =>
-            console.log "rendering NuggetListView"
+            # console.log "rendering NuggetListView"
+            @collectionbackup = if (@collectionbackup or []).length < @collection.models.length then @collection.models.filter (nugget) => true else @collectionbackup
             if @query
                 if @query.tags 
                     @taglist = decodeURIComponent(@query.tags).split(';')
@@ -57,17 +58,20 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                     tagged and select
                 @collection.reset()
                 @collection.add(filteredlist,silent:true)
-            # console.log @collection
-            # console.log @collectionbackup
+            console.log @collection
+            console.log @collectionbackup
             @$el.html templates.nugget_list @context()
             @makeSortable()
             @add_subview "tagselectorview", new TagSelectorView(collection: @collection), ".tagselectorview"
             
         initialize: ->
             # console.log "init NuggetListView"
-            console.log @collection
-            @collectionbackup = @collection.models.filter (nugget) => true
-            console.log "Backup Set"
+            if @collection.models.length>0
+                console.log @collection.models
+                @collectionbackup = @collection.models.filter (nugget) => true
+                console.log "Backup Set"
+            else
+                @collectionbackup = []
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", _.debounce @render, 50 # TODO: this gets fired a kazillion times!
