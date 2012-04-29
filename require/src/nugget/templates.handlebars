@@ -39,12 +39,13 @@
 </script>
 
 <script id="tag_selector" type="text/x-handlebars-template">
-    
+
+<a href ='{{quiz.url}}' class='item-button btn primary quizme'>Quiz Me</a>    
 <div class="pagination">
     <ul>
         {{#each claimfilter}}<li {{#if selected}}class='active'{{/if}}><a href='{{url}}'>{{ text }}</a></li>{{/each}}
     </ul>
-</div> 
+</div>
     {{#each taglist}}<a href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
     
 </script>
