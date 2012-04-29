@@ -24,15 +24,17 @@
     
     <p><i>Note: this is the full list of content nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
     
-    <ul class="nuggetlist">
-        {{#each collection.models }}
-            {{#if attributes.title }}<li><a href="{{ ../../url }}{{ slug }}/">{{ attributes.title }}</a></li>{{/if}}
-        {{/each }}
-    </ul>
+    <div class="nuggetlist">
+        <ul>
+            {{#each collection.models }}
+                {{#if attributes.title }}<li><a href="{{ ../../url }}{{ slug }}/">{{ attributes.title }}</a></li>{{/if}}
+            {{/each }}
+        </ul>
+        <span class="editor-only"><button class="add-button btn success">Add nugget</button></span>
+    </div>
 
     <div class="tagselectorview"></div>
 
-    <span class="editor-only"><button class="add-button btn success">Add nugget</button></span>
     
 </script>
 
