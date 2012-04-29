@@ -85,15 +85,18 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
            
         nextProbe: =>
             if @inc >= @collection.length
-                nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
-                doPost '/analytics/nuggetattempt/', nuggetattempt, =>
-                    if @claimed
-                        @$el.html "Nugget Claimed!"
-                        require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
-                    else
-                        @$el.html "Practice makes better!"
-                        require('app').get('user').get('partial').add _id: @model.parent.model.id
-                return
+                if not @claiming
+                    nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
+                    doPost '/analytics/nuggetattempt/', nuggetattempt, =>
+                        if @claimed
+                            @$el.html "Nugget Claimed!"
+                            require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
+                        else
+                            @$el.html "Practice makes better!"
+                            require('app').get('user').get('partial').add _id: @model.parent.model.id
+                    return
+                else
+                    
             @model = @collection.at(@inc)
             @model.fetch success: @render
             @inc += 1
