@@ -22,17 +22,15 @@
     
     <h2>Nuggets</h2>
     
-    <div class="tagselectorview"></div>
-    
     <p><i>Note: this is the full list of content nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
     
-    {{#if query.tags }}<p><b>Tags:</b> {{ query.tags }}</p>{{/if}}
-    
-    <ul>
+    <ul class="nuggetlist">
         {{#each collection.models }}
             {{#if attributes.title }}<li><a href="{{ ../../url }}{{ slug }}/">{{ attributes.title }}</a></li>{{/if}}
         {{/each }}
     </ul>
+
+    <div class="tagselectorview"></div>
 
     <span class="editor-only"><button class="add-button btn success">Add nugget</button></span>
     
@@ -55,12 +53,10 @@
 
     <div class="description" data="description"></div>
 
-    {{#if tags }}
-        <br/>
-        <b>Tags:</b>
-        <span data="tags">{{comma_join tags}}</span>
-        <br/>{{{navlink tags}}}
-    {{/if }}
+    <br/>
+    <b>Tags:</b>
+    <span data="tags">{{comma_join tags}}</span>
+    <br/>{{{navlink tags}}}
     
     <span class="probetoggle logged-in-only"></span>
 

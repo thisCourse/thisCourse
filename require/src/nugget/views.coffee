@@ -297,15 +297,16 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     class NuggetTopView extends baseviews.BaseView
         
         Handlebars.registerHelper ('navlink'), (tags) ->
+            if not _.isArray(tags) then return ""
             relec = new RegExp('L([0-9]+)')
             reclus = new RegExp('C([0-9]+)')
             for tag in tags
                 lec = relec.exec(tag) or lec
                 clus = reclus.exec(tag) or clus
             if not lec or not clus then return ''
-            out = "<a href='"+@url+"../../study/lecture/"+lec[0]+"/cluster/"+clus[0]+"/'>Return to Lecture "+Number(lec[1])+" Cluster "+Number(clus[1])+"</a>"
+            return "<a href='"+@url+"../../study/lecture/"+lec[0]+"/cluster/"+clus[0]+"/'>Return to Lecture "+Number(lec[1])+" Cluster "+Number(clus[1])+"</a>"
 
-        Handlebars.registerHelper ('comma_join'), (tags) -> tags.join?(",") or ""
+        Handlebars.registerHelper ('comma_join'), (tags) -> _.isArray(tags) and tags.join?(",") or ""
         
         initialize: ->
             # @model.bind "change", @render
