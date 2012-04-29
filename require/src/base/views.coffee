@@ -358,12 +358,12 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             @navigate @subfragment, @query
 
         navigate: (fragment, query={}) =>
+            if not fragment then return # TODO: why is this needed? (was getting called with @url and fragment both undefined)
             @subfragment = fragment
             @query = query
             @$("a, " + @childTagName).removeClass "active"
             # console.log @url, fragment
             path = @url + fragment
-            if not path then return # TODO: why is this needed? (was getting called with @url and fragment both undefined)
             selected = null
             links = @$("a")
             for a in links
