@@ -29,8 +29,9 @@ define ["cs!utils/formatters"], (formatters) ->
     class BaseModel extends Backbone.Model
 
         url: => # TODO: test this, and make the api endpoint configurable
-            if @apiCollection
-                return "/api/" + @apiCollection + "/" + (@id or "")
+            rootUrl = get_url(@collection?.url) or (@apiCollection and ("/api/" + @apiCollection))
+            if rootUrl
+                return rootUrl + "/" + (@id or "")
 
         getDate: (attr) =>
             date = @get(attr)
@@ -162,10 +163,11 @@ define ["cs!utils/formatters"], (formatters) ->
                     else
                         # clog "turning array into collection"
                         bind_to_collection = => # this was wrapped in a closure so that variables doesn't get clobbered in the loop
-                            collection = attr[key] = new opts.collection(attr[key]) # turn array into collection
-                            includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
-                            collection.includeInJSON = includeInJSON
                             parent = {model: @, key: key}
+                            includeInJSON = opts.includeInJSON.slice?(0) or opts.includeInJSON # slice to make a copy
+                            collection = attr[key] = new opts.collection(attr[key]) # turn array into collection
+                            collection.includeInJSON = includeInJSON
+                            collection.parent = parent
                             # TODO: unbind here first, since we may have been through here before?
                             collection.bind "add", (model) =>
                                 # clog "adding parent to", model, "from", @, "at key", key
@@ -312,11 +314,17 @@ define ["cs!utils/formatters"], (formatters) ->
             super
             @apiCollection = @model::apiCollection
         
-        toJSON: ->
+        toJSON: =>
             models = super
             # filter out non-embedded models that are unsaved (to prevent extra id-less instances from being created as a result of recursive saving)
             models = _.filter models, (model) -> model.includeInJSON or idAttribute of model
-            return models                    
+            return models
+        
+        url: =>
+            if parent_url = get_url(@parent?.model?.url) # if collection has a parent model, derive url from parent
+                rootUrl = parent_url + "/" + @parent.key
+            else if @apiCollection # otherwise, use the root api url
+                rootUrl = "/api/" + @apiCollection + "/"
 
 
     BaseModel: BaseModel
