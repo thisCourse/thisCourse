@@ -28,6 +28,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         routes: =>
             "": => view: NuggetListView, datasource: "collection", nonpersistent: true
+            "quiz/": => view: probeviews.ProbeRouterView, datasource: "collection", nonpersistent: true, notclaiming: true, many: true
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
 
         initialize: ->
@@ -41,21 +42,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .delete-button": "deleteNugget"
 
         render: =>
-            # console.log "rendering NuggetListView"
-            if @query
-                if @query.tags 
-                    @taglist = decodeURIComponent(@query.tags).split(';')
-                else
-                    @taglist = []
-                @claimed = @query.claimed or ''
-                filteredlist = @collection.filter (nugget) =>
-                    switch @claimed
-                        when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
-                        when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
-                        else select = 1
-                    tagged = if @taglist then _.isEqual(_.intersection(nugget.get('tags'),@taglist).sort(),@taglist.sort()) else true
-                    tagged and select
-                @filteredcollection = new Backbone.Collection filteredlist
+            @filteredcollection = @collection.select(@query)
             @$el.html templates.nugget_list collection: @filteredcollection
             @makeSortable()
             @add_subview "tagselectorview", new TagSelectorView(collection: @filteredcollection), ".tagselectorview"
@@ -103,7 +90,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             tags = []
             if @query
                 @claimfilter = @claimedUrl()
-                console.log @claimfilter
                 for nugget in @collection.models
                     for tag in (nugget.get('tags') or [])
                         tags.push tag
@@ -114,7 +100,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                         @taglist.push tagname: tag, selected: true, url: @tagUrl(tag,true)
                     else
                         @taglist.push tagname: tag, url: @tagUrl(tag,false)
-            @$el.html templates.tag_selector @context(@taglist,@claimfilter)
+            @quiz = @quizUrl()
+            @$el.html templates.tag_selector @context(@taglist,@claimfilter,@quiz)
             
         claimedUrl: () =>
             tags = if @query.tags then 'tags='+@query.tags else ''
@@ -132,6 +119,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 taglist.push tagname
             tags = if taglist.join(';') then 'tags='+taglist.join(';') else ''
             url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
+            
+        quizUrl: =>
+            claimed = if @query.claimed then 'claimed='+@query.claimed else ''
+            tags = @query.tags or ''
+            quizUrl = url: if tags then @url + 'quiz/' + '?' + tags + (if claimed then '&' + claimed else '') else @url + 'quiz/' + (if claimed then '?' + claimed else '')
     
     class LectureListView extends baseviews.RouterView
                 
