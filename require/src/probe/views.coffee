@@ -4,7 +4,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => view: ProbeContainerView, datasource: "collection"
+            "": => view: ProbeContainerView, datasource: "collection", notclaiming: @notclaiming, many: @many
             "edit/": => view: ProbeListView, datasource: "collection"
             "edit/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "collection", key: probe_id
 
@@ -70,7 +70,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .nextquestion" : "nextProbe"
         
         initialize: =>
-            @collection = new Backbone.Collection(@collection.shuffle())
+            if @many
+                @collection = new Backbone.Collection(_.union(nugget.get('probeset') for nugget in @collection.select(@query)).shuffle())
+            else
+                @collection = new Backbone.Collection(@collection.shuffle())
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
@@ -85,7 +88,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
            
         nextProbe: =>
             if @inc >= @collection.length
-                if not @claiming
+                if not @notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
                     doPost '/analytics/nuggetattempt/', nuggetattempt, =>
                         if @claimed
