@@ -115,3 +115,19 @@
     <span class="editor-only"><button class="add-button btn success">Add Probe</button></span>
     
 </script>
+
+<script id="nugget_review_list" type="text/x-handlebars-template">
+    
+    <h2>Consider Reviewing these Nuggets</h2>
+    
+    <div class="nuggetlist">
+        <ul>
+            {{#each collection.models }}
+                {{#if attributes.title }}<li><a href="../{{ ../../url }}{{ slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
+            {{/each }}
+        </ul>
+    </div>
+
+
+    
+</script>
