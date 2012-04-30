@@ -107,8 +107,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                             require('app').get('user').get('partial').add _id: @model.parent.model.id
                     return
                 else
-                    console.log @review
-                    @$el.html templates.nugget_review_list collection: new Backbone.Collection(@review)
+                    if @review.length > 0
+                        @$el.html templates.nugget_review_list collection: new Backbone.Collection(@review),query: @query
+                    else
+                        @$el.html templates.nugget_review_list query: @query
                     return
             @model = @collection.at(@inc)
             @model.fetch success: @render
