@@ -28,7 +28,7 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                         when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
                         else select = 1
                     tagged = if taglist then _.isEqual(_.intersection(nugget.get('tags') or [],taglist).sort(),taglist.sort()) else true
-                    tagged and select
+                    tagged and select and nugget.get('title') #HACK to exclude title-less nuggets
             else
                 filteredlist = @.models
             filteredcollection = new Backbone.Collection filteredlist
