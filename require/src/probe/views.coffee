@@ -4,7 +4,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => view: ProbeContainerView, datasource: "collection", notclaiming: @notclaiming, many: @many
+            "": => view: ProbeContainerView, datasource: "collection", notclaiming: @options.notclaiming, many: @options.many
             "edit/": => view: ProbeListView, datasource: "collection"
             "edit/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "collection", key: probe_id
 
@@ -70,25 +70,33 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .nextquestion" : "nextProbe"
         
         initialize: =>
-            if @many
-                @collection = new Backbone.Collection(_.union(nugget.get('probeset') for nugget in @collection.select(@query)).shuffle())
-            else
-                @collection = new Backbone.Collection(@collection.shuffle())
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
+            if @options.many then @review = []
             @claimed = true
             @points = 0
             @inc = 0
-            @nextProbe()
         
         render: =>
             @$el.html templates.probe_container
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
+            
+        navigate: (fragment, query) =>
+            if not _.isEqual query, @query then _.defer @render # re-render the view if the query changed
+            if @options.many
+                console.log @query
+                console.log @collection.select(@query).models
+                @collection = new Backbone.Collection(_.shuffle(_.flatten((probe for probe in nugget.get('probeset').models) for nugget in @collection.select(@query).models)))
+                console.log @collection
+            else
+                @collection = new Backbone.Collection(@collection.shuffle())
+            @nextProbe()
+            super
            
         nextProbe: =>
             if @inc >= @collection.length
-                if not @notclaiming
+                if not @options.notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
                     doPost '/analytics/nuggetattempt/', nuggetattempt, =>
                         if @claimed
@@ -99,7 +107,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                             require('app').get('user').get('partial').add _id: @model.parent.model.id
                     return
                 else
-                    
+                    console.log @review
+                    @$el.html templates.nugget_review_list collection: new Backbone.Collection(@review)
+                    return
             @model = @collection.at(@inc)
             @model.fetch success: @render
             @inc += 1
@@ -119,6 +129,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$('.answerbtn').hide()
                 if not data.correct 
                     @claimed = false
+                    if @options.many
+                        @review.push @model.parent.model
                 else
                     for answer in data.probe.answers
                         @points += answer.correct or 0
@@ -151,7 +163,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$('.questionstatus').append('<h3 style="color:#FF2222">Incorrect</h3>')
             @$('.nextquestion').show()
             if @parent.inc == @parent.collection.length
-                if @parent.claimed == true
+                if @parent.claimed == true and not @parent.options.notclaiming #TODO: Remove this to fully modularize probes
                     @$('.nextquestion').text('Claim Nugget!')
                 else
                     @$('.nextquestion').text('Finish Quiz')
