@@ -21,8 +21,8 @@ define [], () ->
     
     if environ=="DEPLOY"
         window.onerror = (message, file, line) ->
-           formattedMessage = '[' + file + ' (' + line + ')] ' + message.toString()
-           ga_log_error formattedMessage
+            formattedMessage = '[' + file + ' (' + line + ')] ' + message.toString()
+            ga_log_error formattedMessage
        
     
     ga_initialize: ga_initialize
