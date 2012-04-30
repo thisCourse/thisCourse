@@ -118,7 +118,7 @@
 
 <script id="nugget_review_list" type="text/x-handlebars-template">
     
-    <h2>Consider Reviewing these Nuggets</h2>
+    {{#if collection}}<h4>Consider Reviewing these Nuggets</h4>{{else}}<h3>Congratulations! You got those all correct!</h3>{{/if}}
     
     <div class="nuggetlist">
         <ul>
@@ -126,6 +126,7 @@
                 {{#if attributes.title }}<li><a href="../{{ ../../url }}{{ slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
             {{/each }}
         </ul>
+        <a href="../{{url}}{{#if query.tags}}?tags={{query.tags}}{{#if query.claimed}}&claimed={{query.claimed}}{{/if}}{{else}}{{#if query.claimed}}?claimed={{query.claimed}}{{/if}}{{/if}}"<p>Return to Nugget List</p></a>
     </div>
 
 
