@@ -1,9 +1,29 @@
-<script id="boiler_list" type="text/x-handlebars-template">
+<script id="analytics" type="text/x-handlebars-template">
     
+    <table class="student-stats"></table>
+    
+    <button class="btn success load-statistics">Load Statistics</button>
 
 </script>
 
-<script id="boiler" type="text/x-handlebars-template">
-    
+<script id="student_stats_header" type="text/x-handlebars-template">
+
+    <tr>
+        <th>Student email</th>
+        <th>Total points claimed</th>
+        <th>Nuggets claimed</th>
+        <th>Nuggets attempted</th>
+    </tr>
+
+</script>
+
+<script id="student_stats_row" type="text/x-handlebars-template">
+
+    <tr>
+        <td>{{ email }}</td>
+        <td>{{ total_points }}</td>
+        <td>{{ claimed.length }}</td>
+        <td>{{ attempted.length }}</td>
+    </tr>
 
 </script>
