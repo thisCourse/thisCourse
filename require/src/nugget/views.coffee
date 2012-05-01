@@ -92,7 +92,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 @claimfilter = @claimedUrl()
                 for nugget in @collection.models
                     for tag in (nugget.get('tags') or [])
-                        tags.push tag
+                        tags.push tag.trim().toLowerCase()
                 tags = _.uniq(tags)
                 tags.sort()
                 for tag in tags
@@ -186,7 +186,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     class LectureBottomView extends baseviews.RouterView
         
         routes: =>
-            "cluster/:cluster_id/": (cluster_id) => view: FilteredNuggetListView, datasource: "collection", cluster: cluster_id, lecture: @options.lecture
+            "cluster/:cluster_id/": (cluster_id) => view: FilteredNuggetListView, datasource: "collection", cluster: cluster_id, lecture: @options.lecture, nonpersistent: true
 
     class FilteredNuggetListView extends baseviews.BaseView
         

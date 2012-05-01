@@ -18,7 +18,7 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
             
             if query        
                 if query.tags 
-                    taglist = decodeURIComponent(query.tags).split(';')
+                    taglist = (tag.trim().toLowerCase() for tag in decodeURIComponent(query.tags).split(';'))
                 else
                     taglist = []
                 claimed = query.claimed or ''
@@ -27,7 +27,8 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                         when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
                         when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
                         else select = 1
-                    tagged = if taglist then _.isEqual(_.intersection(nugget.get('tags') or [],taglist).sort(),taglist.sort()) else true
+                    nuggettags = (tag.trim().toLowerCase() for tag in nugget.get('tags') or [])
+                    tagged = if taglist then _.isEqual(_.intersection(nuggettags,taglist).sort(),taglist.sort()) else true
                     tagged and select and nugget.get('title') #HACK to exclude title-less nuggets
             else
                 filteredlist = @.models
