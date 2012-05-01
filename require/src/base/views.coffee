@@ -63,6 +63,8 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             if @visible
                 @visible = false
                 if @nonpersistent then @close() else @$el.hide()
+            for name, subview of @subviews
+                subview.hide()
 
         close: =>
             @closed = true
