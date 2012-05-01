@@ -86,6 +86,22 @@ define [], ->
             'C04': 'Object Categories'
          'title': 'Object Concepts'
          'minpoints': 10
+      'L11':
+         'clusters':
+            'C01': 'The Importance of Social Cognition'
+            'C02': 'Social cognition requirements'
+            'C03': 'Self-awareness'
+            'C04': 'Theory of Mind'
+         'title': 'Social Cognition and Theory of Mind'
+         'minpoints': 10
+      'L12':
+         'clusters':
+            'C01': 'Social Cognition, Communication, & Language'
+            'C02': 'Social Communication'
+            'C03': 'Language and communication'
+            'C04': 'Language and Theory of Mind'
+         'title': 'Social Cognition, Communication, & Language'
+         'minpoints': 10
 
 
    knowledgestructure: knowledgestructure
