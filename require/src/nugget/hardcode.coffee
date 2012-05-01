@@ -102,6 +102,16 @@ define [], ->
             'C04': 'Language and Theory of Mind'
          'title': 'Social Cognition, Communication, & Language'
          'minpoints': 10
+      'L13':
+         'clusters':
+            'C01': 'Language Lateralization'
+            'C02': 'Regional Specialization'
+            'C03': 'Written Word Processing'
+            'C04': 'Modeling Language Processing'
+            'C05': 'Measuring Meaning'
+            'C06': 'Semantic relatedness and the N400'
+         'title': 'Language and meaning in the brain'
+         'minpoints': 10
 
 
    knowledgestructure: knowledgestructure
