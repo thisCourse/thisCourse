@@ -14,9 +14,12 @@
 
     <tr>
         <th>Student email</th>
-        <th>Total points claimed</th>
+        <th>Total points</th>
         <th>Nuggets claimed</th>
         <th>Nuggets attempted</th>
+        <th>Questions correct</th>
+        <th>Questions incorrect</th>
+        <th>Percent correct</th>
     </tr>
 
 </script>
@@ -24,10 +27,13 @@
 <script id="student_stats_row" type="text/x-handlebars-template">
 
     <tr>
-        <td>{{ email }}</td>
-        <td>{{ total_points }}</td>
-        <td>{{ claimed.length }}</td>
-        <td>{{ attempted.length }}</td>
+        <td title="Student email">{{ email }}</td>
+        <td title="Total points">{{ total_points }}</td>
+        <td title="Nuggets claimed">{{ claimed.length }}</td>
+        <td title="Nuggets attempted">{{ attempted.length }}</td>
+        <td title="Questions correct">{{ correct }}</td>
+        <td title="Questions incorrect">{{ incorrect }}</td>
+        <td title="Percent correct">{{ percent }}%</td>
     </tr>
 
 </script>
