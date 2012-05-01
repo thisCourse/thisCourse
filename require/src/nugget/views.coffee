@@ -141,7 +141,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                         lecture.status = 'unclaimed'
                     for nuggetitem in claimed.models
                         lec = ''
-                        for tag in require('app').get('course').get('nuggets').get(nuggetitem.id).get('tags')
+                        for tag in require('app').get('course').get('nuggets').get(nuggetitem.id)?.get('tags') or []
                             lec = relec.exec(tag)?[0] or lec
                         if not lec then continue
                         _.find(@lecturelist.lecture, (lect) -> lect.lecture==lec).points += nuggetitem.get('points')
