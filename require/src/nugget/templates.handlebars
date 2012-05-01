@@ -40,7 +40,8 @@
 
 <script id="tag_selector" type="text/x-handlebars-template">
 
-    <a href ='{{quiz.url}}' class='item-button btn primary quizme logged-in-only' title="Test yourself on the quiz questions in the selected nuggets">Quiz Me</a>
+    <a href ='{{quiz.url}}' class='item-button btn primary quizme logged-in-only' title="Test yourself on the quiz questions in the selected nuggets">Quiz Me</a></br>
+    <a href ='{{test.url}}' class='item-button btn danger quizme logged-in-only' title="Take a practice test on the selected nuggets">Practice Test</a>
     <div class="pagination logged-in-only">
         <ul>
             {{#each claimfilter}}<li {{#if selected}}class='active'{{/if}}><a href='{{url}}'>{{ text }}</a></li>{{/each}}

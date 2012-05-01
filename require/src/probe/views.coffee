@@ -4,7 +4,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => view: ProbeContainerView, datasource: "collection", notclaiming: @options.notclaiming, many: @options.many
+            "": => view: ProbeContainerView, datasource: "collection", notclaiming: @options.notclaiming, nofeedback: @options.nofeedback
             "edit/": => view: ProbeListView, datasource: "collection"
             "edit/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "collection", key: probe_id
 
@@ -73,7 +73,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
-            if @options.many then @review = []
+            if @options.notclaiming then @review = []
             @claimed = true
             @points = 0
             @inc = 0
@@ -83,7 +83,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
             
         navigate: (fragment, query) =>
-            if @options.many
+            if @options.notclaiming
                 # console.log @query
                 # console.log "pre", @collection.length
                 # console.log @collection.select(@query).models
@@ -132,7 +132,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$('.answerbtn').hide()
                 if not data.correct 
                     @claimed = false
-                    if @options.many
+                    if @options.notclaiming
                         @review.push @model.parent.model
                 else
                     for answer in data.probe.answers
@@ -170,6 +170,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @$('.nextquestion').text('Claim Nugget!')
                 else
                     @$('.nextquestion').text('Finish Quiz')
+            if @parent.options.nofeedback then return
             for key,subview of @subviews
                 subview.showFeedback()
             if @model.get('feedback')
