@@ -66,31 +66,54 @@ class NuggetAttempt extends AnalyticsHandler
     collection: db.collection("nuggetattempt")
 
     checkPermissions: =>
-        if @req.method == "GET" then return true
+        if @req.method is "GET" then return true
         super
 
     handle_POST: (callback) =>
         @save_analytics_object @req.body, callback
 
     handle_GET: (callback) =>
-        if not @req.session.email
-            return callback new api.JSONResponse(claimed: [], attempted: [])
-        @collection.find(email: @req.session.email).toArray (err, attempts) =>
-            if err then return callback new api.APIError(err)
-            claimed_ids = []
-            attempted_ids = []
-            claimed = []
-            attempted = []
-            for attempt in attempts
-                if attempt.claimed and attempt.nugget not in claimed_ids
-                    claimed_ids.push attempt.nugget
-                    claimed.push _id: attempt.nugget, points: attempt.points
-                else if not attempt.claimed and attempt.nugget not in attempted_ids
-                    attempted_ids.push attempt.nugget
-                    attempted.push _id: attempt.nugget
+        get_student_nugget_attempts @req.session.email, (err, claimed, attempted) =>
             callback new api.JSONResponse(claimed: claimed, attempted: attempted)
     
+get_student_nugget_attempts = (email, callback) ->
+    if not email
+        return callback [], []
+    db.collection("nuggetattempt").find(email: email).toArray (err, attempts) =>
+        if err then return callback new api.APIError(err)
+        claimed_ids = []
+        attempted_ids = []
+        claimed = []
+        attempted = []
+        for attempt in attempts
+            if attempt.claimed and attempt.nugget not in claimed_ids
+                claimed_ids.push attempt.nugget
+                claimed.push _id: attempt.nugget, points: attempt.points
+            else if not attempt.claimed and attempt.nugget not in attempted_ids
+                attempted_ids.push attempt.nugget
+                attempted.push _id: attempt.nugget
+        callback null, claimed, attempted
 
+class StudentStatistics extends AnalyticsHandler
+    
+    checkPermissions: =>
+        if @req.session.email isnt "admin"
+            @res.json error: "Must be logged in as admin", 403
+            return false
+        if @req.method is "GET" then return true
+        
+    handle_GET: (callback) =>
+        users = []
+        user_count = 0
+        api.db.collection('user').find().each (err, user) =>
+            if err then return users.push email: user.email, _id: user._id, claimed: [], attempted: [], _error: err.toString()
+            if not user?.email then return
+            user_count++
+            get_student_nugget_attempts user.email, (err, claimed, attempted) =>
+                users.push email: user.email, _id: user._id, claimed: claimed, attempted: attempted
+                if users.length==user_count then callback new api.JSONResponse(users)
+                
+        
 class PreTest extends AnalyticsHandler
     collection: db.collection("pretest")
     
@@ -127,7 +150,7 @@ collections =
     nuggetattempt: NuggetAttempt
     pretest: PreTest
     proberesponse: ProbeResponse
-
+    studentstatistics: StudentStatistics
 
 module.exports =
     router: router
