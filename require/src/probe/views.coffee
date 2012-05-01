@@ -79,19 +79,20 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @inc = 0
         
         render: =>
-            @$el.html templates.probe_container
+            @$el.html templates.probe_container()
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
             
         navigate: (fragment, query) =>
-            if not _.isEqual query, @query then _.defer @render # re-render the view if the query changed
             if @options.many
-                console.log @query
-                console.log @collection.select(@query).models
+                # console.log @query
+                # console.log "pre", @collection.length
+                # console.log @collection.select(@query).models
                 @collection = new Backbone.Collection(_.shuffle(_.flatten((probe for probe in nugget.get('probeset').models) for nugget in @collection.select(@query).models)))
-                console.log @collection
+                # console.log "post", @collection
             else
                 @collection = new Backbone.Collection(@collection.shuffle())
             @nextProbe()
+            if not _.isEqual query, @query then _.defer @render # re-render the view if the query changed
             super
            
         nextProbe: =>
@@ -108,7 +109,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     return
                 else
                     if @review.length > 0
-                        @$el.html templates.nugget_review_list collection: new Backbone.Collection(@review),query: @query
+                        @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query
                     else
                         @$el.html templates.nugget_review_list query: @query
                     return
