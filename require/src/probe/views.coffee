@@ -137,7 +137,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 else
                     for answer in data.probe.answers
                         @points += answer.correct or 0
-                @subviews.probeview.answered(data)
+                if @options.nofeedback then @nextProbe() else @subviews.probeview.answered(data)
                   
     
     
@@ -170,7 +170,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @$('.nextquestion').text('Claim Nugget!')
                 else
                     @$('.nextquestion').text('Finish Quiz')
-            if @parent.options.nofeedback then return
             for key,subview of @subviews
                 subview.showFeedback()
             if @model.get('feedback')
