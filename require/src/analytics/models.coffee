@@ -1,13 +1,16 @@
 define ["cs!base/models"], (basemodels) ->
 
-    class BoilerModel extends basemodels.LazyModel
+    class StudentStatisticsModel extends Backbone.Model
+        
+        set: (obj) =>
+            obj.total_points = 0
+            for nugget in obj.claimed
+                obj.total_points += nugget.points
+            super
 
-        apiCollection: "boiler"
+    class StudentStatisticsCollection extends Backbone.Collection
 
-    class BoilerCollection extends basemodels.LazyCollection
+        model: StudentStatisticsModel
 
-        model: BoilerModel
-
-
-    BoilerModel: BoilerModel
-    BoilerCollection: BoilerCollection
+    StudentStatisticsModel: StudentStatisticsModel
+    StudentStatisticsCollection: StudentStatisticsCollection
