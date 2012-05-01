@@ -29,7 +29,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         routes: =>
             "": => view: NuggetListView, datasource: "collection", nonpersistent: true
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
-            "quiz/": => view: probeviews.ProbeRouterView, datasource: "collection", nonpersistent: true, notclaiming: true, many: true
+            "quiz/": => view: probeviews.ProbeRouterView, datasource: "collection", nonpersistent: true, notclaiming: true
+            "test/": => view: probeviews.ProbeRouterView, datasource: "collection", nonpersistent: true, nofeedback: true
 
         initialize: ->
             # console.log "NuggetRouterView init"
@@ -100,7 +101,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                         @taglist.push tagname: tag, selected: true, url: @tagUrl(tag,true)
                     else
                         @taglist.push tagname: tag, url: @tagUrl(tag,false)
-            @quiz = @quizUrl()
+            @quiz = @quizUrl('quiz/')
+            @test = @quizUrl('test/')
             @$el.html templates.tag_selector @context(@taglist,@claimfilter,@quiz)
             
         claimedUrl: () =>
@@ -120,10 +122,10 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             tags = if taglist.join(';') then 'tags='+taglist.join(';') else ''
             url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
             
-        quizUrl: =>
+        quizUrl: (quiz) =>
             claimed = if @query.claimed then 'claimed='+@query.claimed else ''
             tags = if @query.tags then 'tags='+@query.tags else ''
-            quizUrl = url: if tags then @url + 'quiz/' + '?' + tags + (if claimed then '&' + claimed else '') else @url + 'quiz/' + (if claimed then '?' + claimed else '')
+            quizUrl = url: if tags then @url + quiz + '?' + tags + (if claimed then '&' + claimed else '') else @url + quiz + (if claimed then '?' + claimed else '')
     
     class LectureListView extends baseviews.RouterView
                 
