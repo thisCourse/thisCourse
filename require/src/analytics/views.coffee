@@ -22,7 +22,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 for student in students
                     @$(".student-stats").append templates.student_stats_row student.attributes
                     points.push student.get("total_points")
-                require ["libs/protovis/protovis"], =>
+                require ["libs/protovis/protovis.min"], =>
                     w = 910
                     h = 200
                     x = pv.Scale.linear(0, pv.max(points)).range(0, w)
