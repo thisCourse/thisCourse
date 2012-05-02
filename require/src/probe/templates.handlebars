@@ -4,11 +4,13 @@
     <div class='timer'></div>
         <div class='probequestion container'></div>
         <button class='button btn success answerbtn'>Submit Answer</button>
+        {{#if notclaiming}}<button class='button btn danger skipbutton'>Skip Question</button>{{/if}}
     </div>
 </script>
 
 <script id="probe" type="text/x-handlebars-template">
     <h6>Question {{increment}} out of {{total}}</h6>
+    {{#if nuggettitle}}<h6>Nugget: {{nuggettitle}}</h6>{{/if}}
     <h3 class='question'>{{{question_text}}}</h3>
     <ol class='answerlist'>
         </ol>
