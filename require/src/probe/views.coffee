@@ -77,6 +77,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @claimed = true
             @points = 0
             @inc = 0
+            @earnedpoints = 0
+            # @starttime = new Date
         
         render: =>
             @$el.html templates.probe_container()
@@ -109,9 +111,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     return
                 else
                     if @review.length > 0
-                        @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query
+                        @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
                     else
-                        @$el.html templates.nugget_review_list query: @query
+                        @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
                     return
             @model = @collection.at(@inc)
             @model.fetch success: @render
@@ -132,11 +134,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$('.answerbtn').hide()
                 if not data.correct 
                     @claimed = false
-                    if @options.notclaiming
+                    if @options.notclaiming                        
                         @review.push @model.parent.model
-                else
-                    for answer in data.probe.answers
-                        @points += answer.correct or 0
+                selected = (subview.model.id for key,subview of @subviews.probeview.subviews when subview.selected)
+                correct = (answer._id for answer in data.probe.answers when answer.correct)
+                increment = if selected.length <= correct.length then _.intersection(selected,correct).length else _.intersection(selected,correct).length - (selected.length-correct.length)
+                @earnedpoints += if increment > 0 then increment else 0
+                for answer in data.probe.answers
+                    @points += answer.correct or 0
                 if @options.nofeedback then @nextProbe() else @subviews.probeview.answered(data)
                   
     
