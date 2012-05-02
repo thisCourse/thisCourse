@@ -71,7 +71,7 @@
 <script id="probe_enable" type="text/x-handlebars-template">
     {{#if probeset.length }}<a href='{{url}}quiz/' class='item-button btn primary quizme'>Quiz Me</a>{{/if }}
     <span class='editor-only'><a href='{{url}}quiz/edit/' class='item-button btn success quizme'>Edit Probes</a></span>
-    {{#if status }}<a href='#' class='item-button btn danger quizme unclaim'>Unclaim Nugget</a><div class="claimed">Claimed!</div>{{/if }}
+    {{#if status }}<a href='#' class='item-button btn danger quizme unclaim editor-only'>Unclaim Nugget</a><div class="claimed">Claimed!</div>{{/if }}
 </script>
 
 <script id="probe_disable" type="text/x-handlebars-template">
