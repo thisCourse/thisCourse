@@ -86,6 +86,14 @@ define [], ->
             'C04': 'Object Categories'
          'title': 'Object Concepts'
          'minpoints': 10
+      'L10':
+         'clusters':
+            'C01': 'Neural Basis'
+            'C02': 'Remote Memory Models'
+            'C03': 'Memory vs Perception'
+            'C04': 'Amnesia'
+         'title': 'Memory and Brain'
+         'minpoints': 10
       'L11':
          'clusters':
             'C01': 'The Importance of Social Cognition'
@@ -111,6 +119,15 @@ define [], ->
             'C05': 'Measuring Meaning'
             'C06': 'Semantic relatedness and the N400'
          'title': 'Language and meaning in the brain'
+         'minpoints': 10
+      'L16':
+         'clusters':
+            'C01': 'Behavioral studies of aging'
+            'C02': 'Age-related brain differences: animal models'
+            'C03': 'Age-related brain differences: people'
+            'C04': 'Age-related brain differences: function'
+            'C05': 'Interventions: mental exercises'
+         'title': 'Cognitive Aging and the Brain'
          'minpoints': 10
 
 
