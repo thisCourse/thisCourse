@@ -68,6 +68,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         events:
             "click .answerbtn": "submitAnswer"
             "click .nextquestion" : "nextProbe"
+            "click .skipbutton" : "skipQuestion"
         
         initialize: =>
             # if not require('app').get('loggedIn')
@@ -81,7 +82,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             # @starttime = new Date
         
         render: =>
-            @$el.html templates.probe_container()
+            @$el.html templates.probe_container notclaiming: @options.notclaiming
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
             
         navigate: (fragment, query) =>
@@ -98,6 +99,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             super
            
         nextProbe: =>
+            if @$('.nextquestion').attr('disabled') then return
+            @$('.nextquestion').attr('disabled','disabled')
             if @inc >= @collection.length
                 if not @options.notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
@@ -143,6 +146,21 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 for answer in data.probe.answers
                     @points += answer.correct or 0
                 if @options.nofeedback then @nextProbe() else @subviews.probeview.answered(data)
+                
+        skipQuestion: =>
+            if (subview for key,subview of @subviews.probeview.subviews when subview.selected).length>0
+                dialogviews.dialog_confirmation "Skip Question","This will skip this question, your answers will not be saved", =>
+                    @skipIt()
+                , confirm_button:"Skip", cancel_button:"Cancel"
+            else
+                @skipIt()
+            
+            
+        skipIt: =>
+            skipmodel = @collection.models.splice(@inc-1,1)
+            @collection.models.push skipmodel[0]
+            @model = @collection.at(@inc-1)
+            @model.fetch success: @render
                   
     
     
@@ -154,7 +172,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         render: =>
             if not @model then return
-            @$el.html templates.probe @context(increment:@parent.inc,total:@parent.collection.length)
+            nuggettitle = if @parent.options.notclaiming then @model.parent.model.get('title')
+            console.log nuggettitle
+            @$el.html templates.probe @context(increment:@parent.inc,total:@parent.collection.length,nuggettitle:nuggettitle)
             @$('.question').html @model.get('questiontext')
             for answer in _.shuffle(@model.get('answers').models)
                 @addAnswers answer, @model.get("answers")
