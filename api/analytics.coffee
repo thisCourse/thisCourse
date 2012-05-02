@@ -78,7 +78,7 @@ class NuggetAttempt extends AnalyticsHandler
     
 get_student_nugget_attempts = (email, callback) ->
     if not email
-        return callback [], []
+        return callback null, [], []
     db.collection("nuggetattempt").find(email: email).toArray (err, attempts) =>
         if err then return callback new api.APIError(err)
         claimed_ids = []
@@ -93,6 +93,15 @@ get_student_nugget_attempts = (email, callback) ->
                 attempted_ids.push attempt.nugget
                 attempted.push _id: attempt.nugget
         callback null, claimed, attempted
+
+get_student_probe_scores = (email, callback) ->
+    if not email
+        return callback null, 0, 0
+    db.collection("proberesponse").count email: email, correct: true, (err, correct) =>
+        if err then callback err
+        db.collection("proberesponse").count email: email, correct: false, (err, incorrect) =>
+            if err then callback err
+            callback null, correct, incorrect
 
 class StudentStatistics extends AnalyticsHandler
     
@@ -110,8 +119,9 @@ class StudentStatistics extends AnalyticsHandler
             if not user?.email then return
             user_count++
             get_student_nugget_attempts user.email, (err, claimed, attempted) =>
-                users.push email: user.email, _id: user._id, claimed: claimed, attempted: attempted
-                if users.length==user_count then callback new api.JSONResponse(users)
+                get_student_probe_scores user.email, (err, correct, incorrect) =>
+                    users.push email: user.email, _id: user._id, claimed: claimed, attempted: attempted, correct: correct, incorrect: incorrect, percent: Math.round(100 * correct / (correct + incorrect))
+                    if users.length==user_count then callback new api.JSONResponse(users)
                 
         
 class PreTest extends AnalyticsHandler
@@ -154,4 +164,5 @@ collections =
 
 module.exports =
     router: router
+    db: db
     

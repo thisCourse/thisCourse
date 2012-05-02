@@ -4,6 +4,8 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
     class AnalyticsView extends baseviews.BaseView
         
+        className: "editor-only"
+        
         events: ->
             "click .load-statistics": "loadStatistics"
             "click .hide-student-details": "hideStudentDetails"
