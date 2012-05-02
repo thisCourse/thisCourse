@@ -37,6 +37,27 @@ define ["cs!base/views", "hb!./templates.handlebars", "less!./styles"], \
 
             closeOnEscape: true
         , options)
+        
+    dialog_confirmation = (title, request, dialog_callback, options) ->
+        confirm_button = options.confirm_button or "Yes!"
+        cancel_button = options.cancel_button or "Cancel"
+        dialog = show_dialog request, 
+            title: title
+            buttons:
+                delete:
+                    html: confirm_button
+                    class: "btn danger"
+                    click: ->
+                        dialog_callback()
+                        $(this).dialog "close"
+                cancel:
+                    html: cancel_button
+                    class: "btn"
+                    click: ->
+                        options.cancel_callback?()
+                        $(this).dialog "close"
+
+            closeOnEscape: true
 
     dialog_request_response = (request, callback, confirm_button, cancel_button) ->
         confirm_button = "Confirm"    unless confirm_button
@@ -70,5 +91,6 @@ define ["cs!base/views", "hb!./templates.handlebars", "less!./styles"], \
     dialog_from_template: dialog_from_template
     show_dialog: show_dialog
     delete_confirmation: delete_confirmation
+    dialog_confirmation: dialog_confirmation
     dialog_request_response: dialog_request_response
     
