@@ -22,7 +22,7 @@
     
     <h2>Nuggets</h2>
     
-    <p><i>Note: this is the full list of content nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
+    <p><i>Please use the tags and filters to review and quiz yourself on specific nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
     
     <div class="nuggetlist">
         <ul>
@@ -71,7 +71,7 @@
 <script id="probe_enable" type="text/x-handlebars-template">
     {{#if probeset.length }}<a href='{{url}}quiz/' class='item-button btn primary quizme'>Quiz Me</a>{{/if }}
     <span class='editor-only'><a href='{{url}}quiz/edit/' class='item-button btn success quizme'>Edit Probes</a></span>
-    {{#if status }}<div class="claimed">Claimed!</div>{{/if }}
+    {{#if status }}<a href='#' class='item-button btn danger quizme unclaim'>Unclaim Nugget</a><div class="claimed">Claimed!</div>{{/if }}
 </script>
 
 <script id="probe_disable" type="text/x-handlebars-template">
