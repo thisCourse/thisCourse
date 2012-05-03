@@ -260,10 +260,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @$el.html templates.probe_enable @context(status:require('app').get('user').get('claimed')?.get(@model.id))
             
         unClaim: =>
-            dialogviews.dialog_confirmation "Unclaim Nugget","Do you really want to Unclaim this Nugget? (This cannot be undone)", =>
-                nuggetattempt = pruned: true, nugget: @parent.model.id
-                console.log nuggetattempt
-                $.post '/analytics/nuggetattempt/', nuggetattempt
+            dialogviews.dialog_confirmation "Unclaim Nugget","Do you really want to Unclaim this Nugget? (you will need to take the quiz again if you want to reclaim it later)", =>
+                nuggetattempt = unclaimed: true, nugget: @parent.model.id
+                $.post('/analytics/nuggetattempt/', nuggetattempt).success refreshNuggetAnalytics
             , confirm_button:"Unclaim", cancel_button:"Cancel"
 
     class ProbeToggleRouterView extends baseviews.RouterView
