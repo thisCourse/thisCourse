@@ -160,6 +160,9 @@ collections =
     pretest: PreTest
     proberesponse: ProbeResponse
     studentstatistics: StudentStatistics
+    get_student_nugget_attempts: get_student_nugget_attempts
+    get_student_probe_scores: get_student_probe_scores
+    
 
 module.exports =
     router: router
