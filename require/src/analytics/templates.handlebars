@@ -33,7 +33,7 @@
         <td title="Nuggets attempted">{{ attempted.length }}</td>
         <td title="Questions correct">{{ correct }}</td>
         <td title="Questions incorrect">{{ incorrect }}</td>
-        <td title="Percent correct">{{ percent }}%</td>
+        <td title="Percent correct">{{#if percent}}{{ percent }}%{{/if}}</td>
     </tr>
 
 </script>
