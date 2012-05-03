@@ -247,6 +247,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
     #     render: =>
     #         @$el.html "I am lecture '#{@options.lecture}'."
 
+    doPost = (url, data, success) ->
+        $.ajax
+            type: 'POST'
+            url: url
+            data: JSON.stringify(data)
+            success: success
+            contentType: 'application/json'
 
     class ProbeToggleEnableView extends baseviews.BaseView
         
@@ -262,7 +269,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         unClaim: =>
             dialogviews.dialog_confirmation "Unclaim Nugget","Do you really want to Unclaim this Nugget? (you will need to take the quiz again if you want to reclaim it later)", =>
                 nuggetattempt = unclaimed: true, nugget: @parent.model.id
-                $.post('/analytics/nuggetattempt/', nuggetattempt).success refreshNuggetAnalytics
+                doPost '/analytics/nuggetattempt/', nuggetattempt, refreshNuggetAnalytics
             , confirm_button:"Unclaim", cancel_button:"Cancel"
 
     class ProbeToggleRouterView extends baseviews.RouterView
