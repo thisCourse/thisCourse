@@ -199,9 +199,10 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             #alert "waaaaa"
             # @$el.html "Nuggs: " + @collection.length + " " + @options.lecture + " " + @options.cluster
-            nuggetlist = nuggets: @collection.models.filter (nugget) =>
-                     if not nugget.attributes.tags then return false
-                     @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
+            nuggetlist = nuggets: @collection.select(tags: @options.lecture+";"+@options.cluster).models #Fix to allow lecture tags with spaces in
+            # nuggetlist = nuggets: @collection.models.filter (nugget) =>
+            #          if not nugget.attributes.tags then return false
+            #          @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
             nuggetlist.nuggets = _.sortBy nuggetlist.nuggets, (nugget) ->
                 nug=''
                 renug = new RegExp('N([0-9]+)')
