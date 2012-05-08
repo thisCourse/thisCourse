@@ -76,6 +76,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     return
             if @options.notclaiming
                 @review = []
+            if @options.nofeedback
                 require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = true
             @points = 0
@@ -124,10 +125,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
                     return
             @model = @collection.at(@inc)
-            @model.whenLoaded @render
             @inc += 1
+            @model.whenLoaded @render
             @prefetchProbe()
-            
 
         prefetchProbe: =>
             @collection.at(@inc)?.fetch()
@@ -174,7 +174,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model.whenLoaded @render
             @prefetchProbe()
 
-    
+
     class ProbeView extends baseviews.BaseView
               
         
