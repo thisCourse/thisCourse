@@ -74,35 +74,39 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
-            if @options.notclaiming then @review = []
+            if @options.notclaiming
+                @review = []
+                require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = true
             @points = 0
             @inc = 0
             @earnedpoints = 0
+            # @collection.bind "change", _.debounce =>
+            #     @filterCollection()
+            #     alert "added"
             # @starttime = new Date
         
         render: =>
             @$el.html templates.probe_container notclaiming: @options.notclaiming
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
-            
-        navigate: (fragment, query) =>
+
+        filterCollection: =>
             if @options.notclaiming
-                # console.log @query
-                # console.log "pre", @collection.length
-                # console.log @collection.select(@query).models
                 @collection = new Backbone.Collection(_.shuffle(_.flatten((probe for probe in nugget.get('probeset').models) for nugget in @collection.select(@query).models)))
-                # console.log "post", @collection
             else
                 @collection = new Backbone.Collection(@collection.shuffle())
             @prefetchProbe()
-            @nextProbe()
-            if not _.isEqual query, @query then _.defer @render # re-render the view if the query changed
+            @nextProbe()    
+            
+        navigate: (fragment, query) =>
             super
+            @filterCollection()
            
         nextProbe: =>
             if @$('.nextquestion').attr('disabled') then return
             @$('.nextquestion').attr('disabled','disabled')
             if @inc >= @collection.length
+                require("app").unbind "windowBlur", @performQuestionSkipping
                 if not @options.notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
                     doPost '/analytics/nuggetattempt/', nuggetattempt, =>
@@ -120,8 +124,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
                     return
             @model = @collection.at(@inc)
-            # @model.fetch()
-            # @prefetchProbe()
             @model.whenLoaded @render
             @inc += 1
             @prefetchProbe()
@@ -138,39 +140,40 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
-                alert "Please Select at least one answer"
+                alert "Please select at least one answer"
                 @$('.answerbtn').removeAttr('disabled')
                 return
             doPost '/analytics/proberesponse/', response, (data) =>
                 @$('.answerbtn').hide()
                 if not data.correct 
                     @claimed = false
-                    if @options.notclaiming                        
+                    if @options.notclaiming
                         @review.push @model.parent.model
                 selected = (subview.model.id for key,subview of @subviews.probeview.subviews when subview.selected)
                 correct = (answer._id for answer in data.probe.answers when answer.correct)
                 increment = if selected.length <= correct.length then _.intersection(selected,correct).length else _.intersection(selected,correct).length - (selected.length-correct.length)
-                @earnedpoints += if increment > 0 then increment else 0
-                for answer in data.probe.answers
+                @earnedpoints += Math.max(0, increment)
+                for answer in data.probe.answers # calculate the total number of points possible in the probe
                     @points += answer.correct or 0
                 if @options.nofeedback then @nextProbe() else @subviews.probeview.answered(data)
                 
         skipQuestion: =>
+            console.log "skipping question"
             if (subview for key,subview of @subviews.probeview.subviews when subview.selected).length>0
                 dialogviews.dialog_confirmation "Skip Question","This will skip this question, your answers will not be saved", =>
-                    @skipIt()
+                    @performQuestionSkipping()
                 , confirm_button:"Skip", cancel_button:"Cancel"
             else
-                @skipIt()
+                @performQuestionSkipping()
             
             
-        skipIt: =>
+        performQuestionSkipping: =>
             skipmodel = @collection.models.splice(@inc-1,1)
             @collection.models.push skipmodel[0]
             @model = @collection.at(@inc-1)
-            @model.fetch success: @render
-                  
-    
+            @model.whenLoaded @render
+            @prefetchProbe()
+
     
     class ProbeView extends baseviews.BaseView
               
