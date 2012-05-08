@@ -7,6 +7,7 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
             $("body").append @$el
             @model.get("user").bind "change:loggedIn", @loginChanged
             @loginChanged()
+            @listenForWindowBlur()
 
         loginChanged: =>
             is_logged_in = @model.get("user").get("loggedIn")
@@ -15,6 +16,14 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
             is_editor = is_logged_in and @model.get("user").get("email")=="admin"
             @$el.toggleClass "editable", is_editor
             @$el.toggleClass "uneditable", not is_editor
+
+        listenForWindowBlur: =>
+            timer = 0
+            $(window).blur =>
+                clearTimeout(timer)
+                timer = setTimeout (=> @model.trigger "windowBlur"), 1000
+            $(window).focus =>
+                clearTimeout(timer)
 
         render: =>
             @$el.html templates.root @context()
