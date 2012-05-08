@@ -30,9 +30,9 @@ users.forEach (student) =>
     body = """
         Dear student,
 
-        As you are no doubt aware, the content of your Midterm and Final exams are determined entirely by your activity on the course website. As such, the grade you can achieve on your Midterm will be greatly affected by the number of points you have accrued while claiming nuggets.
+        As you are no doubt aware, you are able to choose the content of your Midterm and Final exams by your activity on the course website.
 
-        You are receiving this email to inform you of your current standing, and the maximum grade that you will be able to achieve in your Midterm exam.
+        You are receiving this email to inform you of your current standing in nuggets, and the maximum grade that you will be able to achieve in the Midterm exam you have constructed.
 
         Total points for nuggets claimed so far: #{student.points}
         
@@ -42,7 +42,7 @@ users.forEach (student) =>
         
         On the day of the test, questions from any nuggets you have claimed will appear on your midterm exam. If you have claimed nuggets that you do not wish to appear on your midterm exam, please use the 'Unclaim' feature - this button can be found on the page for the particular nugget you wish to unclaim.
         
-        All nugget claiming must be done by midnight on Wednesday in order for your nuggets to be included in the exam. You will be able to continue to practice for your exam up until 1 hour before the exam starts.
+        All nugget claiming/unclaiming must be done by midnight on Wednesday in order for your nuggets to be included in the exam. You will be able to continue to practice for your exam up until 1 hour before the exam starts (1pm).
         
         Due to the experimental nature of the class, the option of a traditional (but still computerized) midterm on Lectures 1-9 will be available at the time of the exam. [If you choose this option, this would be a subset of the material from Lectures 1-9 (totalling 200 points), however you would have no control over which questions you are asked, and which material from these lectures is covered.]
         
