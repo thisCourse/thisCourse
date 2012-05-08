@@ -81,7 +81,7 @@ define ["cs!utils/formatters"], (formatters) ->
 
         loaded: =>
             # clog "CHECKING IF LOADED", @, @includeInJSON==true, @_loaded
-            @includeInJSON==true or @_loaded
+            (@includeInJSON==true or @_loaded) and not @loading
 
         constructor: (attributes, options) ->
             # clog "CREATING LAZYMODEL INSTANCE", @
