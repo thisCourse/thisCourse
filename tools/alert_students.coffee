@@ -15,20 +15,17 @@ grades = ['A','B','C','D','F']
 
 users = []
 user_count = 0
-api.db.collection('user').find().each (err, user) =>
+api.db.collection('user').find({email: {$in: undergrads}}).each (err, user) =>
     if err then return users.push email: user.email, _id: user._id, claimed: [], attempted: [], _error: err.toString()
     if not user?.email then return
-    user_count++
-    get_student_nugget_attempts user.email, (err, claimed, attempted) =>
-        get_student_probe_scores user.email, (err, correct, incorrect) =>
-            users.push email: user.email, _id: user._id, claimed: claimed, attempted: attempted, correct: correct, incorrect: incorrect, percent: Math.round(100 * correct / (correct + incorrect))
-            users.push points: sum(nugget.points for nugget in claimed)
+    if user.email in undergrads
+        get_student_nugget_attempts user.email, (err, claimed, attempted) =>
+            get_student_probe_scores user.email, (err, correct, incorrect) =>
+                users.push email: user.email, _id: user._id, claimed: claimed, attempted: attempted, correct: correct, incorrect: incorrect, percent: Math.round(100 * correct / (correct + incorrect)), points: sum(nugget.points for nugget in claimed), grade: grades[(sum(nugget.points for nugget in claimed)>=x for x in midtermgradeboundaries).indexOf(true)]
+    else
+        return
 
-users = (user for user in users when user.email in undergrads)
-
-users.forEach (student) => 
-    
-    grade = grades[(points>=x for x in midtermgradeboundaries).indexOf(true)]    
+users.forEach (student) =>     
     
     body = """
         Dear student,
@@ -37,7 +34,7 @@ users.forEach (student) =>
 
         You are receiving this email to inform you of your current standing, and the maximum grade that you will be able to achieve in your Midterm exam.
 
-        Total points for nuggets claimed so far: #{points}
+        Total points for nuggets claimed so far: #{student.points}
         
         If you answer all of these questions correctly on the exam, you will get a grade of #{grade} on your Midterm exam.
         
@@ -45,7 +42,11 @@ users.forEach (student) =>
         
         On the day of the test, questions from any nuggets you have claimed will appear on your midterm exam. If you have claimed nuggets that you do not wish to appear on your midterm exam, please use the 'Unclaim' feature - this button can be found on the page for the particular nugget you wish to unclaim.
         
-        As a reminder, these are the points totals you need to correctly answer on your Midterm exam for different grades:
+        All nugget claiming must be done by midnight on Wednesday in order for your nuggets to be included in the exam. You will be able to continue to practice for your exam up until 1 hour before the exam starts.
+        
+        Due to the experimental nature of the class, the option of a traditional (but still computerized) midterm on Lectures 1-9 will be available at the time of the exam. [If you choose this option, this would be a subset of the material from Lectures 1-9 (totalling 200 points), however you would have no control over which questions you are asked, and which material from these lectures is covered.]
+        
+        As a reminder, these are the total points you need to correctly answer on your Midterm exam for different grades:
         
         180+ - A
         
@@ -54,6 +55,10 @@ users.forEach (student) =>
         150-159 - C
         
         140 - 149 - D
+        
+        Finally, if you have not received an email from one of the instructors regarding special accommodations, power requirements, or access to a computer during the exam, and you require any of these, you must contact us before the end of the day.
+        
+        Unless we have been notified otherwise by you, it is assumed that you will arrive at the exam with a laptop capable of sustaining power for the full 80 minutes of the midterm.
 
         Sincerely,
         Your instructors.
