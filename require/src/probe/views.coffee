@@ -94,6 +94,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 # console.log "post", @collection
             else
                 @collection = new Backbone.Collection(@collection.shuffle())
+            @prefetchProbe()
             @nextProbe()
             if not _.isEqual query, @query then _.defer @render # re-render the view if the query changed
             super
@@ -119,8 +120,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
                     return
             @model = @collection.at(@inc)
-            @model.fetch success: @render
+            # @model.fetch()
+            # @prefetchProbe()
+            @model.whenLoaded @render
             @inc += 1
+            @prefetchProbe()
+            
+
+        prefetchProbe: =>
+            @collection.at(@inc)?.fetch()
                     
         submitAnswer: =>
             if @$('.answerbtn').attr('disabled') then return

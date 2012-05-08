@@ -159,12 +159,11 @@ collections =
     nuggetattempt: NuggetAttempt
     pretest: PreTest
     proberesponse: ProbeResponse
-    studentstatistics: StudentStatistics
-    get_student_nugget_attempts: get_student_nugget_attempts
-    get_student_probe_scores: get_student_probe_scores
-    
+    studentstatistics: StudentStatistics    
 
 module.exports =
     router: router
     db: db
-    
+    get_student_nugget_attempts: get_student_nugget_attempts
+    get_student_probe_scores: get_student_probe_scores
+
