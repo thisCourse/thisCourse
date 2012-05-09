@@ -40,13 +40,14 @@ var app = express.createServer(
     auth.user_middleware()
 )
 
-app.listen(2000)
+app.listen(2000);
 
 app.use(function (req, res, next) {
-    res.removeHeader("X-Powered-By")
-    delete req.query._
+    res.removeHeader("X-Powered-By");
+    delete req.query._;
     req.connection.remoteAddress = req.headers['x-real-ip'] || req.connection.remoteAddress;
-    next()
+    console.log((new Date).toISOString(), req.method, req.url.replace(/_=\d+/, ""), req.session.email, req.connection.remoteAddress);
+    next();
 })
 
 app.use("/login", auth.login)

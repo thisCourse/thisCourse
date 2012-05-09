@@ -121,6 +121,9 @@ define ["cs!utils/formatters"], (formatters) ->
                 @loading = false
                 @_loaded = true
                 @trigger "loaded"
+            xhdr.error =>
+                @loading = false
+                @_loaded = false
             return xhdr
 
         whenLoaded: (callback) =>
