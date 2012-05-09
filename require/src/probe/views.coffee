@@ -154,7 +154,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$('.answerbtn').removeAttr('disabled')
                 return
             doPost '/analytics/proberesponse/', response, (data) =>
-                @$('.answerbtn').hide()
+                if not @options.nofeedback then @$('.answerbtn').hide()
                 if not data.correct 
                     @claimed = false
                     if @options.notclaiming
@@ -165,7 +165,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @earnedpoints += Math.max(0, increment)
                 for answer in data.probe.answers # calculate the total number of points possible in the probe
                     @points += answer.correct or 0
-                if @options.nofeedback then @nextProbe() else @subviews.probeview.answered(data)
+                if not @options.nofeedback then @subviews.probeview.answered(data)
+                if @options.nofeedback then @$('.answerbtn').removeAttr('disabled')
+            if @options.nofeedback then @nextProbe()
                 
         skipQuestion: =>
             console.log "skipping question"
