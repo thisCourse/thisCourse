@@ -14,7 +14,7 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
 
         model: NuggetModel
         
-        select: (query) ->
+        selectNuggets: (query) ->
             
             if query        
                 if query.tags 
@@ -22,7 +22,7 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                 else
                     taglist = []
                 claimed = query.claimed or ''
-                filteredlist = @.filter (nugget) =>
+                filteredlist = @filter (nugget) =>
                     switch claimed
                         when '1' then select = 1 if require('app').get('user').get('claimed').get(nugget.id)
                         when '0' then select = 1 if not require('app').get('user').get('claimed').get(nugget.id)
@@ -31,7 +31,7 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                     tagged = if taglist then _.isEqual(_.intersection(nuggettags,taglist).sort(),taglist.sort()) else true
                     tagged and select and nugget.get('title') #HACK to exclude title-less nuggets
             else
-                filteredlist = @.models
+                filteredlist = @models
             filteredcollection = new Backbone.Collection filteredlist
 
 
