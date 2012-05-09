@@ -4,6 +4,7 @@ express = require("express")
 nodeStatic = require('node-static')
 utils = require("./utils.coffee")
 fs = require("fs")
+redis = require("redis").createClient()
 
 api = require("./api.coffee")
 
@@ -55,6 +56,7 @@ class AnalyticsHandler
         if not @collection then return callback new api.APIError("No collection specified in AnalyticsHandler.")
         data.timestamp = new Date()
         data.email = @req.session.email if @req.session.email
+        data.ip = @req.connection.remoteAddress
         @collection.save data, (err, obj) =>
             if err
                 callback new api.APIError(err)
@@ -134,6 +136,41 @@ class PreTest extends AnalyticsHandler
             inc = doc.length and doc[0]?.inc or 0
             callback new api.JSONResponse(inc.toString())
 
+class Midterm extends AnalyticsHandler
+    collection: db.collection("midterm")
+    
+    handle_PUT: (callback) => # choose between the alternate pre-configured test and the claimed nugget test
+        unanswered_key = "midterm-unanswered:" + @req.session.email
+        claimed_key = "midterm-claimed:" + @req.session.email
+        alternate_key = "midterm-alternate:" + @req.session.email
+        if @req.body.alternate
+            redis.rename alternate_key, unanswered_key, (err) =>
+                if err then return callback new api.APIError(err)
+                return @save_analytics_object {alternate: true}, callback
+        else
+            redis.rename claimed_key, unanswered_key, (err) =>
+                if err then return callback new api.APIError(err)
+                return @save_analytics_object {alternate: false}, callback
+    
+    handle_POST: (callback) =>
+        answered_key = "midterm-answered:" + @req.session.email
+        unanswered_key = "midterm-unanswered:" + @req.session.email
+        redis.lrange unanswered_key, -1, -1, (err, id) =>
+            if err then return callback new api.APIError(err)
+            if id==@req.body.probe
+                if @req.body.skipped
+                    redis.rpoplpush unanswered_key, unanswered_key
+                else
+                    redis.rpoplpush unanswered_key, answered_key
+                return @save_analytics_object @req.body, callback
+            else
+                return callback new api.APIError("Can only answer/skip the next item in the queue (#{id}).")
+    
+    handle_GET: (callback) =>
+        redis.lrange "midterm-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
+            if err then return callback new api.APIError(err)
+            callback new api.JSONResponse(unanswered)
+        
 
 class ProbeResponse extends AnalyticsHandler
     collection: db.collection("proberesponse")
@@ -159,7 +196,8 @@ collections =
     nuggetattempt: NuggetAttempt
     pretest: PreTest
     proberesponse: ProbeResponse
-    studentstatistics: StudentStatistics    
+    studentstatistics: StudentStatistics
+    midterm: Midterm
 
 module.exports =
     router: router

@@ -45,6 +45,7 @@ app.listen(2000)
 app.use(function (req, res, next) {
     res.removeHeader("X-Powered-By")
     delete req.query._
+    req.connection.remoteAddress = req.headers['x-real-ip'] || req.connection.remoteAddress;
     next()
 })
 
