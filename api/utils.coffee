@@ -16,19 +16,19 @@ get_by_id = (arr, id, path) ->
 get_by_path = (obj, path, index) ->
     # initialize the index to starting val 0
     if not index
-        console.log "GET_BY_PATH starting, with path", path
+        # console.log "GET_BY_PATH starting, with path", path
         index = 0
     # if we've reached the end of the path, return result
     if index >= path.length
         # console.log "End of path, returning:", obj
         return obj
-    console.log "Descending to key '" + path[index] # + "', on object:\n", obj
+    # console.log "Descending to key '" + path[index] # + "', on object:\n", obj
     # if the next item in the path is an id, descend into the array by item id
     if id_regex.exec(path[index]) and obj instanceof Array
     	return get_by_path(get_by_id(obj, path[index], path), path, index+1)
     # if we hit a missing property, abort
     if not obj or path[index] not of obj
-        console.log "Nothing at the end of the path... returning null"
+        # console.log "Nothing at the end of the path... returning null"
         return null
     # keep traversing
     return get_by_path(obj[path[index]], path, index+1)
