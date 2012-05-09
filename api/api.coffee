@@ -238,7 +238,7 @@ class MongoCollection
 
     initialPermissionCheck: (callback) =>
         if @req.method != "GET" and @email!="admin" and @name!="test" # TODO: this will be more robust... :P
-            return callback new APIError("You must be logged in to do that!", 403)
+            return callback new APIError("You must be logged in as an administrator to do that!", 403)
         callback()
 
     # handle an api request
@@ -259,7 +259,7 @@ class MongoCollection
         ], (jsonresponse) =>
             if not jsonresponse
                 jsonresponse = new APIError("The database did not return a response!", 500)
-            jsonresponse.send @res
+            jsonresponse.send @req, @res
 
     # if no document is selected, handle the request as an action on the collection itself
     handleDirectCollectionReference: (callback) =>
@@ -385,7 +385,7 @@ routing_pattern = '/:collection([a-z]+)/:id([0-9a-fA-F]{24})?:path(*)'
 
 request_handler = (req, res) ->
     if req.params.collection not of collections
-        return (new APIError("Collection '" + req.params.collection + "' is not defined.", 404)).send(res)
+        return (new APIError("Collection '" + req.params.collection + "' is not defined.", 404)).send(req, res)
 #    try
     collection = new collections[req.params.collection](req, res)
 #    catch err
@@ -408,14 +408,18 @@ class JSONResponse
         @status = status
         @headers = headers
 
-    send: (res) =>
+    send: (req, res) =>
         res.json @body, @headers, @status
 
 class APIError extends JSONResponse
     constructor: (msg, status=500) ->
-        console.log "ERROR:", msg
         if msg.message then msg = msg.message
+        @msg = msg
         super {_error: msg.toString?() or msg}, status
+        
+    send: (req, res) =>
+        console.log "ERROR:", req.method, req.url.replace(/_=\d+/, ""), req.session.email, req.connection.remoteAddress, '"' + @msg + '"'
+        super
 
 class CollectionWrapper
     
