@@ -74,7 +74,7 @@ class MongoCollection
                         return callback new APIError("Could not find ${model.constructor.name} with id ${model.id}:" + err)
                     model.set doc
                     if model.get(key)
-                        console.log "recursively expanding models by path", err, doc
+                        # console.log "recursively expanding models by path", err, doc
                         @expandModelsByPath callback, model, path.slice(i) # recursive call to expand further models as needed
                     else
                         callback() # expanding the model didn't help; we're going to end up with a 404
@@ -84,7 +84,7 @@ class MongoCollection
                 model = newmod
         
         # if we got here, then we've successfully found the target key; no more expanding needed
-        console.log "FOUND TARGET, converting to JSON:\n", @Model
+        # console.log "FOUND TARGET, converting to JSON:\n", @Model
         @document = @model.toJSON(true)
         callback()
                 
@@ -132,7 +132,7 @@ class MongoCollection
                     @subpath = @rawpath.slice(i+1)
                     break
             if @submodel
-                console.log "SUBMODEL", @submodel.constructor.name, "SUBPATH", @subpath, "INCLUDE", @submodel.includeInJSON
+                # console.log "SUBMODEL", @submodel.constructor.name, "SUBPATH", @subpath, "INCLUDE", @submodel.includeInJSON
                 if @submodel instanceof Backbone.Model
                     @fullModelParams =
                         collection: @submodel.apiCollection
@@ -162,27 +162,27 @@ class MongoCollection
 
         # this is not a denormalized model we're addressing, so just proceed
         if not @isDenormalized
-            console.log "not denormalized, so not proxying"
+            # console.log "not denormalized, so not proxying"
             return callback()
 
         isCollection = @submodel instanceof Backbone.Collection
-        console.log "isCollection:", isCollection
+        # console.log "isCollection:", isCollection
         
         # don't proxy non-POST requests through to a collection
         if @req.method isnt "POST" and not @fullModelParams.id
-            console.log "@req.method isnt POST and not @fullModelParams.id"
+            # console.log "@req.method isnt POST and not @fullModelParams.id"
             return callback()
 
-        console.log "PROXYING"
+        # console.log "PROXYING"
 
         proxy_res =
             json: (body, headers, status) =>
-                console.log "GOT BACK DATA", body
+                # console.log "GOT BACK DATA", body
                 if status != 200
                     callback new APIError(body._error or body.toString(), status)
                 else
                     if @subpath.length==0 and @req.method!="GET"
-                        console.log "doing a write (non-GET) directly onto a model/collection (no subpath)"
+                        # console.log "doing a write (non-GET) directly onto a model/collection (no subpath)"
                         # use response from object creation as data (especially so we end up with the same _id)
                         if isCollection and @req.method=="POST" then utils.merge(@data, body)
                         # TODO: should go here, or more generally/specifically? needed for POSTing related 1-to-1 models, e.g. course.content
@@ -192,11 +192,11 @@ class MongoCollection
                         utils.filter_object_fields @data, @submodel.includeInJSON
                         callback()
                     else if @req.method=="GET" or @subpath[0] not in @submodel.includeInJSON #or @notEmbeddedInBaseDocument
-                        console.log 'passing request through to proxied url directly'
+                        # console.log 'passing request through to proxied url directly'
                         # pass right through if it was just a GET request or if subpath isn't inside includeInJSON
                         callback new JSONResponse(body, status)
                     else # the field *is* in includeInJSON, so just proceed normally
-                        console.log "field *is* in includeInJSON, so just proceed normally (no proxy)"
+                        # console.log "field *is* in includeInJSON, so just proceed normally (no proxy)"
                         callback()
         
         @req.params = @fullModelParams
@@ -237,15 +237,14 @@ class MongoCollection
         callback()
 
     initialPermissionCheck: (callback) =>
-        console.log @req.method != "GET", not @email, not @name=="test"
-        if @req.method != "GET" and not @email and not (@name=="test") # TODO: this will be more robust... :P
+        if @req.method != "GET" and @email!="admin" and @name!="test" # TODO: this will be more robust... :P
             return callback new APIError("You must be logged in to do that!", 403)
         callback()
 
     # handle an api request
     handle_request: =>
 
-        console.log "REQUEST:", @req.method, @req.url, @path, @data
+        # console.log @req.method, @req.url.replace(/_=\d+/, ""), @email + "@" + @req.connection.remoteAddress
                 
         async.series [
             @initialPermissionCheck
@@ -273,7 +272,7 @@ class MongoCollection
             callback()
 
     finishProcessingRequest: (callback) =>
-        console.log "CALLING process_" + @type
+        # console.log "CALLING process_" + @type
         @["process_" + @type](callback) # run the handler for this "type" (method + target field type)
 
     process_GET_collection: (callback) =>
@@ -300,11 +299,11 @@ class MongoCollection
     process_GET_value: (callback) => @process_GET(callback)
 
     process_GET: (callback) =>
-        if @object instanceof Object
-            if @email
-                @object._editor = true
-            else
-                @object._editor = false
+        # if @object instanceof Object
+        #     if @email
+        #         @object._editor = true
+        #     else
+        #         @object._editor = false
         #console.log @object
         callback new JSONResponse(@object)
 
@@ -425,23 +424,23 @@ class CollectionWrapper
         @collection = db.collection(name)
     
     save: ->
-        console.log "MONGO SAVE:", @name, arguments[0]
+        # console.log "MONGO SAVE:", @name, arguments[0]
         @collection.save.apply(@collection, arguments)
     
     findOne: ->
-        console.log "MONGO FINDONE:", @name, arguments[0]
+        # console.log "MONGO FINDONE:", @name, arguments[0]
         @collection.findOne.apply(@collection, arguments)
 
     update: ->
-        console.log "MONGO UPDATE:", @name, arguments[0], "TO", arguments[1]
+        # console.log "MONGO UPDATE:", @name, arguments[0], "TO", arguments[1]
         @collection.update.apply(@collection, arguments)
 
     remove: ->
-        console.log "MONGO REMOVE:", @name, arguments[0]
+        # console.log "MONGO REMOVE:", @name, arguments[0]
         @collection.remove.apply(@collection, arguments)
 
     find: ->
-        console.log "MONGO FIND:", @name, arguments[0]
+        # console.log "MONGO FIND:", @name, arguments[0]
         @collection.find.apply(@collection, arguments)
     
 
@@ -449,7 +448,7 @@ register_mongo_collection = (cls) ->
     #cls.prototype.collection = db.collection(cls.prototype.name) # get the MongoDB collection reference
     cls.prototype.collection = new CollectionWrapper(cls.prototype.name) # get the wrapped MongoDB collection reference
     collections[cls.prototype.name] = cls # store the collection class by name for later lookup
-    console.log "MODEL REGISTERED:", cls.prototype.Model?.name, "/", collections[cls.prototype.name].name
+    # console.log "MODEL REGISTERED:", cls.prototype.Model?.name, "/", collections[cls.prototype.name].name
 
 global.clog = -> # do nothing! this is a log just for in the browser
 
@@ -459,7 +458,7 @@ initialize = ->
         require(dir + file)
     register_mongo_collection MongoCollection
 
-console.log "\n\n\n\n\n"
+console.log "\n\n"
 
 module.exports = 
     collections: collections
