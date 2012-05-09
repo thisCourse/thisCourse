@@ -171,6 +171,8 @@ class Midterm extends AnalyticsHandler
             if err then return callback new api.APIError(err)
             callback new api.JSONResponse(unanswered)
         
+runDelayed = (ms, callback) =>
+    setTimeout callback, ms
 
 class ProbeResponse extends AnalyticsHandler
     collection: db.collection("proberesponse")
@@ -189,7 +191,8 @@ class ProbeResponse extends AnalyticsHandler
             @save_analytics_object data, (response) =>
                 if response.status == 200
                     response.body.probe = probe
-                callback response
+                runDelayed 2000, =>
+                    callback response
 
 
 collections =
