@@ -29,8 +29,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         routes: =>
             "": => view: NuggetListView, datasource: "collection", nonpersistent: true
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
-            "quiz/": => view: probeviews.ProbeRouterView, datasource: "collection", nonpersistent: true, notclaiming: true
-            "test/": => view: probeviews.ProbeRouterView, datasource: "collection", nonpersistent: true, notclaiming: true, nofeedback: true
+            "quiz/": => view: probeviews.ExamView, datasource: "collection", nonpersistent: true, notclaiming: true
+            "test/": => view: probeviews.ExamView, datasource: "collection", nonpersistent: true, notclaiming: true, nofeedback: true
 
         initialize: ->
             # console.log "NuggetRouterView init"
@@ -43,7 +43,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "click .delete-button": "deleteNugget"
 
         render: =>
-            @filteredcollection = @collection.select(@query)
+            @filteredcollection = @collection.selectNuggets(@query)
             @$el.html templates.nugget_list collection: @filteredcollection
             @makeSortable()
             @add_subview "tagselectorview", new TagSelectorView(collection: @filteredcollection), ".tagselectorview"
@@ -199,7 +199,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         render: =>
             #alert "waaaaa"
             # @$el.html "Nuggs: " + @collection.length + " " + @options.lecture + " " + @options.cluster
-            nuggetlist = nuggets: @collection.select(tags: @options.lecture+";"+@options.cluster).models #Fix to allow lecture tags with spaces in
+            nuggetlist = nuggets: @collection.selectNuggets(tags: @options.lecture+";"+@options.cluster).models #Fix to allow lecture tags with spaces in
             # nuggetlist = nuggets: @collection.models.filter (nugget) =>
             #          if not nugget.attributes.tags then return false
             #          @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags

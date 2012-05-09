@@ -63,6 +63,25 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             success: success
             contentType: 'application/json'
 
+    class ExamView extends baseviews.BaseView
+        
+        initialize: ->
+            @collection.bind "add", _.debounce @render
+
+        render: =>
+            probes = []
+            for nugget in @collection.selectNuggets(@query).models
+                for probe in nugget.get('probeset').models
+                    probes.push probe
+            if probes.length==0 then return
+            probes = new models.ProbeCollection(_.shuffle(probes))
+            @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback)
+
+        navigate: (fragment, query) =>
+            super
+            @render()
+
+
     class ProbeContainerView extends baseviews.BaseView
         
         events:
@@ -70,10 +89,11 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .nextquestion" : "nextProbe"
             "click .skipbutton" : "skipQuestion"
         
-        initialize: =>
+        initialize: ->
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
+            console.log "COLLECTION LENGTH:", @collection.length
             if @options.notclaiming
                 @review = []
             if @options.nofeedback
@@ -82,27 +102,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @points = 0
             @inc = 0
             @earnedpoints = 0
-            # @collection.bind "change", _.debounce =>
-            #     @filterCollection()
-            #     alert "added"
             # @starttime = new Date
+            @showNextProbe()
+            @model.fetch()
         
         render: =>
             @$el.html templates.probe_container notclaiming: @options.notclaiming
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
-
-        filterCollection: =>
-            if @options.notclaiming
-                @collection = new Backbone.Collection(_.shuffle(_.flatten((probe for probe in nugget.get('probeset').models) for nugget in @collection.select(@query).models)))
-            else
-                @collection = new Backbone.Collection(@collection.shuffle())
-            @prefetchProbe()
-            @nextProbe()    
-            
-        navigate: (fragment, query) =>
-            super
-            @filterCollection()
-           
+                       
         nextProbe: =>
             if @$('.nextquestion').attr('disabled') then return
             @$('.nextquestion').attr('disabled','disabled')
@@ -124,6 +131,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     else
                         @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
                     return
+            @showNextProbe()
+
+        showNextProbe: =>
             @model = @collection.at(@inc)
             @inc += 1
             @model.whenLoaded @render
@@ -406,5 +416,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     ProbeListView: ProbeListView
     ProbeView: ProbeView
     ProbeContainerView: ProbeContainerView
+    ExamView: ExamView
     ProbeTopEditView: ProbeEditView
     
