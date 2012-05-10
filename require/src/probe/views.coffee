@@ -281,19 +281,19 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @$('.skipbutton').attr('disabled') then return
             if (subview for key,subview of @subviews.probeview.subviews when subview.selected).length>0
                 dialogviews.dialog_confirmation "Skip Question","This will skip this question, your answers will not be saved", =>
-                    @performQuestionSkipping()
+                    @performQuestionSkipping(true)
                 , confirm_button:"Skip", cancel_button:"Cancel"
             else
-                @performQuestionSkipping()
+                @performQuestionSkipping(true)
             
             
-        performQuestionSkipping: =>
+        performQuestionSkipping: (manual) =>
             if @options.nofeedback then @submitting = 1
             @$('.answerbtn').attr('disabled','disabled')
             @$('.answerbtn').text('Loading')
             @$('.skipbutton').attr('disabled','disabled')
             @$('.skipbutton').text('Loading')
-            @options.sync.skipQuestion? probe: @model.id, skipped: true, =>
+            @options.sync.skipQuestion? probe: @model.id, skipped: true, manual: manual or false, =>
                 @$('.answerbtn').removeAttr('disabled')
                 @$('.answerbtn').text('Submit Answer')
                 @$('.skipbutton').removeAttr('disabled')

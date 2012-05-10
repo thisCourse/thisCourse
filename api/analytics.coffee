@@ -145,10 +145,12 @@ class Midterm extends AnalyticsHandler
         claimed_key = "midterm-claimed:" + @req.session.email
         alternate_key = "midterm-alternate:" + @req.session.email
         if @req.body.alternate
+            console.log @req.session.email, "opted for the alternate exam"
             redis.rename alternate_key, unanswered_key, (err) =>
                 if err then return callback new api.APIError(err)
                 return @save_analytics_object {alternate: true}, callback
         else
+            console.log @req.session.email, "opted for the claimed exam"
             redis.rename claimed_key, unanswered_key, (err) =>
                 if err then return callback new api.APIError(err)
                 return @save_analytics_object {alternate: false}, callback
@@ -162,8 +164,10 @@ class Midterm extends AnalyticsHandler
                 return callback new api.APIError("No more questions to answer!")
             if id[0]==@req.body.probe
                 if @req.body.skipped
+                    console.log @req.session.email, "has skipped question", @req.body.probe, @req.body.manual and "manually" or "automatically!!!"
                     redis.rpoplpush unanswered_key, unanswered_key
                 else
+                    console.log @req.session.email, "has submitted question", @req.body.probe, "with answers", JSON.stringify(@req.body.answers)
                     redis.rpoplpush unanswered_key, answered_key
                 return @save_analytics_object @req.body, callback
             else
