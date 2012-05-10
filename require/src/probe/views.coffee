@@ -98,7 +98,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     probes = ({_id: probe} for probe in data.probes.reverse())
                     if probes.length==0 then return
                     probes = new models.ProbeCollection(probes)
-                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, progress: data.progress, sync:ExamAnalytics)
+                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:ExamAnalytics)
 
         navigate: (fragment, query) =>
             super
