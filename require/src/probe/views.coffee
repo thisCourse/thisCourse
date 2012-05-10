@@ -98,6 +98,24 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         navigate: (fragment, query) =>
             super
             @render()
+            
+    class QuizView extends baseviews.BaseView
+        
+        initialize: ->
+            @collection.bind "add", _.debounce @render
+
+        render: =>
+            probes = []
+            for nugget in @collection.selectNuggets(@query).models
+                for probe in nugget.get('probeset').models
+                    probes.push probe
+            if probes.length==0 then return
+            probes = new models.ProbeCollection(_.shuffle(probes))
+            @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics)
+
+        navigate: (fragment, query) =>
+            super
+            @render()
 
 
     class ProbeContainerView extends baseviews.BaseView
@@ -465,5 +483,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     ProbeView: ProbeView
     ProbeContainerView: ProbeContainerView
     ExamView: ExamView
+    QuizView: QuizView
     ProbeTopEditView: ProbeEditView
     
