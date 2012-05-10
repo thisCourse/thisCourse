@@ -91,7 +91,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             $.get '/analytics/midterm/', (data) =>
                 if data.points
                     midtermgradeboundaries = [180,160,150,140,0]
-                    @$el.html templates.exam_entry_screen points: data, grade: grades[(data.points>=x for x in midtermgradeboundaries).indexOf(true)]
+                    @$el.html templates.exam_entry_screen points: data.points, grade: grades[(Number(data.points)>=x for x in midtermgradeboundaries).indexOf(true)]
                 else if typeof(data)=="object"
                     probes = ({_id: probe} for probe in data.probes.reverse())
                     if probes.length==0 then return
@@ -150,7 +150,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @options.nofeedback
                 require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = true
-            @progress = @options.progress or 0
+            @progress = Number(@options.progress or 0)
             @points = 0
             @inc = @options.inc or 0
             @earnedpoints = 0
