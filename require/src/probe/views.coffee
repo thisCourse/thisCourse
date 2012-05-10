@@ -219,6 +219,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 alert "Please select at least one answer"
                 @$('.answerbtn').removeAttr('disabled')
                 return
+            console.log require('app').get('user').get('email')," answered question ", response.probe," with ",response.answers
             @options.sync.submitQuestion response, (data) =>
                 if not @options.nofeedback then @$('.answerbtn').hide()
                 if @options.sync.nuggetAttempt
