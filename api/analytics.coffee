@@ -198,8 +198,7 @@ class ProbeResponse extends AnalyticsHandler
             @save_analytics_object data, (response) =>
                 if response.status == 200
                     response.body.probe = probe
-                runDelayed 0, =>
-                    callback response
+                callback response
 
 
 collections =
