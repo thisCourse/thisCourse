@@ -70,24 +70,34 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             data: JSON.stringify(data)
             success: success
             contentType: 'application/json'
-            
+    
+    handleError = ->
+        alert "There was an error loading; please check your internet connection and then refresh the page to continue..."
+    
     QuizAnalytics =
-        submitQuestion: (response,callback) =>
-            doPost '/analytics/proberesponse/', response, (data) =>
+        submitQuestion: (response, callback) =>
+            xhdr = doPost '/analytics/proberesponse/', response, (data) =>
                 callback data
+            xhdr.error handleError
                 
-        nuggetAttempt: (nuggetattempt,callback) =>
+        nuggetAttempt: (nuggetattempt, callback) =>
             doPost '/analytics/nuggetattempt/', nuggetattempt, =>
                 callback()
+            xhdr.error handleError
+
+        skipQuestion: (response, callback) =>
+            callback()
                 
     ExamAnalytics =
-        submitQuestion: (response,callback) =>
-            doPost '/analytics/midterm/', response, (data) =>
+        submitQuestion: (response, callback) =>
+            xhdr = doPost '/analytics/midterm/', response, (data) =>
                 callback data
+            xhdr.error handleError
                 
-        skipQuestion: (response,callback) =>
-            doPost '/analytics/midterm/', response, =>
+        skipQuestion: (response, callback) =>
+            xhdr = doPost '/analytics/midterm/', response, =>
                 callback()
+            xhdr.error handleError
 
     class ExamView extends baseviews.BaseView
         
@@ -102,7 +112,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if not require("app").get("user").get("loggedIn")
                 @$el.html "<p>Please log in to take your midterm...</p>"
                 return
-            $.get '/analytics/midterm/', (data) =>
+            xhdr = $.get '/analytics/midterm/', (data) =>
                 if data.points
                     midtermgradeboundaries = [180,160,150,140,0]
                     grades = ['A','B','C','D','F']
@@ -116,6 +126,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     probes = new models.ProbeCollection(probes)
                     probes.url = "/api/probe"
                     @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:ExamAnalytics)
+            xhdr.error handleError
             
         claimed: =>
             @code = @$('.entrycode').val()
@@ -182,13 +193,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @submitting = 0
             # @starttime = new Date
             @showNextProbe()
-            @model.fetch()
+            xhdr = @model.fetch()
+            xhdr.error handleError
         
         render: =>
             @$el.html templates.probe_container notclaiming: @options.notclaiming
             if @submitting == 1
-                @$('.answerbtn').attr('disabled','disabled')
-                @$('.answerbtn').text('Loading')
+                @$('.answerbtn, .skipbutton').attr('disabled','disabled')
+                @$('.answerbtn, .skipbutton').text('Loading')
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
                        
         nextProbe: =>
@@ -223,7 +235,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @prefetchProbe()
 
         prefetchProbe: =>
-            @collection.at(@inc)?.fetch()
+            xhdr = @collection.at(@inc)?.fetch()
+            xhdr.error handleError
                     
         submitAnswer: =>
             if @options.nofeedback then @submitting = 1
@@ -242,7 +255,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 return
             console.log require('app').get('user').get('email'), "answered question", response.probe, "with", response.answers
             @options.sync.submitQuestion response, (data) =>
-                if not @options.nofeedback then @$('.answerbtn').hide()
+                if not @options.nofeedback then @$('.answerbtn, .skipbutton').hide()
                 if @options.sync.nuggetAttempt
                     if not data.correct 
                         @claimed = false
