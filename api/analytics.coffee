@@ -72,7 +72,8 @@ class NuggetAttempt extends AnalyticsHandler
         super
 
     handle_POST: (callback) =>
-        @save_analytics_object @req.body, callback
+        return callback new api.APIError("No can do. Time is up.")
+        #@save_analytics_object @req.body, callback
 
     handle_GET: (callback) =>
         get_student_nugget_attempts @req.session.email, (err, claimed, attempted) =>
