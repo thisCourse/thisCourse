@@ -92,13 +92,11 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 if typeof(data)="string"
                     midtermgradeboundaries = [180,160,150,140,0]
                     @$el.html templates.exam_entry_screen points: data, grade: grades[(Number(data)>=x for x in midtermgradeboundaries).indexOf(true)]
-            probes = []
-            for nugget in @collection.selectNuggets(@query).models
-                for probe in nugget.get('probeset').models
-                    probes.push probe
-            if probes.length==0 then return
-            probes = new models.ProbeCollection(_.shuffle(probes))
-            @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:ExamAnalytics)
+                else if typeof(data)="object"
+                    probes = ({_id: probe} for probe in data.reverse())
+                    if probes.length==0 then return
+                    probes = new models.ProbeCollection(probes)
+                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:ExamAnalytics)
 
         navigate: (fragment, query) =>
             super
