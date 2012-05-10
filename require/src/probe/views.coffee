@@ -83,16 +83,18 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
     class ExamView extends baseviews.BaseView
         
+        events:
+            "click .claimed": "claimed"
+            "click .generic": "generic"
+        
         initialize: ->
-            @collection.bind "add", _.debounce @render
-            
 
         render: =>
             $.get '/analytics/midterm/', (data) =>
-                if typeof(data)="string"
+                if typeof(data)=="string"
                     midtermgradeboundaries = [180,160,150,140,0]
                     @$el.html templates.exam_entry_screen points: data, grade: grades[(Number(data)>=x for x in midtermgradeboundaries).indexOf(true)]
-                else if typeof(data)="object"
+                else if typeof(data)=="object"
                     probes = ({_id: probe} for probe in data.reverse())
                     if probes.length==0 then return
                     probes = new models.ProbeCollection(probes)
@@ -102,6 +104,21 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             super
             @render()
             
+        claimed: =>
+            dialogviews.dialog_confirmation "Take Claimed Midterm","This will choose the midterm you have created. Once you choose this, it cannot be undone.", =>
+                @chooseGeneric(false)
+            , confirm_button:"Choose", cancel_button:"Cancel"
+                
+        generic: =>
+            dialogviews.dialog_confirmation "Take Generic Midterm","This will choose a generic midterm with a particular if you have created your own midterm, this option is not recommended. Once you choose this, it cannot be undone.", =>
+                @chooseGeneric(true)
+            , confirm_button:"Choose", cancel_button:"Cancel"
+            
+        chooseGeneric: (choice) =>
+            code = @$('.entrycode').val()
+            $.put '/analytics/midterm/', alternate: choice, code: code, =>
+                @render()
+        
     class QuizView extends baseviews.BaseView
         
         initialize: ->
