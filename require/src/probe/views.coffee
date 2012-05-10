@@ -97,7 +97,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     if probes.length==0 then return
                     probes = new models.ProbeCollection(probes)
                     probes.url = "/api/probe"
-                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:ExamAnalytics)
+                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, sync:ExamAnalytics)
             
         claimed: =>
             dialogviews.dialog_confirmation "Take Claimed Midterm","This will choose the midterm you have created. Once you choose this, it cannot be undone.", =>
