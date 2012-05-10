@@ -81,7 +81,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             xhdr.error handleError
                 
         nuggetAttempt: (nuggetattempt, callback) =>
-            doPost '/analytics/nuggetattempt/', nuggetattempt, =>
+            xhdr = doPost '/analytics/nuggetattempt/', nuggetattempt, =>
                 callback()
             xhdr.error handleError
 
@@ -194,7 +194,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             # @starttime = new Date
             @showNextProbe()
             xhdr = @model.fetch()
-            xhdr.error handleError
+            xhdr?.error handleError
         
         render: =>
             @$el.html templates.probe_container notclaiming: @options.notclaiming
@@ -236,7 +236,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         prefetchProbe: =>
             xhdr = @collection.at(@inc)?.fetch()
-            xhdr.error handleError
+            xhdr?.error handleError
                     
         submitAnswer: =>
             if @options.nofeedback then @submitting = 1
@@ -335,9 +335,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.nextquestion').show()
             if @parent.inc == @parent.collection.length
                 if @parent.claimed == true and not @parent.options.notclaiming #TODO: Remove this to fully modularize probes
-                    @$('.nextquestion').text('Claim Nugget!')
+                    @$('.nextquestion').text('Claim Nugget!').hide() # DISABLED
                 else
-                    @$('.nextquestion').text('Finish Quiz')
+                    @$('.nextquestion').text('Finish Quiz').hide() # DISABLED
             for key,subview of @subviews
                 subview.showFeedback()
             if @model.get('feedback')
