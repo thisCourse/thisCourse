@@ -8,3 +8,4 @@ require-test/build/
 *.pyc
 backbone (copy)/
 sanitize/
+npm-debug.log

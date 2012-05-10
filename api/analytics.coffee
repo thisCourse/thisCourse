@@ -32,7 +32,7 @@ class AnalyticsHandler
         @res = res
         if not @checkPermissions() then return
         @["handle_" + req.method] (json) =>
-            json?.send(res)
+            json?.send(req, res)
     
     checkPermissions: =>
         if not @req.session.email
