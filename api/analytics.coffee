@@ -172,11 +172,12 @@ class Midterm extends AnalyticsHandler
         redis.type "midterm-unanswered:" + @req.session.email, (err, valtype) =>
             if valtype isnt "list"
                 redis.get "midterm-claimed-points:" + @req.session.email, (err, points) =>
-                    callback new api.JSONResponse(points)
+                    callback new api.JSONResponse(points: points)
             else        
                 redis.lrange "midterm-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
-                    if err then return callback new api.APIError(err)
-                    callback new api.JSONResponse(unanswered)
+                    redis.llen "midterm-answered:" + @req.session.email, (err, progress) =>
+                        if err then return callback new api.APIError(err)
+                        callback new api.JSONResponse(progress: progress, probes: unanswered)
         
 runDelayed = (ms, callback) =>
     setTimeout callback, ms
