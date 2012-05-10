@@ -85,8 +85,13 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         initialize: ->
             @collection.bind "add", _.debounce @render
+            
 
         render: =>
+            $.get '/analytics/midterm/', (data) =>
+                if typeof(data)="string"
+                    midtermgradeboundaries = [180,160,150,140,0]
+                    @$el.html templates.exam_entry_screen points: data, grade: grades[(Number(data)>=x for x in midtermgradeboundaries).indexOf(true)]
             probes = []
             for nugget in @collection.selectNuggets(@query).models
                 for probe in nugget.get('probeset').models
