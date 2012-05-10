@@ -139,15 +139,12 @@
 
 <script id="exam_entry_screen" type="text/x-handlebars-template">
     <div class='logged-in-only'>
-    <p>You have claimed nuggets totalling {{points}} points.</p>
-    <p>If you get every single question correct, you will get a grade {{grade}}</p>
-    <p>Enter the 4-Digit code here</p>
-    <input class='entrycode' type='text' size=4 value=''></input>
-    <p>You may choose to take the midterm you have constructed through claiming, or you may take a generic midterm that is composed of questions worth 200 points taken from Lecture 1-9. Once you make this choice, this will be the midterm you take, so choose wisely.</p>
-    <span><button class='btn primary large claimed'>Take My Claimed Midterm</button>
-    <button class='btn info large generic'>Take Generic Midterm</button></span>
-    </div>
-    <div class='logged-out-only'>
-    <p>Please log in to take your midterm</p>
+        <p>You have claimed nuggets totalling {{points}} points.</p>
+        <p>If you get every single question correct, you will get a grade {{grade}}</p>
+        <p>Enter the 4-Digit code here</p>
+        <input class='entrycode' type='text' value=''></input>
+        <p>You may choose to take the midterm you have constructed through claiming, or you may take a generic midterm that is composed of questions worth 200 points taken from Lecture 1-9. Once you make this choice, this will be the midterm you take, so choose wisely.</p>
+        <span><button class='btn primary large claimed'>Take My Claimed Midterm</button>
+        <button class='btn info large generic'>Take Generic Midterm</button></span>
     </div>
 </script>
