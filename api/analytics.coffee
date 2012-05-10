@@ -169,13 +169,13 @@ class Midterm extends AnalyticsHandler
                 return callback new api.APIError("Can only answer/skip the next item in the queue (#{id}).")
     
     handle_GET: (callback) =>
-        redis.type "midterm-unanswered:" + @req.session.email, (err, valtype) =>
-            if valtype isnt "list"
-                redis.get "midterm-claimed-points:" + @req.session.email, (err, points) =>
-                    callback new api.JSONResponse(points: points)
-            else        
-                redis.lrange "midterm-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
-                    redis.llen "midterm-answered:" + @req.session.email, (err, progress) =>
+        redis.llen "midterm-answered:" + @req.session.email, (err, progress) =>
+            redis.llen "midterm-unanswered:" + @req.session.email, (err, remaining) =>
+                if progress == 0 and remaining == 0
+                    redis.get "midterm-claimed-points:" + @req.session.email, (err, points) =>
+                        callback new api.JSONResponse(points: points)
+                else        
+                    redis.lrange "midterm-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
                         if err then return callback new api.APIError(err)
                         callback new api.JSONResponse(progress: progress, probes: unanswered)
         

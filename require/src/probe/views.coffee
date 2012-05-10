@@ -62,6 +62,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             data: JSON.stringify(data)
             success: success
             contentType: 'application/json'
+
+    doPut = (url, data, success) ->
+        $.ajax
+            type: 'PUT'
+            url: url
+            data: JSON.stringify(data)
+            success: success
+            contentType: 'application/json'
             
     QuizAnalytics =
         submitQuestion: (response,callback) =>
@@ -87,32 +95,49 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click .claimed": "claimed"
             "click .generic": "generic"
         
+        initialize: =>
+            require("app").get("user").bind "change:loggedIn", @render
+        
         render: =>
+            if not require("app").get("user").get("loggedIn")
+                @$el.html "<p>Please log in to take your midterm...</p>"
+                return
             $.get '/analytics/midterm/', (data) =>
                 if data.points
                     midtermgradeboundaries = [180,160,150,140,0]
+                    grades = ['A','B','C','D','F']
                     @$el.html templates.exam_entry_screen points: data.points, grade: grades[(Number(data.points)>=x for x in midtermgradeboundaries).indexOf(true)]
                 else if typeof(data)=="object"
+                    @$el.html ""
                     probes = ({_id: probe} for probe in data.probes.reverse())
-                    if probes.length==0 then return
+                    if probes.length==0
+                        @$el.html "You're done. Finito. Finished!! If you want to leave early, please come and sign out at the front of the room. Otherwise, please close your laptop now so we know you're finished."
+                        return
                     probes = new models.ProbeCollection(probes)
                     probes.url = "/api/probe"
                     @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:ExamAnalytics)
             
         claimed: =>
+            @code = @$('.entrycode').val()
+            if @code.length != 4
+                alert "You must enter the 4 digit code given to you by your instructor."
+                return
             dialogviews.dialog_confirmation "Take Claimed Midterm","This will choose the midterm you have created. Once you choose this, it cannot be undone.", =>
                 @chooseGeneric(false)
             , confirm_button:"Choose", cancel_button:"Cancel"
                 
         generic: =>
+            @code = @$('.entrycode').val()
+            if @code.length != 4
+                alert "You must enter the 4 digit code given to you by your instructor."
+                return
             dialogviews.dialog_confirmation "Take Generic Midterm","This will choose a generic midterm with a particular if you have created your own midterm, this option is not recommended. Once you choose this, it cannot be undone.", =>
                 @chooseGeneric(true)
             , confirm_button:"Choose", cancel_button:"Cancel"
             
         chooseGeneric: (choice) =>
-            code = @$('.entrycode').val()
-            $.put '/analytics/midterm/', alternate: choice, code: code, =>
-                @render()
+            console.log "CODE:", @code
+            doPut '/analytics/midterm/', alternate: choice, code: @code, @render
         
     class QuizView extends baseviews.BaseView
         
@@ -144,7 +169,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             # if not require('app').get('loggedIn')
             #     @$el.html "Please make sure you are logged in to continue. Refresh after login."
             #     return
-            console.log "COLLECTION LENGTH:", @collection.length
+            # console.log "COLLECTION LENGTH:", @collection.length
             if @options.notclaiming
                 @review = []
             if @options.nofeedback
@@ -187,7 +212,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     else if @earnedpoints > 0
                         @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
                     else
-                        @$el.html "Test Complete - Your Grade will be available on the Course Site after grading"
+                        @$el.html "Test Complete - Your grade will be available on the course site after grading. If you want to leave early, please come and sign out at the front of the room. Otherwise, please close your laptop now so we know you're finished."
                     return
             @showNextProbe()
 
@@ -215,7 +240,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 alert "Please select at least one answer"
                 @$('.answerbtn').removeAttr('disabled')
                 return
-            console.log require('app').get('user').get('email')," answered question ", response.probe," with ",response.answers
+            console.log require('app').get('user').get('email'), "answered question", response.probe, "with", response.answers
             @options.sync.submitQuestion response, (data) =>
                 if not @options.nofeedback then @$('.answerbtn').hide()
                 if @options.sync.nuggetAttempt
@@ -278,7 +303,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         render: =>
             if not @model then return
             nuggettitle = @parent.options.notclaiming and @model.parent?.model?.get('title') or probe_nugget_title[@model.id] or ""
-            console.log nuggettitle
+            # console.log nuggettitle
             @$el.html templates.probe @context(increment:@parent.inc+@parent.progress,total:@parent.collection.length+@parent.progress,nuggettitle:nuggettitle)
             @$('.question').html @model.get('questiontext')
             for answer in _.shuffle(@model.get('answers').models)
