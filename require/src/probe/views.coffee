@@ -95,10 +95,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     midtermgradeboundaries = [180,160,150,140,0]
                     @$el.html templates.exam_entry_screen points: data, grade: grades[(Number(data)>=x for x in midtermgradeboundaries).indexOf(true)]
                 else if typeof(data)=="object"
-                    probes = ({_id: probe} for probe in data.reverse())
+                    probes = ({_id: probe} for probe in data.probes.reverse())
                     if probes.length==0 then return
                     probes = new models.ProbeCollection(probes)
-                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:ExamAnalytics)
+                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, inc: data.inc, sync:ExamAnalytics)
 
         navigate: (fragment, query) =>
             super
@@ -156,7 +156,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = true
             @points = 0
-            @inc = 0
+            @inc = @options.inc or 0
             @earnedpoints = 0
             @submitting = 0
             # @starttime = new Date
