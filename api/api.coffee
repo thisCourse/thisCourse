@@ -470,6 +470,7 @@ module.exports =
     router: router
     APIError: APIError
     JSONResponse: JSONResponse
+    ObjectId: ObjectId
     register_mongo_collection: register_mongo_collection
     initialize: initialize
     db: db

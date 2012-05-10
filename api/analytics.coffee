@@ -157,7 +157,9 @@ class Midterm extends AnalyticsHandler
         unanswered_key = "midterm-unanswered:" + @req.session.email
         redis.lrange unanswered_key, -1, -1, (err, id) =>
             if err then return callback new api.APIError(err)
-            if id==@req.body.probe
+            if id.length != 1
+                return callback new api.APIError("No more questions to answer!")
+            if id[0]==@req.body.probe
                 if @req.body.skipped
                     redis.rpoplpush unanswered_key, unanswered_key
                 else
@@ -167,9 +169,14 @@ class Midterm extends AnalyticsHandler
                 return callback new api.APIError("Can only answer/skip the next item in the queue (#{id}).")
     
     handle_GET: (callback) =>
-        redis.lrange "midterm-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
-            if err then return callback new api.APIError(err)
-            callback new api.JSONResponse(unanswered)
+        redis.type "midterm-unanswered:" + @req.session.email, (valtype) =>
+            if valtype isnt "list"
+                redis.get "midterm-claimed-points:" + @req.session.email, (points) =>
+                    callback new api.JSONResponse(points)
+            else        
+                redis.lrange "midterm-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
+                    if err then return callback new api.APIError(err)
+                    callback new api.JSONResponse(unanswered)
         
 runDelayed = (ms, callback) =>
     setTimeout callback, ms
