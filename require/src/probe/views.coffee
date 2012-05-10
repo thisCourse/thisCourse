@@ -4,7 +4,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => view: ProbeContainerView, datasource: "collection", notclaiming: @options.notclaiming, nofeedback: @options.nofeedback
+            "": => view: ProbeContainerView, datasource: "collection", notclaiming: @options.notclaiming, nofeedback: @options.nofeedback, sync:QuizAnalytics
             "edit/": => view: ProbeListView, datasource: "collection"
             "edit/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "collection", key: probe_id
 
@@ -62,6 +62,24 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             data: JSON.stringify(data)
             success: success
             contentType: 'application/json'
+            
+    QuizAnalytics =
+        submitQuestion: (response,callback) =>
+            doPost '/analytics/proberesponse/', response, (data) =>
+                callback data
+                
+        nuggetAttempt: (nuggetattempt,callback) =>
+            doPost '/analytics/nuggetattempt/', nuggetattempt, =>
+                callback()
+                
+    ExamAnalytics =
+        submitQuestion: (response,callback) =>
+            doPost '/analytics/midterm/', response, (data) =>
+                callback data
+                
+        skipQuestion: (response,callback) =>
+            doPost '/analytics/midterm/', response, =>
+                callback()
 
     class ExamView extends baseviews.BaseView
         
@@ -75,7 +93,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     probes.push probe
             if probes.length==0 then return
             probes = new models.ProbeCollection(_.shuffle(probes))
-            @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback)
+            @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:ExamAnalytics)
 
         navigate: (fragment, query) =>
             super
@@ -102,12 +120,16 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @points = 0
             @inc = 0
             @earnedpoints = 0
+            @submitting = 0
             # @starttime = new Date
             @showNextProbe()
             @model.fetch()
         
         render: =>
             @$el.html templates.probe_container notclaiming: @options.notclaiming
+            if @submitting == 1
+                @$('.answerbtn').attr('disabled','disabled')
+                @$('.answerbtn').text('Loading')
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
                        
         nextProbe: =>
@@ -117,7 +139,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 require("app").unbind "windowBlur", @performQuestionSkipping
                 if not @options.notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
-                    doPost '/analytics/nuggetattempt/', nuggetattempt, =>
+                    @options.sync.nuggetAttempt nuggetattempt, =>
                         if @claimed
                             @$el.html "<h4>Nugget Claimed!</h4>"
                             require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
@@ -128,8 +150,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 else
                     if @review.length > 0
                         @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
-                    else
+                    else if @earnedpoints > 0
                         @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
+                    else
+                        @$el.html "Test Complete - Your Grade will be available on the Course Site after grading"
                     return
             @showNextProbe()
 
@@ -143,8 +167,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @collection.at(@inc)?.fetch()
                     
         submitAnswer: =>
+            if @options.nofeedback then @submitting = 1
             if @$('.answerbtn').attr('disabled') then return
             @$('.answerbtn').attr('disabled','disabled')
+            @$('.answerbtn').text('Loading')
+            @$('.skipbutton').attr('disabled','disabled')
+            @$('.skipbutton').text('Loading')
             responsetime = new Date - @subviews.probeview.timestamp_load
             response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime
             for key,subview of @subviews.probeview.subviews
@@ -153,24 +181,31 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 alert "Please select at least one answer"
                 @$('.answerbtn').removeAttr('disabled')
                 return
-            doPost '/analytics/proberesponse/', response, (data) =>
+            @options.sync.submitQuestion response, (data) =>
                 if not @options.nofeedback then @$('.answerbtn').hide()
-                if not data.correct 
-                    @claimed = false
-                    if @options.notclaiming
-                        @review.push @model.parent.model
-                selected = (subview.model.id for key,subview of @subviews.probeview.subviews when subview.selected)
-                correct = (answer._id for answer in data.probe.answers when answer.correct)
-                increment = if selected.length <= correct.length then _.intersection(selected,correct).length else _.intersection(selected,correct).length - (selected.length-correct.length)
-                @earnedpoints += Math.max(0, increment)
-                for answer in data.probe.answers # calculate the total number of points possible in the probe
-                    @points += answer.correct or 0
-                if not @options.nofeedback then @subviews.probeview.answered(data)
-                if @options.nofeedback then @$('.answerbtn').removeAttr('disabled')
+                if @options.sync.nuggetAttempt
+                    if not data.correct 
+                        @claimed = false
+                        if @options.notclaiming
+                            @review.push @model.parent.model
+                    selected = (subview.model.id for key,subview of @subviews.probeview.subviews when subview.selected)
+                    correct = (answer._id for answer in data.probe.answers when answer.correct)
+                    increment = if selected.length <= correct.length then _.intersection(selected,correct).length else _.intersection(selected,correct).length - (selected.length-correct.length)
+                    @earnedpoints += Math.max(0, increment)
+                    for answer in data.probe.answers # calculate the total number of points possible in the probe
+                        @points += answer.correct or 0
+                    if not @options.nofeedback then @subviews.probeview.answered(data)
+                if @options.nofeedback
+                    @$('.answerbtn').removeAttr('disabled')
+                    @$('.answerbtn').text('Submit Answer')
+                    @$('.skipbutton').removeAttr('disabled')
+                    @$('.skipbutton').text('Skip Question')
+                    @submitting = 0
             if @options.nofeedback then @nextProbe()
                 
         skipQuestion: =>
             console.log "skipping question"
+            if @$('.skipbutton').attr('disabled') then return
             if (subview for key,subview of @subviews.probeview.subviews when subview.selected).length>0
                 dialogviews.dialog_confirmation "Skip Question","This will skip this question, your answers will not be saved", =>
                     @performQuestionSkipping()
@@ -180,6 +215,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
             
         performQuestionSkipping: =>
+            if @options.nofeedback then @submitting = 1
+            @$('.answerbtn').attr('disabled','disabled')
+            @$('.answerbtn').text('Loading')
+            @$('.skipbutton').attr('disabled','disabled')
+            @$('.skipbutton').text('Loading')
+            @options.sync.skipQuestion? probe: @model.id, skipped: true, =>
+                @$('.answerbtn').removeAttr('disabled')
+                @$('.answerbtn').text('Submit Answer')
+                @$('.skipbutton').removeAttr('disabled')
+                @$('.skipbutton').text('Skip Question')
+                @submitting = 0
             skipmodel = @collection.models.splice(@inc-1,1)
             @collection.models.push skipmodel[0]
             @model = @collection.at(@inc-1)
