@@ -89,15 +89,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         render: =>
             $.get '/analytics/midterm/', (data) =>
-                if typeof(data)=="string"
+                if data.points
                     midtermgradeboundaries = [180,160,150,140,0]
-                    @$el.html templates.exam_entry_screen points: data, grade: grades[(Number(data)>=x for x in midtermgradeboundaries).indexOf(true)]
+                    @$el.html templates.exam_entry_screen points: data, grade: grades[(data.points>=x for x in midtermgradeboundaries).indexOf(true)]
                 else if typeof(data)=="object"
-                    probes = ({_id: probe} for probe in data.reverse())
+                    probes = ({_id: probe} for probe in data.probes.reverse())
                     if probes.length==0 then return
                     probes = new models.ProbeCollection(probes)
                     probes.url = "/api/probe"
-                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, sync:ExamAnalytics)
+                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:ExamAnalytics)
             
         claimed: =>
             dialogviews.dialog_confirmation "Take Claimed Midterm","This will choose the midterm you have created. Once you choose this, it cannot be undone.", =>
@@ -150,8 +150,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @options.nofeedback
                 require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = true
+            @progress = @options.progress or 0
             @points = 0
-            @inc = 0
+            @inc = @options.inc or 0
             @earnedpoints = 0
             @submitting = 0
             # @starttime = new Date
@@ -278,7 +279,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if not @model then return
             nuggettitle = @parent.options.notclaiming and @model.parent?.model?.get('title') or probe_nugget_title[@model.id] or ""
             console.log nuggettitle
-            @$el.html templates.probe @context(increment:@parent.inc,total:@parent.collection.length,nuggettitle:nuggettitle)
+            @$el.html templates.probe @context(increment:@parent.inc+@parent.progress,total:@parent.collection.length+@parent.progress,nuggettitle:nuggettitle)
             @$('.question').html @model.get('questiontext')
             for answer in _.shuffle(@model.get('answers').models)
                 @addAnswers answer, @model.get("answers")
