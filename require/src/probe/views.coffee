@@ -335,9 +335,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.nextquestion').show()
             if @parent.inc == @parent.collection.length
                 if @parent.claimed == true and not @parent.options.notclaiming #TODO: Remove this to fully modularize probes
-                    @$('.nextquestion').text('Claim Nugget!').hide() # DISABLED
+                    @$('.nextquestion').text('Claim Nugget!')
                 else
-                    @$('.nextquestion').text('Finish Quiz').hide() # DISABLED
+                    @$('.nextquestion').text('Finish Quiz')
             for key,subview of @subviews
                 subview.showFeedback()
             if @model.get('feedback')
