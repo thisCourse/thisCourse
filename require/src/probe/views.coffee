@@ -208,6 +208,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.nextquestion').attr('disabled','disabled')
             if @inc >= @collection.length
                 require("app").unbind "windowBlur", @performQuestionSkipping
+                @inc += 1
                 if not @options.notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
                     @options.sync.nuggetAttempt nuggetattempt, =>
@@ -219,14 +220,21 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                             require('app').get('user').get('partial').add _id: @model.parent.model.id
                     return
                 else
-                    if @review.length > 0
-                        @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
-                    else if @earnedpoints > 0
-                        @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
-                    else
-                        @$el.html "Test Complete - Your grade will be available on the course site after grading. If you want to leave early, please come and sign out at the front of the room. Otherwise, please close your laptop now so we know you're finished."
+                    @showReviewFeedback()
                     return
-            @showNextProbe()
+            else
+                @showNextProbe()
+
+        
+        showReviewFeedback: =>
+            console.log @review
+            console.log @earnedpoints
+            if @review.length > 0
+                @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
+            else if @earnedpoints > 0
+                @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
+            else
+                @$el.html "Test Complete - Your grade will be available on the course site after grading. If you want to leave early, please come and sign out at the front of the room. Otherwise, please close your laptop now so we know you're finished."
 
         showNextProbe: =>
             @model = @collection.at(@inc)
@@ -261,10 +269,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         @claimed = false
                         if @options.notclaiming
                             @review.push @model.parent.model
-                    selected = (subview.model.id for key,subview of @subviews.probeview.subviews when subview.selected)
-                    correct = (answer._id for answer in data.probe.answers when answer.correct)
-                    increment = if selected.length <= correct.length then _.intersection(selected,correct).length else _.intersection(selected,correct).length - (selected.length-correct.length)
+                    correct = (answer._id for answer in data.probe.answers when answer.correct==true)
+                    console.log response.answers, correct
+                    increment = if response.answers.length <= correct.length then _.intersection(response.answers,correct).length else _.intersection(selected,correct).length - (selected.length-correct.length)
+                    console.log increment
                     @earnedpoints += Math.max(0, increment)
+                    console.log @earnedpoints
                     for answer in data.probe.answers # calculate the total number of points possible in the probe
                         @points += answer.correct or 0
                     if not @options.nofeedback then @subviews.probeview.answered(data)
@@ -274,7 +284,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @$('.skipbutton').removeAttr('disabled')
                     @$('.skipbutton').text('Skip Question')
                     @submitting = 0
-            if @options.nofeedback then @nextProbe()
+                    if @inc > @collection.length
+                        @showReviewFeedback()
+            if @options.nofeedback and @inc <= @collection.length then @nextProbe()
                 
         skipQuestion: =>
             console.log "skipping question"
