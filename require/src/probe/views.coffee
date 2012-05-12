@@ -270,10 +270,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         if @options.notclaiming
                             @review.push @model.parent.model
                     correct = (answer._id for answer in data.probe.answers when answer.correct)
-                    increment = if response.answers.length <= correct.length then _.intersection(response.answers,correct).length else _.intersection(selected,correct).length - (selected.length-correct.length)
+                    increment = if response.answers.length <= correct.length then _.intersection(response.answers,correct).length else _.intersection(response.answers,correct).length - (response.answers.length-correct.length)
                     @earnedpoints += Math.max(0, increment)
-                    for answer in data.probe.answers # calculate the total number of points possible in the probe
-                        @points += answer.correct or 0
+                    @points += correct.length
                     if not @options.nofeedback then @subviews.probeview.answered(data)
                 if @options.nofeedback
                     @$('.answerbtn').removeAttr('disabled')
