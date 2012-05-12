@@ -148,12 +148,12 @@ class Midterm extends AnalyticsHandler
             console.log @req.session.email, "opted for the alternate exam"
             redis.rename alternate_key, unanswered_key, (err) =>
                 if err then return callback new api.APIError(err)
-                return @save_analytics_object {alternate: true}, callback
+                return @save_analytics_object @req.body, callback
         else
             console.log @req.session.email, "opted for the claimed exam"
             redis.rename claimed_key, unanswered_key, (err) =>
                 if err then return callback new api.APIError(err)
-                return @save_analytics_object {alternate: false}, callback
+                return @save_analytics_object @req.body, callback
     
     handle_POST: (callback) =>
         answered_key = "midterm-answered:" + @req.session.email
