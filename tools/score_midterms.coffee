@@ -47,11 +47,10 @@ setTimeout addScores, 2000
 # # coffee
 # top = (person for person in people when person.points > 250)
 
-
 examSummary = =>
-    midtermgradeboundaries = [180,160,150,140,0]
+    midtermgradeboundaries = [188,180,174,168,160,157,154,150,147,137,0]
 
-    grades = ['A','B','C','D','F']
+    grades = ['A+','A','A-','B+','B','B-','C+','C','C-','D','F']
 
     examsummary = db.midterm.group
         key: email:true
@@ -66,5 +65,7 @@ examSummary = =>
             out.avg_time = out.csum/out.count
             out.percent = out.score/out.maxscore
             out.grade = grades[(out.score>=x for x in midtermgradeboundaries).indexOf(true)]
+            
+people = examSummary()
             
 #mongoexport --db analytics --collection midterm -q '{"type":"proberesponse"}' -o midterm.json --jsonArray
