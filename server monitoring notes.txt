@@ -1,0 +1,5 @@
+ sudo tail /var/log/nginx/access.log -f -n 100
+ tail -f /home/jamalex/.forever/*.log | grep @
+ htop
+ mongodb analytics
+ 
