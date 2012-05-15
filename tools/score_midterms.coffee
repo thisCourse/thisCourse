@@ -47,25 +47,34 @@ setTimeout addScores, 2000
 # # coffee
 # top = (person for person in people when person.points > 250)
 
-examSummary = =>
-    midtermgradeboundaries = [188,180,174,168,160,157,154,150,147,137,0]
 
-    grades = ['A+','A','A-','B+','B','B-','C+','C','C-','D','F']
+midtermgradeboundaries = [188,180,174,168,160,157,154,150,147,137,0]
 
-    examsummary = db.midterm.group
-        key: email:true
-        cond:{type:"proberesponse"}
-        reduce: (obj,prev) -> 
-            prev.csum+=obj.responsetime
-            prev.count++
-            prev.score+=obj.points
-            prev.maxscore+=obj.totalanswerscorrect
-        initial: csum:0,count:0,score:0, maxscore:0
-        finalize: (out) ->
-            out.avg_time = out.csum/out.count
-            out.percent = out.score/out.maxscore
-            out.grade = grades[(out.score>=x for x in midtermgradeboundaries).indexOf(true)]
+grades = ['A+','A','A-','B+','B','B-','C+','C','C-','D','F']
+
+analytics.db.collection("midterm").group(
+    {email:true}
+    {type:"proberesponse"}
+    {csum:0,count:0,score:0, maxscore:0}
+    (obj,prev) -> 
+        prev.csum+=obj.responsetime
+        prev.count++
+        prev.score+=obj.points
+        prev.maxscore+=obj.totalanswerscorrect
+    (out) ->
+        out.avg_time = out.csum/out.count
+        out.percent = out.score/out.maxscore
+        out.grade = grades[(out.score>=x for x in midtermgradeboundaries).indexOf(true)]
+    (err, people) =>
+        for person in people
+            if person.score < 100 then continue
+            if person.email=="hnhall@ucsd.edu"
+                person.score += 1
+            if person.email=="jldejesu@ucsd.edu" or person.email=="psukaviv@ucsd.edu"
+                person.score += 2
+            grade = grades[(person.score>=x for x in midtermgradeboundaries).indexOf(true)]
+            api.db.collection("grade").save points: person.score, grade: grade, email: person.email, title: "Midterm"
             
-people = examSummary()
-            
+)
+
 #mongoexport --db analytics --collection midterm -q '{"type":"proberesponse"}' -o midterm.json --jsonArray
