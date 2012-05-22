@@ -100,6 +100,8 @@ define [], ->
             'C02': 'Social cognition requirements'
             'C03': 'Self-awareness'
             'C04': 'Theory of Mind'
+            'C05': 'Right TPJ: behavioral scope'
+            'C06': 'Alternate theories of TPJ function'
          'title': 'Social Cognition and Theory of Mind'
          'minpoints': 10
       'L12':
