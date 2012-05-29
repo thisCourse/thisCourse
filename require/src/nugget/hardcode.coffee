@@ -122,6 +122,15 @@ define [], ->
             'C06': 'Semantic relatedness and the N400'
          'title': 'Language and meaning in the brain'
          'minpoints': 10
+      'L14':
+         'clusters':
+            'C01': 'Why Study Music?'
+            'C02': 'Music & Emotion'
+            'C03': 'Amusia'
+            'C04': 'Music structure and expectation'
+            'C05': 'Therapeutic Uses of Music'
+         'title': 'Music, Language, and the Brain'
+         'minpoints': 10
       'L16':
          'clusters':
             'C01': 'Behavioral studies of aging'
