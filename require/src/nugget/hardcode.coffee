@@ -131,6 +131,11 @@ define [], ->
             'C05': 'Therapeutic Uses of Music'
          'title': 'Music, Language, and the Brain'
          'minpoints': 10
+      'L15':
+         'clusters':
+            'C01': 'Neuro-Anatomy of COGS107C'
+         'title': 'Neuro-Anatomy'
+         'minpoints': 10
       'L16':
          'clusters':
             'C01': 'Behavioral studies of aging'
