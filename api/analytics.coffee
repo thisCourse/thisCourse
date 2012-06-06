@@ -183,7 +183,55 @@ class Midterm extends AnalyticsHandler
                     redis.lrange "midterm-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
                         if err then return callback new api.APIError(err)
                         callback new api.JSONResponse(progress: progress, probes: unanswered)
-        
+
+class Final extends AnalyticsHandler
+    collection: db.collection("final")
+    
+    handle_PUT: (callback) => # choose between the alternate pre-configured test and the claimed nugget test
+        unanswered_key = "final-unanswered:" + @req.session.email
+        claimed_key = "final-claimed:" + @req.session.email
+        alternate_key = "final-alternate:" + @req.session.email
+        if @req.body.alternate
+            console.log @req.session.email, "opted for the alternate exam"
+            redis.rename alternate_key, unanswered_key, (err) =>
+                if err then return callback new api.APIError(err)
+                return @save_analytics_object @req.body, callback
+        else
+            console.log @req.session.email, "opted for the claimed exam"
+            redis.rename claimed_key, unanswered_key, (err) =>
+                if err then return callback new api.APIError(err)
+                return @save_analytics_object @req.body, callback
+    
+    handle_POST: (callback) =>
+        answered_key = "final-answered:" + @req.session.email
+        unanswered_key = "final-unanswered:" + @req.session.email
+        redis.lrange unanswered_key, -1, -1, (err, id) =>
+            if err then return callback new api.APIError(err)
+            if id.length != 1
+                return callback new api.APIError("No more questions to answer!")
+            if id[0]==@req.body.probe
+                if @req.body.skipped
+                    console.log @req.session.email, "has skipped question", @req.body.probe, @req.body.manual and "manually" or "automatically!!!"
+                    redis.rpoplpush unanswered_key, unanswered_key
+                else
+                    console.log @req.session.email, "has submitted question", @req.body.probe, "with answers", JSON.stringify(@req.body.answers)
+                    redis.rpoplpush unanswered_key, answered_key
+                return @save_analytics_object @req.body, callback
+            else
+                return callback new api.APIError("Can only answer/skip the next item in the queue (#{id}).")
+    
+    handle_GET: (callback) =>
+        redis.llen "final-answered:" + @req.session.email, (err, progress) =>
+            redis.llen "final-unanswered:" + @req.session.email, (err, remaining) =>
+                if progress == 0 and remaining == 0
+                    redis.get "final-claimed-points:" + @req.session.email, (err, points) =>
+                        callback new api.JSONResponse(points: points)
+                else        
+                    redis.lrange "final-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
+                        if err then return callback new api.APIError(err)
+                        callback new api.JSONResponse(progress: progress, probes: unanswered)
+
+
 runDelayed = (ms, callback) =>
     setTimeout callback, ms
 
@@ -213,6 +261,7 @@ collections =
     proberesponse: ProbeResponse
     studentstatistics: StudentStatistics
     midterm: Midterm
+    final: Final
 
 module.exports =
     router: router

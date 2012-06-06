@@ -68,12 +68,9 @@ analytics.db.collection("midterm").group(
     (err, people) =>
         for person in people
             if person.score < 100 then continue
-            if person.email=="hnhall@ucsd.edu"
-                person.score += 1
-            if person.email=="jldejesu@ucsd.edu" or person.email=="psukaviv@ucsd.edu"
-                person.score += 2
-            grade = grades[(person.score>=x for x in midtermgradeboundaries).indexOf(true)]
-            api.db.collection("grade").save points: person.score, grade: grade, email: person.email, title: "Midterm"
+            if person.email=="jherzber@ucsd.edu"
+                grade = grades[(person.score>=x for x in midtermgradeboundaries).indexOf(true)]
+                api.db.collection("grade").save points: person.score, grade: grade, email: person.email, title: "Midterm"
             
 )
 
