@@ -88,7 +88,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         skipQuestion: (response, callback) =>
             callback()
                 
-    ExamAnalytics =
+    MidtermAnalytics =
         submitQuestion: (response, callback) =>
             xhdr = doPost '/analytics/midterm/', response, (data) =>
                 callback data
@@ -96,6 +96,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 
         skipQuestion: (response, callback) =>
             xhdr = doPost '/analytics/midterm/', response, =>
+                callback()
+            xhdr.error handleError
+            
+    FinalAnalytics =
+        submitQuestion: (response, callback) =>
+            xhdr = doPost '/analytics/final/', response, (data) =>
+                callback data
+            xhdr.error handleError
+                
+        skipQuestion: (response, callback) =>
+            xhdr = doPost '/analytics/final/', response, =>
                 callback()
             xhdr.error handleError
 
@@ -125,7 +136,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         return
                     probes = new models.ProbeCollection(probes)
                     probes.url = "/api/probe"
-                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:ExamAnalytics)
+                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:MidtermAnalytics)
             xhdr.error handleError
             
         claimed: =>
@@ -176,7 +187,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         return
                     probes = new models.ProbeCollection(probes)
                     probes.url = "/api/probe"
-                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:ExamAnalytics)
+                    @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: true, progress: data.progress, sync:FinalAnalytics)
             xhdr.error handleError
             
         claimed: =>

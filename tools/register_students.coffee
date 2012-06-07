@@ -6,7 +6,7 @@ qqqe = ["naltimim@ucsd.edu", "aamodei@ucsd.edu", "latkins@ucsd.edu", "aauyeung@u
 
 students = ['jamalex@gmail.com', "jdalexan@ucsd.edu"]
 
-gradstudents = ["asalexan@ucsd.edu","kblackst@ucsd.edu","kbolden@ucsd.edu","sdeanda@ucsd.edu","djfrost@ucsd.edu","krhendri@ucsd.edu","minfante@ucsd.edu","nkucukbo@ucsd.edu","sbmacken@ucsd.edu","anair@ucsd.edu","vipatt@ucsd.edu","m1robled@ucsd.edu","ajschork@ucsd.edu","rtibbles@ucsd.edu","e1walker@ucsd.edu","cadance@ucsd.edu"]
+gradstudents = ["asalexan@ucsd.edu","kblackst@ucsd.edu","kbolden@ucsd.edu","sdeanda@ucsd.edu","krhendri@ucsd.edu","minfante@ucsd.edu","nkucukbo@ucsd.edu","sbmacken@ucsd.edu","anair@ucsd.edu","vipatt@ucsd.edu","m1robled@ucsd.edu","ajschork@ucsd.edu","rtibbles@ucsd.edu","e1walker@ucsd.edu","cadance@ucsd.edu"]
 
 students.forEach (email) => 
     shasum = crypto.createHash('sha1')
