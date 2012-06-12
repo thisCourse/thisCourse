@@ -176,9 +176,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 return
             xhdr = $.get '/analytics/final/', (data) =>
                 if data.points
-                    midtermgradeboundaries = [180,160,150,140,0]
+                    finalgradeboundaries = [315,280,263,240,0]
                     grades = ['A','B','C','D','F']
-                    @$el.html templates.exam_entry_screen points: data.points, grade: grades[(Number(data.points)>=x for x in midtermgradeboundaries).indexOf(true)]
+                    @$el.html templates.exam_entry_screen points: data.points, grade: grades[(Number(data.points)>=x for x in finalgradeboundaries).indexOf(true)]
                 else if typeof(data)=="object"
                     @$el.html ""
                     probes = ({_id: probe} for probe in data.probes.reverse())
@@ -204,7 +204,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @code.length != 4
                 alert "You must enter the 4 digit code given to you by your instructor."
                 return
-            dialogviews.dialog_confirmation "Take Generic Final","This will choose a generic final with a particular if you have created your own midterm, this option is not recommended. Once you choose this, it cannot be undone.", =>
+            dialogviews.dialog_confirmation "Take Generic Final","This will choose a generic final with a particular if you have created your own final, this option is not recommended. Once you choose this, it cannot be undone.", =>
                 @chooseGeneric(true)
             , confirm_button:"Choose", cancel_button:"Cancel"
             
