@@ -10,8 +10,9 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             "study/": => view: nuggetviews.StudyRouterView, datasource: "model", key: "nuggets"
             "nuggets/": => view: nuggetviews.NuggetRouterView, datasource: "model", key: "nuggets"
             "chat/": => view: chatviews.ChatView
-            "midterm/": => view: probeviews.MidtermView
+            # "midterm/": => view: probeviews.MidtermView
             "final/": => view: probeviews.FinalView
+            "posttest/": => view: probeviews.PostTestView
             "grades/": => view: gradeviews.GradesView
             "analytics/": => view: analyticsviews.AnalyticsView
             "filebrowse/": => new fileviews.FileBrowserView
@@ -26,6 +27,5 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             if @model.has("title") then title += " | " + @model.get("title")
             document.title = title
             
-
 
     return CourseView: CourseView
