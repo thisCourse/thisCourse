@@ -72,7 +72,7 @@ class NuggetAttempt extends AnalyticsHandler
         super
 
     handle_POST: (callback) =>
-        #return callback new api.APIError("No can do. Time is up.")
+        # return callback new api.APIError("No can do. Time is up.")
         @save_analytics_object @req.body, callback
 
     handle_GET: (callback) =>
@@ -231,6 +231,28 @@ class Final extends AnalyticsHandler
                         if err then return callback new api.APIError(err)
                         callback new api.JSONResponse(progress: progress, probes: unanswered)
 
+class PostTest extends AnalyticsHandler
+    collection: db.collection("posttest")
+    
+    handle_POST: (callback) =>
+        answered_key = "posttest-answered:" + @req.session.email
+        unanswered_key = "posttest-unanswered:" + @req.session.email
+        redis.lrange unanswered_key, -1, -1, (err, id) =>
+            if err then return callback new api.APIError(err)
+            if id.length != 1
+                return callback new api.APIError("No more questions to answer!")
+            if id[0]==@req.body.probe
+                console.log @req.session.email, "has submitted question", @req.body.probe, "with answers", JSON.stringify(@req.body.answers)
+                redis.rpoplpush unanswered_key, answered_key
+                return @save_analytics_object @req.body, callback
+            else
+                return callback new api.APIError("Can only answer the next item in the queue (#{id}).")
+    
+    handle_GET: (callback) =>
+        redis.llen "posttest-answered:" + @req.session.email, (err, progress) =>
+            redis.lrange "posttest-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
+                if err then return callback new api.APIError(err)
+                callback new api.JSONResponse(progress: progress, probes: unanswered)
 
 runDelayed = (ms, callback) =>
     setTimeout callback, ms
@@ -258,6 +280,7 @@ class ProbeResponse extends AnalyticsHandler
 collections =
     nuggetattempt: NuggetAttempt
     pretest: PreTest
+    posttest: PostTest
     proberesponse: ProbeResponse
     studentstatistics: StudentStatistics
     midterm: Midterm
