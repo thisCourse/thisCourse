@@ -9,6 +9,8 @@ define ["cs!base/models"], (basemodels) ->
         
     class ProbeModel extends basemodels.LazyModel
         
+        url: => "/api/probe/" + @id
+        
         apiCollection: "probe"
         
         relations: ->

@@ -37,7 +37,8 @@ var app = express.createServer(
     express.cookieParser(),
     auth.token_middleware(),
     express.session(settings.session),
-    auth.user_middleware()
+    auth.user_middleware(),
+    express.responseTime()
 )
 
 app.listen(2000);
@@ -98,7 +99,7 @@ app.get("/course", function(req, res) {
 
 var server = express.createServer(
   //express.logger(), // Log responses to the terminal using Common Log Format.
-  //express.responseTime() // Add a special header with timing information.
+  // express.responseTime() // Add a special header with timing information.
 )
 
 server.use(express.vhost('beta.thiscourse.com', app))
