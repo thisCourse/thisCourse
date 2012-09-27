@@ -1,0 +1,68 @@
+<script id="lecture_list" type="text/x-handlebars-template">
+    
+    <h2>Lectures</h2>
+
+    <ul>
+        {{#each collection/models }}
+            <li><a href="{{ ../url }}{{ id }}/">{{ attributes/title }}</a></li>
+        {{/each }}
+    </ul>
+
+    {{#if _editor }}<button class="add-button btn success">Add lecture</button>{{/if}}
+
+</script>
+
+
+<script id="lecture" type="text/x-handlebars-template">
+
+    <div class="lecture-top"></div>
+
+    <hr/>
+
+    <div class="lecture-page"></div>
+    
+</script>
+
+
+<script id="lecture_top" type="text/x-handlebars-template">
+
+    <h2>{{ title }}</h2>
+
+    <div class="description">{{ description }}</div>
+
+    {{#if scheduled }}
+    <br/>
+    <div><b>Scheduled for:</b>
+    {{#join_with_commas scheduled }}
+    {{$date this }}
+    {{/join_with_commas }}
+    </div>
+    {{/if}}
+
+    {{#if _editor }}<button class="item-button edit-button btn success">Edit lecture details</button>{{/if}}
+
+</script>
+
+
+<script id="lecture_edit" type="text/x-handlebars-template">
+
+    <input class="span12" type="text" data="title" placeholder="Lecture Title"/>
+    <textarea class="span12" data="description" placeholder="Lecture Description">{{ description }}</textarea>
+    <br/>
+    <div class="scheduled-dates"></div>
+    <br/><br/>
+    <!--<dd class="span1">Width:</dd><dt class="span4"><input type="text" data="width"/></dt>-->
+    {{> item_edit_buttons }}
+
+</script>
+
+
+<script id="date_list" type="text/x-handlebars-template">
+
+    {{#if dates }}<b>Scheduled dates:</b>{{/if }}
+    {{#each_with_index dates }}
+        {{$date this }} (<a index="{{ index }}" class="remove-date">remove</a>)<br/>
+    {{/each_with_index }}
+    <input type="hidden" class="scheduled-date"/>
+
+</script>
