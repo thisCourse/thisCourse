@@ -1,0 +1,38 @@
+<script id="item_gallery" type="text/x-handlebars-template">
+
+    <h4 class='itemtitle' data="title"></h4>
+    <a href="{{ get_image_url }}" target="_blank" class="imagelink" rel="gallery_{{ model.parent.model.id }}">
+        <img src="{{ get_thumb_url }}" class="thumb" />
+    </a>
+    <p class="notes">{{ notes }}{{#if model.attributes.url }} (<a target="_blank" href="{{ model.attributes.url }}">link</a>){{/if}}</p>
+    {{> item_buttons }}
+    
+</script>
+
+
+<script id="item_gallery_edit" type="text/x-handlebars-template">
+
+    <input type="text" data="title" placeholder="Title"/>
+    <input class="hasfile-only" type="text" data="file" placeholder="File ID"/>
+    <input class="nofile-only" type="text" data="image_url" placeholder="Image URL"/>
+    <input class="nofile-only" type="text" data="thumb_url" placeholder="Thumbnail URL"/>
+    <iframe class="uploader"></iframe>
+    <input type="text" data="url" placeholder="Link URL"/>
+    <textarea data="notes" placeholder="Notes..."/>
+    {{> item_edit_buttons }}
+    
+</script>
+
+
+<script id="item_gallery_title" type="text/x-handlebars-template">
+
+    <b>
+        {{#if title }}{{ title }}: {{/if}}
+        <span class="notes">{{ notes }}</span>
+    </b>
+    {{#if model.attributes.url }}
+        (<a target="_blank" href="{{ model.attributes.url }}">link</a>)
+    {{/if}}
+
+</script>
+

@@ -1,0 +1,150 @@
+<script id="probe_container" type="text/x-handlebars-template">
+    
+    <div class='probe container'>
+        <div class='timer'></div>
+        <div class='probequestion container'></div>
+        <button class='button btn success answerbtn'>Submit Answer</button>
+        {{#if allowskipping}}<button class='button btn danger skipbutton'>Skip Question</button>{{/if}}
+    </div>
+</script>
+
+<script id="probe" type="text/x-handlebars-template">
+    <h6>Question {{increment}} out of {{total}}</h6>
+    {{#if nuggettitle}}<h6>Nugget: {{nuggettitle}}</h6>{{/if}}
+    <h3 class='question'>{{{question_text}}}</h3>
+    <ol class='answerlist'>
+        </ol>
+    <div class='proberesponse container'>
+        <div class='header'>
+            <h3 class='questionstatus'></h3>
+            <div class='feedback' id='qfeedback'>
+            </div>
+            <button class='button btn success nextquestion'>Next Question</button>
+            <button class='button btn primary' id='feedbut'>View Feedback</button>
+        </div>
+    </div>
+</script>
+
+
+<script id="probe_answer" type="text/x-handlebars-template">
+    <li class='answer'>
+        <div class='answertext'>{{text}}</div>
+        <div class='checkorcross'></div>
+        <div class='feedback'></div>
+    </li>
+</script>
+
+
+<script id="probe_edit" type="text/x-handlebars-template">
+    
+<div class='probeedit container'>
+    <h5>Question:</h5>
+    <div class='display question'>
+        <h3>{{#if question_text}}{{question_text}}{{else}}&nbsp;{{/if}}</h3>
+    </div>
+    <div class='question edit'>
+        <textarea class='input-xlarge question_text' type='text' rows='3'>{{question_text}}</textarea>
+    </div>
+    <h5>Feedback:</h5>
+    <div class='display questionfeedback'>
+        <p>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</p>
+    </div>
+    <div class='edit questionfeedback'>
+        <textarea class='input-xlarge feedback_text' type='text' rows='3'>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</textarea>
+    </div>
+    <div class='row'>
+    <ul class='answerlist'>
+    <li>
+        <div class='row'>
+            <div class='span8'>
+                <h5>Answer Text</h5>
+            </div>
+            <div class='span1'>
+                <p>Correct?</p>
+            </div>
+            <div class='span1'>
+                <p>Delete<p>
+            </div>
+
+        </div>
+    </li>
+    </ul>
+    </div>
+    <button class='btn primary addanswer'>Add Answer</button><br/><br/>
+    <button class='btn success save'>Save</button>
+    <button class='btn danger cancel'>Cancel</button>
+</div>
+
+</script>
+
+<script id="probe_answer_edit" type="text/x-handlebars-template">
+<li><div class='row'>
+            <div class='span8'>
+                <div class='text answer display'>
+                    <p>{{text}}</p>
+                </div>
+                <div class='text answer edit'>
+                    <input class='answertext' type='text' value='{{text}}'></input>
+                </div>
+                <h6 class='inline'>Answer Feedback?</h6><input class='answerfeedback' type='checkbox' {{#if feedback}}checked='checked'{{/if}}value='answerfeedback'></input>
+                <div class='text display feedback feedback_text{{#if feedback}} {{else}} hidden {{/if}}'>
+                    <p>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</p>
+                </div>
+                <div class='text edit feedback'>
+                    <textarea class='input answerfeedbacktext' type='text' rows='2'>{{feedback}}</textarea>
+                </div>
+            </div>
+            <div class='span1 middlealign'>
+                <input class='check_correct' type='checkbox' value='correct' {{#if correct}}checked='checked'{{/if}}></input>
+            </div>
+            <div class='span1 middlealign'>
+                <button class="section-button delete-button btn danger">X</button>
+            </div>
+
+        </div>
+        </li>
+</script>
+
+
+<script id="probe_list" type="text/x-handlebars-template">
+    
+    <h2>Probes</h2>
+    <ul>
+        {{#each collection/models }}
+            <li><a href='{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
+        {{/each }}
+    </ul>
+
+    <span class="editor-only"><button class="add-button btn success">Add Probe</button></span>
+    
+</script>
+
+<script id="nugget_review_list" type="text/x-handlebars-template">
+    
+    {{#if collection}}<h4>Consider Reviewing these Nuggets</h4>{{else}}<h3>Congratulations! You got those all correct!</h3>{{/if}}
+    <h5>Total points attained: {{earnedpoints}} out of {{totalpoints}}</h5>
+    
+    <div class="nuggetlist">
+        <ul>
+            {{#each collection.models }}
+                {{#if attributes.title }}<li><a href="../{{ ../../url }}{{ slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
+            {{/each }}
+        </ul>
+        <a href="../{{url}}{{#if query.tags}}?tags={{query.tags}}{{#if query.claimed}}&claimed={{query.claimed}}{{/if}}{{else}}{{#if query.claimed}}?claimed={{query.claimed}}{{/if}}{{/if}}"<p>Return to Nugget List</p></a>
+    </div>
+
+
+    
+</script>
+
+<script id="exam_entry_screen" type="text/x-handlebars-template">
+    <div class='logged-in-only'>
+        <p>You have claimed nuggets totalling {{points}} points.</p>
+        <p>If you get every single question correct, you will get a grade of {{grade}}.</p>
+        <p>Enter the 4-Digit code here; do not begin the exam before 3pm.</p>
+        <input class='entrycode' type='text' value=''></input>
+        <p>You may choose to take the exam you have constructed through claiming, or you may take a generic exam that is composed of questions worth 350 points taken from the course. Once you make this choice, this will be the exam you take, so choose wisely.</p>
+        <span><button class='btn primary large claimed'>Take My Claimed Exam</button>
+        <button class='btn info large generic'>Take Generic Exam</button></span>
+    </div>
+</script>
