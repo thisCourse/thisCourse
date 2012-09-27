@@ -3,9 +3,6 @@
 node_modules/
 public/base_styles.css
 public/templates.js
-require/build/
-require-test/build/
+build/
 *.pyc
-backbone (copy)/
-sanitize/
 npm-debug.log
