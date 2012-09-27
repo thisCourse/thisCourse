@@ -1,0 +1,48 @@
+@import "../libs/bootstrap/mixins.less";
+@import "../base/globals.less";
+
+.AppView {
+
+    .TopTabsView {    
+        padding: 3px 15px;
+        margin: 0;
+    }
+
+    #container-outer {
+        width: @siteWidth + 2 * @container-padding + 2 * @content-border-width;
+        margin: 0 auto;    
+    }
+
+    #container {    
+        background-color: #ffffff;
+        .border-radius(10px);
+        padding: @container-padding;
+        .clearfix();
+        min-height: 500px;
+        .box-shadow(0 5px 10px rgba(0,0,0,.2));
+    }    
+}
+
+.editable .editor-only {
+    display: inline;
+}
+
+.uneditable .editor-only {
+    display: none;
+}
+
+.logged-in .logged-in-only {
+    display: inherit;
+}
+
+.logged-out .logged-in-only {
+    display: none;
+}
+
+.logged-in .logged-out-only {
+    display: none;
+}
+
+.logged-out .logged-out-only {
+    display: inherit;
+}

@@ -1,0 +1,23 @@
+<script id="item_teacher" type="text/x-handlebars-template">
+
+    <h4>{{ name }}</h4>
+    {{#if title }}<div>({{ title }})</div>{{/if}}
+    <div>{{ email }}</div>
+    <div>{{ phone }}</div>
+    {{> item_buttons }}    
+
+</script>
+
+
+<script id="item_teacher_edit" type="text/x-handlebars-template">
+
+    <div class="row span6">
+        <dd class="span1">Name:</dd><dt class="span4"><input type="text" data="name"/></dt>
+        <dd class="span1">Title:</dd><dt class="span4"><input type="text" data="title"/></dt>
+        <dd class="span1">Email:</dd><dt class="span4"><input type="text" data="email"/></dt>
+        <dd class="span1">Phone:</dd><dt class="span4"><input type="text" data="phone"/></dt>
+    </div>
+    <br/>
+    {{> item_edit_buttons }}
+    
+</script>

@@ -1,0 +1,117 @@
+@import "../libs/bootstrap/mixins.less";
+@import "../libs/bootstrap/variables.less";
+@import "../base/globals.less";
+
+.ContentView {
+    
+    margin: 0 auto;
+    position: relative;
+    
+    .SectionView {
+        // overflow: hidden;
+        margin-bottom: 20px;
+        border: @content-border-width solid #EEE;
+        .border-radius(5px);
+        position: relative;
+        
+        .sectiontitle {
+            min-height: 20px;
+        }
+        
+        .section-inner {
+            padding: 10px 10px 30px 20px;
+            min-height: 100px;
+        }
+ 
+        .ItemView {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+            vertical-align: top;
+            float: none;
+            // overflow: hidden;
+            position: relative;
+        } 
+
+        .ItemDisplayView, .ItemEditInlineView {
+            background-color: #f8f8f8;
+            padding: 10px;
+            .border-radius(5px);
+            min-height: 50px;
+            color: #000;
+        }
+
+        .ItemEditPopupView {
+            position: absolute;
+            // float: left;
+            .border-radius(5px);
+            padding: 15px;
+            background-color: #f6f6f6;
+            border: 1px #ccc solid;
+            z-index: 100000;
+        }
+        
+    }
+
+    .edit-button {
+        bottom: 0;
+        right: 0;
+        padding: 5px 10px;
+    }
+    
+    .add-button {
+        bottom: 0;
+        right: 0;
+    }
+
+    .delete-button {
+        top: 0;
+        right: 0;
+        padding: 1px 5px;
+    }
+
+    .content-button, .section-button, .item-button {
+        position: absolute;
+        display: none;
+        margin: 5px;    
+    }
+
+    .content-button {
+        position: static;
+        display: inline;
+    }
+
+    .section-button.delete-button {
+        margin: 10px;
+    }
+
+    .drag-button {
+        background: ~"url(@{iconpath}/nonfree/cursor_drag_arrow_32_blur.png) no-repeat";
+        width: 35px;
+        height: 35px;
+        top: 2px;
+        left: 2px;
+        cursor: pointer;
+    }
+
+}
+
+.item-edit {
+
+    dd {
+        font-weight: bold;
+        padding-top: 5px;
+    }
+
+    dt {
+        padding-bottom: 7px;
+    }
+    
+    .save.btn {
+        min-width: 80px;
+    }
+    
+    .errors {
+        color: #C00;
+    }
+}

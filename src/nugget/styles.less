@@ -1,0 +1,193 @@
+@import "../libs/bootstrap/mixins.less";
+@import "../libs/bootstrap/variables.less";
+@import "../base/globals.less";
+
+.NuggetView {
+
+    .nugget-top {
+        
+        position: relative;
+        
+        .edit-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        
+        textarea {
+            margin: 10px 0;
+        }
+        
+    }
+    
+}
+
+.NuggetTopView {
+    min-height: 30px;
+
+    .quizme {
+        float:right;
+    }
+
+}
+
+@partialcolor: #EEEEAA;
+@claimedcolor: #AAFFCC;
+@unclaimedcolor: #AACCFF;
+@lecturesquare: 90px;
+
+.tab-pane {
+    padding: 10px;
+}
+
+.hovershadowbox (@thecolor,@vert,@horiz,@blur,@shadowcolor,@mtop,@mright,@mbot,@mleft,@pbot,@pright) {
+    @upshift: @vert/2;
+    @leftshift: @horiz/2;
+    background-color:lighten(@thecolor,8%);
+    box-shadow: @upshift @leftshift @blur @shadowcolor;
+    @mtopa: @mtop + @upshift;
+    @mrighta: @mright - @leftshift;
+    @mbota: @mbot - @upshift;
+    @mlefta: @mleft + @leftshift;
+    margin: @mtopa @mrighta @mbota @mlefta;
+    padding-bottom: @pbot + @upshift/2;
+    padding-right: @pright + @leftshift/2;
+    color: #0069D6;
+}
+
+.ClusterListView {
+    a {
+        &:hover{
+            color:darken(#0069D6,20%);
+        }
+        padding: 0 9px;
+    }
+    
+    
+}
+
+.LectureListView {
+    
+    ul {
+        margin: 0;
+    }
+    
+    li {
+        width: 134px;
+        height: 134px;
+    }
+    
+    .lecture{
+        box-shadow: 5px 5px 3px #888;
+        width: @lecturesquare;
+        height: @lecturesquare;
+        margin: 10px;
+        &>div {
+            width:@lecturesquare;
+            height:@lecturesquare;
+            position:relative;            
+        }
+        &.claimed {
+            background-color: @claimedcolor;
+            &:hover {
+                .hovershadowbox (@claimedcolor,5px,5px,3px,#888,10px,25px,23px,10px,8px,8px);
+            }
+        }
+        &.unclaimed {
+            background-color: @unclaimedcolor;
+            &:hover {
+                .hovershadowbox (@unclaimedcolor,5px,5px,3px,#888,10px,25px,23px,10px,8px,8px);
+            }
+        }
+        &.partial {
+            background-color: @partialcolor;
+            &:hover {
+                .hovershadowbox (@partialcolor,5px,5px,3px,#888,10px,25px,23px,10px,8px,8px);
+            }
+        }
+        .points {
+            color:#888822;
+            bottom:0;
+            position: absolute;
+        }
+        .lecturetitle {
+            min-height:50px;
+        }
+    }
+}
+
+.FilteredNuggetListView {
+    .nugget {
+        box-shadow: 10px 10px 3px #888;
+        &.unclaimed {
+            background-color: @unclaimedcolor;
+            margin: 2px 10px 5px 2px;
+            padding-bottom:8px;
+            padding-right:8px;
+            &:hover {
+                .hovershadowbox (@unclaimedcolor,10px,10px,5px,#888,2px,10px,5px,2px,5.75px,5.75px)
+            }
+        }
+        &.claimed {
+            background-color:@claimedcolor;
+            margin: 2px 10px 5px 2px;
+            padding-bottom:8px;
+            padding-right:8px;
+            &:hover {
+                .hovershadowbox (@claimedcolor,10px,10px,5px,#888,2px,10px,5px,2px,5.75px,5.75px)
+            }
+        }
+        &.partial {
+            background-color:@partialcolor;
+            margin: 2px 10px 5px 2px;
+            padding-bottom:8px;
+            padding-right:8px;
+            &:hover {
+                .hovershadowbox (@partialcolor,10px,10px,5px,#888,2px,10px,5px,2px,5.75px,5.75px)
+            }
+        }
+    }    
+}
+
+
+.NuggetLectureNavRouterView .active {
+    font-weight: bold;
+}
+
+.ProbeToggleEnableView {
+    .claimed {
+        color: green;
+        font-size: 12pt;
+        float: right;
+        padding: 5px;
+    }
+}
+
+.NuggetListView {
+    
+    .nuggetlist {
+        float: left;
+        width: 45%
+    }
+    
+    .tagselectorview {
+        border-radius: 10px;
+        box-shadow: 10px 10px 5px #DDDDDD;
+        padding: 20px;
+        width: 45%;
+        background-color: #EFF0FF;
+        word-wrap:break-word;
+        float:left;
+        .quizme {
+            float:right;
+        }
+        span {
+            display:inline-block;
+            line-height:10px;
+            margin: 0px 2px;
+        }
+        .pagination {
+            margin-top: 0;
+        }
+    }
+}

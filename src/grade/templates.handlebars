@@ -1,0 +1,112 @@
+<script id="grades" type="text/x-handlebars-template">
+    
+    {{#if models.length}}
+    <h3>Your Score</h3>
+    {{#each models}}<b>{{ attributes.title }}</b>: score of {{ attributes.points }} points, which is a grade of {{ attributes.grade }}<br/>{{/each}}
+    {{else}}
+    <p>You do not yet have a score assigned for the midterm (or it is still loading...)</p>
+    {{/if}}
+
+    <br/><br/><br/>
+
+    <h3>Midterm Grading Scheme</h3>
+    <table style="width: 250px; padding: ">
+        <tr valign=top>
+            <td>
+                <p><b>Letter grade</b></p>
+            </td>
+            <td>
+                <p><b>Midterm score</b></p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A+</p>
+            </td>
+            <td>
+                <p>&gt;= 188</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A</p>
+            </td>
+            <td>
+                <p>180 - 187</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A-</p>
+            </td>
+            <td>
+                <p>174 - 179</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B+</p>
+            </td>
+            <td>
+                <p>168 - 173</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B</p>
+            </td>
+            <td>
+                <p>160 - 167</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B-</p>
+            </td>
+            <td>
+                <p>157 - 159</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C+</p>
+            </td>
+            <td>
+                <p>154 - 156</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C</p>
+            </td>
+            <td>
+                <p>150 -153</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C-</p>
+            </td>
+            <td>
+                <p>147 - 149</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D</p>
+            </td>
+            <td>
+                <p>137 - 146</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>F</p>
+            </td>
+            <td>
+                <p>&lt;= 136</p>
+            </td>
+        </tr>
+    </table>
+
+</script>
