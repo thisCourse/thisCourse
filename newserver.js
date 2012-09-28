@@ -57,8 +57,8 @@ app.use("/hash", auth.hash)
 app.use("/check", auth.check)
 
 app.use('/static', express.static(__dirname + '/public'))
-app.use('/backbone', express.static(__dirname + '/backbone'))
-app.use('/require', express.static(__dirname + '/require'))
+app.use('/src', express.static(__dirname + '/src'))
+app.use('/build', express.static(__dirname + '/build'))
 
 // express routing
 app.namespace('/api', api.router)
@@ -77,14 +77,20 @@ app.get('/ucsd/cogs187a/wi12/*', function(request, response) {
   })
 })
 
-var base_html = fs.readFileSync(__dirname + '/require/build/test_build.html')
+var base_html = "";
+
+try {
+  base_html = fs.readFileSync(__dirname + '/build/test_build.html')
+} catch (e) {
+  base_html = "The project has not been built. Please run 'make'."
+}
 
 app.get('/course/*', function(request, response) {
   response.end(base_html)
 })
 
 app.get('/src/*', function(request, response) {
-  fs.readFile(__dirname + '/require/src/test_src.html', function(err,text) {
+  fs.readFile(__dirname + '/src/test_src.html', function(err,text) {
       response.end(text)
   })
 })
