@@ -2,7 +2,7 @@ requirejs = require('requirejs')
 
 requirejs.config
     nodeRequire: require
-    baseUrl: 'require/src'
+    baseUrl: '../src'
     paths:
         cs: 'libs/requirejs/cs'
         hb: 'libs/requirejs/hb'
