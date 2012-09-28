@@ -13,32 +13,39 @@ idRegex = /^[0-9a-fA-F]{24}$/
 Backbone.sync = (method, model, options) ->
     deferred = new $.Deferred
     collection = db.collection(model.constructor.mongocollection)
+    data = model.toJSON()
+    if data._id
+        data._id = db.ObjectID(data._id)
+    query = _id: data._id
     switch method
         when "create"
-            collection.save model.toJSON(), (err, obj) ->
+            collection.update query, data, {safe: true, upsert: true}, (err, obj) ->
                 if err
                     deferred.reject(err)
                 else
                     deferred.resolve(obj)
         when "read"
-            collection.findOne {_id: db.ObjectID(model.id)}, (err, obj) ->
+            collection.findOne query, (err, obj) ->
                 if err
                     deferred.reject(err)
                 else
                     deferred.resolve(obj)
         when "update"
-            collection.update {_id: db.ObjectID(model.id)}, model.toJSON(), (err, obj) ->
+            collection.update query, data, {safe: true}, (err, obj) ->
                 if err
                     deferred.reject(err)
                 else
                     deferred.resolve(obj)
         when "delete"
-            collection.remove {_id: db.ObjectID(model.id)}, (err, obj) ->
+            collection.remove query, (err, obj) ->
                 if err
                     deferred.reject(err)
                 else
                     deferred.resolve(obj)
-    return deferred.promise()
+    promise = deferred.promise()
+    promise.success = promise.then
+    promise.error = promise.fail
+    return promise
 
 
 getModel = (path, modelName, callback) ->
@@ -73,6 +80,12 @@ handleOperation = (path, operation, data={}, callback) ->
 module.exports =
     handleOperation: handleOperation
 
-for i in [1..10]
-    handleOperation "assignment/AssignmentModel", "create", {test: Math.random()}, (err, result) -> console.log result
+# for i in [1..10]
+#     handleOperation "assignment/AssignmentModel", "create", {test: Math.random()}, (err, result) -> console.log result
+
+handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d39732000008"}, (err, result) -> console.log "read", result
+
+handleOperation "assignment/AssignmentModel", "update", {_id: "50650ee80000d39732000008", sum: Math.random()}, (err, result) -> console.log "write", result
+
+handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d39732000008"}, (err, result) -> console.log "read", result
 
