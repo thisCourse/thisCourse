@@ -22,9 +22,9 @@ if (!window.console) {
 }
 
 if (environ==="DEPLOY") {
-	config.baseUrl = "/require/build"
+	config.baseUrl = "/build"
 } else {
-	config.baseUrl = "/require/src"
+	config.baseUrl = "/src"
 }
 
 if (window.less) less.env = "production"
