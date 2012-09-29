@@ -1,6 +1,4 @@
 var mongoskin = require("mongoskin")
-var mongodb = require("mongodb")
-var ObjectId = mongodb.BSONPure.ObjectID
 
 var cs = require("coffee-script")
 
