@@ -1,13 +1,14 @@
-sys = require 'sys'
-http = require 'http'
-express = require "express"
-OperationHelper = require('apac').OperationHelper
+sys = require("sys")
+http = require("http")
+express = require("express")
+OperationHelper = require("apac").OperationHelper
 
-opHelper = new OperationHelper(
-    awsId:     'AKIAIZ6YYCQC5UJ6XEWA'
-    awsSecret: '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'
-    assocId:   'gx224sa-20'
-)
+secrets = require("../secrets")
+
+opHelper = new OperationHelper
+    awsId: secrets.awsId
+    awsSecret: secrets.awsSecret
+    assocId: secrets.assocId
 
 app = express.createServer()
 

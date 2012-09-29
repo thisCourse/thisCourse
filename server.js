@@ -11,6 +11,8 @@ var api = require('./api/api')
 var s3 = require('./api/s3')
 var RedisStore = require('connect-redis')(express)
 
+var secrets = require("./secrets")
+
 var auth = require("./auth")
 var analytics = require("./api/analytics")
 
@@ -19,7 +21,7 @@ var courses = db.collection("courses")
 var settings = {
 	session: {
 		key: 'token',
-		secret: '65542df21089e1a59f6a0bfc7a5d32ccf2eccd27e7a18fee09c8f6f',
+		secret: secrets.sessionSecret,
 		cookie: {
 			 path: '/',
 			 httpOnly: false,

@@ -8,10 +8,12 @@ express = require("express")
 knox = require("knox")
 s3 = module["exports"]
 
+secrets = require("../secrets")
+
 knoxClient = knox.createClient
-    key: "AKIAJLU4UNM7TIOYH6HA"
-    secret: "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"
-    bucket: "thiscourse"
+    key: secrets.s3Key
+    secret: secrets.s3Secret
+    bucket: secrets.s3Bucket
 
 s3.knoxClient = knoxClient
 
@@ -97,7 +99,7 @@ APIError = (res, msg, code) ->
     , code
 
 sign_policy = (policy) ->
-    crypto.createHmac("sha1", "7ytH0P+dwSBxlG5nIIiidBQyE3xvm4+OX/DlwiHq").update(policy).digest encoding = "base64"
+    crypto.createHmac("sha1", secrets.s3Secret).update(policy).digest("base64")
 
 create_policy = (policy) ->
     policy = JSON.stringify(policy)    if typeof (policy) isnt "string"
@@ -158,14 +160,14 @@ s3.router = ->
 
 policy_params =
     key: "uploads/${filename}"
-    AWSAccessKeyId: "AKIAJLU4UNM7TIOYH6HA"
+    AWSAccessKeyId: secrets.s3Key
     acl: "public-read"
     success_action_redirect: "http://127.0.0.1:3000/s3/uploaded"
 
 policy =
     expiration: "2013-01-01T00:00:00Z"
     conditions: [
-        bucket: "thiscourse"
+        bucket: secrets.s3Bucket
     , [ "starts-with", "$key", "uploads/" ],
         acl: policy_params.acl
     , [ "content-length-range", 0, 10000000 ], [ "starts-with", "$name", "" ], [ "starts-with", "$Filename", "" ], [ "starts-with", "$success_action_status", "" ] ]
