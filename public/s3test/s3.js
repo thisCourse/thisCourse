@@ -1,9 +1,10 @@
 var knox = require("knox")
+var secrets = require("../../secrets")
 
 var client = knox.createClient({
-    key: 'AKIAJLU4UNM7TIOYH6HA',
-    secret: '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',
-    bucket: 'thiscourse'
+    key: secrets.s3Key,
+    secret: secrets.s3Secret,
+    bucket: secrets.s3Bucket
 })
 
 buf = "hello world!"

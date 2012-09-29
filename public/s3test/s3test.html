@@ -23,6 +23,7 @@
         $(function() {
             
             $.get("/s3?" + Math.random(), function(policy_params) {
+                $("input.AWSAccessKeyId").val(policy_params.AWSAccessKeyId)
                 $("input.policy").val(policy_params.policy)
                 $("input.signature").val(policy_params.signature)
                 $("input.submit").removeAttr('disabled')
@@ -40,7 +41,7 @@
                         'success_action_redirect': 'http://127.0.0.1:3000/s3/uploaded',
                         //'Content-Type': 'image/jpeg',
                         'success_action_status': '201',
-                        'AWSAccessKeyId' : 'AKIAJLU4UNM7TIOYH6HA',       
+                        'AWSAccessKeyId' : policy_params.AWSAccessKeyId,
                         'policy': policy_params.policy,
                         'signature': policy_params.signature
                     },
@@ -87,7 +88,7 @@
   <body> 
     <form action="https://thiscourse.s3.amazonaws.com/" method="post" enctype="multipart/form-data" target="uploader">
       <input type="hidden" name="key" value="uploads/${filename}">
-      <input type="hidden" name="AWSAccessKeyId" value="AKIAJLU4UNM7TIOYH6HA"> 
+      <input type="hidden" name="AWSAccessKeyId" class="AWSAccessKeyId"> 
       <input type="hidden" name="acl" value="public-read">
       <input type="hidden" name="success_action_redirect" value="http://127.0.0.1:3000/s3/uploaded">
       <input type="hidden" name="policy" class="policy" value="">

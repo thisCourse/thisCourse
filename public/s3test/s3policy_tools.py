@@ -5,7 +5,7 @@ def create_policy(json):
     return base64.b64encode(json)
 
 def sign_policy(policy):
-    aws_secret_key = '7ytH0P+dwSBxlG5nIIiidBQyE3xvm4+OX/DlwiHq'
+    aws_secret_key = 'YOUR_S3_KEY'
     return base64.b64encode(hmac.new(aws_secret_key, policy, sha).digest())
 
 if __name__ == '__main__':
