@@ -1,3 +1,4 @@
+buildall: install build
 
 build: clean
 
@@ -32,4 +33,4 @@ clean:
 install:
 	
 	@echo "* Installing dependencies..."
-	npm install
+	@npm install

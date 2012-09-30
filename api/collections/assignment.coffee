@@ -1,5 +1,5 @@
 api = require("../api.coffee")
-requirejs = require("../requirejs.coffee")
+requirejs = require("../../requirejs.coffee")
 
 requirejs ['cs!assignment/models'], (models) =>
 
