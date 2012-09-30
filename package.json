@@ -45,7 +45,7 @@
   "main": "server",
   "scripts": {
     "postinstall": "make build",
-    "preuninstall,": "make clean",
+    "preuninstall": "make clean",
     "postupdate": "make build",
     "start": "forever start server.js",
     "stop": "forever stop server.js"
