@@ -28,3 +28,8 @@ clean:
 
 	@echo "* Deleting old 'build' directory"
 	@rm -rf build
+
+install:
+	
+	@echo "* Installing dependencies..."
+	npm install

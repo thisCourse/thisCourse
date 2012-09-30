@@ -112,3 +112,4 @@ server.use(express.vhost('beta.thiscourse.com', app))
 
 api.initialize()
 
+module.exports = app
