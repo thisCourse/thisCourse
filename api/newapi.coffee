@@ -88,4 +88,3 @@ handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d397320
 handleOperation "assignment/AssignmentModel", "update", {_id: "50650ee80000d39732000008", sum: Math.random()}, (err, result) -> console.log "write", result
 
 handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d39732000008"}, (err, result) -> console.log "read", result
-
