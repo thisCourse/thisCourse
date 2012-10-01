@@ -1,4 +1,4 @@
-define ["cs!utils/formatters"], (formatters) ->
+define ["underscore", "cs!utils/formatters"], (_, formatters) ->
     
     idAttribute = Backbone.Model::idAttribute = "_id"
 

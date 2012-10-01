@@ -1,7 +1,7 @@
 mongoskin = require('mongoskin')
 async = require('async')
 # express = require("express")
-$ = require("jquery-deferred")
+$ = require("jquery")
 requirejs = require("../requirejs.coffee")
 _ = require("underscore")
 
@@ -9,39 +9,41 @@ db = mongoskin.db('127.0.0.1/testing?auto_reconnect')
 
 idRegex = /^[0-9a-fA-F]{24}$/
 
+# return a callback function that will trigger a deferred to reject/resolve appropriately
+deferredCallback = (deferred) ->
+    (err, obj) ->
+        if err
+            deferred.reject(err)
+        else
+            deferred.resolve(obj)
 
 Backbone.sync = (method, model, options) ->
+    
     deferred = new $.Deferred
     collection = db.collection(model.constructor.mongocollection)
     data = model.toJSON()
+    
     if data._id
-        data._id = db.ObjectID(data._id)
+        data._id = db.ObjectID(data._id.toString())
     query = _id: data._id
+    
     switch method
         when "create"
-            collection.update query, data, {safe: true, upsert: true}, (err, obj) ->
-                if err
-                    deferred.reject(err)
-                else
-                    deferred.resolve(obj)
+            collection.save data, deferredCallback(deferred)
         when "read"
-            collection.findOne query, (err, obj) ->
-                if err
-                    deferred.reject(err)
-                else
-                    deferred.resolve(obj)
+            collection.findOne query, deferredCallback(deferred)
         when "update"
-            collection.update query, data, {safe: true}, (err, obj) ->
-                if err
-                    deferred.reject(err)
-                else
-                    deferred.resolve(obj)
+            delete data._id # can't do a $set for _id attribute, so clear it out
+            collection.update query, $set: data, {safe: true}, deferredCallback(deferred)
         when "delete"
-            collection.remove query, (err, obj) ->
-                if err
-                    deferred.reject(err)
-                else
-                    deferred.resolve(obj)
+            collection.remove query, deferredCallback(deferred)
+    
+    # update the model with the result returned from MongoDB
+    deferred.then (result) ->
+        if _.isObject(result)
+            model.set result
+    
+    # get a promise from the deferred, and add some aliases so it behaves more like an AJAX request
     promise = deferred.promise()
     promise.success = promise.then
     promise.error = promise.fail
@@ -79,12 +81,31 @@ handleOperation = (path, operation, data={}, callback) ->
 
 module.exports =
     handleOperation: handleOperation
+    getModel: getModel
+    requirejs: requirejs
 
 # for i in [1..10]
 #     handleOperation "assignment/AssignmentModel", "create", {test: Math.random()}, (err, result) -> console.log result
 
-handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d39732000008"}, (err, result) -> console.log "read", result
+# handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d39732000008"}, (err, result) -> console.log "read", result
 
-handleOperation "assignment/AssignmentModel", "update", {_id: "50650ee80000d39732000008", sum: Math.random()}, (err, result) -> console.log "write", result
+# handleOperation "assignment/AssignmentModel", "create", {sum: Math.random()}, (err, result) ->
+#     id = result._id
+#     console.log "write", result
+#     handleOperation "assignment/AssignmentModel", "read", {_id: id}, (err, result) ->
+#         console.log "read", result
+#         handleOperation "assignment/AssignmentModel", "update", {_id: id, color: "pink"}, (err, result) ->
+#             console.log "update", result
+#             handleOperation "assignment/AssignmentModel", "read", {_id: id}, (err, result) -> console.log "read", result
 
-handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d39732000008"}, (err, result) -> console.log "read", result
+# handleOperation "assignment/AssignmentModel", "read", {_id: "50650ee80000d39732000008"}, (err, result) -> console.log "read", result
+
+getModel "nugget", "NuggetModel", (err, mod) -> console.log "args", arguments
+
+if false
+    api = require("./api/newapi")
+    api.getModel "nugget", "NuggetModel", (err, mod) -> global.NuggetModel = mod
+    q = new NuggetModel
+    q.save()
+    
+    
