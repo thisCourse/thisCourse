@@ -39,18 +39,12 @@
     
 <div class='probeedit container'>
     <h5>Question:</h5>
-    <div class='display question'>
-        <h3>{{#if question_text}}{{question_text}}{{else}}&nbsp;{{/if}}</h3>
-    </div>
-    <div class='question edit'>
+    <div class='question'>
         <textarea class='input-xlarge question_text' type='text' rows='3'>{{question_text}}</textarea>
     </div>
     <h5>Feedback:</h5>
-    <div class='display questionfeedback'>
-        <p>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</p>
-    </div>
-    <div class='edit questionfeedback'>
-        <textarea class='input-xlarge feedback_text' type='text' rows='3'>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</textarea>
+    <div class='questionfeedback'>
+        <textarea class='input-xlarge feedback_text' type='text' rows='3'>{{feedback}}</textarea>
     </div>
     <div class='row'>
     <ul class='answerlist'>
@@ -80,16 +74,10 @@
 <script id="probe_answer_edit" type="text/x-handlebars-template">
 <li><div class='row'>
             <div class='span8'>
-                <div class='text answer display'>
-                    <p>{{text}}</p>
-                </div>
-                <div class='text answer edit'>
+                <div class='text answer'>
                     <input class='answertext' type='text' value='{{text}}'></input>
                 </div>
                 <h6 class='inline'>Answer Feedback?</h6><input class='answerfeedback' type='checkbox' {{#if feedback}}checked='checked'{{/if}}value='answerfeedback'></input>
-                <div class='text display feedback feedback_text{{#if feedback}} {{else}} hidden {{/if}}'>
-                    <p>{{#if feedback}}{{feedback}}{{else}}&nbsp;{{/if}}</p>
-                </div>
                 <div class='text edit feedback'>
                     <textarea class='input answerfeedbacktext' type='text' rows='2'>{{feedback}}</textarea>
                 </div>

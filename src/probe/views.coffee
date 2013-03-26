@@ -516,11 +516,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         events: #-> _.extend super,
             "click button.save": "save"
             "click button.cancel": "cancel"
-            "dblclick .question" : "editQuestion"
-            "dblclick .questionfeedback": "editFeedback"
-            "keypress .question_text" : "updateQuestionOnEnter"
-            "keypress .feedback_text" : "updateFeedbackOnEnter"
             "click .addanswer"  : "createAnswer"
+            "change .question_text" : "updateQuestion"
+            "change .feedback_text" : "updateFeedback"
 
         save: =>
             @$("input").blur()
@@ -533,36 +531,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @mementoRestore()
             @return()
         
-        edit: (aclass) =>
-            @$(aclass).addClass('editing')
-        
-        stopEdit: (aclass) =>
-            @$(aclass).removeClass('editing')
-        
-        editQuestion: =>
-            @edit('.question')
-        
-        editFeedback: =>
-            @edit('.questionfeedback')
-        
-        finish: (aclass) =>
-            if aclass=='.question'
-                @model.set question_text:@$('.question_text')[0].value
-                @stopEdit(aclass)
-            else if aclass=='.questionfeedback'
-                @model.set feedback:@$('.feedback_text')[0].value
-                @stopEdit(aclass)
-        
-        updateQuestionOnEnter: (event) =>
-            @updateOnEnter(event,'.question')
+        updateQuestion: (event) =>
+            @model.set question_text: @$('.question_text')[0].value
             
-        updateFeedbackOnEnter: (event) =>
-            @updateOnEnter(event,'.questionfeedback')
+        updateFeedback: (event) =>
+            @model.set feedback:@$('.feedback_text')[0].value
         
-        updateOnEnter: (event,aclass) =>
-            if event.keyCode == 13 then @finish(aclass)
-        
-            
         return: =>
             require("app").navigate @url + ".."
             
@@ -579,13 +553,11 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeAnswerEditView extends baseviews.BaseView
 
         events:
-            "dblclick .answer" : "editAnswer"
-            "dblclick .feedback": "editFeedback"
-            "keypress .answertext" : "updateAnswerOnEnter"
-            "keypress .answerfeedbacktext" : "updateFeedbackOnEnter"
             "click .answerfeedback" : "toggleFeedback"
             "click .delete-button" : "delete"
             "click .check_correct" : "toggleCorrect"
+            "change .answertext" : "updateAnswer"
+            "change .answerfeedback" : "updateFeedback"
         
         initialize: =>
             @model.bind "change", @render
@@ -597,39 +569,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         delete: =>
             @model.destroy()
-
-        edit: (aclass) =>
-            @$(aclass).addClass('editing')
-            @editing = aclass
         
-        stopEdit: (aclass) =>
-            @$(aclass).removeClass('editing')
-            @editing = ''
-        
-        editAnswer: =>
-            if @editing then @finish(@editing)
-            @edit('.answer')
-        
-        editFeedback: =>
-            if @editing then @finish(@editing)
-            @edit('.feedback')
-        
-        finish: (aclass) =>
-            if aclass=='.answer'
-                @stopEdit(aclass)
-                @model.set text:@$('.answertext')[0].value
-            else if aclass=='.feedback'
-                @stopEdit(aclass)
-                @model.set feedback:@$('.answerfeedbacktext')[0].value
-        
-        updateAnswerOnEnter: (event) =>
-            @updateOnEnter(event,'.answer')
+        updateAnswer: (event) =>
+            @model.set text:@$('.answertext')[0].value
             
-        updateFeedbackOnEnter: (event) =>
-            @updateOnEnter(event,'.feedback')
-        
-        updateOnEnter: (event,aclass) =>
-            if event.keyCode == 13 then @finish(aclass)
+        updateFeedback: (event) =>
+            @model.set feedback:@$('.answerfeedbacktext')[0].value
                 
         toggleFeedback: (event) =>
             if @editing then @finish(@editing)
