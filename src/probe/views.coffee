@@ -553,16 +553,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeAnswerEditView extends baseviews.BaseView
 
         events:
-            "click .answerfeedback" : "toggleFeedback"
+            "change .answerfeedback" : "toggleFeedback"
             "click .delete-button" : "delete"
             "click .check_correct" : "toggleCorrect"
             "change .answertext" : "updateAnswer"
-            "change .answerfeedback" : "updateFeedback"
+            "change .answerfeedbacktext" : "updateFeedback"
         
         initialize: =>
             @model.bind "change", @render
             @model.bind "destroy", @close
-            @editing = ''
 
         render: =>
             @$el.html templates.probe_answer_edit @context()
@@ -577,15 +576,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model.set feedback:@$('.answerfeedbacktext')[0].value
                 
         toggleFeedback: (event) =>
-            if @editing then @finish(@editing)
-            @$('.feedback_text').toggleClass('hidden')
-            if @$(event.target).is(':checked')
-                @finish('.feedback')
-            else
+            @$('.feedback').toggleClass('hidden')
+            if not @$(event.target).is(':checked')
+                console.log event
                 @model.set feedback:''
                 
         toggleCorrect: =>
-            if @editing then @finish(@editing)
             @model.set correct:not @model.get('correct')
             
     ProbeRouterView: ProbeRouterView
