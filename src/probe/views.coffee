@@ -115,6 +115,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             xhdr = doPost '/analytics/posttest/', response, (data) =>
                 callback data
             xhdr.error handleError
+            
+    PreTestAnalytics =
+        submitQuestion: (response, callback) =>
+            xhdr = doPost '/analytics/pretest/', response, (data) =>
+                callback data
+            xhdr.error handleError
 
     class MidtermView extends baseviews.BaseView
         
