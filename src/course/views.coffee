@@ -12,6 +12,7 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             "chat/": => view: chatviews.ChatView
             # "midterm/": => view: probeviews.MidtermView
             "final/": => view: probeviews.FinalView
+            "pretest/": => view: probeviews.PreTestView
             "posttest/": => view: probeviews.PostTestView
             "grades/": => view: gradeviews.GradesView
             "analytics/": => view: analyticsviews.AnalyticsView
