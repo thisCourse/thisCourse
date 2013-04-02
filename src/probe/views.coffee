@@ -219,6 +219,36 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             doPut '/analytics/final/', alternate: choice, code: @code, @render
 
 
+    class PreTestView extends baseviews.BaseView
+        
+        initialize: =>
+            require("app").get("user").bind "change:loggedIn", @render
+        
+        render: =>
+            if not require("app").get("user").get("loggedIn")
+                @$el.html "<p>Please log in to take your pre-test...</p>"
+                return
+            xhdr = $.get '/analytics/pretest/', (data) =>
+                @$el.html ""
+                probes = ({_id: probe} for probe in data.probes.reverse())
+                if probes.length==0
+                    @$el.html "You're done. Finito. Finished!!"
+                    return
+                probes = new models.ProbeCollection(probes)
+                @add_subview "probecontainer", new ProbeContainerView
+                    collection: probes
+                    notclaiming: true
+                    nofeedback: true
+                    noskipping: true
+                    progress: data.progress
+                    sync: PreTestAnalytics
+                    complete: @complete
+            xhdr.error handleError
+        
+        complete: =>
+            @$el.html "Thanks, all done!"
+
+
     class PostTestView extends baseviews.BaseView
         
         initialize: =>
@@ -241,7 +271,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     nofeedback: true
                     noskipping: true
                     progress: data.progress
-                    sync:PostTestAnalytics
+                    sync: PostTestAnalytics
                     complete: @complete
             xhdr.error handleError
         
