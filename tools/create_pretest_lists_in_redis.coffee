@@ -24,8 +24,8 @@ api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000
     undergrads.forEach (email) =>
         console.log "Processing", email
 
-        answered_key = "posttest-answered:" + email
-        unanswered_key = "posttest-unanswered:" + email
+        answered_key = "pretest-answered:" + email
+        unanswered_key = "pretest-unanswered:" + email
         
         redis.del answered_key, unanswered_key, =>
             probes.forEach (probe) =>
