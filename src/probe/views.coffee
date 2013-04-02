@@ -621,6 +621,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     MidtermView: MidtermView
     FinalView: FinalView
     PostTestView: PostTestView
+    PreTestView: PreTestView
     QuizView: QuizView
     ProbeTopEditView: ProbeEditView
     
