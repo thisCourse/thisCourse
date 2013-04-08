@@ -81,15 +81,13 @@ define [], ->
             'C04': 'Object Categories'
          'title': 'Object Concepts'
          'minpoints': 5
-      # 'L012':
-      #    'clusters':
-      #       'C01': 'Lorem ipsum'
-      #       'C02': 'Lorem ipsum'
-      #       'C03': 'Lorem ipsum'
-      #       'C04': 'Lorem ipsum'
-      #       'C05': 'Lorem ipsum'
-      #    'title': 'Mental Lexicon'
-      #    'minpoints': 5
+      'L012':
+         'clusters':
+            'C01': 'Two Views'
+            'C02': 'Simple Recurrent Network'
+            'C03': 'Implications'
+         'title': 'Mental Lexicon'
+         'minpoints': 5
       # 'L013':
       #    'clusters':
       #       'C01': 'Lorem ipsum'
@@ -108,19 +106,19 @@ define [], ->
       #       'C05': 'Lorem ipsum'
       #    'title': 'Language Mapping'
       #    'minpoints': 5
-      # 'L015':
-      #    'clusters':
-      #       'C01': 'What Attentions'
-      #       'C02': 'Visual Search'
-      #       'C03': 'Selective Attention'
-      #       'C04': 'Salience Maps'
-      #    'title': 'Attention Basics'
-      #    'minpoints': 5
-      # 'L016':
-      #    'clusters':
-      #       'C01': 'Attention Networks'
-      #    'title': 'Attention Networks'
-      #    'minpoints': 5
+      'L015':
+         'clusters':
+            'C01': 'What Attentions'
+            'C02': 'Visual Search'
+            'C03': 'Selective Attention'
+            'C04': 'Salience Maps'
+         'title': 'Attention Basics'
+         'minpoints': 5
+      'L016':
+         'clusters':
+            'C01': 'Attention Networks'
+         'title': 'Attention Networks'
+         'minpoints': 5
       # 'L017':
       #    'clusters':
       #       'C01': 'Two Systems'
@@ -191,8 +189,8 @@ define [], ->
       #    'minpoints': 5
       # 'L025':
       #    'clusters':
-      #       'C01': 'Neuro-Anatomy of COGS57C'
-      #    'title': 'Neuro-Anatomy of COGS57C'
+      #       'C01': 'Neuro-Anatomy of COGS107C'
+      #    'title': 'Neuro-Anatomy of COGS107C'
       #    'minpoints': 5
 
    knowledgestructure: knowledgestructure
