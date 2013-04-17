@@ -5,14 +5,30 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         routes: =>
             "": => view: ProbeContainerView, datasource: "collection", notclaiming: @options.notclaiming, nofeedback: @options.nofeedback, sync:QuizAnalytics
-            "edit/": => view: ProbeListView, datasource: "collection"
-            "edit/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "collection", key: probe_id
 
         initialize: ->
             # console.log "ProbeRouterView init"
             super
 
-    class ProbeListView extends baseviews.BaseView
+    class ProbeEditRouterView extends baseviews.RouterView
+
+        routes: =>
+            "": => view: QuestionTypeListView, datasource: "model"
+            "probe/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "model", key: "probeset", probe: probe_id
+            "exam/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "model", key: "examquestions", probe: probe_id
+
+        initialize: ->
+            console.log "ProbeEditRouterView init"
+            console.log @model
+            super
+
+    class QuestionTypeListView extends baseviews.BaseView
+        
+        render: =>
+            @add_subview "probelist", new QuestionListView(collection: @model.get("probeset"), title: "Probe", path:"probe/")
+            @add_subview "examlist", new QuestionListView(collection: @model.get("examquestions"), title: "Exam Question", path: "exam/")
+
+    class QuestionListView extends baseviews.BaseView
 
         events:
             "click .add-button": "addNewProbe"
@@ -20,7 +36,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         render: =>
             # console.log "rendering ProbeListView"
-            @$el.html templates.probe_list @context()
+            @$el.html templates.question_list @context()
             @makeSortable()
             
         initialize: ->
@@ -33,7 +49,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         addNewProbe: =>
             @collection.create {},
-                success: (model) => require("app").navigate model.id
+                success: (model) => require("app").navigate @options.path + model.id
             
 
         deleteProbe: (ev) =>
@@ -364,8 +380,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @showNextProbe()
         
         showReviewFeedback: =>
-            console.log @review
-            console.log @earnedpoints
+            # console.log @review
+            # console.log @earnedpoints
             if @review.length > 0
                 @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
             else if @earnedpoints > 0
@@ -539,10 +555,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         initialize: ->
             @mementoStore()
-            @model.bind "change", @render
+            @collection.bind "change", @render
             @newans = 0
+            console.log "Init ProbeEditView"
         
         render: =>
+            @model = @collection.get(@options.probe)
             @$el.html templates.probe_edit @context()
             # Backbone.ModelBinding.bind @
             # @enablePlaceholders()
@@ -574,7 +592,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model.set feedback:@$('.feedback_text')[0].value
         
         return: =>
-            require("app").navigate @url + ".."
+            require("app").navigate @url + "../.."
             
         createAnswer: =>
             answer = @model.get('answers').create {}
@@ -621,7 +639,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model.set correct:not @model.get('correct')
             
     ProbeRouterView: ProbeRouterView
-    ProbeListView: ProbeListView
+    ProbeEditRouterView: ProbeEditRouterView
+    QuestionListView: QuestionListView
     ProbeView: ProbeView
     ProbeContainerView: ProbeContainerView
     MidtermView: MidtermView
