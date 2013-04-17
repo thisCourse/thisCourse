@@ -97,6 +97,7 @@
 <script id="question_list" type="text/x-handlebars-template">
     <div class="questionlist">
         <h2>{{options/title}}s</h2>
+        <h3>Total Points: {{points}}</h3>
         <ul>
             {{#each collection/models }}
                 <li><a href='{{ ../options/path }}{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>

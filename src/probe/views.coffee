@@ -36,7 +36,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         render: =>
             # console.log "rendering ProbeListView"
-            @$el.html templates.question_list @context()
+            @points = 0
+            for model in @collection.models
+                for answer in model.get("answers").models
+                    if answer.get("correct") then @points++
+            console.log @points
+            @$el.html templates.question_list @context(points: @points)
             @makeSortable()
             
         initialize: ->
