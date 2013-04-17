@@ -163,8 +163,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @lecturecollection = @collection.filter (model) => 
                 lecture in (model.get('tags') or [])
             clustercollection = hardcode.knowledgestructure[lecture]
-            console.log hardcode.knowledgestructure
-            console.log clustercollection
+            # console.log hardcode.knowledgestructure
+            # console.log clustercollection
             @add_subview "clusterview", new NuggetSpaceClusterView(collection: @lecturecollection, clusters: clustercollection), ".clusterview"    
                 
     class LectureView extends baseviews.BaseView
@@ -204,7 +204,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             #          if not nugget.attributes.tags then return false
             #          @options.cluster in nugget.attributes.tags and @options.lecture in nugget.attributes.tags
             nuggetlist.nuggets = _.sortBy nuggetlist.nuggets, (nugget) ->
-                nug=''
+                nug = ''
                 renug = new RegExp('N([0-9]+)')
                 for tag in nugget.attributes.tags
                     nug = renug.exec(tag)?[1] or nug
@@ -298,10 +298,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         routes: =>
             "": => name: "pageview", view: pageviews.PageView, datasource: "model", key: "page"
-            "quiz/": => view: probeviews.ProbeRouterView, datasource: "model", key: "probeset", nonpersistent: true
-
+            "quiz/": => view: probeviews.ProbeRouterView, datasource: "model", key: "probeset", nonpersistent: true, examquestions: @examquestions
+            "quiz/edit/": => view: probeviews.ProbeEditRouterView, datasource: "model", nonpersistent: true
 
         initialize: ->
+            @examquestions = @model.get("examquestions")
             # console.log "NuggetBottomRouterView init"
             super
 

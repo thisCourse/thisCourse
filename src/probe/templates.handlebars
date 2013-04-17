@@ -94,17 +94,17 @@
 </script>
 
 
-<script id="probe_list" type="text/x-handlebars-template">
-    
-    <h2>Probes</h2>
-    <ul>
-        {{#each collection/models }}
-            <li><a href='{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
-        {{/each }}
-    </ul>
+<script id="question_list" type="text/x-handlebars-template">
+    <div class="questionlist">
+        <h2>{{options/title}}s</h2>
+        <ul>
+            {{#each collection/models }}
+                <li><a href='{{ ../options/path }}{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
+            {{/each }}
+        </ul>
 
-    <span class="editor-only"><button class="add-button btn success">Add Probe</button></span>
-    
+        <span class="editor-only"><button class="add-button btn success">Add {{options/title}}</button></span>
+    </div>
 </script>
 
 <script id="nugget_review_list" type="text/x-handlebars-template">
