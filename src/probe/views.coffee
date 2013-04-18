@@ -18,15 +18,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "exam/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "model", key: "examquestions", probe: probe_id
 
         initialize: ->
-            console.log "ProbeEditRouterView init"
-            console.log @model
+            # console.log "ProbeEditRouterView init"
             super
 
     class QuestionTypeListView extends baseviews.BaseView
         
         render: =>
-            @add_subview "probelist", new QuestionListView(collection: @model.get("probeset"), title: "Probe", path:"probe/")
-            @add_subview "examlist", new QuestionListView(collection: @model.get("examquestions"), title: "Exam Question", path: "exam/")
+            if app.get("user").get("email") is "admin"
+                @add_subview "probelist", new QuestionListView(collection: @model.get("probeset"), title: "Probe", path:"probe/")
+                @add_subview "examlist", new QuestionListView(collection: @model.get("examquestions"), title: "Exam Question", path: "exam/")
+            else
+                @$el.html "<p>Wouldn't you prefer a nice game of chess?</p>"
 
     class QuestionListView extends baseviews.BaseView
 
@@ -40,7 +42,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             for model in @collection.models
                 for answer in model.get("answers").models
                     if answer.get("correct") then @points++
-            console.log @points
             @$el.html templates.question_list @context(points: @points)
             @makeSortable()
             
@@ -562,7 +563,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @mementoStore()
             @collection.bind "change", @render
             @newans = 0
-            console.log "Init ProbeEditView"
+            # console.log "Init ProbeEditView"
         
         render: =>
             @model = @collection.get(@options.probe)
