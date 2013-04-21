@@ -29,7 +29,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         routes: =>
             "": => view: NuggetListView, datasource: "collection", nonpersistent: true
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
-            "quiz/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true
+            "quiz/take/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true
             "test/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true, nofeedback: true
 
         initialize: ->
@@ -278,6 +278,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         routes: =>
             "": => view: ProbeToggleEnableView, datasource: "model", nonpersistent: true
             "quiz/": => view: baseviews.GenericTemplateView, template: templates.probe_disable
+            # TODO: Make the URL reference for the exit quiz in probe_disable more robust.
 
     class NuggetView extends baseviews.BaseView
 
