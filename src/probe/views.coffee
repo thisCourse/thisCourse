@@ -14,6 +14,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         routes: =>
             "": => view: QuestionTypeListView, datasource: "model"
+            "preview/probe/": => view: ProbeContainerView, datasource: "model", key: "probeset", notclaiming: true, nofeedback: false, sync:QuizAnalytics
+            "preview/exam/": => view: ProbeContainerView, datasource: "model", key: "examquestions", notclaiming: true, nofeedback: false, sync:QuizAnalytics
             "probe/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "model", key: "probeset", probe: probe_id
             "exam/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "model", key: "examquestions", probe: probe_id
 

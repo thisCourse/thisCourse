@@ -50,7 +50,7 @@
     <ul class='answerlist'>
     <li>
         <div class='row'>
-            <div class='span8'>
+            <div class='span10'>
                 <h5>Answer Text</h5>
             </div>
             <div class='span1'>
@@ -73,9 +73,9 @@
 
 <script id="probe_answer_edit" type="text/x-handlebars-template">
 <li><div class='row'>
-            <div class='span8'>
+            <div class='span10'>
                 <div class='text answer'>
-                    <input class='answertext' type='text' value='{{text}}'></input>
+                    <textarea class='input answertext' type='text' rows='2'>{{text}}</textarea>
                 </div>
                 <h6 class='inline'>Answer Feedback?</h6><input class='answerfeedback' type='checkbox' {{#if feedback}}checked='checked'{{/if}}value='answerfeedback'></input>
                 <div class='text {{#unless feedback}}hidden{{/unless}} feedback'>
@@ -104,7 +104,10 @@
             {{/each }}
         </ul>
 
-        <span class="editor-only"><button class="add-button btn success">Add {{options/title}}</button></span>
+        <span class="editor-only">
+            <button class="add-button btn success">Add {{options/title}}</button>
+            <a href="preview/{{ options/path }}" class="preview-button btn info">Preview {{options/title}}s</a>
+        </span>
     </div>
 </script>
 
