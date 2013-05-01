@@ -101,7 +101,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                         @taglist.push tagname: tag, selected: true, url: @tagUrl(tag,true)
                     else
                         @taglist.push tagname: tag, url: @tagUrl(tag,false)
-            @quiz = @quizUrl('quiz/')
+            @quiz = @quizUrl('quiz/take/')
             @test = @quizUrl('test/')
             @$el.html templates.tag_selector @context(@taglist,@claimfilter,@quiz)
             
