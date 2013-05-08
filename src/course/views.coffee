@@ -10,7 +10,7 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             "study/": => view: nuggetviews.StudyRouterView, datasource: "model", key: "nuggets"
             "nuggets/": => view: nuggetviews.NuggetRouterView, datasource: "model", key: "nuggets"
             "chat/": => view: chatviews.ChatView
-            # "midterm/": => view: probeviews.MidtermView
+            "midterm/": => view: probeviews.MidtermView
             "final/": => view: probeviews.FinalView
             "pretest/": => view: probeviews.PreTestView
             "posttest/": => view: probeviews.PostTestView
