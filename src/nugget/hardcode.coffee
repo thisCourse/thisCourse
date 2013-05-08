@@ -108,7 +108,7 @@ define [], ->
       #    'minpoints': 5
       'L015':
          'clusters':
-            'C01': 'What Attentions'
+            'C01': 'What is Attention?'
             'C02': 'Visual Search'
             'C03': 'Selective Attention'
             'C04': 'Salience Maps'
