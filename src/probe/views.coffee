@@ -150,7 +150,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         events:
             "click .claimed": "claimed"
-            "click .generic": "generic"
         
         initialize: =>
             require("app").get("user").bind "change:loggedIn", @render
@@ -161,9 +160,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 return
             xhdr = $.get '/analytics/midterm/', (data) =>
                 if data.points
-                    midtermgradeboundaries = [180,160,150,140,0]
-                    grades = ['A','B','C','D','F']
-                    @$el.html templates.exam_entry_screen points: data.points, grade: grades[(Number(data.points)>=x for x in midtermgradeboundaries).indexOf(true)]
+                    @$el.html templates.exam_entry_screen
                 else if typeof(data)=="object"
                     @$el.html ""
                     probes = ({_id: probe} for probe in data.probes.reverse())
@@ -180,18 +177,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @code.length != 4
                 alert "You must enter the 4 digit code given to you by your instructor."
                 return
-            dialogviews.dialog_confirmation "Take Claimed Midterm","This will choose the midterm you have created. Once you choose this, it cannot be undone.", =>
-                @chooseGeneric(false)
-            , confirm_button:"Choose", cancel_button:"Cancel"
-                
-        generic: =>
-            @code = @$('.entrycode').val()
-            if @code.length != 4
-                alert "You must enter the 4 digit code given to you by your instructor."
-                return
-            dialogviews.dialog_confirmation "Take Generic Midterm","This will choose a generic midterm with a particular if you have created your own midterm, this option is not recommended. Once you choose this, it cannot be undone.", =>
-                @chooseGeneric(true)
-            , confirm_button:"Choose", cancel_button:"Cancel"
+            @chooseGeneric(false)
             
         chooseGeneric: (choice) =>
             console.log "CODE:", @code
