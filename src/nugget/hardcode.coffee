@@ -119,21 +119,21 @@ define [], ->
             'C01': 'Attention Networks'
          'title': 'Attention Networks'
          'minpoints': 5
-      # 'L017':
-      #    'clusters':
-      #       'C01': 'Two Systems'
-      #       'C02': 'Dorsal System'
-      #       'C03': 'Ventral System'
-      #       'C04': 'Two Systems Summary'
-      #    'title': 'Attention Regulation'
-      #    'minpoints': 5
-      # 'L018':
-      #    'clusters':
-      #       'C01': 'Spatial Neglect'
-      #       'C02': 'Blindsight'
-      #       'C03': 'Inattention'
-      #    'title': 'Neglect and Inattention'
-      #    'minpoints': 5
+      'L017':
+         'clusters':
+            'C01': 'Two Systems'
+            'C02': 'Dorsal System'
+            'C03': 'Ventral System'
+            'C04': 'Two Systems Summary'
+         'title': 'Attention Regulation'
+         'minpoints': 5
+      'L018':
+         'clusters':
+            'C01': 'Spatial Neglect'
+            'C02': 'Blindsight'
+            'C03': 'Inattention'
+         'title': 'Neglect and Inattention'
+         'minpoints': 5
       # 'L019':
       #    'clusters':
       #       'C01': 'Behavioral Models'
