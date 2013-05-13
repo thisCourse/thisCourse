@@ -10,20 +10,21 @@ probeanswers = {}
 
 api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000001"), (err, course) =>    
     course.nuggets.forEach (nugget) =>
-        nugget.examquestions.forEach (probe) =>
-            id = probe._id.toString()
-            if id.length isnt 24
-                console.log id.length, id, typeof id
-                return
-            api.db.collection("probe").findOne _id: new api.ObjectId(id), (err, fullprobe) =>
-                probeanswers[id] = fullprobe.answers
-                # if not _.isString(probeanswers[id])
-                # probeanswers[id] = probeanswers[id]._id
-                # else
-                    # console.log fullprobe.answers
+        if nugget.examquestions
+            nugget.examquestions.forEach (probe) =>
+                id = probe._id.toString()
+                if id.length isnt 24
+                    console.log id.length, id, typeof id
+                    return
+                api.db.collection("probe").findOne _id: new api.ObjectId(id), (err, fullprobe) =>
+                    probeanswers[id] = fullprobe.answers
+                    # if not _.isString(probeanswers[id])
+                    # probeanswers[id] = probeanswers[id]._id
+                    # else
+                        # console.log fullprobe.answers
 
-                # fullprobe.answers.forEach (answer) =>
-                #     nuggetpoints[nugget._id] += answer.correct or 0
+                    # fullprobe.answers.forEach (answer) =>
+                    #     nuggetpoints[nugget._id] += answer.correct or 0
         
 
 addScores = =>
