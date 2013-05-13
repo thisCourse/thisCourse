@@ -4,7 +4,7 @@ analytics = require("../api/analytics")
 api = require("../api/api")
 redis = require("redis").createClient()
 students = require("./students.coffee")
-# undergrads = ["test", "admin"]
+# students = ["test", "admin"]
 
 probeanswers = {}
 
@@ -70,7 +70,7 @@ analytics.db.collection("midterm").group(
     (err, people) =>
         for person in people
             if person.score < 100 then continue
-            if person.email in undergrads
+            if person.email in students
                 grade = grades[(person.score>=x for x in midtermgradeboundaries).indexOf(true)]
                 api.db.collection("grade").save points: person.score, grade: grade, email: person.email, title: "Midterm"
             
