@@ -88,15 +88,17 @@ define [], ->
             'C03': 'Implications'
          'title': 'Mental Lexicon'
          'minpoints': 5
-      # 'L013':
-      #    'clusters':
-      #       'C01': 'Lorem ipsum'
-      #       'C02': 'Lorem ipsum'
-      #       'C03': 'Lorem ipsum'
-      #       'C04': 'Lorem ipsum'
-      #       'C05': 'Lorem ipsum'
-      #    'title': 'ERPs of Meaning'
-      #    'minpoints': 5
+      'L013':
+         'clusters':
+            'C01': 'Introduction'
+            'C02': 'Discovery'
+            'C03': 'Characterizing a Measure'
+            'C04': 'First Questions and Debates'
+            'C05': 'New and Maturing Research Lines'
+            'C06': 'Theories of the N400'
+            'C07': 'Conclusions'
+         'title': 'ERPs of Meaning'
+         'minpoints': 5
       # 'L014':
       #    'clusters':
       #       'C01': 'Lorem ipsum'
