@@ -136,28 +136,28 @@ define [], ->
             'C03': 'Inattention'
          'title': 'Neglect and Inattention'
          'minpoints': 5
-      # 'L019':
-      #    'clusters':
-      #       'C01': 'Behavioral Models'
-      #       'C02': 'Memory Guided Saccades'
-      #       'C03': 'Material Specificity'
-      #       'C04': 'Functional Connectivity'
-      #       'C05': 'Top Down'
-      #       'C06': 'Summary'
-      #    'title': 'Working Memory'
-      #    'minpoints': 5
-      # 'L020':
-      #    'clusters':
-      #       'C01': 'Neural Circuit'
-      #       'C02': 'Definition'
-      #       'C03': 'Measuring Inhibition'
-      #       'C04': 'Anatomical Evidence'
-      #       'C05': 'Disorders of Inhibition'
-      #       'C06': 'Drug Addiction'
-      #       'C07': 'Functional Overlap'
-      #       'C08': 'Age & Gender'
-      #    'title': 'Response Inhibition'
-      #    'minpoints': 5
+      'L019':
+         'clusters':
+            'C01': 'Behavioral Models'
+            'C02': 'Memory Guided Saccades'
+            'C03': 'Material Specificity'
+            'C04': 'Functional Connectivity'
+            'C05': 'Top Down'
+            'C06': 'Summary'
+         'title': 'Working Memory'
+         'minpoints': 5
+      'L020':
+         'clusters':
+            'C01': 'Neural Circuit'
+            'C02': 'Definition'
+            'C03': 'Measuring Inhibition'
+            'C04': 'Anatomical Evidence'
+            'C05': 'Disorders of Inhibition'
+            'C06': 'Drug Addiction'
+            'C07': 'Functional Overlap'
+            'C08': 'Age & Gender'
+         'title': 'Response Inhibition'
+         'minpoints': 5
       # 'L021':
       #    'clusters':
       #       'C01': 'Lorem ipsum'
