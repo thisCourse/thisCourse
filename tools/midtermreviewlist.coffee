@@ -24,24 +24,25 @@ grades = ['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F']
 
 addGrades = =>
     analytics.db.collection("midterm").group(
-        {email:true}
-        {type:"proberesponse"}
-        {csum:0,count:0,score:0, maxscore:0}
-        (obj,prev) -> 
+        key: {email:true}
+        cond: {type:"proberesponse"}
+        initial: {csum:0,count:0,score:0, maxscore:0, review: []}
+        reduce: (obj,prev) -> 
             prev.csum+=obj.responsetime
             prev.count++
             prev.score+=obj.points
             prev.maxscore+=obj.totalanswerscorrect
-        (out) ->
+            if obj.points < obj.totalanswerscorrect then prev.review.push obj.probe
+        finalize: (out) ->
             out.avg_time = out.csum/out.count
             out.percent = out.score/out.maxscore
         (err, people) =>
             for person in people
                 if person.email in students
+                    review = _.uniq(probenuggets[probe] for probe in person.review)
                     grade = grades[(person.score>=x for x in midtermgradeboundaries).indexOf(true)]
-                    api.db.collection("grade").save points: person.score, grade: grade, email: person.email, title: "Midterm"       
+                    api.db.collection("grade").save points: person.score, grade: grade, email: person.email, review: review, title: "Midterm"
     )
-
 
 removeGrades = =>
     for student in students
