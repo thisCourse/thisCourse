@@ -17,6 +17,12 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
 
         model: NuggetModel
         
+        filterWithIds: (ids) ->
+            
+            filteredlist = @filter (nugget) =>
+                _.indexOf(ids, nugget.id) > -1
+            filteredcollection = new Backbone.Collection filteredlist
+        
         selectNuggets: (query) ->
             
             if query        
