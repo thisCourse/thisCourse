@@ -55,25 +55,25 @@ midtermgradeboundaries = [97,93,90,87,83,80,77,73,70,67,63,60,0]
 
 grades = ['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F']
 
+start = new Date(2013,2,31)
+
 analytics.db.collection("midterm").group(
     {email:true}
     {type:"proberesponse"}
-    {csum:0,count:0,score:0, maxscore:0, review: []}
+    {csum:0,count:0,score:0, maxscore:0}
     (obj,prev) -> 
         prev.csum+=obj.responsetime
         prev.count++
         prev.score+=obj.points
         prev.maxscore+=obj.totalanswerscorrect
-        if obj.points < obj.totalanswerscorrect then prev.review.push obj.probe
     (out) ->
         out.avg_time = out.csum/out.count
         out.percent = out.score/out.maxscore
     (err, people) =>
         for person in people
             if person.email in students
-                review = _.uniq(probenuggets[probe] for probe in person.review)
                 grade = grades[(person.score>=x for x in midtermgradeboundaries).indexOf(true)]
-                api.db.collection("grade").save points: person.score, grade: grade, email: person.email, review: review, title: "Midterm"       
+                api.db.collection("grade").save points: person.score, grade: grade, email: person.email, title: "Midterm"       
 )
 
 #mongoexport --db analytics --collection midterm -q '{"type":"proberesponse"}' -o midterm.json --jsonArray
