@@ -2,7 +2,24 @@
     
     {{#if models.length}}
     <h3>Your Score</h3>
-    {{#each models}}<b>{{ attributes.title }}</b>: score of {{ attributes.points }} points, which is a grade of {{ attributes.grade }}<br/>{{/each}}
+    {{#each models}}<b>{{ attributes.title }}</b>: score of {{ attributes.points }} points, which is a grade of {{ attributes.grade }}<br/>
+        
+        {{#if attributes.review}}
+        
+            <h4>Consider Reviewing these Nuggets</h4>
+            
+            <div class="nuggetlist">
+                <ul>
+                    {{#each attributes.review.models }}
+                        {{#if attributes.title }}<li><a href="../nuggets/{{ attributes.slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
+                    {{/each }}
+                </ul>
+            </div>
+        {{else}}
+            <h3>Congratulations! You got everything correct!</h3>
+        {{/if}}
+    {{/each}}
+    
     {{else}}
     <p>You do not yet have a score assigned for the midterm (or it is still loading...)</p>
     {{/if}}
