@@ -193,10 +193,10 @@ define [], ->
       #       'C05': 'Lorem ipsum'
       #    'title': 'Post-Natal Brain Development'
       #    'minpoints': 5
-      # 'L025':
-      #    'clusters':
-      #       'C01': 'Neuro-Anatomy of COGS107C'
-      #    'title': 'Neuro-Anatomy of COGS107C'
-      #    'minpoints': 5
+      'L025':
+         'clusters':
+            'C01': 'Neuro-Anatomy of COGS107C'
+         'title': 'Neuro-Anatomy of COGS107C'
+         'minpoints': 5
 
    knowledgestructure: knowledgestructure
