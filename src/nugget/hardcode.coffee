@@ -158,15 +158,19 @@ define [], ->
             'C08': 'Age & Gender'
          'title': 'Response Inhibition'
          'minpoints': 5
-      # 'L021':
-      #    'clusters':
-      #       'C01': 'Lorem ipsum'
-      #       'C02': 'Lorem ipsum'
-      #       'C03': 'Lorem ipsum'
-      #       'C04': 'Lorem ipsum'
-      #       'C05': 'Lorem ipsum'
-      #    'title': 'Social Cognition'
-      #    'minpoints': 5
+      'L021':
+         'clusters':
+            'C01': 'Introduction'
+            'C02': 'Learning by Observation'
+            'C03': 'Observation: Neural Mechanisms'
+            'C04': 'Observation: Costs & Benefits'
+            'C05': 'Mentalizing'
+            'C06': 'Mentalizing: Costs & Benefits'
+            'C07': 'Explicit Processes'
+            'C08': 'Sharing: Metacognition'
+            'C09': 'Conclusions'
+         'title': 'Social Cognition'
+         'minpoints': 5
       # 'L022':
       #    'clusters':
       #       'C01': 'Behavioral studies of aging'
