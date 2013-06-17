@@ -19,7 +19,7 @@ students.forEach (email) ->
 api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000001"), (err, course) =>
     
     course.nuggets.forEach (nugget) =>
-        if nuggets.tag != undefined
+        if nugget.tag != undefined
             if (/L0[0-9]{2}/.test(tag) for tag in nugget.tags).some((item) -> item)
                 studynuggets.push(nugget._id)
 
