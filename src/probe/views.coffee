@@ -16,7 +16,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         events:
             "click .add-button": "addNewProbe"
-            "click .delete-button": "addNewProbe"
+            "click .delete-button": "deleteProbe"
 
         render: =>
             # console.log "rendering ProbeListView"
@@ -37,6 +37,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
 
         deleteProbe: (ev) =>
+            console.log ev 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
                 @collection.remove probe
