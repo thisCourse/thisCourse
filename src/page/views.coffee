@@ -72,8 +72,18 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
     class PageNavRouterView extends baseviews.NavRouterView
         pattern: "page/:page_id/"
         
+        events:
+            "click .delete-button": "deleteProbe"
+
+        
         render: =>
-            super
+            html = ""
+            for model in @collection.models
+                console.log model
+                html += "<#{@childTagName} title='#{model.get('tooltip')}'> <button id ='#{model.id}' class='section-button delete-button btn danger'>X</button><a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
+            @$el.html html
+            @navigate @subfragment, @query
+            
             
 
         navigate: (fragment) =>
@@ -85,10 +95,18 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
         
         initialize: ->
             @collection.bind "add", @addItem
+            @collection.bind "remove", @render
             
         addItem: (model, collection) =>
             @render()
             @$("a").last().click()
         
+        deleteProbe: (ev) =>
+            console.log ev 
+            probe = @collection.get(ev.target.id)
+            dialogviews.delete_confirmation probe, "probe", =>
+                probe.destroy()
+                probe.parent.model.save()
+
     PageView: PageView
     PageRouterView: PageRouterView
