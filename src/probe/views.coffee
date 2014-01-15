@@ -40,7 +40,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             console.log ev 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
-                @collection.remove probe
+                probe.destroy()
+                probe.parent.model.save()
+            
 
         # probeAdded: (model, coll) =>
         #     alert "added"
@@ -531,6 +533,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @return()
 
         cancel: =>
+            console.log @model.get("question_text")
             @mementoRestore()
             @return()
         
