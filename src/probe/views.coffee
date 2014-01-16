@@ -16,7 +16,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         events:
             "click .add-button": "addNewProbe"
-            "click .delete-button": "addNewProbe"
+            "click .delete-button": "deleteProbe"
 
         render: =>
             # console.log "rendering ProbeListView"
@@ -37,9 +37,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
 
         deleteProbe: (ev) =>
+            # console.log ev 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
-                @collection.remove probe
+                probe.destroy()
+                probe.parent.model.save()
+            
 
         # probeAdded: (model, coll) =>
         #     alert "added"
@@ -530,6 +533,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @return()
 
         cancel: =>
+            # console.log @model.get("question_text")
             @mementoRestore()
             @return()
         
@@ -596,7 +600,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$el.html templates.probe_answer_edit @context()
 
         delete: =>
-            @model.destroy()
+            dialogviews.delete_confirmation @model, "answer", =>
+                @model.destroy()
 
         edit: (aclass) =>
             @$(aclass).addClass('editing')
