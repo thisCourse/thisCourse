@@ -37,7 +37,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
 
         deleteProbe: (ev) =>
-            console.log ev 
+            # console.log ev 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
                 probe.destroy()
@@ -533,7 +533,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @return()
 
         cancel: =>
-            console.log @model.get("question_text")
+            # console.log @model.get("question_text")
             @mementoRestore()
             @return()
         
