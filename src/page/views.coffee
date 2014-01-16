@@ -73,14 +73,14 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
         pattern: "page/:page_id/"
         
         events:
-            "click .delete-button": "deleteProbe"
+            "click .delete-button": "deletePage"
 
         
         render: =>
             html = ""
             for model in @collection.models
                 console.log model
-                html += "<#{@childTagName} title='#{model.get('tooltip')}'> <button id ='#{model.id}' class='section-button delete-button btn danger'>X</button><a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
+                html += "<#{@childTagName} title='#{model.get('tooltip')}'> <button id ='#{model.id}' class='section-button delete-button btn danger'>X</button>&nbsp<a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
             @$el.html html
             @navigate @subfragment, @query
             
@@ -101,12 +101,12 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
             @render()
             @$("a").last().click()
         
-        deleteProbe: (ev) =>
-            console.log ev 
-            probe = @collection.get(ev.target.id)
-            dialogviews.delete_confirmation probe, "probe", =>
-                probe.destroy()
-                probe.parent.model.save()
+        deletePage: (ev) =>
+            # console.log ev 
+            page = @collection.get(ev.target.id)
+            dialogviews.delete_confirmation page, "page", =>
+                page.destroy()
+                page.parent.model.save()
 
     PageView: PageView
     PageRouterView: PageRouterView

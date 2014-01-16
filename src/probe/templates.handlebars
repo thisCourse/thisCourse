@@ -111,7 +111,7 @@
     <h2>Probes</h2>
     <ul>
         {{#each collection/models }}
-            <li><a href='{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a>  <button id ='{{id}}' class="section-button delete-button btn danger">X</button>
+            <li> <button id ='{{id}}' class="section-button delete-button btn danger">x</button> <a href='{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a>  
           </li>
         {{/each }}
     </ul>
