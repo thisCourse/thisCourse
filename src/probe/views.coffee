@@ -600,7 +600,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$el.html templates.probe_answer_edit @context()
 
         delete: =>
-            @model.destroy()
+            dialogviews.delete_confirmation @model, "answer", =>
+                @model.destroy()
 
         edit: (aclass) =>
             @$(aclass).addClass('editing')
