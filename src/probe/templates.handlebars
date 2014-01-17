@@ -136,3 +136,114 @@
         <span><button class='btn primary large claimed'>Take My Claimed Exam</button>
     </div>
 </script>
+
+<script id="probe_answer" type="text/x-handlebars-template">
+    <li class='answer'>
+        <div class='answertext'>{{text}}</div>
+        <div class='checkorcross'></div>
+        <div class='feedback'></div>
+    </li>
+</script>
+
+
+<script id="probe_edit" type="text/x-handlebars-template">
+    
+<div class='probeedit container'>
+    <h5>Question:</h5>
+    <div class='question'>
+        <textarea class='input-xlarge question_text' type='text' rows='3'>{{question_text}}</textarea>
+    </div>
+    <h5>Feedback:</h5>
+    <div class='questionfeedback'>
+        <textarea class='input-xlarge feedback_text' type='text' rows='3'>{{feedback}}</textarea>
+    </div>
+    <div class='row'>
+    <ul class='answerlist'>
+    <li>
+        <div class='row'>
+            <div class='span10'>
+                <h5>Answer Text</h5>
+            </div>
+            <div class='span1'>
+                <p>Correct?</p>
+            </div>
+            <div class='span1'>
+                <p>Delete<p>
+            </div>
+
+        </div>
+    </li>
+    </ul>
+    </div>
+    <button class='btn primary addanswer'>Add Answer</button><br/><br/>
+    <button class='btn success save'>Save</button>
+    <button class='btn danger cancel'>Cancel</button>
+</div>
+
+</script>
+
+<script id="probe_answer_edit" type="text/x-handlebars-template">
+<li><div class='row'>
+            <div class='span10'>
+                <div class='text answer'>
+                    <textarea class='input answertext' type='text' rows='2'>{{text}}</textarea>
+                </div>
+                <h6 class='inline'>Answer Feedback?</h6><input class='answerfeedback' type='checkbox' {{#if feedback}}checked='checked'{{/if}}value='answerfeedback'></input>
+                <div class='text {{#unless feedback}}hidden{{/unless}} feedback'>
+                    <textarea class='input answerfeedbacktext' type='text' rows='2'>{{feedback}}</textarea>
+                </div>
+            </div>
+            <div class='span1 middlealign'>
+                <input class='check_correct' type='checkbox' value='correct' {{#if correct}}checked='checked'{{/if}}></input>
+            </div>
+            <div class='span1 middlealign'>
+                <button class="section-button delete-button btn danger">X</button>
+            </div>
+
+        </div>
+        </li>
+</script>
+
+
+<script id="question_list" type="text/x-handlebars-template">
+    <div class="questionlist">
+        <h2>{{options/title}}s</h2>
+        <h3>Total Points: {{points}}</h3>
+        <ul>
+            {{#each collection/models }}
+                <li><a href='{{ ../options/path }}{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
+            {{/each }}
+        </ul>
+
+        <span class="editor-only">
+            <button class="add-button btn success">Add {{options/title}}</button>
+            <a href="preview/{{ options/path }}" class="preview-button btn info">Preview {{options/title}}s</a>
+        </span>
+    </div>
+</script>
+
+<script id="nugget_review_list" type="text/x-handlebars-template">
+    
+    {{#if collection}}<h4>Consider Reviewing these Nuggets</h4>{{else}}<h3>Congratulations! You got those all correct!</h3>{{/if}}
+    <h5>Total points attained: {{earnedpoints}} out of {{totalpoints}}</h5>
+    
+    <div class="nuggetlist">
+        <ul>
+            {{#each collection.models }}
+                {{#if attributes.title }}<li><a href="../{{ ../../url }}{{ slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
+            {{/each }}
+        </ul>
+        <a href="../{{url}}{{#if query.tags}}?tags={{query.tags}}{{#if query.claimed}}&claimed={{query.claimed}}{{/if}}{{else}}{{#if query.claimed}}?claimed={{query.claimed}}{{/if}}{{/if}}"<p>Return to Nugget List</p></a>
+    </div>
+
+
+    
+</script>
+
+<script id="exam_entry_screen" type="text/x-handlebars-template">
+    <div class='logged-in-only'>
+        <p>Enter the 4-Digit code here; do not begin the exam before 3pm.</p>
+        <input class='entrycode' type='text' value=''></input>
+        <span><button class='btn primary large claimed'>Take My Claimed Exam</button>
+    </div>
+</script>

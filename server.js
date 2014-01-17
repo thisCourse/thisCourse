@@ -1,4 +1,7 @@
+//var $ = require('jquery')
 var mongoskin = require("mongoskin")
+var mongodb = require("mongodb")
+var ObjectId = mongodb.BSONPure.ObjectID
 
 var cs = require("coffee-script")
 
@@ -112,3 +115,4 @@ server.use(express.vhost('beta.thiscourse.com', app))
 
 api.initialize()
 
+module.exports = {db: db}

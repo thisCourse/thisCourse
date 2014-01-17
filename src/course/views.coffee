@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/views", "cs!nugget/views", "cs!chat/views", "cs!analytics/views", "cs!file/views", "cs!probe/views", "cs!grade/views", "cs!./models"], \
-        (baseviews, homeviews, lectureviews, assignmentviews, nuggetviews, chatviews, analyticsviews, fileviews, probeviews, gradeviews, models) ->
+define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/views", "cs!nugget/views", "cs!file/views", "cs!./models"], \
+        (baseviews, homeviews, lectureviews, assignmentviews, nuggetviews, fileviews, models) ->
 
     class CourseView extends baseviews.RouterView
 
@@ -28,5 +28,6 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             if @model.has("title") then title += " | " + @model.get("title")
             document.title = title
             
+
 
     return CourseView: CourseView
