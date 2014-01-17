@@ -29,4 +29,5 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             document.title = title
             
 
+
     return CourseView: CourseView

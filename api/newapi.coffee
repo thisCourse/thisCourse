@@ -2,7 +2,7 @@ mongoskin = require('mongoskin')
 async = require('async')
 # express = require("express")
 $ = require("jquery-deferred")
-requirejs = require("./requirejs.coffee")
+requirejs = require("../requirejs.coffee")
 _ = require("underscore")
 
 db = mongoskin.db('127.0.0.1/testing?auto_reconnect')
