@@ -9,10 +9,19 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
             probeset:
                 collection: probemodels.ProbeCollection
                 includeInJSON: false
+            examquestions:
+                collection: probemodels.ProbeCollection
+                includeInJSON: false
 
     class NuggetCollection extends basemodels.LazyCollection
 
         model: NuggetModel
+        
+        filterWithIds: (ids) ->
+            
+            filteredlist = @filter (nugget) =>
+                _.indexOf(ids, nugget.id) > -1
+            filteredcollection = new Backbone.Collection filteredlist
         
         selectNuggets: (query) ->
             

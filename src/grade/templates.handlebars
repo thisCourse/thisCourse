@@ -2,13 +2,381 @@
     
     {{#if models.length}}
     <h3>Your Score</h3>
-    {{#each models}}<b>{{ attributes.title }}</b>: score of {{ attributes.points }} points, which is a grade of {{ attributes.grade }}<br/>{{/each}}
+    {{#each models}}<b>{{ attributes.title }}</b>: score of {{ attributes.points }} points, which is a grade of {{ attributes.grade }}<br/>
+        
+        {{#if attributes.review}}
+        
+            <h4>Consider Reviewing these Nuggets</h4>
+            
+            <div class="nuggetlist">
+                <ul>
+                    {{#each attributes.review.models }}
+                        {{#if attributes.title }}<li><a href="../nuggets/{{ attributes.slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
+                    {{/each }}
+                </ul>
+            </div>
+        {{else}}
+            <h3>Congratulations! You got everything correct!</h3>
+        {{/if}}
+    {{/each}}
+    
     {{else}}
     <p>You do not yet have a score assigned for the midterm (or it is still loading...)</p>
     {{/if}}
 
     <br/><br/><br/>
 
+    <h3>Midterm Grading Scheme</h3>
+    <table style="width: 250px; padding: ">
+        <tr valign=top>
+            <td>
+                <p><b>Letter grade</b></p>
+            </td>
+            <td>
+                <p><b>Midterm score</b></p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A+</p>
+            </td>
+            <td>
+                <p>&gt;= 97</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A</p>
+            </td>
+            <td>
+                <p>93 - 96</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A-</p>
+            </td>
+            <td>
+                <p>90 - 92</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B+</p>
+            </td>
+            <td>
+                <p>87 - 89</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B</p>
+            </td>
+            <td>
+                <p>83 - 86</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B-</p>
+            </td>
+            <td>
+                <p>80 - 82</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C+</p>
+            </td>
+            <td>
+                <p>77 - 79</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C</p>
+            </td>
+            <td>
+                <p>73 - 76</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C-</p>
+            </td>
+            <td>
+                <p>70 - 72</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D+</p>
+            </td>
+            <td>
+                <p>67 - 69</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D</p>
+            </td>
+            <td>
+                <p>63 - 66</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D-</p>
+            </td>
+            <td>
+                <p>60 - 62</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>F</p>
+            </td>
+            <td>
+                <p>&lt;= 60</p>
+            </td>
+        </tr>
+    </table>
+
+</script>
+    <h3>Midterm Grading Scheme</h3>
+    <table style="width: 250px; padding: ">
+        <tr valign=top>
+            <td>
+                <p><b>Letter grade</b></p>
+            </td>
+            <td>
+                <p><b>Midterm score</b></p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A+</p>
+            </td>
+            <td>
+                <p>&gt;= 97</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A</p>
+            </td>
+            <td>
+                <p>93 - 96</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A-</p>
+            </td>
+            <td>
+                <p>90 - 92</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B+</p>
+            </td>
+            <td>
+                <p>87 - 89</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B</p>
+            </td>
+            <td>
+                <p>83 - 86</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B-</p>
+            </td>
+            <td>
+                <p>80 - 82</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C+</p>
+            </td>
+            <td>
+                <p>77 - 79</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C</p>
+            </td>
+            <td>
+                <p>73 - 76</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C-</p>
+            </td>
+            <td>
+                <p>70 - 72</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D+</p>
+            </td>
+            <td>
+                <p>67 - 69</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D</p>
+            </td>
+            <td>
+                <p>63 - 66</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D-</p>
+            </td>
+            <td>
+                <p>60 - 62</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>F</p>
+            </td>
+            <td>
+                <p>&lt;= 60</p>
+            </td>
+        </tr>
+    </table>
+
+</script>
+    <h3>Midterm Grading Scheme</h3>
+    <table style="width: 250px; padding: ">
+        <tr valign=top>
+            <td>
+                <p><b>Letter grade</b></p>
+            </td>
+            <td>
+                <p><b>Midterm score</b></p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A+</p>
+            </td>
+            <td>
+                <p>&gt;= 97</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A</p>
+            </td>
+            <td>
+                <p>93 - 96</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A-</p>
+            </td>
+            <td>
+                <p>90 - 92</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B+</p>
+            </td>
+            <td>
+                <p>87 - 89</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B</p>
+            </td>
+            <td>
+                <p>83 - 86</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B-</p>
+            </td>
+            <td>
+                <p>80 - 82</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C+</p>
+            </td>
+            <td>
+                <p>77 - 79</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C</p>
+            </td>
+            <td>
+                <p>73 - 76</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C-</p>
+            </td>
+            <td>
+                <p>70 - 72</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D+</p>
+            </td>
+            <td>
+                <p>67 - 69</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D</p>
+            </td>
+            <td>
+                <p>63 - 66</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D-</p>
+            </td>
+            <td>
+                <p>60 - 62</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>F</p>
+            </td>
+            <td>
+                <p>&lt;= 60</p>
+            </td>
+        </tr>
+    </table>
+
+</script>
     <h3>Midterm Grading Scheme</h3>
     <table style="width: 250px; padding: ">
         <tr valign=top>
@@ -105,6 +473,123 @@
             </td>
             <td>
                 <p>&lt;= 136</p>
+            </td>
+        </tr>
+    </table>
+
+</script>
+    <h3>Midterm Grading Scheme</h3>
+    <table style="width: 250px; padding: ">
+        <tr valign=top>
+            <td>
+                <p><b>Letter grade</b></p>
+            </td>
+            <td>
+                <p><b>Midterm score</b></p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A+</p>
+            </td>
+            <td>
+                <p>&gt;= 97</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A</p>
+            </td>
+            <td>
+                <p>93 - 96</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>A-</p>
+            </td>
+            <td>
+                <p>90 - 92</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B+</p>
+            </td>
+            <td>
+                <p>87 - 89</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B</p>
+            </td>
+            <td>
+                <p>83 - 86</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>B-</p>
+            </td>
+            <td>
+                <p>80 - 82</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C+</p>
+            </td>
+            <td>
+                <p>77 - 79</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C</p>
+            </td>
+            <td>
+                <p>73 - 76</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>C-</p>
+            </td>
+            <td>
+                <p>70 - 72</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D+</p>
+            </td>
+            <td>
+                <p>67 - 69</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D</p>
+            </td>
+            <td>
+                <p>63 - 66</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>D-</p>
+            </td>
+            <td>
+                <p>60 - 62</p>
+            </td>
+        </tr>
+        <tr valign=top>
+            <td>
+                <p>F</p>
+            </td>
+            <td>
+                <p>&lt;= 60</p>
             </td>
         </tr>
     </table>
