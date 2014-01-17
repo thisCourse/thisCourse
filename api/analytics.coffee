@@ -130,12 +130,24 @@ class PreTest extends AnalyticsHandler
     collection: db.collection("pretest")
     
     handle_POST: (callback) =>
-        @save_analytics_object @req.body, callback
-
+        answered_key = "pretest-answered:" + @req.session.email
+        unanswered_key = "pretest-unanswered:" + @req.session.email
+        redis.lrange unanswered_key, -1, -1, (err, id) =>
+            if err then return callback new api.APIError(err)
+            if id.length != 1
+                return callback new api.APIError("No more questions to answer!")
+            if id[0]==@req.body.probe
+                console.log @req.session.email, "has submitted question", @req.body.probe, "with answers", JSON.stringify(@req.body.answers)
+                redis.rpoplpush unanswered_key, answered_key
+                return @save_analytics_object @req.body, callback
+            else
+                return callback new api.APIError("Can only answer the next item in the queue (#{id}).")
+    
     handle_GET: (callback) =>
-        @collection.find(email: @req.session.email, {limit:1, sort:[['_id', -1]]}).toArray (err, doc) =>
-            inc = doc.length and doc[0]?.inc or 0
-            callback new api.JSONResponse(inc.toString())
+        redis.llen "pretest-answered:" + @req.session.email, (err, progress) =>
+            redis.lrange "pretest-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
+                if err then return callback new api.APIError(err)
+                callback new api.JSONResponse(progress: progress, probes: unanswered)
 
 class Midterm extends AnalyticsHandler
     collection: db.collection("midterm")

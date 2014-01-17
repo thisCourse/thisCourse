@@ -12,15 +12,41 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             # console.log "ProbeRouterView init"
             super
 
-    class ProbeListView extends baseviews.BaseView
+    class ProbeEditRouterView extends baseviews.RouterView
+
+        routes: =>
+            "": => view: QuestionTypeListView, datasource: "model"
+            "preview/probe/": => view: ProbeContainerView, datasource: "model", key: "probeset", notclaiming: true, nofeedback: false, sync:QuizAnalytics
+            "preview/exam/": => view: ProbeContainerView, datasource: "model", key: "examquestions", notclaiming: true, nofeedback: false, sync:QuizAnalytics
+            "probe/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "model", key: "probeset", probe: probe_id
+            "exam/:probe_id/": (probe_id) => view: ProbeEditView, datasource: "model", key: "examquestions", probe: probe_id
+
+        initialize: ->
+            # console.log "ProbeEditRouterView init"
+            super
+
+    class QuestionTypeListView extends baseviews.BaseView
+        
+        render: =>
+            if app.get("user").get("email") is "admin"
+                @add_subview "probelist", new QuestionListView(collection: @model.get("probeset"), title: "Probe", path:"probe/")
+                @add_subview "examlist", new QuestionListView(collection: @model.get("examquestions"), title: "Exam Question", path: "exam/")
+            else
+                @$el.html "<p>Wouldn't you prefer a nice game of chess?</p>"
+
+    class QuestionListView extends baseviews.BaseView
 
         events:
             "click .add-button": "addNewProbe"
-            "click .delete-button": "deleteProbe"
+            "click .delete-button": "addNewProbe"
 
         render: =>
             # console.log "rendering ProbeListView"
-            @$el.html templates.probe_list @context()
+            @points = 0
+            for model in @collection.models
+                for answer in model.get("answers").models
+                    if answer.get("correct") then @points++
+            @$el.html templates.question_list @context(points: @points)
             @makeSortable()
             
         initialize: ->
@@ -33,16 +59,13 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         addNewProbe: =>
             @collection.create {},
-                success: (model) => require("app").navigate model.id
+                success: (model) => require("app").navigate @options.path + model.id
             
 
         deleteProbe: (ev) =>
-            # console.log ev 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
-                probe.destroy()
-                probe.parent.model.save()
-            
+                @collection.remove probe
 
         # probeAdded: (model, coll) =>
         #     alert "added"
@@ -118,6 +141,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             xhdr = doPost '/analytics/posttest/', response, (data) =>
                 callback data
             xhdr.error handleError
+            
+    PreTestAnalytics =
+        submitQuestion: (response, callback) =>
+            xhdr = doPost '/analytics/pretest/', response, (data) =>
+                callback data
+            xhdr.error handleError
 
     class MidtermView extends baseviews.BaseView
         
@@ -134,9 +163,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 return
             xhdr = $.get '/analytics/midterm/', (data) =>
                 if data.points
-                    midtermgradeboundaries = [180,160,150,140,0]
-                    grades = ['A','B','C','D','F']
-                    @$el.html templates.exam_entry_screen points: data.points, grade: grades[(Number(data.points)>=x for x in midtermgradeboundaries).indexOf(true)]
+                    @$el.html templates.exam_entry_screen
                 else if typeof(data)=="object"
                     @$el.html ""
                     probes = ({_id: probe} for probe in data.probes.reverse())
@@ -153,18 +180,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @code.length != 4
                 alert "You must enter the 4 digit code given to you by your instructor."
                 return
-            dialogviews.dialog_confirmation "Take Claimed Midterm","This will choose the midterm you have created. Once you choose this, it cannot be undone.", =>
-                @chooseGeneric(false)
-            , confirm_button:"Choose", cancel_button:"Cancel"
-                
-        generic: =>
-            @code = @$('.entrycode').val()
-            if @code.length != 4
-                alert "You must enter the 4 digit code given to you by your instructor."
-                return
-            dialogviews.dialog_confirmation "Take Generic Midterm","This will choose a generic midterm with a particular if you have created your own midterm, this option is not recommended. Once you choose this, it cannot be undone.", =>
-                @chooseGeneric(true)
-            , confirm_button:"Choose", cancel_button:"Cancel"
+            @chooseGeneric(false)
             
         chooseGeneric: (choice) =>
             console.log "CODE:", @code
@@ -222,6 +238,36 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             doPut '/analytics/final/', alternate: choice, code: @code, @render
 
 
+    class PreTestView extends baseviews.BaseView
+        
+        initialize: =>
+            require("app").get("user").bind "change:loggedIn", @render
+        
+        render: =>
+            if not require("app").get("user").get("loggedIn")
+                @$el.html "<p>Please log in to take your pre-test...</p>"
+                return
+            xhdr = $.get '/analytics/pretest/', (data) =>
+                @$el.html ""
+                probes = ({_id: probe} for probe in data.probes.reverse())
+                if probes.length==0
+                    @$el.html "You're done. Finito. Finished!!"
+                    return
+                probes = new models.ProbeCollection(probes)
+                @add_subview "probecontainer", new ProbeContainerView
+                    collection: probes
+                    notclaiming: true
+                    nofeedback: true
+                    noskipping: true
+                    progress: data.progress
+                    sync: PreTestAnalytics
+                    complete: @complete
+            xhdr.error handleError
+        
+        complete: =>
+            @$el.html "Thanks, all done!"
+
+
     class PostTestView extends baseviews.BaseView
         
         initialize: =>
@@ -244,7 +290,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     nofeedback: true
                     noskipping: true
                     progress: data.progress
-                    sync:PostTestAnalytics
+                    sync: PostTestAnalytics
                     complete: @complete
             xhdr.error handleError
         
@@ -331,8 +377,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @showNextProbe()
         
         showReviewFeedback: =>
-            console.log @review
-            console.log @earnedpoints
+            # console.log @review
+            # console.log @earnedpoints
             if @review.length > 0
                 @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
             else if @earnedpoints > 0
@@ -429,7 +475,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         
         render: =>
             if not @model then return
-            nuggettitle = @parent.options.notclaiming and @model.parent?.model?.get('title') or probe_nugget_title[@model.id] or ""
+            nuggettitle = @parent.options.notclaiming and @model.parent?.model?.get('title') or ""
             # console.log nuggettitle
             @$el.html templates.probe @context(increment:@parent.inc+@parent.progress,total:@parent.collection.length+@parent.progress,nuggettitle:nuggettitle)
             @$('.question').html @model.get('questiontext')
@@ -506,10 +552,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         initialize: ->
             @mementoStore()
-            @model.bind "change", @render
+            @collection.bind "change", @render
             @newans = 0
+            # console.log "Init ProbeEditView"
         
         render: =>
+            @model = @collection.get(@options.probe)
             @$el.html templates.probe_edit @context()
             # Backbone.ModelBinding.bind @
             # @enablePlaceholders()
@@ -524,6 +572,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "keypress .question_text" : "updateQuestionOnEnter"
             "keypress .feedback_text" : "updateFeedbackOnEnter"
             "click .addanswer"  : "createAnswer"
+            "change .question_text" : "updateQuestion"
+            "change .feedback_text" : "updateFeedback"
 
         save: =>
             @$("input").blur()
@@ -533,42 +583,21 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @return()
 
         cancel: =>
-            # console.log @model.get("question_text")
             @mementoRestore()
             @return()
         
-        edit: (aclass) =>
-            @$(aclass).addClass('editing')
-        
-        stopEdit: (aclass) =>
-            @$(aclass).removeClass('editing')
-        
-        editQuestion: =>
-            @edit('.question')
-        
-        editFeedback: =>
-            @edit('.questionfeedback')
-        
-        finish: (aclass) =>
-            if aclass=='.question'
-                @model.set question_text:@$('.question_text')[0].value
-                @stopEdit(aclass)
-            else if aclass=='.questionfeedback'
-                @model.set feedback:@$('.feedback_text')[0].value
-                @stopEdit(aclass)
-        
-        updateQuestionOnEnter: (event) =>
-            @updateOnEnter(event,'.question')
+        updateQuestion: (event) =>
+            @model.set question_text: @$('.question_text')[0].value
             
-        updateFeedbackOnEnter: (event) =>
-            @updateOnEnter(event,'.questionfeedback')
+        updateFeedback: (event) =>
+            @model.set feedback:@$('.feedback_text')[0].value
         
         updateOnEnter: (event,aclass) =>
             if event.keyCode == 13 then @finish(aclass)
         
             
         return: =>
-            require("app").navigate @url + ".."
+            require("app").navigate @url + "../.."
             
         createAnswer: =>
             answer = @model.get('answers').create {}
@@ -583,13 +612,11 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeAnswerEditView extends baseviews.BaseView
 
         events:
-            "dblclick .answer" : "editAnswer"
-            "dblclick .feedback": "editFeedback"
-            "keypress .answertext" : "updateAnswerOnEnter"
-            "keypress .answerfeedbacktext" : "updateFeedbackOnEnter"
-            "click .answerfeedback" : "toggleFeedback"
+            "change .answerfeedback" : "toggleFeedback"
             "click .delete-button" : "delete"
             "click .check_correct" : "toggleCorrect"
+            "change .answertext" : "updateAnswer"
+            "change .answerfeedbacktext" : "updateFeedback"
         
         initialize: =>
             @model.bind "change", @render
@@ -600,48 +627,22 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$el.html templates.probe_answer_edit @context()
 
         delete: =>
-            dialogviews.delete_confirmation @model, "answer", =>
-                @model.destroy()
+            @model.destroy()
 
         edit: (aclass) =>
             @$(aclass).addClass('editing')
             @editing = aclass
         
-        stopEdit: (aclass) =>
-            @$(aclass).removeClass('editing')
-            @editing = ''
-        
-        editAnswer: =>
-            if @editing then @finish(@editing)
-            @edit('.answer')
-        
-        editFeedback: =>
-            if @editing then @finish(@editing)
-            @edit('.feedback')
-        
-        finish: (aclass) =>
-            if aclass=='.answer'
-                @stopEdit(aclass)
-                @model.set text:@$('.answertext')[0].value
-            else if aclass=='.feedback'
-                @stopEdit(aclass)
-                @model.set feedback:@$('.answerfeedbacktext')[0].value
-        
-        updateAnswerOnEnter: (event) =>
-            @updateOnEnter(event,'.answer')
+        updateAnswer: (event) =>
+            @model.set text:@$('.answertext')[0].value
             
-        updateFeedbackOnEnter: (event) =>
-            @updateOnEnter(event,'.feedback')
-        
-        updateOnEnter: (event,aclass) =>
-            if event.keyCode == 13 then @finish(aclass)
+        updateFeedback: (event) =>
+            @model.set feedback:@$('.answerfeedbacktext')[0].value
                 
         toggleFeedback: (event) =>
-            if @editing then @finish(@editing)
-            @$('.feedback_text').toggleClass('hidden')
-            if @$(event.target).is(':checked')
-                @finish('.feedback')
-            else
+            @$('.feedback').toggleClass('hidden')
+            if not @$(event.target).is(':checked')
+                console.log event
                 @model.set feedback:''
                 
         toggleCorrect: =>
@@ -649,12 +650,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model.set correct:not @model.get('correct')
             
     ProbeRouterView: ProbeRouterView
-    ProbeListView: ProbeListView
+    ProbeEditRouterView: ProbeEditRouterView
+    QuestionListView: QuestionListView
     ProbeView: ProbeView
     ProbeContainerView: ProbeContainerView
     MidtermView: MidtermView
     FinalView: FinalView
     PostTestView: PostTestView
+    PreTestView: PreTestView
     QuizView: QuizView
     ProbeTopEditView: ProbeEditView
     

@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/views", "cs!nugget/views", "cs!chat/views", "cs!analytics/views", "cs!file/views", "cs!probe/views", "cs!grade/views", "cs!./models"], \
-        (baseviews, homeviews, lectureviews, assignmentviews, nuggetviews, chatviews, analyticsviews, fileviews, probeviews, gradeviews, models) ->
+define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/views", "cs!nugget/views", "cs!file/views", "cs!./models"], \
+        (baseviews, homeviews, lectureviews, assignmentviews, nuggetviews, fileviews, models) ->
 
     class CourseView extends baseviews.RouterView
 
@@ -10,8 +10,9 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             "study/": => view: nuggetviews.StudyRouterView, datasource: "model", key: "nuggets"
             "nuggets/": => view: nuggetviews.NuggetRouterView, datasource: "model", key: "nuggets"
             "chat/": => view: chatviews.ChatView
-            # "midterm/": => view: probeviews.MidtermView
+            "midterm/": => view: probeviews.MidtermView
             "final/": => view: probeviews.FinalView
+            "pretest/": => view: probeviews.PreTestView
             "posttest/": => view: probeviews.PostTestView
             "grades/": => view: gradeviews.GradesView
             "analytics/": => view: analyticsviews.AnalyticsView
@@ -27,5 +28,6 @@ define ["cs!base/views", "cs!home/views", "cs!lecture/views", "cs!assignment/vie
             if @model.has("title") then title += " | " + @model.get("title")
             document.title = title
             
+
 
     return CourseView: CourseView

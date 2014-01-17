@@ -1,0 +1,522 @@
+Creating user naltimim@ucsd.edu
+Creating user aamodei@ucsd.edu
+Creating user latkins@ucsd.edu
+Creating user aauyeung@ucsd.edu
+Creating user mawasthi@ucsd.edu
+Creating user ebarney@ucsd.edu
+Creating user tbarnsto@ucsd.edu
+Creating user cjbarton@ucsd.edu
+Creating user sbijanpo@ucsd.edu
+Creating user e1bloom@ucsd.edu
+Creating user nbonanno@ucsd.edu
+Creating user dbseiso@ucsd.edu
+Creating user jcalais@ucsd.edu
+Creating user svcampos@ucsd.edu
+Creating user kcarrasc@ucsd.edu
+Creating user joc013@ucsd.edu
+Creating user vwchang@ucsd.edu
+Creating user wachao@ucsd.edu
+Creating user ayc011@ucsd.edu
+Creating user lwchen@ucsd.edu
+Creating user rlc001@ucsd.edu
+Creating user lwc001@ucsd.edu
+Creating user jwc025@ucsd.edu
+Creating user gchuck@ucsd.edu
+Creating user jcoss@ucsd.edu
+Creating user ocostanz@ucsd.edu
+Creating user tcranfor@ucsd.edu
+Creating user rccuella@ucsd.edu
+Creating user rcusing@ucsd.edu
+Creating user sdangelo@ucsd.edu
+Creating user jldejesu@ucsd.edu
+Creating user jdefalco@ucsd.edu
+Creating user mdejosep@ucsd.edu
+Creating user radeng@ucsd.edu
+Creating user bdhaliwa@ucsd.edu
+Creating user gsdhillo@ucsd.edu
+Creating user jjdiamon@ucsd.edu
+Creating user tdomingo@ucsd.edu
+Creating user ccduong@ucsd.edu
+Creating user l2duong@ucsd.edu
+Creating user amfreema@ucsd.edu
+Creating user jgarafal@ucsd.edu
+Creating user vngarcia@ucsd.edu
+Creating user rgosavi@ucsd.edu
+Creating user cgov@ucsd.edu
+Creating user vaguerre@ucsd.edu
+Creating user mgumina@ucsd.edu
+Creating user pguzman@ucsd.edu
+Creating user csha@ucsd.edu
+Creating user kjhaley@ucsd.edu
+Creating user hnhall@ucsd.edu
+Creating user nhalstea@ucsd.edu
+Creating user sharihar@ucsd.edu
+Creating user crharmon@ucsd.edu
+Creating user aheredic@ucsd.edu
+Creating user jherzber@ucsd.edu
+Creating user tahirota@ucsd.edu
+Creating user tbhoang@ucsd.edu
+Creating user vkhollin@ucsd.edu
+Creating user sfhoward@ucsd.edu
+Creating user jyhsi@ucsd.edu
+Creating user eehsieh@ucsd.edu
+Creating user joh006@ucsd.edu
+Creating user thuezo@ucsd.edu
+Creating user aphunter@ucsd.edu
+Creating user rihu@ucsd.edu
+Creating user nishiko@ucsd.edu
+Creating user cjameson@ucsd.edu
+Creating user akamgarp@ucsd.edu
+Creating user nskanani@ucsd.edu
+Creating user myk009@ucsd.edu
+Creating user rkedlaya@ucsd.edu
+Creating user emk005@ucsd.edu
+Creating user hhk007@ucsd.edu
+Creating user dkrishna@ucsd.edu
+Creating user lakumar@ucsd.edu
+Creating user rolam@ucsd.edu
+Creating user a4lau@ucsd.edu
+Creating user klavi@ucsd.edu
+Creating user abl004@ucsd.edu
+Creating user c7le@ucsd.edu
+Creating user jnl004@ucsd.edu
+Creating user ttl018@ucsd.edu
+Creating user tlederge@ucsd.edu
+Creating user erl004@ucsd.edu
+Creating user jhl054@ucsd.edu
+Creating user sol015@ucsd.edu
+Creating user jil066@ucsd.edu
+Creating user chl159@ucsd.edu
+Creating user t9lin@ucsd.edu
+Creating user clinsche@ucsd.edu
+Creating user mcliu@ucsd.edu
+Creating user tsliu@ucsd.edu
+Creating user slunardi@ucsd.edu
+Creating user elundste@ucsd.edu
+Creating user siluong@ucsd.edu
+Creating user amacari@ucsd.edu
+Creating user cmagana@ucsd.edu
+Creating user lmai@ucsd.edu
+Creating user smandavg@ucsd.edu
+Creating user smannino@ucsd.edu
+Creating user kmanveli@ucsd.edu
+Creating user jcmcelfr@ucsd.edu
+Creating user elmeltze@ucsd.edu
+Creating user ntmercer@ucsd.edu
+Creating user ametzler@ucsd.edu
+Creating user jmeyers@ucsd.edu
+Creating user smezher@ucsd.edu
+Creating user kmiu@ucsd.edu
+Creating user e3moon@ucsd.edu
+Creating user rnassimi@ucsd.edu
+Creating user sneugros@ucsd.edu
+Creating user qpnguyen@ucsd.edu
+Creating user tbn006@ucsd.edu
+Creating user tbn004@ucsd.edu
+Creating user tin006@ucsd.edu
+Creating user nnocum@ucsd.edu
+Creating user aknoda@ucsd.edu
+Creating user asobrien@ucsd.edu
+Creating user rmohara@ucsd.edu
+Creating user aworr@ucsd.edu
+Creating user aoveroye@ucsd.edu
+Creating user apainter@ucsd.edu
+Creating user apatil@ucsd.edu
+Creating user jperches@ucsd.edu
+Creating user kapeterk@ucsd.edu
+Creating user spetit@ucsd.edu
+Creating user nppham@ucsd.edu
+Creating user adphuong@ucsd.edu
+Creating user raportil@ucsd.edu
+Creating user fqafiti@ucsd.edu
+Creating user qquarles@ucsd.edu
+Creating user kmquigle@ucsd.edu
+Creating user creuter@ucsd.edu
+Creating user earivera@ucsd.edu
+Creating user grorem@ucsd.edu
+Creating user krosendo@ucsd.edu
+Creating user rsablove@ucsd.edu
+Creating user asaini@ucsd.edu
+Creating user lrsakata@ucsd.edu
+Creating user psamermi@ucsd.edu
+Creating user ssamples@ucsd.edu
+Creating user d2scott@ucsd.edu
+Creating user eseubert@ucsd.edu
+Creating user ksharma@ucsd.edu
+Creating user m8shin@ucsd.edu
+Creating user isimpelo@ucsd.edu
+Creating user lesolano@ucsd.edu
+Creating user v1solis@ucsd.edu
+Creating user wstahl@ucsd.edu
+Creating user csubrahm@ucsd.edu
+Creating user psukaviv@ucsd.edu
+Creating user jrsyang@ucsd.edu
+Creating user gtalan@ucsd.edu
+Creating user rtalia@ucsd.edu
+Creating user bltang@ucsd.edu
+Creating user dtang@ucsd.edu
+Creating user dttran@ucsd.edu
+Creating user jet004@ucsd.edu
+Creating user a1tse@ucsd.edu
+Creating user emtse@ucsd.edu
+Creating user etuma@ucsd.edu
+Creating user alturner@ucsd.edu
+Creating user mudo@ucsd.edu
+Creating user mrvargas@ucsd.edu
+Creating user jvillads@ucsd.edu
+Creating user mwedeen@ucsd.edu
+Creating user nawells@ucsd.edu
+Creating user mrwestfa@ucsd.edu
+Creating user jcw020@ucsd.edu
+Creating user k8wong@ucsd.edu
+Creating user elyang@ucsd.edu
+Creating user gtyang@ucsd.edu
+Creating user v2yu@ucsd.edu
+Email sent to naltimim@ucsd.edu
+Email sent to aamodei@ucsd.edu
+User successfully created: naltimim@ucsd.edu (password: 10c567a7)
+User successfully created: latkins@ucsd.edu (password: c6c46c53)
+User successfully created: aamodei@ucsd.edu (password: a84e90aa)
+User successfully created: aauyeung@ucsd.edu (password: 126dd73f)
+Email sent to latkins@ucsd.edu
+Email sent to aauyeung@ucsd.edu
+User successfully created: mawasthi@ucsd.edu (password: b64c6316)
+User successfully created: ebarney@ucsd.edu (password: e42538a0)
+Email sent to mawasthi@ucsd.edu
+User successfully created: tbarnsto@ucsd.edu (password: 27263b1c)
+User successfully created: cjbarton@ucsd.edu (password: 036db201)
+Email sent to ebarney@ucsd.edu
+Email sent to tbarnsto@ucsd.edu
+User successfully created: sbijanpo@ucsd.edu (password: f494cfac)
+User successfully created: e1bloom@ucsd.edu (password: 8a3356a2)
+Email sent to cjbarton@ucsd.edu
+User successfully created: nbonanno@ucsd.edu (password: bbeb510f)
+User successfully created: dbseiso@ucsd.edu (password: 4728d959)
+Email sent to sbijanpo@ucsd.edu
+Email sent to e1bloom@ucsd.edu
+User successfully created: jcalais@ucsd.edu (password: 9b5adc93)
+User successfully created: svcampos@ucsd.edu (password: 11f314da)
+Email sent to nbonanno@ucsd.edu
+User successfully created: kcarrasc@ucsd.edu (password: 91aed785)
+User successfully created: joc013@ucsd.edu (password: 8ca841f5)
+Email sent to dbseiso@ucsd.edu
+Email sent to jcalais@ucsd.edu
+User successfully created: vwchang@ucsd.edu (password: aaaf0d94)
+Email sent to svcampos@ucsd.edu
+User successfully created: wachao@ucsd.edu (password: 5033da1b)
+User successfully created: ayc011@ucsd.edu (password: c96a6ce8)
+User successfully created: lwchen@ucsd.edu (password: 4c650581)
+Email sent to kcarrasc@ucsd.edu
+Email sent to joc013@ucsd.edu
+User successfully created: rlc001@ucsd.edu (password: 007ab7ca)
+User successfully created: lwc001@ucsd.edu (password: 6817e087)
+Email sent to vwchang@ucsd.edu
+User successfully created: jwc025@ucsd.edu (password: d1e3efe2)
+User successfully created: gchuck@ucsd.edu (password: a79d16a4)
+Email sent to wachao@ucsd.edu
+Email sent to ayc011@ucsd.edu
+User successfully created: jcoss@ucsd.edu (password: c9903d5e)
+User successfully created: ocostanz@ucsd.edu (password: d6600c15)
+Email sent to lwchen@ucsd.edu
+User successfully created: tcranfor@ucsd.edu (password: 38f7ce55)
+User successfully created: rccuella@ucsd.edu (password: 056ac0aa)
+Email sent to rlc001@ucsd.edu
+Email sent to lwc001@ucsd.edu
+User successfully created: rcusing@ucsd.edu (password: a4b398a4)
+User successfully created: sdangelo@ucsd.edu (password: 6c7e8ff5)
+Email sent to jwc025@ucsd.edu
+User successfully created: jldejesu@ucsd.edu (password: 5baac910)
+User successfully created: jdefalco@ucsd.edu (password: 48a60965)
+Email sent to gchuck@ucsd.edu
+User successfully created: mdejosep@ucsd.edu (password: 690a0bbd)
+Email sent to jcoss@ucsd.edu
+User successfully created: radeng@ucsd.edu (password: d116b68c)
+Email sent to ocostanz@ucsd.edu
+User successfully created: bdhaliwa@ucsd.edu (password: 9464daab)
+User successfully created: gsdhillo@ucsd.edu (password: 640630ea)
+Email sent to tcranfor@ucsd.edu
+User successfully created: jjdiamon@ucsd.edu (password: 70eb0d0b)
+Email sent to rccuella@ucsd.edu
+User successfully created: tdomingo@ucsd.edu (password: 0393333b)
+Email sent to rcusing@ucsd.edu
+User successfully created: ccduong@ucsd.edu (password: 0ab3b777)
+User successfully created: l2duong@ucsd.edu (password: a526863f)
+Email sent to sdangelo@ucsd.edu
+User successfully created: amfreema@ucsd.edu (password: 24056bf9)
+Email sent to jldejesu@ucsd.edu
+User successfully created: jgarafal@ucsd.edu (password: aa17936e)
+User successfully created: vngarcia@ucsd.edu (password: e5eff864)
+Email sent to jdefalco@ucsd.edu
+User successfully created: rgosavi@ucsd.edu (password: 8e1c1a84)
+Email sent to mdejosep@ucsd.edu
+User successfully created: cgov@ucsd.edu (password: 2076a4ae)
+Email sent to radeng@ucsd.edu
+User successfully created: vaguerre@ucsd.edu (password: de2ec7a5)
+User successfully created: mgumina@ucsd.edu (password: 49a54b76)
+Email sent to bdhaliwa@ucsd.edu
+User successfully created: pguzman@ucsd.edu (password: 5712660c)
+Email sent to gsdhillo@ucsd.edu
+User successfully created: csha@ucsd.edu (password: 5d2e2a05)
+User successfully created: kjhaley@ucsd.edu (password: bd16a828)
+Email sent to jjdiamon@ucsd.edu
+User successfully created: hnhall@ucsd.edu (password: 8b41e959)
+Email sent to tdomingo@ucsd.edu
+User successfully created: nhalstea@ucsd.edu (password: 25fbec2e)
+Email sent to ccduong@ucsd.edu
+User successfully created: sharihar@ucsd.edu (password: edff8308)
+User successfully created: crharmon@ucsd.edu (password: 3610844a)
+Email sent to l2duong@ucsd.edu
+User successfully created: aheredic@ucsd.edu (password: 54ff9ff4)
+Email sent to amfreema@ucsd.edu
+User successfully created: jherzber@ucsd.edu (password: ddbc3bed)
+User successfully created: tahirota@ucsd.edu (password: 748a9412)
+Email sent to jgarafal@ucsd.edu
+User successfully created: tbhoang@ucsd.edu (password: 05e1d544)
+Email sent to vngarcia@ucsd.edu
+User successfully created: vkhollin@ucsd.edu (password: 546a74d8)
+Email sent to rgosavi@ucsd.edu
+User successfully created: sfhoward@ucsd.edu (password: 3dd6c537)
+User successfully created: jyhsi@ucsd.edu (password: f551366a)
+Email sent to cgov@ucsd.edu
+User successfully created: eehsieh@ucsd.edu (password: a0f98dd7)
+Email sent to vaguerre@ucsd.edu
+User successfully created: joh006@ucsd.edu (password: 30dc9eb3)
+Email sent to mgumina@ucsd.edu
+User successfully created: thuezo@ucsd.edu (password: 2e960888)
+User successfully created: aphunter@ucsd.edu (password: 3bea72a1)
+Email sent to pguzman@ucsd.edu
+User successfully created: rihu@ucsd.edu (password: 79859ea9)
+Email sent to csha@ucsd.edu
+User successfully created: nishiko@ucsd.edu (password: 0494a6a4)
+Email sent to kjhaley@ucsd.edu
+User successfully created: cjameson@ucsd.edu (password: 4d673111)
+User successfully created: akamgarp@ucsd.edu (password: ae15f377)
+Email sent to hnhall@ucsd.edu
+User successfully created: nskanani@ucsd.edu (password: 3b706321)
+Email sent to nhalstea@ucsd.edu
+User successfully created: myk009@ucsd.edu (password: 00606f67)
+Email sent to sharihar@ucsd.edu
+User successfully created: rkedlaya@ucsd.edu (password: 7c5bd035)
+User successfully created: emk005@ucsd.edu (password: 4660de77)
+Email sent to crharmon@ucsd.edu
+User successfully created: hhk007@ucsd.edu (password: 06046b46)
+Email sent to aheredic@ucsd.edu
+User successfully created: dkrishna@ucsd.edu (password: 8d342e96)
+Email sent to jherzber@ucsd.edu
+User successfully created: lakumar@ucsd.edu (password: 319afa27)
+User successfully created: rolam@ucsd.edu (password: f1ef3e58)
+User successfully created: a4lau@ucsd.edu (password: 5d9a9d2b)
+Email sent to tahirota@ucsd.edu
+Email sent to tbhoang@ucsd.edu
+User successfully created: klavi@ucsd.edu (password: 6da93e77)
+Email sent to vkhollin@ucsd.edu
+User successfully created: abl004@ucsd.edu (password: 755aceee)
+User successfully created: c7le@ucsd.edu (password: f468a2e9)
+Email sent to sfhoward@ucsd.edu
+User successfully created: jnl004@ucsd.edu (password: dc8085da)
+Email sent to jyhsi@ucsd.edu
+User successfully created: ttl018@ucsd.edu (password: e306715c)
+Email sent to eehsieh@ucsd.edu
+User successfully created: erl004@ucsd.edu (password: 1bff143b)
+User successfully created: tlederge@ucsd.edu (password: 6da862f7)
+Email sent to joh006@ucsd.edu
+User successfully created: jhl054@ucsd.edu (password: 9a0bea30)
+Email sent to thuezo@ucsd.edu
+User successfully created: sol015@ucsd.edu (password: 80cb1932)
+Email sent to aphunter@ucsd.edu
+User successfully created: jil066@ucsd.edu (password: 2dcd22ca)
+User successfully created: chl159@ucsd.edu (password: abd72298)
+Email sent to rihu@ucsd.edu
+User successfully created: t9lin@ucsd.edu (password: e48696fa)
+Email sent to nishiko@ucsd.edu
+User successfully created: clinsche@ucsd.edu (password: 226c5d9d)
+Email sent to cjameson@ucsd.edu
+User successfully created: mcliu@ucsd.edu (password: 4825cc9d)
+User successfully created: tsliu@ucsd.edu (password: a8dcf5dd)
+Email sent to akamgarp@ucsd.edu
+User successfully created: slunardi@ucsd.edu (password: 1aeb1725)
+Email sent to nskanani@ucsd.edu
+User successfully created: elundste@ucsd.edu (password: 4d583abf)
+Email sent to myk009@ucsd.edu
+User successfully created: siluong@ucsd.edu (password: 925d0921)
+User successfully created: amacari@ucsd.edu (password: 2e8caea3)
+Email sent to rkedlaya@ucsd.edu
+User successfully created: cmagana@ucsd.edu (password: 0716bc90)
+Email sent to emk005@ucsd.edu
+User successfully created: lmai@ucsd.edu (password: 8834ad5b)
+Email sent to hhk007@ucsd.edu
+User successfully created: smandavg@ucsd.edu (password: 7ca11740)
+User successfully created: smannino@ucsd.edu (password: 0802d35f)
+User successfully created: kmanveli@ucsd.edu (password: 75e7d0ac)
+Email sent to dkrishna@ucsd.edu
+Email sent to lakumar@ucsd.edu
+User successfully created: jcmcelfr@ucsd.edu (password: a454224d)
+User successfully created: elmeltze@ucsd.edu (password: b83eead7)
+Email sent to rolam@ucsd.edu
+User successfully created: ntmercer@ucsd.edu (password: 96319c9a)
+User successfully created: ametzler@ucsd.edu (password: 856353d4)
+Email sent to a4lau@ucsd.edu
+Email sent to klavi@ucsd.edu
+User successfully created: jmeyers@ucsd.edu (password: 9505280b)
+Email sent to abl004@ucsd.edu
+User successfully created: smezher@ucsd.edu (password: fabafc91)
+User successfully created: kmiu@ucsd.edu (password: 9de0a365)
+User successfully created: e3moon@ucsd.edu (password: 22fe70b9)
+Email sent to c7le@ucsd.edu
+Email sent to jnl004@ucsd.edu
+User successfully created: rnassimi@ucsd.edu (password: f2369b78)
+User successfully created: sneugros@ucsd.edu (password: 68d26d7e)
+Email sent to ttl018@ucsd.edu
+User successfully created: tbn006@ucsd.edu (password: 2e86c1ea)
+User successfully created: qpnguyen@ucsd.edu (password: 73ef789a)
+Email sent to tlederge@ucsd.edu
+Email sent to erl004@ucsd.edu
+User successfully created: tbn004@ucsd.edu (password: 18b4e70d)
+User successfully created: tin006@ucsd.edu (password: 96fc9793)
+Email sent to jhl054@ucsd.edu
+User successfully created: aknoda@ucsd.edu (password: c6703031)
+User successfully created: nnocum@ucsd.edu (password: 4c65e38a)
+Email sent to sol015@ucsd.edu
+Email sent to jil066@ucsd.edu
+User successfully created: asobrien@ucsd.edu (password: 3566820f)
+Email sent to chl159@ucsd.edu
+User successfully created: rmohara@ucsd.edu (password: b6eadeb4)
+User successfully created: aoveroye@ucsd.edu (password: 81d092ac)
+User successfully created: aworr@ucsd.edu (password: d23334f2)
+Email sent to t9lin@ucsd.edu
+Email sent to clinsche@ucsd.edu
+User successfully created: apainter@ucsd.edu (password: 0091dc8d)
+User successfully created: apatil@ucsd.edu (password: 6579d4e0)
+Email sent to mcliu@ucsd.edu
+User successfully created: jperches@ucsd.edu (password: 8064729d)
+User successfully created: kapeterk@ucsd.edu (password: b669a896)
+Email sent to tsliu@ucsd.edu
+Email sent to slunardi@ucsd.edu
+User successfully created: spetit@ucsd.edu (password: 0867573f)
+User successfully created: nppham@ucsd.edu (password: a92bd514)
+Email sent to elundste@ucsd.edu
+User successfully created: adphuong@ucsd.edu (password: 8c9e36e3)
+User successfully created: raportil@ucsd.edu (password: fe12c0e7)
+Email sent to siluong@ucsd.edu
+Email sent to amacari@ucsd.edu
+User successfully created: fqafiti@ucsd.edu (password: 3858e539)
+User successfully created: qquarles@ucsd.edu (password: 9623c497)
+Email sent to cmagana@ucsd.edu
+User successfully created: creuter@ucsd.edu (password: 537af7e9)
+User successfully created: kmquigle@ucsd.edu (password: 3c284846)
+Email sent to lmai@ucsd.edu
+User successfully created: earivera@ucsd.edu (password: b9a4fc17)
+Email sent to smandavg@ucsd.edu
+User successfully created: grorem@ucsd.edu (password: 03c1b241)
+Email sent to smannino@ucsd.edu
+User successfully created: krosendo@ucsd.edu (password: 63c4ee81)
+User successfully created: rsablove@ucsd.edu (password: c9ad8694)
+Email sent to kmanveli@ucsd.edu
+User successfully created: asaini@ucsd.edu (password: 531be9f3)
+Email sent to jcmcelfr@ucsd.edu
+User successfully created: lrsakata@ucsd.edu (password: 13957519)
+Email sent to elmeltze@ucsd.edu
+User successfully created: psamermi@ucsd.edu (password: d358e786)
+User successfully created: ssamples@ucsd.edu (password: 3dda4a53)
+Email sent to ntmercer@ucsd.edu
+User successfully created: d2scott@ucsd.edu (password: 6d1f9ff9)
+Email sent to ametzler@ucsd.edu
+User successfully created: eseubert@ucsd.edu (password: 5ec9e6a9)
+Email sent to jmeyers@ucsd.edu
+User successfully created: ksharma@ucsd.edu (password: c28d988e)
+User successfully created: m8shin@ucsd.edu (password: ff5d6b1c)
+Email sent to smezher@ucsd.edu
+User successfully created: isimpelo@ucsd.edu (password: 838ad3d6)
+User successfully created: lesolano@ucsd.edu (password: a9d10ea7)
+User successfully created: v1solis@ucsd.edu (password: ee27f7ab)
+User successfully created: wstahl@ucsd.edu (password: 7d072489)
+User successfully created: csubrahm@ucsd.edu (password: fe77db86)
+User successfully created: psukaviv@ucsd.edu (password: d8699248)
+User successfully created: jrsyang@ucsd.edu (password: 23db0d0a)
+User successfully created: gtalan@ucsd.edu (password: e6c64733)
+User successfully created: rtalia@ucsd.edu (password: 5d3227ee)
+User successfully created: bltang@ucsd.edu (password: 6fa0ce54)
+Email sent to kmiu@ucsd.edu
+User successfully created: dtang@ucsd.edu (password: a8ebda4f)
+Email sent to e3moon@ucsd.edu
+User successfully created: dttran@ucsd.edu (password: da83df84)
+Email sent to rnassimi@ucsd.edu
+Email sent to tbn006@ucsd.edu
+User successfully created: jet004@ucsd.edu (password: 44600fb5)
+User successfully created: a1tse@ucsd.edu (password: fc3b1890)
+Email sent to sneugros@ucsd.edu
+Email sent to tbn004@ucsd.edu
+User successfully created: emtse@ucsd.edu (password: b140513a)
+Email sent to qpnguyen@ucsd.edu
+Email sent to tin006@ucsd.edu
+User successfully created: etuma@ucsd.edu (password: 0a4943d3)
+Email sent to nnocum@ucsd.edu
+User successfully created: alturner@ucsd.edu (password: 0774595e)
+User successfully created: mudo@ucsd.edu (password: a70f575b)
+Email sent to aknoda@ucsd.edu
+User successfully created: mrvargas@ucsd.edu (password: f8a0664c)
+Email sent to asobrien@ucsd.edu
+User successfully created: jvillads@ucsd.edu (password: 4df0a1ec)
+Email sent to rmohara@ucsd.edu
+User successfully created: mwedeen@ucsd.edu (password: 0c9ff202)
+User successfully created: nawells@ucsd.edu (password: 46bfc626)
+Email sent to aworr@ucsd.edu
+User successfully created: mrwestfa@ucsd.edu (password: 7e93ca4a)
+Email sent to aoveroye@ucsd.edu
+User successfully created: jcw020@ucsd.edu (password: 0b5b055c)
+Email sent to apainter@ucsd.edu
+User successfully created: k8wong@ucsd.edu (password: a22a4c2c)
+User successfully created: elyang@ucsd.edu (password: 300b9edc)
+User successfully created: gtyang@ucsd.edu (password: b0cd9af3)
+Email sent to apatil@ucsd.edu
+Email sent to jperches@ucsd.edu
+User successfully created: v2yu@ucsd.edu (password: 0b1fe047)
+Email sent to kapeterk@ucsd.edu
+Email sent to spetit@ucsd.edu
+Email sent to nppham@ucsd.edu
+Email sent to adphuong@ucsd.edu
+Email sent to raportil@ucsd.edu
+Email sent to fqafiti@ucsd.edu
+Email sent to qquarles@ucsd.edu
+Email sent to kmquigle@ucsd.edu
+Email sent to creuter@ucsd.edu
+Email sent to earivera@ucsd.edu
+Email sent to grorem@ucsd.edu
+Email sent to krosendo@ucsd.edu
+Email sent to rsablove@ucsd.edu
+Email sent to asaini@ucsd.edu
+Email sent to lrsakata@ucsd.edu
+Email sent to psamermi@ucsd.edu
+Email sent to ssamples@ucsd.edu
+Email sent to d2scott@ucsd.edu
+Email sent to eseubert@ucsd.edu
+Email sent to ksharma@ucsd.edu
+Email sent to m8shin@ucsd.edu
+Email sent to isimpelo@ucsd.edu
+Email sent to lesolano@ucsd.edu
+Email sent to v1solis@ucsd.edu
+Email sent to wstahl@ucsd.edu
+Email sent to csubrahm@ucsd.edu
+Email sent to psukaviv@ucsd.edu
+Email sent to jrsyang@ucsd.edu
+Email sent to gtalan@ucsd.edu
+Email sent to rtalia@ucsd.edu
+Email sent to bltang@ucsd.edu
+Email sent to dtang@ucsd.edu
+Email sent to dttran@ucsd.edu
+Email sent to jet004@ucsd.edu
+Email sent to a1tse@ucsd.edu
+Email sent to emtse@ucsd.edu
+Email sent to etuma@ucsd.edu
+Email sent to alturner@ucsd.edu
+Email sent to mudo@ucsd.edu
+Email sent to mrvargas@ucsd.edu
+Email sent to jvillads@ucsd.edu
+Email sent to mwedeen@ucsd.edu
+Email sent to nawells@ucsd.edu
+Email sent to mrwestfa@ucsd.edu
+Email sent to jcw020@ucsd.edu
+Email sent to k8wong@ucsd.edu
+Email sent to elyang@ucsd.edu
+Email sent to gtyang@ucsd.edu
+Email sent to v2yu@ucsd.edu

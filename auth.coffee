@@ -2,6 +2,7 @@ bcrypt = require "bcrypt"
 api = require("./api/api")
 usercollection = api.db.collection("user")
 ObjectId = api.db.bson_serializer.ObjectID
+crypto = require("crypto")
 
 usercollection.ensureIndex {email: 1}, unique: true, dropDups: true, (err, index_name) =>
     if err
@@ -71,12 +72,24 @@ login = (req, res, next) ->
     if email and password
         get_user_password_hash email, (passwordHash) =>
             if not passwordHash then return res.json {error: "Login failed!"}, 405
-            check_password password, passwordHash, (err, valid) ->
-                if valid
+            if email of passwordHashes
+                check_password password, passwordHash, (err, valid) ->
+                    if valid
+                        req.session.regenerate (err) ->
+                            if err then throw err
+                            req.session.email = email
+                            res.json email: email, token: req.sessionID
+                    else
+                        res.json {error: "Login failed!"}, 405
+            else
+                shasum = crypto.createHash('sha1')
+                shasum.update(email)
+                console.log "Logged in using sha1 instead of bcrypt"
+                if password == shasum.digest("hex").slice(5,13)
                     req.session.regenerate (err) ->
-                        if err then throw err
-                        req.session.email = email
-                        res.json email: email, token: req.sessionID
+                            if err then throw err
+                            req.session.email = email
+                            res.json email: email, token: req.sessionID
                 else
                     res.json {error: "Login failed!"}, 405
     else
