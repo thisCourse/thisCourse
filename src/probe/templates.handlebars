@@ -100,7 +100,9 @@
         <h3>Total Points: {{points}}</h3>
         <ul>
             {{#each collection/models }}
-                <li><button id ='{{id}}' class="section-button delete-button btn danger">x</button><a href='{{ ../options/path }}{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
+                <li><button id ='{{id}}' class="section-button delete-button btn danger">x</button>
+                <input type="checkbox"  value='{{id}}'>
+                <a href='{{ ../options/path }}{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
             {{/each }}
         </ul>
 
