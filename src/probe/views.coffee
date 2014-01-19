@@ -36,7 +36,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         events:
             "click .add-button": "addNewProbe"
-            "click .delete-button": "addNewProbe"
+            "click .delete-button": "deleteProbe"
+            
 
         render: =>
             # console.log "rendering ProbeListView"
@@ -45,15 +46,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 for answer in model.get("answers").models
                     if answer.get("correct") then @points++
             @$el.html templates.question_list @context(points: @points)
-            @makeSortable()
+            
             
         initialize: ->
+            @itemsToMove = new Backbone.Collection
             # console.log "init ProbeListView"
             for model in @collection.models
                 model.fetch()
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", @render
+            # @itemsToMove.bind "add"
 
         addNewProbe: =>
             @collection.create {},
@@ -61,23 +64,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
 
         deleteProbe: (ev) =>
+            # console.log ev 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
-                @collection.remove probe
+                probe.destroy()
+                probe.parent.model.save()
 
         # probeAdded: (model, coll) =>
         #     alert "added"
         #     @$('ul').append("<li>" + model.get("title") + "</li>")
 
-        makeSortable: ->
-            # @$("ul").sortable
-            #     update: (event, ui) ->
-            #         new_order = self.$("ul").sortable("toArray")
-            #         self.collection.reorder new_order
-            #         app.course.save()
-
-            #     opacity: 0.6
-            #     tolerance: "pointer"
+        
 
     doPost = (url, data, success) ->
         $.ajax
