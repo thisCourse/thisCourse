@@ -80,7 +80,7 @@ define ["cs!base/views", "cs!./models", "cs!content/views", "cs!ui/dialogs/views
             html = ""
             for model in @collection.models
                 console.log model
-                html += "<#{@childTagName} title='#{model.get('tooltip')}'> <button id ='#{model.id}' class='section-button delete-button btn danger'>X</button>&nbsp<a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
+                html += "<#{@childTagName} title='#{model.get('tooltip')}'> <button id ='#{model.id}' class='section-button delete-button btn danger editor-only'>X</button>&nbsp<a href='#{@createUrl(model)}'>#{model.get('title')}</a></#{@childTagName}>"
             @$el.html html
             @navigate @subfragment, @query
             
