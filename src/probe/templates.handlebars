@@ -93,6 +93,14 @@
         </li>
 </script>
 
+<script id="question_type_list" type="text/x-handlebars-template">
+    <div class="questiontypelist">
+        <div class="probe-list"></div>
+        <button class="section-button disabled swap-button btn danger">Swap Questions</button>
+        <div class="exam-list"></div>
+    </div>
+</script>
+
 
 <script id="question_list" type="text/x-handlebars-template">
     <div class="questionlist">
@@ -101,9 +109,9 @@
         <ul>
             {{#each collection/models }}
                 <li><button id ='{{id}}' class="section-button delete-button btn danger">x</button>
-                <input type="checkbox"  value='{{id}}'>
+                <input type="checkbox" class ="question-select" value='{{id}}'>
                 <a href='{{ ../options/path }}{{id}}'>{{#if attributes/question_text }}{{ attributes/question_text }}{{else}}No Title{{/if}}</a></li>
-            {{/each }}
+            {{/each }} 
         </ul>
 
         <span class="editor-only">
