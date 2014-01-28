@@ -606,6 +606,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         cancel: =>
             @mementoRestore()
+            @render()
             @return()
         
         updateQuestion: (event) =>
