@@ -85,8 +85,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 success: (model) => require("app").navigate @options.path + model.id
             
 
-        deleteProbe: (ev) =>
-            # console.log ev 
+        deleteProbe: (ev) => 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
                 probe.destroy()
@@ -95,12 +94,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         questionPresent: (ev)=>
             question = @collection.get(ev.target.value)
-            # console.log question
             if question in @itemsToMove.models
                 @itemsToMove.remove question
             else 
                 @itemsToMove.add question
-            console.log @itemsToMove
             
             
         moveProbe: =>
