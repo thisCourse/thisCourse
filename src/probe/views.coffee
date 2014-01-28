@@ -24,19 +24,39 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             super
 
     class QuestionTypeListView extends baseviews.BaseView
-        
+        events:
+             "click .swap-button": "swapProbes"
+             "click .question-select": "boxChecked"
         render: =>
+            @$el.html templates.question_type_list 
             if app.get("user").get("email") is "admin"
-                @add_subview "probelist", new QuestionListView(collection: @model.get("probeset"), title: "Probe", path:"probe/")
-                @add_subview "examlist", new QuestionListView(collection: @model.get("examquestions"), title: "Exam Question", path: "exam/")
+                @add_subview "probelist", new QuestionListView(collection: @model.get("probeset"), title: "Probe", path:"probe/"), ".probe-list"
+                @add_subview "examlist", new QuestionListView(collection: @model.get("examquestions"), title: "Exam Question", path: "exam/"), ".exam-list"
             else
                 @$el.html "<p>Wouldn't you prefer a nice game of chess?</p>"
-
+        
+        swapProbes: =>
+            for key,subview of @subviews
+                subview.moveProbe()
+                @boxChecked()
+                
+        boxChecked: => 
+            checked = false
+            for key,subview of @subviews
+                if subview.itemsToMove.models.length > 0
+                    checked = true
+            if checked 
+                @$(".swap-button").removeClass("disabled")
+            else
+                @$(".swap-button").addClass("disabled")
+            
     class QuestionListView extends baseviews.BaseView
 
         events:
             "click .add-button": "addNewProbe"
             "click .delete-button": "deleteProbe"
+            "click .question-select": "questionPresent"
+           
             
 
         render: =>
@@ -63,16 +83,30 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 success: (model) => require("app").navigate @options.path + model.id
             
 
-        deleteProbe: (ev) =>
-            # console.log ev 
+        deleteProbe: (ev) => 
             probe = @collection.get(ev.target.id)
             dialogviews.delete_confirmation probe, "probe", =>
                 probe.destroy()
                 probe.parent.model.save()
 
-        # probeAdded: (model, coll) =>
-        #     alert "added"
-        #     @$('ul').append("<li>" + model.get("title") + "</li>")
+
+        questionPresent: (ev)=>
+            question = @collection.get(ev.target.value)
+            if question in @itemsToMove.models
+                @itemsToMove.remove question
+            else 
+                @itemsToMove.add question
+            
+            
+        moveProbe: =>
+            targetColl = if @options.title == "Probe" then @collection.parent.model.get("examquestions") else @collection.parent.model.get("probeset")
+            for model in @itemsToMove.models
+                @collection.remove model
+                targetColl.add model
+            @itemsToMove = new Backbone.Collection
+            @collection.parent.model.save()
+            
+                             
 
         
 
@@ -459,6 +493,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model.whenLoaded @render
             @prefetchProbe()
 
+
     class ProbeView extends baseviews.BaseView
         
         events:
@@ -579,6 +614,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         updateFeedback: (event) =>
             @model.set feedback:@$('.feedback_text')[0].value
         
+            
         return: =>
             require("app").navigate @url + "../.."
             
@@ -604,6 +640,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         initialize: =>
             @model.bind "change", @render
             @model.bind "destroy", @close
+            @editing = ''
 
         render: =>
             @$el.html templates.probe_answer_edit @context()
