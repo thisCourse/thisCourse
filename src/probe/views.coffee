@@ -598,8 +598,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "input propertychange .feedback_text" : "updateFeedback"
 
         save: =>
-            console.log "this is the save button"
-            # @$("input").blur()
+            @$("input").blur()
             @$(".save.btn").button "loading"
             @model.save().success =>
                 console.log @url
