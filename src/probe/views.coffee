@@ -594,11 +594,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             "click button.save": "save"
             "click button.cancel": "cancel"
             "click .addanswer"  : "createAnswer"
-            "change .question_text" : "updateQuestion"
-            "change .feedback_text" : "updateFeedback"
+            "input propertychange .question_text" : "updateQuestion"
+            "input propertychange .feedback_text" : "updateFeedback"
 
         save: =>
-            @$("input").blur()
+            console.log "this is the save button"
+            # @$("input").blur()
             @$(".save.btn").button "loading"
             @model.save().success =>
                 console.log @url
