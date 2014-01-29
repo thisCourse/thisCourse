@@ -80,7 +80,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         addNewProbe: =>
             @collection.create {},
-                success: (model) => require("app").navigate @options.path + model.id
+                success: (model) => 
+                    console.log model
+                    require("app").navigate @options.path + model.get("_id")
             
 
         deleteProbe: (ev) => 
@@ -577,13 +579,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class ProbeEditView extends baseviews.BaseView
 
         initialize: ->
+            @model = @collection.get(@options.probe)
             @mementoStore()
-            @collection.bind "change", @render
+            @model.bind "change", @render
+            @model.bind "destroy", @close
             @newans = 0
             # console.log "Init ProbeEditView"
         
         render: =>
-            @model = @collection.get(@options.probe)
             @$el.html templates.probe_edit @context()
             # Backbone.ModelBinding.bind @
             # @enablePlaceholders()
