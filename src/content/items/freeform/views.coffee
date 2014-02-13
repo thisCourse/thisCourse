@@ -1,5 +1,5 @@
-define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.handlebars", "less!./styles"], \
-        (itemviews, baseviews, ckeditorviews, templates, styles) ->
+define ["cs!../views", "cs!base/views", "cs!ckeditor/views","cs!glossary/views","hb!./templates.handlebars", "less!./styles"], \
+        (itemviews, baseviews, ckeditorviews, glossaryviews, templates, styles) ->
 
     class FreeformItemEditView extends itemviews.ItemEditInlineView
         
@@ -18,17 +18,33 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views", "hb!./templates.han
         close: =>
             # @$(".ckeditor").ckeditorGet().destroy() # this is commented out because it breaks the editor upon second load
             super
-
     class FreeformItemDisplayView extends itemviews.ItemDisplayView
 
         initialize: ->
             @model.set width: Math.min(15, @model.parent.model.get("width"))
             super
 
+        events:
+            "mouseover glossary" : "showDef" 
+            "click .close-button" : "closeGlossary"
         render: =>
             # console.log "rendering freeform itemview"
             super
             @$el.html templates.item_freeform @context()
+            
+        showDef: (ev) =>
+            console.log ev.target.id
+            console.log ev.target 
+            if "glossaryItem_" + ev.target.id in Object.keys(@subviews)
+                return
+            else
+                for key, subview of @subviews
+                    @close_subview(key)
+                @add_subview "glossaryItem_" + ev.target.id, new glossaryviews.GlossaryView(html: "definition shown", target: ev.target)
+
+        closeGlossary: =>
+            for key,subview of @subviews
+                @close_subview(key)
             
     class FreeformItemView extends itemviews.ItemView    
         EditView: FreeformItemEditView
