@@ -265,6 +265,13 @@ define ["cs!utils/formatters"], (formatters) ->
             
     class BaseCollection extends Backbone.Collection
         
+        _loaded: false
+        loading: false
+        
+        loaded: =>
+            # clog "CHECKING IF LOADED", @, @includeInJSON==true, @_loaded
+            (@includeInJSON==true or @_loaded) and not @loading
+        
         constructor: ->
             @_bySlug = {}
             super
@@ -310,6 +317,20 @@ define ["cs!utils/formatters"], (formatters) ->
                     # console.log "slug changed", model.previous("slug"), model.slug()
                     @_addToSlugIndex model
             super
+
+        fetchAll: =>
+            if @loading
+                console.log "Collection", @, "is already being loaded; aborting 'fetchAll()'."
+                return
+            @loading = true
+            $.when(model.fetch() for model in @models).done =>
+                @_loaded = _.all @models, (model) -> model.loaded
+                @loading = false
+                @trigger "loaded"
+                
+        whenLoaded: (callback) =>
+            if @loaded() then return callback()
+            @bind "loaded", callback # TODO: unbind?
 
     class LazyCollection extends BaseCollection
         
