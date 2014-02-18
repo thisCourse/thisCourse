@@ -40,7 +40,8 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views","cs!glossary/views",
             else
                 for key, subview of @subviews
                     @close_subview(key)
-                @add_subview "glossaryItem_" + ev.target.id, new glossaryviews.GlossaryView(html: "definition shown", target: ev.target)
+                @add_subview "glossaryItem_" + ev.target.id, new glossaryviews.GlossaryView(target: ev.target), ".glossary-placeholder"
+                console.log "glossaryItem_" + ev.target.id
 
         closeGlossary: =>
             for key,subview of @subviews
