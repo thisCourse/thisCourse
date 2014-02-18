@@ -602,6 +602,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         save: =>
             @$("input").blur()
+            @updateQuestion()
             @$(".save.btn").button "loading"
             @model.save().success =>
                 console.log @url
