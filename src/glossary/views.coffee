@@ -15,9 +15,11 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
     class GlossaryView extends baseviews.BaseView
 
-             
+        initialize: =>
+            @model =  app.get("course").get("glossary").get(@options.target.id) 
                   
         render: =>
+            console.log @model
             @$el.html templates.glossary @context()
             @$el.width 172
             if $(@options.target).offset()["left"] < window.innerWidth/2 
