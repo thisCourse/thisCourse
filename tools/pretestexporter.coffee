@@ -15,15 +15,16 @@ api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000
     
     for nugget in course.nuggets
         if nugget._id == "514df2ae400a59290a000054"
-	        nugget.probeset.forEach (probe) =>
-    	        id = probe
-		        if id.length isnt 24
-		            console.log id.length, id, typeof id
-		            return
-		        api.db.collection("probe").findOne _id: new api.ObjectId(id), (err, fullprobe) =>
-			    	stream.write JSON.stringify(probe) + ",\n"
+            nugget.probeset.forEach (probe) =>
+                console.log probe
+                id = probe._id
+                if id.length isnt 24
+                    console.log id.length, id, typeof id
+                    return
+                api.db.collection("probe").findOne _id: new api.ObjectId(id), (err, fullprobe) =>
+                    stream.write JSON.stringify(probe) + ",\n"
 
 close = (filestream) =>
-	filestream.write "}"
+    filestream.write "}"
 
 setTimeout close, 5000
