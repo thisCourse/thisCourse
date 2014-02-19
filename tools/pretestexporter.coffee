@@ -17,7 +17,7 @@ api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000
         if nugget._id.toString() == "514df2ae400a59290a000054"
             nugget.probeset.forEach (probe) =>
                 console.log probe
-                id = probe._id
+                id = probe._id.toString()
                 if id.length isnt 24
                     console.log id.length, id, typeof id
                     return
@@ -27,4 +27,4 @@ api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000
 close = (filestream) =>
     filestream.write "}"
 
-setTimeout close, 5000
+setTimeout close(filestream), 5000
