@@ -4,6 +4,7 @@ analytics = require("../api/analytics")
 api = require("../api/api")
 redis = require("redis").createClient()
 undergrads = require("./students.coffee")
+start = new Date(2013,2,31)
 
 students = undergrads
 
@@ -15,7 +16,7 @@ api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000
         if nugget._id.toString() == "514df2ae400a59290a000054" then nougat = nugget
     
     nougat.probeset.forEach (probe) =>
-        id = probe_id.toString()
+        id = probe._id.toString()
         if id.length isnt 24
             console.log id.length, id, typeof id
             return
@@ -31,7 +32,7 @@ api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000
         
 
 addScores = =>
-    analytics.db.collection("pretest").find(type: "pretestresponse").toArray (err, pretestresponses) =>
+    analytics.db.collection("pretest").find(type: "proberesponse", email: {$in: students}, timestamp: {$gte: start}).toArray (err, pretestresponses) =>
         pretestresponses.forEach (response) =>
             response.totalanswers = probeanswers[response.probe].length
             correct = (answer._id.toString() for answer in probeanswers[response.probe] when answer.correct)
@@ -54,7 +55,7 @@ setTimeout addScores, 2000
 
 analytics.db.collection("pretest").group(
     {email:true}
-    {type:"pretestresponse"}
+    {type:"proberesponse", timestamp: {$gte: start}}
     {csum:0,count:0,score:0, maxscore:0}
     (obj,prev) -> 
         prev.csum+=obj.responsetime
