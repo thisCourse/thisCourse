@@ -4,6 +4,7 @@ analytics = require("../api/analytics")
 api = require("../api/api")
 redis = require("redis").createClient()
 undergrads = require("./students.coffee")
+start = new Date(2013,2,31)
 
 students = undergrads
 
@@ -31,7 +32,7 @@ api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000
         
 
 addScores = =>
-    analytics.db.collection("posttest").find(type: "proberesponse").toArray (err, proberesponses) =>
+    analytics.db.collection("posttest").find(type: "proberesponse", email: {$in: students}, timestamp: {$gte: start}).toArray (err, proberesponses) =>
         proberesponses.forEach (response) =>
             response.totalanswers = probeanswers[response.probe].length
             correct = (answer._id.toString() for answer in probeanswers[response.probe] when answer.correct)
@@ -53,7 +54,7 @@ setTimeout addScores, 2000
 
 analytics.db.collection("posttest").group(
     {email:true}
-    {type:"proberesponse"}
+    {type:"proberesponse", timestamp: {$gte: start}}
     {csum:0,count:0,score:0, maxscore:0}
     (obj,prev) -> 
         prev.csum+=obj.responsetime
