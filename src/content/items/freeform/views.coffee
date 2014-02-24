@@ -31,6 +31,11 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views","cs!glossary/views",
             # console.log "rendering freeform itemview"
             super
             @$el.html templates.item_freeform @context()
+            _.defer(@tagGlossary())
+
+        tagGlossary: =>
+            for glossaryitem in app.get("course").get("glossary").models
+                glossaryitem.searchTitle(@$el)
             
         showDef: (ev) =>
             console.log ev.target.id
