@@ -2,50 +2,16 @@ define ["cs!base/models"], (basemodels) ->
 
     class GlossaryModel extends basemodels.LazyModel
         
-        searchTitle: =>
+        searchTitle: (el) =>
             re =  new RegExp("(#{@get("title")})","gi")
             replace = "<glossary id = #{@get("_id")}>$1</glossary>"
             console.log "This is re" + re
             console.log "This is replace" + replace
-            # console.log "starting"
-            # console.log @collection.parent.model.parent.model
-            # if @collection.parent.model.get("nuggets").models
-                # console.log "HI1"
-            @collection.parent.model.get("nuggets").fetch().success =>
-                @collection.parent.model.get("nuggets").forEach (nugget) =>
-                    # if content in nugget.get("page").get("contents").models
-                        # console.log "HI2"
-                    nugget.get("page").get("contents").fetch().success =>
-                        nugget.get("page").get("contents").forEach (content) =>
-                        # if section in content.get("sections").models
-                            # console.log "HI3"
-                            content.get("sections").fetch().success =>
-                                # console.log "Success!"
-                                content.get("sections").forEach (section) =>
-                                    section.get("items").fetch().success =>
-                                        section.get("items").forEach (item) =>
-                                            if item.get("html")
-                                                # console.log item.get("html")
-                                                $object = $.parseHTML(item.get("html"))
-                                                removed = false
-                                                for object in $object
-                                                    remove = []
-                                                    if object then @replaceText(object, re, replace, remove)
-                                                    if remove.length
-                                                        $(remove, object).remove()
-                                                        removed = true
-                                                if removed
-                                                    test = (object.outerHTML for object in $object when object.outerHTML)
-                                                    console.log test
-                                                    teststr = test.join("")
-                                                    # console.log "Setting this!" + test.join(teststr)
-                                                    console.log teststr
-                                                    # item.set "html": [object.outerHTML for object in $object].join("")
-                                                    # item.save().success =>
-                                                    #     console.log "Item changed!"
-                                                    # console.log nugget.get("title")
-                                                    # if object.innerText.lower == @title.lower
-                                                    #     object.innerText.wrap("<glossary id = #{@_id}></glossary>")                                
+            if el
+                remove = []
+                if object then @replaceText(el, re, replace, remove)
+                if remove.length
+                    $(remove, el).remove()
         
         replaceText: (node, search, replace, remove) ->
             if node.childNodes
