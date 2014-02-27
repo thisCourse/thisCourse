@@ -12,18 +12,20 @@ define ["cs!base/models"], (basemodels) ->
             # if @collection.parent.model.get("nuggets").models
                 # console.log "HI1"
             @collection.parent.model.get("nuggets").fetch().success =>
-                @collection.parent.model.get("nuggets").forEach (nugget) =>
-                    # if content in nugget.get("page").get("contents").models
-                        # console.log "HI2"
+                #nugget = @collection.parent.model.get("nuggets").get("4f79dea9ebfd0b4b310001d3")
+                for nugget in @collection.parent.model.get("nuggets").forEach (nugget) =>
+                #if nugget 
+                    console.log "nugget"
                     nugget.get("page").get("contents").fetch().success =>
                         nugget.get("page").get("contents").forEach (content) =>
                         # if section in content.get("sections").models
                             # console.log "HI3"
-                            content.get("sections").fetch().success =>
-                                # console.log "Success!"
-                                content.get("sections").forEach (section) =>
-                                    section.get("items").fetch().success =>
+                            if content.get("sections")
+                                content.get("sections").fetch().success =>
+                                    content.get("sections").forEach (section) =>
+                                        console.log "these are the sections" + section
                                         section.get("items").forEach (item) =>
+                                            console.log "these are the items" + item
                                             if item.get("html")
                                                 # console.log item.get("html")
                                                 $object = $.parseHTML(item.get("html"))
@@ -35,14 +37,13 @@ define ["cs!base/models"], (basemodels) ->
                                                         $(remove, object).remove()
                                                         removed = true
                                                 if removed
-                                                    test = (object.outerHTML for object in $object when object.outerHTML)
-                                                    console.log test
-                                                    teststr = test.join("")
-                                                    # console.log "Setting this!" + test.join(teststr)
-                                                    console.log teststr
-                                                    # item.set "html": [object.outerHTML for object in $object].join("")
-                                                    # item.save().success =>
-                                                    #     console.log "Item changed!"
+                                                    output = (object.outerHTML for object in $object when object.outerHTML)
+                                                    outputstr = output.join("")
+                                                    console.log "Setting this!" + outputstr
+                                                    item.set "html": outputstr
+                                                    # nugget.save().success =>
+                                                    item.save().success =>
+                                                        console.log "Item changed!"
                                                     # console.log nugget.get("title")
                                                     # if object.innerText.lower == @title.lower
                                                     #     object.innerText.wrap("<glossary id = #{@_id}></glossary>")                                
