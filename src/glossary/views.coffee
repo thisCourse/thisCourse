@@ -17,20 +17,35 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
         initialize: =>
             @model =  app.get("course").get("glossary").get(@options.target.id) 
+            console.log @$el.width()
                   
         render: =>
             console.log @model
             @$el.html templates.glossary @context()
-            @$el.width 172
-            if $(@options.target).offset()["left"] < window.innerWidth/2 
-                @$el.css "top" , $(@options.target).offset()["top"] #;+ $(options.target).hieght()
-                @$el.css "left", $(@options.target).offset()["left"] + $(@options.target).width()
-                
-            else
-                @$el.css "top" , $(@options.target).offset()["top"] #;+ $(options.target).hieght()
-                @$el.css "left", $(@options.target).offset()["left"] - @$el.width()
-                console.log @$el.width()
+            @$el.css "opacity", 0
+            @$el.children().css "opacity", 0
+            _.defer => @resize()
+        
+        resize: =>
+            @$el.css "top" , $(@options.target).position()["top"] + $(@options.target).height()
+            @$el.css "left", $(@options.target).position()["left"] + $(@options.target).width()
             
+            if (@$el.offset()["left"] + @$el.width()) > $(window).width() 
+                difference = (@$el.offset()["left"] + @$el.width()) - $(window).width()
+                @$el.css "left", (@$el.position()["left"] - difference)
+                
+            if (@$el.offset()["top"] + @$el.height()) > $(window).height() 
+                difference = (@$el.offset()["top"] + @$el.height()) - $(window).height()
+                @$el.css "top", (@$el.position()["top"] - difference)
+                
+            if @$el.offset()["left"] < 0
+                @$el.css "left", (@$el.position()["left"] - @$el.offset()["left"])
+                
+            if @$el.offset()["top"] < 0
+                @$el.css "top", (@$el.position()["top"] - @$el.offset()["top"]) 
+                
+            @$el.css "opacity", 1
+            @$el.children().css "opacity", 0.8
 
 
     GlossaryRouterView: GlossaryRouterView
