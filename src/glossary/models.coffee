@@ -5,11 +5,10 @@ define ["cs!base/models"], (basemodels) ->
         searchTitle: (el) =>
             re =  new RegExp("(#{@get("title")})","gi")
             replace = "<glossary id = #{@get("_id")}>$1</glossary>"
-            console.log "This is re" + re
-            console.log "This is replace" + replace
             if el
                 remove = []
-                if object then @replaceText(el, re, replace, remove)
+                for object in el
+                    @replaceText(object, re, replace, remove)
                 if remove.length
                     $(remove, el).remove()
         
@@ -20,17 +19,16 @@ define ["cs!base/models"], (basemodels) ->
                     if child.nodeType == 3
                         #The original node value.
                         val = child.nodeValue
-                        # console.log val
                         new_val = val.replace( search, replace );
                         # Only replace text if the new value is actually different!
                         if new_val != val
-                            console.log ("new val is not the same as old val")
+                            # console.log ("new val is not the same as old val")
                             if /</.test( new_val )
                                 # The new value contains HTML, set it in a slower but far more
                                 # robust way.
-                                $(child).before( new_val )
+                                $(child).before new_val 
                                 #Don't remove the node yet, or the loop will lose its place.
-                                remove.push( child );
+                                remove.push child
                             else
                                 #The new value contains no HTML, so it can be set in this
                                 #very fast, simple way.

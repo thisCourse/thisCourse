@@ -16,11 +16,9 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
     class GlossaryView extends baseviews.BaseView
 
         initialize: =>
-            @model =  app.get("course").get("glossary").get(@options.target.id) 
-            console.log @$el.width()
+            @model =  app.get("course").get("glossary").get(@options.target.id)
                   
         render: =>
-            console.log @model
             @$el.html templates.glossary @context()
             @$el.css "opacity", 0
             @$el.children().css "opacity", 0
