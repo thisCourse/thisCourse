@@ -31,22 +31,19 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views","cs!glossary/views",
             # console.log "rendering freeform itemview"
             super
             @$el.html templates.item_freeform @context()
-            _.defer(@tagGlossary())
+            _.defer => @tagGlossary()
 
         tagGlossary: =>
             for glossaryitem in app.get("course").get("glossary").models
                 glossaryitem.searchTitle(@$el)
             
-        showDef: (ev) =>
-            console.log ev.target.id
-            console.log ev.target 
+        showDef: (ev) => 
             if "glossaryItem_" + ev.target.id in Object.keys(@subviews)
                 return
             else
                 for key, subview of @subviews
                     @close_subview(key)
                 @add_subview "glossaryItem_" + ev.target.id, new glossaryviews.GlossaryView(target: ev.target), ".glossary-placeholder"
-                console.log "glossaryItem_" + ev.target.id
 
         closeGlossary: =>
             for key,subview of @subviews
