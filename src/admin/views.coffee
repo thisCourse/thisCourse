@@ -4,8 +4,9 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
     class AdminRouterView extends baseviews.RouterView
 
         routes: =>
-            "/test": => view: TestView, datasource: "model"
-            "": => view: AdminView, datasource: "collection"
+            # "/test": => view: TestView, datasource: "model"
+            "": => view: AdminView
+            # "/glossary": => view: glossaryviews.GlossaryListView, datasource: "course", key: "glossary"
 
 
     class AdminView extends baseviews.BaseView

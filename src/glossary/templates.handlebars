@@ -1,13 +1,25 @@
 <script id="glossary_list" type="text/x-handlebars-template">
+    <span class="editor-only">
+            <button class="add-button btn success">Add glossary item</button>
+    </span>
     <ul>
         {{#each models }}
-        <li>{{ name }}</li>
+        <li><a href="{{ slug }}/">{{#if attributes.title}}{{ attributes.title }}{{else}}Untitled{{/if}}</a></li>
         {{/each}} 
-    </ul>
+    </ul> 
 </script>
 
 <script id="glossary" type="text/x-handlebars-template">
+    <h3>{{title}}</h3>
     {{{ html }}}
     <button class="close-button btn danger">X</button>
 
+</script>
+
+<script id="glossary_edit" type="text/x-handlebars-template">
+    <input class="span12" type="text" data="title" value="{{title}}"/>
+    <textarea class="ckeditor">{{{ html }}}</textarea>
+    <br/>
+    {{> item_edit_buttons }}
+    
 </script>
