@@ -1,13 +1,17 @@
-define ["cs!base/models"], (basemodels) ->
+define ["cs!base/models", "cs!probe/models"], (basemodels, probemodels) ->
 
-    class AdminModel extends basemodels.LazyModel
+    class TestModel extends basemodels.LazyModel
 
-        apiCollection: "admin"
+        relations: ->
+            probeset:
+                collection: probemodels.ProbeCollection
+                includeInJSON: false
+            
+    # class AdminCollection extends basemodels.LazyCollection
 
-    class AdminCollection extends basemodels.LazyCollection
-
-        model: AdminModel
+        # model: AdminModel
 
 
-    AdminModel: AdminModel
-    AdminCollection: AdminCollection
+    # AdminModel: AdminModel
+    # AdminCollection: AdminCollection
+    TestModel:TestModel

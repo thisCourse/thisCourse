@@ -32,10 +32,13 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             ,
                 name: "tools"
                 items: [ "Maximize", "ShowBlocks" ]
+            ,
+                 name: "extratools"
+                 items:["tliyoutube"]
         ]
         
-        config.extraPlugins = "autogrow"
-        config.autoGrow_bottomSpace = 30
+        config.extraPlugins = "autogrow,tliyoutube"
+        config.autoGrow_bottomSpace = 30 
         config.autoGrow_maxHeight = 1000
         config.autoGrow_minHeight = 300
         config.autoGrow_onStartup = true
