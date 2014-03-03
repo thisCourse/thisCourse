@@ -4,22 +4,23 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
     class AdminRouterView extends baseviews.RouterView
 
         routes: =>
-            "": => view: AdminListView, datasource: "collection"
-            ":admin_id/": (admin_id) => view: AdminView, datasource: "collection", key: admin_id
+            # "/test": => view: TestView, datasource: "model"
+            "": => view: AdminView
+            # "/glossary": => view: glossaryviews.GlossaryListView, datasource: "course", key: "glossary"
 
-
-    class AdminListView extends baseviews.BaseView
-
-        render: =>
-            @$el.html templates.admin_list @context()
-            
 
     class AdminView extends baseviews.BaseView
         
         render: =>
             @$el.html templates.admin @context()
+            
+    
+    class TestView extends baseviews.BaseView
+        
+        render: =>
+            @$el.html templates.test @context()
 
 
     AdminRouterView: AdminRouterView
-    AdminListView: AdminListView
     AdminView: AdminView
+    TestView: TestView
