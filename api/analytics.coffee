@@ -1,5 +1,6 @@
 mongoskin = require('mongoskin')
 async = require('async')
+Backbone = require('backbone')
 express = require("express")
 nodeStatic = require('node-static')
 utils = require("./utils.coffee")
@@ -12,6 +13,7 @@ db = mongoskin.db('127.0.0.1/analytics?auto_reconnect')
 ObjectId = db.bson_serializer.ObjectID
 
 routing_pattern = '/:collection([a-z]+)/'
+Backbone.Model.prototype.idAttribute = "_id"
 
 router = ->
     # attach the various HTTP verbs to the api path (for some reason this.all(...) doesn't work here)
@@ -24,6 +26,7 @@ router = ->
 request_handler = (req, res) ->
     handler = new (collections[req.params.collection])
     handler.handle_request(req, res)
+
 
 class AnalyticsHandler
     
@@ -286,8 +289,55 @@ class ProbeResponse extends AnalyticsHandler
             @save_analytics_object data, (response) =>
                 if response.status == 200
                     response.body.probe = probe
+                    response.body.userstatus = change_user_status @req, @req.session.email, "review": response.body
                 callback response
 
+
+change_user_status = (req, email, diff) =>
+    status = api.db.collection("userstatus")
+    log = db.collection("userstatuslog")
+    query = email: email
+    diff_actions = 
+        "set": (data, userstatus) ->
+            data
+        "review": (data, userstatus) ->
+            
+            userstatus.shield -= data
+            if userstatus.shield < 0
+                userstatus.life += userstatus.shield
+                userstatus.shield = 0
+            return userstatus
+        "claimed": (data, userstatus) ->
+            userstatus.claimed = new backbone.Collection(userstatus.claimed)
+            userstatus.partial = new backbone.Collection(userstatus.partial)
+            if data.unclaimed
+                userstatus.claimed.remove data.unclaimed
+                userstatus.partial.remove data.unclaimed
+            if data.claimed
+                userstatus.claimed.add data.claimed
+            if data.claimed is false and not userstatus.claimed.contains(data.claimed._id)
+                userstatus.partial.add data.claimed
+            userstatus.claimed = userstatus.claimed.toJSON()
+            userstatus.partial = userstatus.partial.toJSON()
+            return userstatus
+
+
+    status.findOne(query) (err, userstatus) =>
+        if err then return callback new APIError(err)
+        for key, obj of diff
+            data = diff_action[key] obj, userstatus
+            if data._id then delete data._id
+            status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
+                if err then return new APIError(err)
+                data.timestamp = new Date()
+                data.email = email
+                data.ip = req.connection.remoteAddress
+                collection.save data, (err, obj) =>
+                    if err
+                        console.log "User Status logging failed"
+                    else
+                        console.log "User Status change logged for #{email}"
+                return updatedstatus
 
 collections =
     nuggetattempt: NuggetAttempt
@@ -297,10 +347,12 @@ collections =
     studentstatistics: StudentStatistics
     midterm: Midterm
     final: Final
+    userstatus: UserStatus
 
 module.exports =
     router: router
     db: db
     get_student_nugget_attempts: get_student_nugget_attempts
     get_student_probe_scores: get_student_probe_scores
+    change_user_status: change_user_status
 
