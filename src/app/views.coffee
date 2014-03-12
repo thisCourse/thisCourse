@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], \
-        (baseviews, courseviews, authviews, templates, bootstrap, styles) ->
+define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles", "cs!userstatus/views"], \
+        (baseviews, courseviews, authviews, templates, bootstrap, styles, userstatusviews) ->
 
     class AppView extends baseviews.BaseView
 
@@ -30,6 +30,11 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
             @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"
             @add_subview "toptabsview", new TopTabsView(collection: @model.get("tabs")), "#toptabs"
             @add_subview "loginview", new authviews.LoginView(model: @model.get("user")), "#authbar"
+            userstatus = new Backbone.Model
+                shield: 100
+                life: 100
+            @model.set userstatus: userstatus
+            @add_subview "userstatusview", new userstatusviews.UserStatusView(model: @model.get("userstatus")), "#life_shield"
 
     class TopTabsView extends baseviews.BaseView
 
