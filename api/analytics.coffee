@@ -376,7 +376,6 @@ collections =
     studentstatistics: StudentStatistics
     midterm: Midterm
     final: Final
-    userstatus: UserStatus
 
 module.exports =
     router: router
