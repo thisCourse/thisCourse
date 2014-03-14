@@ -392,13 +392,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @inc += 1
                 if not @options.notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
-                    @options.sync.nuggetAttempt nuggetattempt, =>
+                    @options.sync.nuggetAttempt nuggetattempt, (data) =>
                         if @claimed
                             @$el.html "<h4>Nugget Claimed!</h4>"
                             require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
                         else
                             @$el.html "<h4>Practice makes better!</h4>"
                             require('app').get('user').get('partial').add _id: @model.parent.model.id
+                        app.get("userstatus").set(data.userstatus)
                     return
                 else
                     @showReviewFeedback()
@@ -436,7 +437,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.skipbutton').attr('disabled','disabled')
             @$('.skipbutton').text('Loading')
             responsetime = new Date - @subviews.probeview.timestamp_load
-            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime
+            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime, options: @options
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -447,15 +448,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @options.sync.submitQuestion response, (data) =>
                 if not @options.nofeedback then @$('.answerbtn, .skipbutton').hide()
                 if @options.sync.nuggetAttempt
-                    if not data.correct 
+                    if not data.correct
                         @claimed = false
                         if @options.notclaiming
                             @review.push @model.parent.model
-                    correct = (answer._id for answer in data.probe.answers when answer.correct)
-                    increment = if response.answers.length <= correct.length then _.intersection(response.answers,correct).length else _.intersection(response.answers,correct).length - (response.answers.length-correct.length)
-                    @earnedpoints += Math.max(0, increment)
-                    @points += correct.length
+                    @earnedpoints += data.earnedpoints
+                    @points += data.totalpoints
                     if not @options.nofeedback then @subviews.probeview.answered(data)
+                    app.get("userstatus").set(data.userstatus)
                 if @options.nofeedback
                     @$('.answerbtn').removeAttr('disabled')
                     @$('.answerbtn').text('Submit Answer')
