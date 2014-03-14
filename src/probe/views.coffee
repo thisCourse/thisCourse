@@ -382,6 +382,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             if @submitting == 1
                 @$('.answerbtn, .skipbutton').attr('disabled','disabled')
                 @$('.answerbtn, .skipbutton').text('Loading')
+            if @collection.models.length == 1
+                @$('.skipbutton').hide()
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
                        
         nextProbe: =>
