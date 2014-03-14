@@ -1,4 +1,4 @@
-define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
+define ["cs!base/views", "hb!./templates.handlebars","cs!ui/dialogs/views"], (baseviews, templates,dialogviews) ->
 
     class ItemView extends baseviews.BaseView
         tagName: "span"
@@ -38,9 +38,11 @@ define ["cs!base/views", "hb!./templates.handlebars"], (baseviews, templates) ->
             return false
             
         delete: =>
-            @model.destroy()
-            return false
-
+            if @model.get("image_url") or @model.get("html")
+                dialogviews.delete_confirmation @model, "item", =>
+                    @model.destroy()
+            else
+                @model.destroy()
 
     class ItemDisplayView extends baseviews.BaseView
         className: "ItemDisplayView"
