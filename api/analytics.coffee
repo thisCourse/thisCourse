@@ -343,7 +343,7 @@ change_user_status = (req, email, diff) =>
                 userstatus.partial.remove data.unclaimed
             if data.claimed
                 if not userstatus.claimed.contains data.nugget
-                userstatus.claimed.add _id: data.nugget, points: data.points, timestamp: new Date()
+                    userstatus.claimed.add _id: data.nugget, points: data.points, timestamp: new Date()
             if data.claimed is false and not userstatus.claimed.contains data.nugget
                 userstatus.partial.add data.claimed
             userstatus.claimed = userstatus.claimed.toJSON()
