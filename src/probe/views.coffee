@@ -138,8 +138,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             xhdr.error handleError
                 
         nuggetAttempt: (nuggetattempt, callback) =>
-            xhdr = doPost '/analytics/nuggetattempt/', nuggetattempt, =>
-                callback()
+            xhdr = doPost '/analytics/nuggetattempt/', nuggetattempt, (data) =>
+                callback data
             xhdr.error handleError
 
         skipQuestion: (response, callback) =>
@@ -393,13 +393,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 if not @options.notclaiming
                     nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
                     @options.sync.nuggetAttempt nuggetattempt, (data) =>
+                        console.log data.userstatus
                         if @claimed
                             @$el.html "<h4>Nugget Claimed!</h4>"
                             require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
                         else
                             @$el.html "<h4>Practice makes better!</h4>"
                             require('app').get('user').get('partial').add _id: @model.parent.model.id
-                        app.get("userstatus").set(data.userstatus)
+                        if data.userstatus then require('app').get("userstatus").set(data.userstatus)
                     return
                 else
                     @showReviewFeedback()
@@ -437,7 +438,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.skipbutton').attr('disabled','disabled')
             @$('.skipbutton').text('Loading')
             responsetime = new Date - @subviews.probeview.timestamp_load
-            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime, options: @options
+            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime, options: @options, nugget_id: @model.parent.model.id
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -455,7 +456,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @earnedpoints += data.earnedpoints
                     @points += data.totalpoints
                     if not @options.nofeedback then @subviews.probeview.answered(data)
-                    app.get("userstatus").set(data.userstatus)
+                    if data.userstatus then require('app').get("userstatus").set(data.userstatus)
                 if @options.nofeedback
                     @$('.answerbtn').removeAttr('disabled')
                     @$('.answerbtn').text('Submit Answer')

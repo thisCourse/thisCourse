@@ -78,8 +78,11 @@ class NuggetAttempt extends AnalyticsHandler
         # return callback new api.APIError("No can do. Time is up.")
         @save_analytics_object @req.body, (response) =>
             if response.status == 200
-                response.body.userstatus = change_user_status @req, @req.session.email, "claimed": response.body
-            callback response
+                change_user_status @req, @req.session.email, "claimed": response.body, (userstatus) =>
+                    response.body.userstatus = userstatus
+                    callback response
+            else
+                callback response
 
     handle_GET: (callback) =>
         get_student_nugget_attempts @req.session.email, (err, claimed, attempted) =>
@@ -300,24 +303,27 @@ class ProbeResponse extends AnalyticsHandler
             data.correct = correct
             #Note calculating this all server side results in a 50% slowdown, but still <1ms on benchmarking
             @save_analytics_object data, (response) =>
-                if response.status == 200
-                    response.body.probe = probe
-                    response.body.userstatus = change_user_status @req, @req.session.email, "review": response.body
-                callback response
+                if response.status == 200 and data.options.notclaiming
+                    change_user_status @req, @req.session.email, "review": response.body, (userstatus) =>
+                        response.body.userstatus = userstatus
+                        callback response
+                else
+                    callback response
 
 
-change_user_status = (req, email, diff) =>
+change_user_status = (req, email, diff, callback) =>
     status = api.db.collection("userstatus")
     log = db.collection("userstatuslog")
     query = email: email
     diff_actions = 
         "set": (data, userstatus) ->
             data
+
         "review": (data, userstatus) ->
-            if not data.options.notclaiming then return userstatus
-            userstatus.claimed = new backbone.Collection userstatus.claimed
-            model = userstatus.claimed.get data.probe.parent._id
-            _id = data.probe._id
+            if not data.options.notclaiming then return false
+            userstatus.claimed = new Backbone.Collection(userstatus.claimed)
+            model = userstatus.claimed.get data.nugget_id
+            _id = data.probe
             if model
                 timenow = new Date()
                 probetimes = model.get "probetimes"
@@ -333,40 +339,48 @@ change_user_status = (req, email, diff) =>
                 if update
                     userstatus.shield = Math.min(100, userstatus.shield + data.earnedpoints)
                     probetimes[_id] = timenow
-            userstatus.claimed = userstatus.claimed.toJSON()
-            return userstatus
+                    userstatus.claimed = userstatus.claimed.toJSON()
+                    return userstatus
+            return false
+
         "claimed": (data, userstatus) ->
-            userstatus.claimed = new backbone.Collection(userstatus.claimed)
-            userstatus.partial = new backbone.Collection(userstatus.partial)
+            userstatus.claimed = new Backbone.Collection(userstatus.claimed)
+            userstatus.partial = new Backbone.Collection(userstatus.partial)
             if data.unclaimed
                 userstatus.claimed.remove data.unclaimed
                 userstatus.partial.remove data.unclaimed
             if data.claimed
-                if not userstatus.claimed.contains data.nugget
+                if not userstatus.claimed.get data.nugget
                     userstatus.claimed.add _id: data.nugget, points: data.points, timestamp: new Date()
-            if data.claimed is false and not userstatus.claimed.contains data.nugget
-                userstatus.partial.add data.claimed
+                    userstatus.partial.remove data.nugget
+            if data.claimed is false and not userstatus.claimed.get data.nugget
+                userstatus.partial.add _id: data.nugget
             userstatus.claimed = userstatus.claimed.toJSON()
             userstatus.partial = userstatus.partial.toJSON()
             return userstatus
 
     #TODO: Implement Caching of server side Backbone Collections with node-cache. (5x speed up)
-    status.findOne(query) (err, userstatus) =>
+    status.findOne query, (err, userstatus) =>
         if err then return callback new APIError(err)
+        if not userstatus then userstatus = "life": 100, "shield": 100
         for key, obj of diff
-            data = diff_action[key] obj, userstatus
-            if data._id then delete data._id
-            status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
-                if err then return new APIError(err)
-                data.timestamp = new Date()
-                data.email = email
-                data.ip = req.connection.remoteAddress
-                collection.save data, (err, obj) =>
-                    if err
-                        console.log "User Status logging failed"
-                    else
-                        console.log "User Status change logged for #{email}"
-                return updatedstatus
+            data = diff_actions[key] obj, userstatus
+            if data
+                console.log data
+                if data._id then delete data._id
+                status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
+                    if err then return new APIError(err)
+                    data.timestamp = new Date()
+                    data.email = email
+                    data.ip = req.connection.remoteAddress
+                    log.save data, (err, obj) =>
+                        if err
+                            console.log "User Status logging failed"
+                        else
+                            console.log "User Status change logged for #{email}"
+                    callback data
+            else
+                callback null
 
 collections =
     nuggetattempt: NuggetAttempt

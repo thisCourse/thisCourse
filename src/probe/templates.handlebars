@@ -129,10 +129,10 @@
     <div class="nuggetlist">
         <ul>
             {{#each collection.models }}
-                {{#if attributes.title }}<li><a href="../{{ ../../url }}{{ slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
+                {{#if attributes.title }}<li><a href="../../{{ ../../url }}{{ slug }}/" target="_blank">{{ attributes.title }}</a></li>{{/if}}
             {{/each }}
         </ul>
-        <a href="../{{url}}{{#if query.tags}}?tags={{query.tags}}{{#if query.claimed}}&claimed={{query.claimed}}{{/if}}{{else}}{{#if query.claimed}}?claimed={{query.claimed}}{{/if}}{{/if}}"<p>Return to Nugget List</p></a>
+        <a href="../../{{url}}{{#if query.tags}}?tags={{query.tags}}{{#if query.claimed}}&claimed={{query.claimed}}{{/if}}{{else}}{{#if query.claimed}}?claimed={{query.claimed}}{{/if}}{{/if}}"<p>Return to Nugget List</p></a>
     </div>
 
 
