@@ -28,6 +28,8 @@ define ["cs!utils/formatters"], (formatters) ->
 
     class BaseModel extends Backbone.Model
 
+        remote: true
+
         url: => # TODO: test this, and make the api endpoint configurable
             rootUrl = get_url(@collection?.url) or (@apiCollection and ("/api/" + @apiCollection))
             if rootUrl

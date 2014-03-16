@@ -27,10 +27,15 @@ define ["cs!base/models"], (basemodels) ->
 
         model: ProbeModel
 
+    class QuizCollection extends basemodels.LazyCollection
 
+        model: ProbeModel
+
+        local: true
         
     
     AnswerModel: AnswerModel
     AnswerCollection: AnswerCollection
     ProbeModel: ProbeModel
     ProbeCollection: ProbeCollection
+    QuizCollection: QuizCollection

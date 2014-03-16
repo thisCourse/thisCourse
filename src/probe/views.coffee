@@ -342,7 +342,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 for probe in nugget.get('probeset').models
                     probes.push probe
             if probes.length==0 then return
-            probes = new models.ProbeCollection(_.shuffle(probes))
+            probes = new models.QuizCollection(_.shuffle(probes))
             @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics)
 
         navigate: (fragment, query) =>
