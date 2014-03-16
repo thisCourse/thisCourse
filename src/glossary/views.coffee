@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles","cs!ckeditor/views"], \
-        (baseviews, models, templates, styles,ckeditorviews) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles","cs!ckeditor/views", "cs!ui/dialogs/views"], \
+        (baseviews, models, templates, styles,ckeditorviews, dialogviews) ->
 
     class GlossaryRouterView extends baseviews.RouterView
 
