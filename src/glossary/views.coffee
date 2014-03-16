@@ -11,6 +11,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
         
         events:
             "click .add-button": "addNewGlossary"
+            "click .delete-button": "deleteGlossary"
             
         initialize: =>
             # console.log "init NuggetListView"
@@ -27,6 +28,12 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 success: (model) => 
                     console.log model
                     require("app").navigate model.get("_id")
+
+        deleteGlossary: (ev) => 
+            glossary = @collection.get(ev.target.id)
+            dialogviews.delete_confirmation glossary, "glossary", =>
+                glossary.destroy()
+                glossary.parent.model.save()
             
 
     class GlossaryView extends baseviews.BaseView

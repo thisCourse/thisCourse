@@ -4,8 +4,8 @@
     </span>
     <ul>
         {{#each models }}
-        <li><a href="{{ slug }}/">{{#if attributes.title}}{{ attributes.title }}{{else}}Untitled{{/if}}</a></li>
-        {{/each}} 
+        <li><button id ='{{id}}' class="section-button delete-button btn danger">x</button><a href="{{ slug }}/">{{#if attributes.title}}{{ attributes.title }}{{else}}Untitled{{/if}}</a></li>
+        {{/each}}
     </ul> 
 </script>
 
