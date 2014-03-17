@@ -164,17 +164,22 @@ policy_params =
     acl: "public-read"
     success_action_redirect: "http://127.0.0.1:3000/s3/uploaded"
 
-policy =
-    expiration: "2013-01-01T00:00:00Z"
-    conditions: [
-        bucket: secrets.s3Bucket
-    , [ "starts-with", "$key", "uploads/" ],
-        acl: policy_params.acl
-    , [ "content-length-range", 0, 10000000 ], [ "starts-with", "$name", "" ], [ "starts-with", "$Filename", "" ], [ "starts-with", "$success_action_status", "" ] ]
+policy = ->
+    timenow = new Date()
+    timenow.setHours(timenow.getHours()+2)
+    policy_obj = 
+        expiration: timenow.toISOString()
+        conditions: [
+            bucket: secrets.s3Bucket
+        , [ "starts-with", "$key", "uploads/" ],
+            acl: policy_params.acl
+        , [ "content-length-range", 0, 10000000 ], [ "starts-with", "$name", "" ], [ "starts-with", "$Filename", "" ], [ "starts-with", "$success_action_status", "" ] ]
+    return policy_obj
 
-policy_params.policy = create_policy(policy)
-policy_params.signature = sign_policy(policy_params.policy)
 handle_s3_creds = (req, res, next) ->
+    current_policy = policy()
+    policy_params.policy = create_policy(current_policy)
+    policy_params.signature = sign_policy(policy_params.policy)
     res.json policy_params
 
 s3.move_file = move_file
