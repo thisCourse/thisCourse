@@ -337,12 +337,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @collection.bind "add", _.debounce @render
 
         render: =>
-            probes = []
-            for nugget in @collection.selectNuggets(@query).models
-                for probe in nugget.get('probeset').models
-                    probes.push probe
-            if probes.length==0 then return
-            probes = new models.QuizCollection(_.shuffle(probes))
+            probes = require('app').get("review_quiz")
+            if not probes
+                probes = []
+                for nugget in @collection.selectNuggets(@query).models
+                    for probe in nugget.get('probeset').models
+                        probes.push probe
+                if probes.length==0 then return
+                require('app').set "review_quiz": new models.QuizCollection(_.shuffle(probes))
+                probes = require('app').get("review_quiz")
             @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics)
 
         navigate: (fragment, query) =>

@@ -27,7 +27,7 @@ define ["cs!base/models"], (basemodels) ->
 
         model: ProbeModel
 
-    class QuizCollection extends basemodels.LazyCollection
+    class QuizCollection extends Backbone.Collection
 
         model: ProbeModel
 
