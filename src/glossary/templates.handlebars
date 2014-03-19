@@ -17,7 +17,9 @@
 </script>
 
 <script id="glossary_edit" type="text/x-handlebars-template">
-    <input class="span12" type="text" data="title" value="{{title}}"/>
+    <div class= "title">
+        <input class="span12" type="text" data="title" value="{{title}}" placeholder="Title"/>
+    </div>
     <textarea class="ckeditor">{{{ html }}}</textarea>
     <br/>
     {{> item_edit_buttons }}

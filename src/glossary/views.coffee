@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles","cs!ckeditor/views"], \
-        (baseviews, models, templates, styles,ckeditorviews) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles","cs!ckeditor/views","cs!ui/dialogs/views"], \
+        (baseviews, models, templates, styles,ckeditorviews,dialogviews) ->
 
     class GlossaryRouterView extends baseviews.RouterView
 
@@ -76,6 +76,13 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             #@add_subview "ckeditor", new ckeditorviews.CKEditorView(html: @model.get("html")), ".html"
     
         save: =>
+            console.log @$(".ckeditor").val()
+            if @$(".ckeditor").val() == ""
+                dialogviews.dialog_confirmation "Creating empty glossary item","Do you really want to save this glossary item?", @finalSave, confirm_button:"Save", cancel_button:"Cancel"
+            else
+                finalSave()
+                
+        finalSave: =>                            
             @model.set html: @$(".ckeditor").val(), title: @$(".span12").val()
             # alert @model.get("title")
             @$("input").blur()
@@ -94,6 +101,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                             msg = "The object could not be found on the server; it may have been deleted."
                     @$(".errors").text msg
                     @$(".save.btn").button "complete"
+
         return: =>
             require("app").navigate @url + ".."
             
