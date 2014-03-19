@@ -4,7 +4,9 @@ define ["cs!base/models"], (basemodels) ->
         
         searchTitle: (el) =>
             re =  new RegExp("(#{@get("title")})","gi")
-            replace = "<glossary id = #{@get("_id")}>$1</glossary>"
+            replace = "<glossary "
+            if @get("anatomy") then replace+="class='anatomy' "
+            replace += "id = #{@get("_id")}>$1</glossary>"
             if el
                 remove = []
                 for object in el

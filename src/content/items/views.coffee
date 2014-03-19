@@ -43,6 +43,7 @@ define ["cs!base/views", "hb!./templates.handlebars","cs!ui/dialogs/views"], (ba
                     @model.destroy()
             else
                 @model.destroy()
+            return false
 
     class ItemDisplayView extends baseviews.BaseView
         className: "ItemDisplayView"
