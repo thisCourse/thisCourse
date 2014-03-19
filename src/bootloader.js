@@ -47,7 +47,7 @@ define(
 		"order!libs/backbone/backbone-relational",
 		"order!libs/backbone/backbone.memento",
 		"order!libs/backbone/backbone.modelbinding",
-        "order!libs/backbone/backbone.dualstorage",
+        "order!libs/backbone/backbone.localStorage",
 		"order!libs/handlebars/wrapper",
 		//"order!libs/bootstrap/bootstrap-button",
         // "order!libs/bootstrap/bootstrap-tab",

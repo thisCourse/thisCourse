@@ -330,23 +330,41 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         redirect: =>
             window.location = "http://bit.ly/M9mlCF"
-        
+    
+    Quizzes = new models.QuizCollection
+
     class QuizView extends baseviews.BaseView
         
         initialize: ->
-            @collection.bind "add", _.debounce @render
+            Quizzes.fetch success: @initQuiz
 
         render: =>
-            probes = require('app').get("review_quiz")
-            if not probes
+            if not @quiz then return
+            console.log @quiz
+            @add_subview "probecontainer", new ProbeContainerView(collection: @quiz.get("probes"), notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics, inc: @quiz)
+
+        initQuiz: =>
+            console.log Quizzes
+            @collection.fetch success: @quizFetch
+
+        quizFetch: =>
+            @quiz = Quizzes.last()
+            if not @quiz
                 probes = []
                 for nugget in @collection.selectNuggets(@query).models
                     for probe in nugget.get('probeset').models
                         probes.push probe
                 if probes.length==0 then return
-                require('app').set "review_quiz": new models.QuizCollection(_.shuffle(probes))
-                probes = require('app').get("review_quiz")
-            @add_subview "probecontainer", new ProbeContainerView(collection: probes, notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics)
+                @quiz = new models.QuizModel
+                    "probes": new models.ProbeCollection(_.shuffle(probes))
+                    "index": 0
+                    "review": []
+                Quizzes.add @quiz
+                console.log "Setting Quiz"
+                @quiz.save null, success: =>
+                    @render()
+            else
+                @render()
 
         navigate: (fragment, query) =>
             super
@@ -366,15 +384,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     return
             # console.log "COLLECTION LENGTH:", @collection.length
             if @options.notclaiming
-                @review = []
+                review = @options.inc.get("review") or []
             if @options.nofeedback and not @options.noskipping
                 require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = true
             @progress = Number(@options.progress or 0)
-            @points = 0
-            @inc = @options.inc or 0
-            @earnedpoints = 0
+            @inc = @options.inc.get("index") or 0
             @submitting = 0
+            @points = @options.inc.get("points") or 0
+            @earnedpoints = @options.inc.get("earnedpoints") or 0
             # @starttime = new Date
             @showNextProbe()
             xhdr = @model.fetch()
@@ -407,11 +425,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @showReviewFeedback()
                     return
             else
+                if @options.inc
+                    @options.inc.set "index": @options.inc.get("index") + 1
+                    @options.inc.save()
                 @showNextProbe()
         
         showReviewFeedback: =>
             # console.log @review
             # console.log @earnedpoints
+            Quizzes.reset()
             if @review.length > 0
                 @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
             else if @earnedpoints > 0
@@ -454,11 +476,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                         @claimed = false
                         if @options.notclaiming
                             @review.push @model.parent.model
+                            if @options.inc then @options.inc.get("review").push @model.parent.model
                     correct = (answer._id for answer in data.probe.answers when answer.correct)
                     increment = if response.answers.length <= correct.length then _.intersection(response.answers,correct).length else _.intersection(response.answers,correct).length - (response.answers.length-correct.length)
                     @earnedpoints += Math.max(0, increment)
                     @points += correct.length
                     if not @options.nofeedback then @subviews.probeview.answered(data)
+                    if @options.inc
+                        @options.inc.set "points": @points, "earnedpoints": @earnedpoints
+                        @options.inc.save()
                 if @options.nofeedback
                     @$('.answerbtn').removeAttr('disabled')
                     @$('.answerbtn').text('Submit Answer')

@@ -27,15 +27,24 @@ define ["cs!base/models"], (basemodels) ->
 
         model: ProbeModel
 
+    class QuizModel extends basemodels.LazyModel
+
+        relations: ->
+            probes:
+                collection: ProbeCollection
+                includeInJSON: false
+
+
     class QuizCollection extends Backbone.Collection
 
-        model: ProbeModel
+        model: QuizModel
 
-        local: true
+        localStorage: new Backbone.LocalStorage "review-quiz"
         
     
     AnswerModel: AnswerModel
     AnswerCollection: AnswerCollection
     ProbeModel: ProbeModel
     ProbeCollection: ProbeCollection
+    QuizModel: QuizModel
     QuizCollection: QuizCollection
