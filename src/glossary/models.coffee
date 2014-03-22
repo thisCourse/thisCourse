@@ -1,18 +1,27 @@
 define ["cs!base/models"], (basemodels) ->
 
+    class AlternateTitleModel extends basemodels.LazyModel
+        
+    class AlternateTitleCollection extends basemodels.LazyCollection
+        model: AlternateTitleModel
+        
     class GlossaryModel extends basemodels.LazyModel
         
         searchTitle: (el) =>
-            re =  new RegExp("(#{@get("title")})","gi")
-            replace = "<glossary "
-            if @get("anatomy") then replace+="class='anatomy' "
-            replace += "id = #{@get("_id")}>$1</glossary>"
-            if el
-                remove = []
-                for object in el
-                    @replaceText(object, re, replace, remove)
-                if remove.length
-                    $(remove, el).remove()
+            search_array = (model.get("alternateTitle") for model in @get("alternateTitle").models)
+            search_array.unshift @get("title")
+            for term in search_array
+                re =  new RegExp("(#{term})","gi")
+                replace = "<glossary "
+                if @get("anatomy") then replace+="class='anatomy' "
+                replace += "id = #{@get("_id")}>$1</glossary>"
+                if el
+                    remove = []
+                    for object in el
+                        @replaceText(object, re, replace, remove)
+                    if remove.length
+                        $(remove, el).remove()
+                        console.log term
         
         replaceText: (node, search, replace, remove) ->
             if node.childNodes
@@ -38,6 +47,10 @@ define ["cs!base/models"], (basemodels) ->
                     else if child.nodeType in [1,2,3,5,6,11] 
                         @replaceText(child, search, replace, remove)        
                         
+        relations: ->
+            alternateTitle:
+                collection: AlternateTitleCollection
+                includeInJSON: true
                            
                 
     class GlossaryCollection extends basemodels.LazyCollection
