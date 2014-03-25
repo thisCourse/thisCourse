@@ -376,6 +376,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @showNextProbe()
             xhdr = @model.fetch()
             xhdr?.error handleError
+            require("app").bind "exitQuiz", @exitQuiz
         
         render: =>
             @$el.html templates.probe_container allowskipping: @options.notclaiming and not @options.noskipping
@@ -391,17 +392,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 require("app").unbind "windowBlur", @performQuestionSkipping
                 @inc += 1
                 if not @options.notclaiming
-                    nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
-                    @options.sync.nuggetAttempt nuggetattempt, (data) =>
-                        console.log data.userstatus
-                        if @claimed
-                            @$el.html "<h4>Nugget Claimed!</h4>"
-                            require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
-                        else
-                            @$el.html "<h4>Practice makes better!</h4>"
-                            require('app').get('user').get('partial').add _id: @model.parent.model.id
-                        if data.userstatus then require('app').get("userstatus").set(data.userstatus)
-                    return
+                    @claimNugget()
                 else
                     @showReviewFeedback()
                     return
@@ -456,7 +447,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @earnedpoints += data.earnedpoints
                     @points += data.totalpoints
                     if not @options.nofeedback then @subviews.probeview.answered(data)
-                    if data.userstatus then require('app').get("userstatus").set(data.userstatus)
+                    if data.userstatus then require('app').updateUserStatus(data)
                 if @options.nofeedback
                     @$('.answerbtn').removeAttr('disabled')
                     @$('.answerbtn').text('Submit Answer')
@@ -495,6 +486,24 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model = @collection.at(@inc-1)
             @model.whenLoaded @render
             @prefetchProbe()
+
+        exitQuiz: =>
+            if @inc > 0 and not @options.notclaiming
+                @claimNugget()
+            else
+                @navigateBack()
+            
+        navigateBack: =>
+            require("app").navigate "../.."
+
+        claimNugget: =>
+            nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
+            @options.sync.nuggetAttempt nuggetattempt, (data) =>
+                if @claimed
+                    @$el.toggle "highlight", {"color": "#00FF77", "complete": @navigateBack}
+                else
+                    @$el.toggle "highlight", {"color": "#BBFF00", "complete": @navigateBack}
+                if data.userstatus then require('app').updateUserStatus(data)
 
 
     class ProbeView extends baseviews.BaseView

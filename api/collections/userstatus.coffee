@@ -9,7 +9,7 @@ requirejs ['cs!userstatus/models'], (models) =>
         Collection: models.UserStatusCollection
 
         initialPermissionCheck: (callback) =>
-            if (@req.method is "POST" and @req.session.email isnt "admin") or (@req.session.email isnt "admin" and @req.session.email isnt @req.params.email.toString())
+            if (@req.method is "POST" and @req.session.email isnt "admin") or (@req.session.email isnt "admin" and @req.params.id==undefined)
                 return callback new api.APIError("Must be logged in as admin", 403)
             callback()
 
@@ -19,9 +19,13 @@ requirejs ['cs!userstatus/models'], (models) =>
             super
 
         process_GET_document: (callback) =>
-            @collection.findOne(email: @req.params.email.toString())? (err, userstatus) =>
-                if err or not userstatus then return callback new api.APIError("You have no user status.", 404)
-                return callback new (api.JSONResponse)(userstatus)
+            # if @req.session.email isnt "admin" or @object.email == @req.session.email
+            #     console.log @object.email == @req.session.email
+            #     console.log @req.session.email
+            #     console.log @object.email
+            #     return callback new api.APIError("Must be logged in as admin", 403)
+            # else
+            callback new api.JSONResponse(@object)
 
         process_GET_collection: (callback) =>
             @collection.find().toArray? (err, userstatuses) =>

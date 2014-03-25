@@ -4,6 +4,7 @@
 </script>
 
 <script id="user_status" type="text/x-handlebars-template">
+    <div class="logged-in-only">
     <svg id = "svg_element" style ="height: 180px; width: 180px; float:right" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <defs>
             <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
@@ -25,4 +26,5 @@
             text-anchor: middle;">{{shield}}</text>
         {{/if}}
     </svg>
+    </div>
 </script>

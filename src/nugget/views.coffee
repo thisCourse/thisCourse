@@ -1,18 +1,6 @@
 define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles"], \
         (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles) ->
 
-    refreshNuggetAnalytics = =>
-        $.get '/analytics/nuggetattempt/', (nuggetattempt) =>
-            partial = nuggetattempt.attempted
-            claimed = nuggetattempt.claimed
-            
-            require('app').get('user').set claimed: new Backbone.Collection(claimed), partial: new Backbone.Collection(partial)
-            require('app').trigger "nuggetAnalyticsChanged" # TODO: hackish
-
-    refreshNuggetAnalytics()
-
-    _.defer => require("app").bind "loginChanged", refreshNuggetAnalytics
-
     class StudyRouterView extends baseviews.RouterView
 
         routes: =>
@@ -134,24 +122,31 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         render: =>
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
-            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}                
+            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}
+            if require('app').get('userstatus')
+                require('app').get('userstatus').getKeyWhenReady 'claimed', (claimed) =>
+                    @annotate(claimed)
+            else
+                @annotate models: []
+
+
+        annotate: (claimed) =>
             relec = new RegExp('(L[0-9]+)')
-            require('app').get('user').getKeyWhenReady 'claimed', (claimed) =>
-                require('app').get("course").whenLoaded =>
-                    for lecture in @lecturelist.lecture
-                        lecture.points = 0
-                        lecture.status = 'unclaimed'
-                    for nuggetitem in claimed.models
-                        lec = ''
-                        for tag in require('app').get('course').get('nuggets').get(nuggetitem.id)?.get('tags') or []
-                            lec = relec.exec(tag)?[0] or lec
-                        if not lec then continue
-                        _.find(@lecturelist.lecture, (lect) -> lect.lecture==lec)?.points += nuggetitem.get('points')
-                    @lecturelist.totalpoints = 0
-                    for lecture in @lecturelist.lecture
-                        @lecturelist.totalpoints += lecture.points
-                        if lecture.points >= lecture.minpoints then lecture.status = 'claimed'
-                    @$el.html templates.nugget_lecture_list @context(@lecturelist)
+            require('app').get("course").whenLoaded =>
+                for lecture in @lecturelist.lecture
+                    lecture.points = 0
+                    lecture.status = 'unclaimed'
+                for nuggetitem in claimed.models
+                    lec = ''
+                    for tag in require('app').get('course').get('nuggets').get(nuggetitem.id)?.get('tags') or []
+                        lec = relec.exec(tag)?[0] or lec
+                    if not lec then continue
+                    _.find(@lecturelist.lecture, (lect) -> lect.lecture==lec)?.points += nuggetitem.get('points')
+                @lecturelist.totalpoints = 0
+                for lecture in @lecturelist.lecture
+                    @lecturelist.totalpoints += lecture.points
+                    if lecture.points >= lecture.minpoints then lecture.status = 'claimed'
+                @$el.html templates.nugget_lecture_list @context(@lecturelist)
                     
         initialize: =>
             require('app').bind "nuggetAnalyticsChanged", @render
@@ -197,7 +192,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             require('app').bind "nuggetAnalyticsChanged", @render
         
         render: =>
-            #alert "waaaaa"
             # @$el.html "Nuggs: " + @collection.length + " " + @options.lecture + " " + @options.cluster
             nuggetlist = nuggets: @collection.selectNuggets(tags: @options.lecture+";"+@options.cluster).models #Fix to allow lecture tags with spaces in
             # nuggetlist = nuggets: @collection.models.filter (nugget) =>
@@ -210,18 +204,18 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                     nug = renug.exec(tag)?[1] or nug
                 Number(nug)
             for nugget in nuggetlist.nuggets
-                if require('app').get('user').get('claimed')?.get(nugget.id)
+                if require('app').get('userstatus').get('claimed')?.get(nugget.id)
                     nugget.status = 'claimed'
-                else if require('app').get('user').get('partial')?.get(nugget.id)
+                else if require('app').get('userstatus').get('partial')?.get(nugget.id)
                     nugget.status = 'partial'
                 else
                     nugget.status = 'unclaimed'
             @$el.html templates.filtered_nugget_list nuggetlist
 
-    
-
-
-
+        navigate: ->
+            #HACK: To fix failure to render
+            @render()
+            super
 
     # class NuggetLectureTestView extends baseviews.BaseView
             
@@ -265,20 +259,31 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             require('app').bind "nuggetAnalyticsChanged", @render
         
         render: =>
-            @$el.html templates.probe_enable @context(status:require('app').get('user').get('claimed')?.get(@model.id))
+            @$el.html templates.probe_enable @context(status:require('app').get('userstatus')?.get('claimed')?.get(@model.id))
             
         unClaim: =>
             dialogviews.dialog_confirmation "Unclaim Nugget","Do you really want to Unclaim this Nugget? (you will need to take the quiz again if you want to reclaim it later)", =>
                 nuggetattempt = unclaimed: true, nugget: @parent.model.id
-                doPost '/analytics/nuggetattempt/', nuggetattempt, refreshNuggetAnalytics
+                doPost '/analytics/nuggetattempt/', nuggetattempt, (data) =>
+                    require('app').updateUserStatus(data)
             , confirm_button:"Unclaim", cancel_button:"Cancel"
 
     class ProbeToggleRouterView extends baseviews.RouterView
         
         routes: =>
             "": => view: ProbeToggleEnableView, datasource: "model", nonpersistent: true
-            "quiz/": => view: baseviews.GenericTemplateView, template: templates.probe_disable
+            "quiz/take/": => view: ProbeExitQuizView, template: templates.probe_disable
+            "quiz/edit/": => view: baseviews.GenericTemplateView, template: templates.probe_edit_disable
             # TODO: Make the URL reference for the exit quiz in probe_disable more robust.
+
+
+    class ProbeExitQuizView extends baseviews.GenericTemplateView
+
+        events:
+            "click #exit_quiz" : "exitQuiz"
+
+        exitQuiz: ->
+            require('app').trigger "exitQuiz"
 
     class NuggetView extends baseviews.BaseView
 
@@ -299,7 +304,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         routes: =>
             "": => name: "pageview", view: pageviews.PageView, datasource: "model", key: "page"
-            "quiz/": => view: probeviews.ProbeRouterView, datasource: "model", key: "probeset", nonpersistent: true, examquestions: @examquestions
+            "quiz/take/": => view: probeviews.ProbeRouterView, datasource: "model", key: "probeset", nonpersistent: true, examquestions: @examquestions
             "quiz/edit/": => view: probeviews.ProbeEditRouterView, datasource: "model", nonpersistent: true
 
         initialize: ->

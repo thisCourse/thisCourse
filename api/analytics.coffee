@@ -346,38 +346,40 @@ change_user_status = (req, email, diff, callback) =>
         "claimed": (data, userstatus) ->
             userstatus.claimed = new Backbone.Collection(userstatus.claimed)
             userstatus.partial = new Backbone.Collection(userstatus.partial)
+            userstatus.unclaimed = new Backbone.Collection(userstatus.unclaimed)
             if data.unclaimed
-                userstatus.claimed.remove data.unclaimed
-                userstatus.partial.remove data.unclaimed
+                userstatus.claimed.remove data.nugget
+                userstatus.partial.remove data.nugget
+                userstatus.unclaimed.add data.nugget
             if data.claimed
                 if not userstatus.claimed.get data.nugget
                     userstatus.claimed.add _id: data.nugget, points: data.points, timestamp: new Date()
                     userstatus.partial.remove data.nugget
+                    if not userstatus.unclaimed.get data.nugget
+                    userstatus.shield = Math.min(100, userstatus.shield + data.points*3)
             if data.claimed is false and not userstatus.claimed.get data.nugget
                 userstatus.partial.add _id: data.nugget
             userstatus.claimed = userstatus.claimed.toJSON()
             userstatus.partial = userstatus.partial.toJSON()
+            userstatus.unclaimed = userstatus.unclaimed.toJSON()
             return userstatus
 
     #TODO: Implement Caching of server side Backbone Collections with node-cache. (5x speed up)
     status.findOne query, (err, userstatus) =>
         if err then return callback new APIError(err)
-        if not userstatus then userstatus = "life": 100, "shield": 100
         for key, obj of diff
             data = diff_actions[key] obj, userstatus
             if data
-                console.log data
                 if data._id then delete data._id
                 status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
                     if err then return new APIError(err)
                     data.timestamp = new Date()
                     data.email = email
+                    data.diff = key
                     data.ip = req.connection.remoteAddress
                     log.save data, (err, obj) =>
                         if err
-                            console.log "User Status logging failed"
-                        else
-                            console.log "User Status change logged for #{email}"
+                            console.log "User Status logging failed for #{email}"
                     callback data
             else
                 callback null
