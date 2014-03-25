@@ -4,8 +4,11 @@
     </span>
     <ul>
         {{#each models }}
-        <li><button id ='{{id}}' class="section-button delete-button btn danger">x</button><a href="{{ slug }}/">{{#if attributes.title}}{{ attributes.title }}{{else}}Untitled{{/if}}</a></li>
-        {{/each}}
+        <li><a href="{{ slug }}/">{{#if attributes.title}}{{ attributes.title }}{{else}}Untitled{{/if}}</a>
+        {{#each attributes.alternateTitle.models}}
+            , {{attributes.alternateTitle}}
+        {{/each}}</li>
+        {{/each}} 
     </ul> 
 </script>
 
@@ -17,9 +20,18 @@
 </script>
 
 <script id="glossary_edit" type="text/x-handlebars-template">
-    <input class="span12" type="text" data="title" value="{{title}}"/>
+    <div class= "title">
+        <input class="span12" type="text" data="title" value="{{title}}" placeholder="Title"/>
+        <div class="attachAltTitle"></div>
+        <input class"span12" id="altTitle" type = "text" data="alternateTitle" placeholder="Enter new alternate title" /> 
+    </div>
     <textarea class="ckeditor">{{{ html }}}</textarea>
     <br/>
     {{> item_edit_buttons }}
     
 </script>
+
+<script id="alt_title_edit" type="text/x-handlebars-template">
+    <input class"span12" type = "text" data="alternateTitle" value="{{alternateTitle}}"/>
+    <button class="section-button delete-button btn danger">X</button>
+</script>        

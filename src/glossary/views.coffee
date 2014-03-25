@@ -1,5 +1,6 @@
-define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles","cs!ckeditor/views", "cs!ui/dialogs/views"], \
-        (baseviews, models, templates, styles,ckeditorviews, dialogviews) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles", "cs!ckeditor/views", "cs!ui/dialogs/views"], \
+        (baseviews, models, templates, styles, ckeditorviews, dialogviews) ->
+
 
     class GlossaryRouterView extends baseviews.RouterView
 
@@ -12,6 +13,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
         events:
             "click .add-button": "addNewGlossary"
             "click .delete-button": "deleteGlossary"
+            
             
         initialize: =>
             # console.log "init NuggetListView"
@@ -76,13 +78,25 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
         events:  
             "click .save": "save"
             "click .cancel": "cancel"
+            "keypress #altTitle":"addAltTitleOnEnter"
         
+        initialize: ->
+            @newalt = 0
+            
         render: =>
             @$el.html templates.glossary_edit @context()
             _.defer => $(".ckeditor").ckeditor ckeditorviews.get_config()
+            for title in @model.get('alternateTitle').models
+                @addAlternateTitle title, @model.get("alternateTitle")
             #@add_subview "ckeditor", new ckeditorviews.CKEditorView(html: @model.get("html")), ".html"
     
         save: =>
+            if @$(".ckeditor").val() == ""
+                dialogviews.dialog_confirmation "Creating empty glossary item","Do you really want to save this glossary item?", @finalSave, confirm_button:"Save", cancel_button:"Cancel"
+            else
+                @finalSave()
+                
+        finalSave: =>                            
             @model.set html: @$(".ckeditor").val(), title: @$(".span12").val()
             # alert @model.get("title")
             @$("input").blur()
@@ -101,6 +115,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                             msg = "The object could not be found on the server; it may have been deleted."
                     @$(".errors").text msg
                     @$(".save.btn").button "complete"
+
         return: =>
             require("app").navigate @url + ".."
             
@@ -109,7 +124,36 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 @model.destroy()
             @return()
             @close()
+            
+        addAltTitleOnEnter: (ev) =>
+            if ev.which is 13 and not (@$("#altTitle").val() == "")
+                altTitle = @model.get('alternateTitle').create {alternateTitle: @$("#altTitle").val()}
+                @$("#altTitle").val('')
+                @addAlternateTitle altTitle,@model.get('alternateTitle')
+                
+        addAlternateTitle:(model,coll) =>
+            viewid = model.id or @newalt
+            @add_subview "alttitleview_"+viewid, new AlternateTitleView(model: model), ".attachAltTitle"
+            @newalt += 1
+             
+    class AlternateTitleView extends baseviews.BaseView
 
+        events:
+            "click .delete-button" : "delete"
+            "change .titletext" : "updateAnswer"
+        
+        initialize: =>
+            @model.bind "change", @render
+            @model.bind "destroy", @close
+
+        render: =>
+            @$el.html templates.alt_title_edit @context()
+
+        delete: =>
+            @model.destroy()
+        
+        updateAnswer: (event) =>
+            @model.set text:@$('.titletext')[0].value        
 
 
     GlossaryRouterView: GlossaryRouterView
