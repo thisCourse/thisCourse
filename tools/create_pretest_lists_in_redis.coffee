@@ -13,7 +13,7 @@ probes = []
 api.db.collection("course").findOne _id: new api.ObjectId("4f78e9a5e6ef81971e000001"), (err, course) =>
     
     for nugget in course.nuggets
-        if nugget._id == "514df2ae400a59290a000054" then nougat = nugget
+        if nugget._id.toString() == "514df2ae400a59290a000054" then nougat = nugget
     
     nougat.probeset.forEach (probe) =>
         probes.push(probe._id.toString())

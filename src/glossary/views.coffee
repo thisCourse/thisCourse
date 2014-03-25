@@ -1,5 +1,6 @@
-define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles","cs!ckeditor/views","cs!ui/dialogs/views"], \
-        (baseviews, models, templates, styles,ckeditorviews,dialogviews) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles", "cs!ckeditor/views", "cs!ui/dialogs/views"], \
+        (baseviews, models, templates, styles, ckeditorviews, dialogviews) ->
+
 
     class GlossaryRouterView extends baseviews.RouterView
 
@@ -11,6 +12,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
         
         events:
             "click .add-button": "addNewGlossary"
+            "click .delete-button": "deleteGlossary"
             
             
         initialize: =>
@@ -28,6 +30,12 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 success: (model) => 
                     console.log model
                     require("app").navigate model.get("_id")
+
+        deleteGlossary: (ev) => 
+            glossary = @collection.get(ev.target.id)
+            dialogviews.delete_confirmation glossary, "glossary", =>
+                glossary.destroy()
+                glossary.parent.model.save()
             
 
     class GlossaryView extends baseviews.BaseView
