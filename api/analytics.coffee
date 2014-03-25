@@ -356,7 +356,7 @@ change_user_status = (req, email, diff, callback) =>
                     userstatus.claimed.add _id: data.nugget, points: data.points, timestamp: new Date()
                     userstatus.partial.remove data.nugget
                     if not userstatus.unclaimed.get data.nugget
-                    userstatus.shield = Math.min(100, userstatus.shield + data.points*3)
+                        userstatus.shield = Math.min(100, userstatus.shield + data.points*3)
             if data.claimed is false and not userstatus.claimed.get data.nugget
                 userstatus.partial.add _id: data.nugget
             userstatus.claimed = userstatus.claimed.toJSON()
