@@ -19,7 +19,7 @@ anatomyaTag.models.forEach (nugget) =>
 
 models[0].get("page").get("contents").models[0].get("sections").models[0].get("items").models[0].get("file")
 title = app.get("course").get("nuggets").selectNuggets({"tags":"anatomy"}).models[0].get("title")
-#glossaryimport = [{"html": "<img src = /s3/file_redirect?id=" + file + ">", "title": title}]
+glossaryimport = [{"html": "<img src = /s3/file_redirect?id=" + file + " style = \"width: 800px; \" />", "title": title}]
 glossarylist = require('app').get('course').get('glossary')
 
 require ['cs!glossary/models'], (glossarymodels) =>
