@@ -4,12 +4,6 @@ define ["cs!base/models"], (basemodels) ->
 
         apiCollection: "userstatus"
 
-        initialize: ->
-            @get("claimed").bind "change", @trigger "nuggetAnalytics" 
-            @get("partial").bind "change", @trigger "nuggetAnalytics" 
-            @get("unclaimed").bind "change", @trigger "nuggetAnalytics" 
-
-
         relations: ->
             claimed:
                 collection: Backbone.Collection

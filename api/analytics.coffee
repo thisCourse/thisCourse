@@ -348,9 +348,9 @@ change_user_status = (req, email, diff, callback) =>
             userstatus.partial = new Backbone.Collection(userstatus.partial)
             userstatus.unclaimed = new Backbone.Collection(userstatus.unclaimed)
             if data.unclaimed
+                unclaimed = userstatus.claimed.get data.nugget
                 userstatus.claimed.remove data.nugget
-                userstatus.partial.remove data.nugget
-                userstatus.unclaimed.add data.nugget
+                userstatus.unclaimed.add unclaimed
             if data.claimed
                 if not userstatus.claimed.get data.nugget
                     userstatus.claimed.add _id: data.nugget, points: data.points, timestamp: new Date()
@@ -366,13 +366,13 @@ change_user_status = (req, email, diff, callback) =>
 
     #TODO: Implement Caching of server side Backbone Collections with node-cache. (5x speed up)
     status.findOne query, (err, userstatus) =>
-        if err then return callback new APIError(err)
+        if err then return callback new api.APIError(err)
         for key, obj of diff
             data = diff_actions[key] obj, userstatus
             if data
                 if data._id then delete data._id
                 status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
-                    if err then return new APIError(err)
+                    if err then return new api.APIError(err)
                     data.timestamp = new Date()
                     data.email = email
                     data.diff = key

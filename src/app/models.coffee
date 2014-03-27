@@ -35,7 +35,9 @@ define ["cs!base/models", "cs!course/models", "cs!auth/models", "cs!./router", "
             Backbone.history.start pushState: true, root: @get("root_url")
 
         updateUserStatus: (data) =>
+            @get('userstatus').clear silent: true
             @get('userstatus').set data.userstatus
+            @trigger "nuggetAnalyticsChanged"
 
     class TabModel extends basemodels.LazyModel
         

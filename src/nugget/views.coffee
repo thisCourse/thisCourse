@@ -204,9 +204,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                     nug = renug.exec(tag)?[1] or nug
                 Number(nug)
             for nugget in nuggetlist.nuggets
-                if require('app').get('userstatus').get('claimed')?.get(nugget.id)
+                if require('app').get('userstatus')?.get('claimed')?.get(nugget.id)
                     nugget.status = 'claimed'
-                else if require('app').get('userstatus').get('partial')?.get(nugget.id)
+                else if require('app').get('userstatus')?.get('partial')?.get(nugget.id)
                     nugget.status = 'partial'
                 else
                     nugget.status = 'unclaimed'
@@ -259,7 +259,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             require('app').bind "nuggetAnalyticsChanged", @render
         
         render: =>
-            @$el.html templates.probe_enable @context(status:require('app').get('userstatus')?.get('claimed')?.get(@model.id))
+            console.log "Rendering!"
+            @$el.html templates.probe_enable @context
+                claimed: require('app').get('userstatus')?.get('claimed')?.get(@model.id),
+                partial: require('app').get('userstatus')?.get('partial')?.get(@model.id),
+                unclaimed: require('app').get('userstatus')?.get('unclaimed')?.get(@model.id),
             
         unClaim: =>
             dialogviews.dialog_confirmation "Unclaim Nugget","Do you really want to Unclaim this Nugget? (you will need to take the quiz again if you want to reclaim it later)", =>

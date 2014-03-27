@@ -366,7 +366,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @review = []
             if @options.nofeedback and not @options.noskipping
                 require("app").bind "windowBlur", @performQuestionSkipping
-            @claimed = true
+            @claimed = false
             @progress = Number(@options.progress or 0)
             @points = 0
             @inc = @options.inc or 0
@@ -394,6 +394,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 require("app").unbind "windowBlur", @performQuestionSkipping
                 @inc += 1
                 if not @options.notclaiming
+                    @claimed = @earnedpoints == @points
                     @claimNugget()
                 else
                     @showReviewFeedback()
@@ -442,10 +443,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @options.sync.submitQuestion response, (data) =>
                 if not @options.nofeedback then @$('.answerbtn, .skipbutton').hide()
                 if @options.sync.nuggetAttempt
-                    if not data.correct
-                        @claimed = false
-                        if @options.notclaiming
-                            @review.push @model.parent.model
+                    if not data.correct and @options.notclaiming
+                        @review.push @model.parent.model
                     @earnedpoints += data.earnedpoints
                     @points += data.totalpoints
                     if not @options.nofeedback then @subviews.probeview.answered(data)
@@ -499,7 +498,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             require("app").navigate "../.."
 
         claimNugget: =>
-            nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
+            nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @earnedpoints
             @options.sync.nuggetAttempt nuggetattempt, (data) =>
                 if @claimed
                     @$el.toggle "highlight", {"color": "#00FF77", "complete": @navigateBack}
