@@ -99,15 +99,17 @@ define [], ->
             'C07': 'Conclusions'
          'title': 'ERPs of Meaning'
          'minpoints': 5
-      # 'L014':
-      #    'clusters':
-      #       'C01': 'Lorem ipsum'
-      #       'C02': 'Lorem ipsum'
-      #       'C03': 'Lorem ipsum'
-      #       'C04': 'Lorem ipsum'
-      #       'C05': 'Lorem ipsum'
-      #    'title': 'Language Mapping'
-      #    'minpoints': 5
+      'L014':
+         'clusters':
+            'C01': 'Introduction'
+            'C02': 'Background'
+            'C03': 'Task dependence and definitions'
+            'C04': 'Dual-stream model of speech processing'
+            'C05': 'Ventral stream: sound to meaning'
+            'C06': 'Dorsal stream: sound to action'
+            'C07': 'Summary'
+         'title': 'Speech and Brain'
+         'minpoints': 5
       'L015':
          'clusters':
             'C01': 'What is Attention?'
