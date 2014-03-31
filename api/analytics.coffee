@@ -364,6 +364,15 @@ change_user_status = (req, email, diff, callback) =>
             userstatus.unclaimed = userstatus.unclaimed.toJSON()
             return userstatus
 
+        "erode": (data, userstatus) ->
+            if data.remove
+                userstatus.shield -= data.remove
+                if userstatus.shield < 0
+                    userstatus.life += userstatus.shield
+                    userstatus.shield = 0
+                console.log userstatus.shield
+            return userstatus
+
     #TODO: Implement Caching of server side Backbone Collections with node-cache. (5x speed up)
     status.findOne query, (err, userstatus) =>
         if err then return callback new api.APIError(err)
@@ -376,7 +385,7 @@ change_user_status = (req, email, diff, callback) =>
                     data.timestamp = new Date()
                     data.email = email
                     data.diff = key
-                    data.ip = req.connection.remoteAddress
+                    data.ip = req?.connection?.remoteAddress
                     log.save data, (err, obj) =>
                         if err
                             console.log "User Status logging failed for #{email}"
