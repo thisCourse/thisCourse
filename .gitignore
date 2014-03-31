@@ -7,3 +7,4 @@ build/
 *.pyc
 npm-debug.log
 secrets.coffee
+analysis/
