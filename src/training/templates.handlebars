@@ -1,0 +1,116 @@
+<script id="training_list" type="text/x-handlebars-template">
+    
+
+</script>
+
+<script id="training_container" type="text/x-handlebars-template">
+    <div class="trainingquestion">
+    </div>
+    <div class="buttonhole">
+        <button class='button btn success nexttraining large' disabled="disabled">Start Next</button>
+    </div>
+</script>
+
+<script id="training" type="text/x-handlebars-template">
+    <div class="exemplar">{{{ exemplar }}}</div>
+    <div class="responses"></div>
+    <div class="feedback">&nbsp</div>
+</script>
+
+<script id="response" type="text/x-handlebars-template">
+    <div class="responseitem" id="{{_id}}">{{{ html }}}</div>
+</script>
+
+<script id='choice_control' type="text/x-handlebars-template">
+    <div class='choiceselectionview'></div>
+    <div class='choicetrainingview'></div>
+</script>
+
+<script id='choice_selection' type="text/x-handlebars-template">
+    <div class="title"><h2>Click a button below to choose the next category of Fribbles to learn.</h2></div>
+    <div class="choices"></div>
+
+</script>
+
+<script id='nochoice_selection' type="text/x-handlebars-template">
+    <div class="title"><h2>Click the button below to learn the next category of Fribbles.</h2></div>
+    <div class="choices"></div>
+    <div class="buttonhole">
+        <button class='button btn primary trainingchoice large'>Start Next</button>
+    </div>
+</script>
+
+<script id='choice_selection_model' type="text/x-handlebars-template">
+    <div class='{{#unless disabled}}training{{/unless}}choice' id='{{id}}' {{#if unselectable}}unselectable=true{{/if}}><exemplar class="btn button info large" {{#if disabled}}disabled="disabled"{{/if}}>{{{exemplar}}}</exemplar></div>
+</script>
+
+<script id='initial_instructions' type="text/x-handlebars-template">
+    <div class="instructions_wrapper">
+        <div class="instructions">
+            <p class="instruction">You are about to learn about Fribbles. Fribbles are a special kind of object that belong to many different categories. You will be learning to recognize the names of some of these categories. As you proceed through the experiment, you will get to learn the names for twelve different categories of Fribbles.</p>
+            </br>
+            <p class="instruction">In order to decide which category of Fribble to learn next, you will be shown the name of two Fribble categories - you will then sometimes get to <b>choose</b> which one you learn next, and sometimes the computer will decide for you.</p>
+            </br>
+            <p class="instruction">For each Fribble category, you will be shown the name of the Fribble category, and two pictures - one of a Fribble belonging to that category, one of a similar Fribble that does not. You should always try to <b>pick</b> the Fribble that you think belongs to that category. When you have chosen, you will be told whether you were <b>correct</b> or <b>incorrect</b>. You will see many examples from the Fribble category, so you will have a chance to learn what marks them out from similar Fribbles.</p>
+            </br>
+            <p class="instruction">When you have learned the names of twelve different categories of Fribbles, you will be given a test on how well you have learned the different names. There will be no feedback in the test.</p>
+            </br>
+            <div class="buttonhole">
+                <button class='btn button info understand'>I have read these instructions</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id='warnings' type="text/x-handlebars-template">
+    <div class="instructions_wrapper">
+        <div class="instructions">
+            <p class="instruction">This experiment will take approximately two hours to complete, make sure you are situated in a quiet place without distractions where you can observe the following:</p>
+            </br>
+            <p class="instruction">&#8226;Remain logged in.</p>
+            <p class="instruction">&#8226;Stay within the browser window.</p>
+            <p class="instruction">&#8226;Do not navigate away from, or refresh the page.</p>
+            <p class="instruction">&#8226;Maintain a stable Internet connection.</p>
+            </br>
+            <p class="instruction">Failure to observe these precautions may result in the experiment restarting from the beginning.</p>
+            <p class="instruction">If you need to take a break at any point, leave the browser window open and the computer on and connected to the Internet.</p>
+            <p class="instruction">You will now do a short practice session to familiarize yourself with the experiment</p>
+            <div class="buttonhole">
+                <button class='btn button success understand'>Practice</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id='ready_to_start' type="text/x-handlebars-template">
+    <div class="instructions_wrapper">
+        <div class="instructions">
+            <p class="instruction">That was a practice (if you would like to repeat the practice, please refresh the page) - when you click below, you will move on to the experiment.</p>
+            <p class="instruction">Remember:</p>
+            </br>
+            <p class="instruction">&#8226;Remain logged in.</p>
+            <p class="instruction">&#8226;Stay within the browser window.</p>
+            <p class="instruction">&#8226;Do not navigate away from, or refresh the page.</p>
+            <p class="instruction">&#8226;Maintain a stable Internet connection.</p>
+            </br>
+            <p class="instruction">Failure to observe these precautions may result in the experiment restarting from the beginning.</p>
+            <p class="instruction">If you need to take a break at any point, leave the browser window open and the computer on and connected to the Internet.</p>
+            <p class="instruction">The best time to take a break is between categories, either when you see the red button at the end of a category, or on the screen where the choices are shown.</p>
+            <div class="buttonhole">
+                <button class='btn button success understand'>Begin Experiment</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id='post_test' type="text/x-handlebars-template">
+    <div class="instructions_wrapper">
+        <div class="instructions">
+            <p class="instruction">You have now finished learning all the categories of Fribbles. You will now be tested on them in a random sequence. The testing will be the same as the training, but this time you will receive no feedback.</p>
+            <p class="instruction">Press the button below when you are ready to continue.</p>
+            <div class="buttonhole">
+                <button class='btn button success posttest'>Begin Posttest</button>
+            </div>
+        </div>
+    </div>
+</script>

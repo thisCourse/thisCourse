@@ -5,6 +5,12 @@ nodeStatic = require('node-static')
 utils = require("./utils.coffee")
 fs = require("fs")
 redis = require("redis").createClient()
+auth = require("../auth.coffee")
+crypto = require("crypto")
+emailer = require("./email.coffee")
+secrets = require("../secrets.coffee")
+http = require("http")
+https = require("https")
 
 api = require("./api.coffee")
 
@@ -142,12 +148,16 @@ class PreTest extends AnalyticsHandler
                 return @save_analytics_object @req.body, callback
             else
                 return callback new api.APIError("Can only answer the next item in the queue (#{id}).")
-    
+        @save_analytics_object @req.body, callback
+
     handle_GET: (callback) =>
         redis.llen "pretest-answered:" + @req.session.email, (err, progress) =>
             redis.lrange "pretest-unanswered:" + @req.session.email, 0, -1, (err, unanswered) =>
                 if err then return callback new api.APIError(err)
                 callback new api.JSONResponse(progress: progress, probes: unanswered)
+        @collection.find(email: @req.session.email, {limit:1, sort:[['_id', -1]]}).toArray (err, doc) =>
+            inc = doc.length and doc[0]?.inc or 0
+            callback new api.JSONResponse(inc.toString())
 
 class Midterm extends AnalyticsHandler
     collection: db.collection("midterm")
@@ -288,6 +298,126 @@ class ProbeResponse extends AnalyticsHandler
                     response.body.probe = probe
                 callback response
 
+class PracticeResponse extends AnalyticsHandler
+    collection: db.collection("practiceresponse")
+    
+    handle_POST: (callback) =>
+        data = @req.body
+        @save_analytics_object data, (response) =>
+            callback response
+
+class TrainingResponse extends AnalyticsHandler
+    collection: db.collection("trainingresponse")
+    
+    handle_POST: (callback) =>
+        data = @req.body
+        api.db.collection("training").find(_id: new ObjectId(data.training)).toArray (err, trainings) =>
+            if err then return callback new api.APIError(err)
+            if not trainings?.length then return callback new api.APIError("Training could not be found.")
+            training = trainings[0]
+            if data.tabbedout
+                data.checking = "tabbedout"
+            else
+                data.correct = (data.answer in (example._id.toString() for example in training.examples))
+            @save_analytics_object data, (response) =>
+                callback response
+
+class PostTestResponse extends AnalyticsHandler
+    collection: db.collection("posttestresponse")
+    
+    handle_POST: (callback) =>
+        data = @req.body
+        api.db.collection("training").find(_id: new ObjectId(data.training)).toArray (err, trainings) =>
+            if err then return callback new api.APIError(err)
+            if not trainings?.length then return callback new api.APIError("Training could not be found.")
+            training = trainings[0]
+            if data.tabbedout
+                data.checking = "tabbedout"
+            else
+                data.correct = false
+                for answer in data.options
+                    if answer in ((example._id.toString() for example in training.examples))
+                        data.recall = true
+                        if data.answer == answer then data.correct = true
+                    else if answer in ((test._id.toString() for test in training.tests))
+                        data.recall = false
+                        if data.answer == answer then data.correct = true
+            @save_analytics_object data, (response) =>
+                callback response
+
+class ExperimentalConsent extends AnalyticsHandler
+    collection: db.collection("experimentalconsent")
+    
+    checkPermissions: =>
+        if @req.session.email
+            @res.json error: "Already logged in", 403
+            return false
+        return true
+    
+    handle_POST: (callback) =>
+        data = @req.body
+        api.db.collection("user").find(email: data.email).toArray (err, users) =>
+            if users?.length then return callback new api.APIError("User already exists.")
+            email = data.email
+            shasum = crypto.createHash('sha1')
+            shasum.update(email)
+            password = secrets.createPassword(shasum.digest("hex"))
+            auth.create_user email, password, (err, user) =>
+                if not err
+                    body = """
+                        Dear participant,
+
+                        Welcome to the Categorical Learning Study! We've created an account for you to login to the website.
+
+                        Email: #{email}
+                        Password: #{password}
+                        
+                        To access the experiment, please use a W3 Standards compliant Browser (Firefox, Chrome, Safari).
+                        
+                        Please login to the experiment at: http://tfle.org/learning/experiment
+
+                        Sincerely,
+                        CHD Researchers
+                        """
+                    console.log "User successfully created:", email, "(password:" + password + ")"
+                    emailer.send TextBody: body, To: email, Subject: "Welcome to the Categorical Learning Study! (login details inside)", =>
+                        console.log "Email sent to", email
+                    metadatafields = (meta for meta in ['name', 'study_id', 'dob', 'contact','sharing'] when data[meta])
+                    metadatavalues = (data[meta] for meta in metadatafields)
+                    metadata = _.object(metadatafields, metadatavalues)
+                    api.db.collection("user").findAndModify { email: email }, ['_id', 'asc'], { $set: metadata}, new: true, (err, user) =>
+                        if not err then return callback new api.JSONResponse(user) else return callback new api.APIError("Error updating user metadata.")
+                else
+                    console.log "Error creating user", email, "(" + err + ")"
+                    return callback new api.APIError("There was an error creating the user: " + err)
+
+class ExperimentComplete extends AnalyticsHandler
+    collection: db.collection("experimentcomplete")
+    
+    handle_POST: (callback) =>
+        data = @req.body
+        api.db.collection("user").findAndModify { email: data.email }, ['_id', 'asc'], { $set: { experimentcomplete: data.experimentcomplete, variantid: data.variantid } }, new: true, (err, user) =>
+            if not err
+                if user.study_id
+                    options = 
+                        host: "ucsd.sona-systems.com"
+                        path: "/services/SonaAPI.svc/WebstudyCredit?experiment_id=365&credit_token=41776aa497874d8682ba07d5db70f073&survey_code=#{user.study_id}"
+                    req = https.request options, (apidata) =>
+                        str = ''
+                        apidata.on 'data', (chunk) =>
+                            str += chunk
+                        apidata.on 'end', =>    
+                            api.db.collection("user").findAndModify { email: data.email }, ['_id', 'asc'], { $set: { sonaAPI: str } }, new: true, (err2, user2) =>
+                                if not err2
+                                    return callback new api.JSONResponse(user2.experimentcomplete)
+                                else
+                                    return callback new api.APIError("Error updating user metadata: " + err2)
+                    req.end()
+                else
+                    return callback new api.JSONResponse(user.experimentcomplete)
+            else
+                return callback new api.APIError("Error updating user metadata: " + err)
+
 
 collections =
     nuggetattempt: NuggetAttempt
@@ -297,6 +427,11 @@ collections =
     studentstatistics: StudentStatistics
     midterm: Midterm
     final: Final
+    trainingresponse: TrainingResponse
+    posttestresponse: PostTestResponse
+    practiceresponse: PracticeResponse
+    experimentalconsent: ExperimentalConsent
+    experimentcomplete: ExperimentComplete
 
 module.exports =
     router: router
