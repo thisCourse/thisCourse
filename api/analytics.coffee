@@ -393,6 +393,43 @@ change_user_status = (req, email, diff, callback) =>
             else
                 callback null
 
+create_user_status = (email, data, callback) =>
+    status = api.db.collection("userstatus")
+    user = api.db.collection("user")
+    log = db.collection("userstatuslog")
+    query = email: email
+    user.findOne query, (err, user_exists) =>
+        if user_exists
+            status.findOne query, (err, userstatus) =>
+                if err then return callback new api.APIError(err)
+                if userstatus
+                    console.log "User Status for #{email} already exists"
+                    callback null
+                else
+                    if data
+                        if data._id then delete data._id
+                        data.email = email
+                        status.insert data, (err, newstatus) =>
+                            newstatus = newstatus[0]
+                            if err then return new api.APIError(err)
+                            data.timestamp = new Date()
+                            data.diff = "new"
+                            log.save data, (err, obj) =>
+                                if err
+                                    console.log "User Status logging failed for #{email}"
+                            update_user = $set: {status_id: newstatus._id.toString()}
+                            user.update query, update_user, {safe: true, upsert: true}, (err, auth_user) =>
+                                if err
+                                    console.log err
+                                    return new api.APIError(err)
+                                callback data
+                    else
+                        console.log "No data passed for creation of user status"
+                        callback null
+        else
+            console.log "User not found"
+            callback null
+
 collections =
     nuggetattempt: NuggetAttempt
     pretest: PreTest
@@ -408,4 +445,4 @@ module.exports =
     get_student_nugget_attempts: get_student_nugget_attempts
     get_student_probe_scores: get_student_probe_scores
     change_user_status: change_user_status
-
+    create_user_status: create_user_status

@@ -4,7 +4,6 @@ define ["cs!base/views", "hb!./templates.handlebars", "less!./styles"], \
     class SpinnerView extends baseviews.BaseView
 
         render: =>
-            console.log "Spinning!"
             @$el.html templates.spinner()
         
         show: -> $("body").addClass("wait")

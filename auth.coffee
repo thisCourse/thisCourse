@@ -85,8 +85,6 @@ login = (req, res, next) ->
                             req.session.email = email
                             get_user_status_id email, (err, status_id) ->
                                 if not err
-                                    # FOR TESTING PURPOSES ONLY!
-                                    if email == "test" then status_id = "532a10fd237a64e93a000001"
                                     req.session.status_id = status_id
                                     res.json email: email, token: req.sessionID, status_id: status_id
                                 else
@@ -101,14 +99,9 @@ login = (req, res, next) ->
                     req.session.regenerate (err) ->
                             if err then throw err
                             req.session.email = email
-                            get_user_status_id email, (err, status_id) ->
-                                if not err
-                                    # FOR TESTING PURPOSES ONLY!
-                                    if email == "test" then status_id = "532a10fd237a64e93a000001"
-                                    req.session.status_id = status_id
-                                    res.json email: email, token: req.sessionID, status_id: status_id
-                                else
-                                    res.json {error: "Login failed!"}, 405
+                            get_user_status_id email, (status_id) ->
+                                req.session.status_id = status_id
+                                res.json email: email, token: req.sessionID, status_id: status_id
                 else
                     res.json {error: "Login failed!"}, 405
     else

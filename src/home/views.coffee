@@ -14,7 +14,6 @@ define ["cs!base/views", "cs!schedule/views", "cs!content/views", "cs!./models",
                 @add_lazy_subview name: "content", view: contentviews.ContentView, datasource: "model", key: "content", target: ".content"
                 @updateTitle()
             else
-                console.log "Here!"
                 @add_subview "spinner", new spinnerviews.SpinnerView model: null, "#content"
                 @subviews["spinner"].show()
 
