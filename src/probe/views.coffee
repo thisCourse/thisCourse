@@ -567,10 +567,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
         showFeedback: =>
             if @model.get('correct')
-                @$('.answertext').addClass('showing')
+                @$('.answer').addClass('correct')
                 if @model.get('feedback')
                     @$('.feedback').append(@model.get('feedback'))
                     @parent.feedback = true
+            else
+                @$('.select').addClass('incorrect')
             if @selected then @addFeedback()
 
         
