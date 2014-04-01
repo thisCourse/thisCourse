@@ -376,6 +376,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @showNextProbe()
             xhdr = @model.fetch()
             xhdr?.error handleError
+            @timeOut = null
         
         render: =>
             @$el.html templates.probe_container allowskipping: @options.notclaiming and not @options.noskipping
@@ -384,8 +385,13 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$('.answerbtn, .skipbutton').text('Loading')
             if @collection.models.length == 1
                 @$('.skipbutton').hide()
+            @$('.answerbtn').attr('disabled','disabled')
+            @timeOut = setTimeout @allowAnswer, 5000
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
-                       
+        
+        allowAnswer: =>
+            @$('.answerbtn').removeAttr('disabled')
+
         nextProbe: =>
             if @$('.nextquestion').attr('disabled') then return
             @$('.nextquestion').attr('disabled','disabled')
@@ -481,6 +487,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
         performQuestionSkipping: (manual) =>
             if @options.nofeedback then @submitting = 1
+            clearTimeout(@timeOut)
             @$('.answerbtn').attr('disabled','disabled')
             @$('.answerbtn').text('Loading')
             @$('.skipbutton').attr('disabled','disabled')
