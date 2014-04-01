@@ -29,28 +29,31 @@ div.questionlist {
             font-style:italic;
             
         }
-        ol.answerlist {
+        ul.answerlist {
             list-style:none;
-            counter-reset: list;
             li.answer {
-                width: 600px;
-                padding:16px 0px;
+                padding:16px 6px;
+                margin: 1px;
                 font-size:16px;
                 cursor:pointer;
-                &:before{
-                    font-style: italic;
-                    content: counter(list, @locale) ". ";
-                    counter-increment: list;
-                }
+                border-width: 3px;
+                border-color: #FFFFFF;
                 &.select {
                     font-weight:bold;
                     color: #2222FF;
+                    background-color: #BBBBFF;
                 }
-                div.answertext{
-                    display:inline;
-                    &.showing {
+                &.correct {
+                        font-weight:bold;
+                        color: #2222FF;
                         background-color: #BBFFBB;
                     }
+                &.incorrect {
+                        color: #808080;
+                        background-color: #FFBBBB;
+                    }
+                div.answertext{
+                    display:inline;
                 }
 
                 div.checkorcross {
