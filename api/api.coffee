@@ -397,6 +397,7 @@ class MongoCollection
                 console.log "Purging of #{@req.url} failed"
         purge_request.on 'error', (err) ->
             console.log "Problem connecting to Cache Server:", err
+        purge_request.end()
 
 
 
