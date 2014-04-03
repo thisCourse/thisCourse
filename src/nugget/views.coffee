@@ -134,7 +134,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         render: =>
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
-            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}                
+            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints, draft: lect.draft} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}                
             relec = new RegExp('(L[0-9]+)')
             require('app').get('user').getKeyWhenReady 'claimed', (claimed) =>
                 require('app').get("course").whenLoaded =>
