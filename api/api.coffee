@@ -5,6 +5,8 @@ nodeStatic = require('node-static')
 utils = require("./utils.coffee")
 Backbone = require("backbone")
 fs = require("fs")
+http = require('http')
+settings = require('../settings.coffee')
 
 #db = mongojs.connect("test")
 db = mongoskin.db('127.0.0.1/courses?auto_reconnect')
@@ -273,6 +275,8 @@ class MongoCollection
     finishProcessingRequest: (callback) =>
         # console.log "CALLING process_" + @type
         @["process_" + @type](callback) # run the handler for this "type" (method + target field type)
+        # If not a GET request, purge the Varnish cache
+        if @req.method != "GET" then @purgeCache()
 
     process_GET_collection: (callback) =>
         callback new APIError("The '#{ @name }' collection does not support GET queries.", 405)
@@ -378,6 +382,22 @@ class MongoCollection
                 return @updateDatabase({$pull: utils.wrap_in_object(@parent_ref, null)}, callback)
             else
                 callback @mongoJsonResponse(err, obj)
+
+    purgeCache: =>
+        if not settings.varnish then return
+        options =
+            host: settings.varnish.host
+            port: settings.varnish.port
+            method: "PURGE"
+            path: @req.url
+        purge_request = http.request options, (response) ->
+            if response.statusCode == 404
+                console.log "#{@req.url} purged"
+            else
+                console.log "Purging of #{@req.url} failed"
+        purge_request.on 'error', (err) ->
+            console.log "Problem connecting to Cache Server:", err
+
 
 
 routing_pattern = '/:collection([a-z]+)/:id([0-9a-fA-F]{24})?:path(*)'
