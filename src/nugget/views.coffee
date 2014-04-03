@@ -259,7 +259,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             require('app').bind "nuggetAnalyticsChanged", @render
         
         render: =>
-            console.log "Rendering!"
             @$el.html templates.probe_enable @context
                 claimed: require('app').get('userstatus')?.get('claimed')?.get(@model.id),
                 partial: require('app').get('userstatus')?.get('partial')?.get(@model.id),

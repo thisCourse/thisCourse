@@ -421,6 +421,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$el.html "Test Complete - Your grade will be available on the course site after grading. If you want to leave early, please come and sign out at the front of the room. Otherwise, please close your laptop now so we know you're finished."
 
         showNextProbe: =>
+            clearTimeout(@timeOut)
             @model = @collection.at(@inc)
             @inc += 1
             @model.whenLoaded @render
@@ -438,7 +439,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.skipbutton').attr('disabled','disabled')
             @$('.skipbutton').text('Loading')
             responsetime = new Date - @subviews.probeview.timestamp_load
-            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime, options: @options, nugget_id: @model.parent.model.id
+            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime, options: @options, nugget_id: @model.parent?.model.id
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -456,7 +457,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     if not @options.nofeedback then @subviews.probeview.answered(data)
                     if data.userstatus then require('app').updateUserStatus(data)
                 if @options.nofeedback
-                    @$('.answerbtn').removeAttr('disabled')
+                    if not @timeOut
+                        @allowAnswer()
                     @$('.answerbtn').text('Submit Answer')
                     @$('.skipbutton').removeAttr('disabled')
                     @$('.skipbutton').text('Skip Question')
@@ -496,7 +498,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @prefetchProbe()
 
         exitQuiz: =>
-            if @inc > 0 and not @options.notclaiming
+            if @inc > 1 and not @options.notclaiming
                 @claimNugget()
             else
                 @navigateBack()

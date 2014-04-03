@@ -376,22 +376,25 @@ change_user_status = (req, email, diff, callback) =>
     #TODO: Implement Caching of server side Backbone Collections with node-cache. (5x speed up)
     status.findOne query, (err, userstatus) =>
         if err then return callback new api.APIError(err)
-        for key, obj of diff
-            data = diff_actions[key] obj, userstatus
-            if data
-                if data._id then delete data._id
-                status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
-                    if err then return new api.APIError(err)
-                    data.timestamp = new Date()
-                    data.email = email
-                    data.diff = key
-                    data.ip = req?.connection?.remoteAddress
-                    log.save data, (err, obj) =>
-                        if err
-                            console.log "User Status logging failed for #{email}"
-                    callback data
-            else
-                callback null
+        if userstatus
+            for key, obj of diff
+                data = diff_actions[key] obj, userstatus
+                if data
+                    if data._id then delete data._id
+                    status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
+                        if err then return new api.APIError(err)
+                        data.timestamp = new Date()
+                        data.email = email
+                        data.diff = key
+                        data.ip = req?.connection?.remoteAddress
+                        log.save data, (err, obj) =>
+                            if err
+                                console.log "User Status logging failed for #{email}"
+                        callback data
+                else
+                    callback null
+        else
+            callback null
 
 create_user_status = (email, data, callback) =>
     status = api.db.collection("userstatus")
