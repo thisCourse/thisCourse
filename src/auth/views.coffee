@@ -27,7 +27,7 @@ define ["cs!base/views", "cs!./models", "cs!./utils", "hb!./templates.handlebars
             utils.check(@model)
 
         submitLogin: =>
-            login = utils.login(@model, @$(".email").val(), @$(".password").val())
+            login = utils.login(@model, @$(".email").val().trim(), @$(".password").val().trim())
             login.error => alert("There was an error logging you in. Please try again.")
 
         submitLogout: =>
