@@ -122,7 +122,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         render: =>
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
-            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}
+            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints, draft: lect.draft} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}
             if require('app').get('userstatus')
                 require('app').get('userstatus').getKeyWhenReady 'claimed', (claimed) =>
                     @annotate(claimed)
