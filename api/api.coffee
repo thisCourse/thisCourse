@@ -391,7 +391,7 @@ class MongoCollection
             method: "PURGE"
             path: @req.url
         purge_request = http.request options, (response) ->
-            if response.statusCode == 404
+            if response.statusCode == 200
                 console.log "#{@req.url} purged"
             else
                 console.log "Purging of #{@req.url} failed"
