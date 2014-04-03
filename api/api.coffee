@@ -390,7 +390,7 @@ class MongoCollection
             port: settings.varnish.port
             method: "PURGE"
             path: @req.url
-        purge_request = http.request options, (response) ->
+        purge_request = http.request options, (response) =>
             if response.statusCode == 200
                 console.log "#{@req.url} purged"
             else
