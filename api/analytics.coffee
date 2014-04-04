@@ -311,9 +311,11 @@ class ProbeResponse extends AnalyticsHandler
                     callback response
 
 
+status = api.db.collection("userstatus")
+statuslog = db.collection("userstatuslog")
+usercollection = api.db.collection("user")
+
 change_user_status = (req, email, diff, callback) =>
-    status = api.db.collection("userstatus")
-    log = db.collection("userstatuslog")
     query = email: email
     diff_actions = 
         "set": (data, userstatus) ->
@@ -398,10 +400,10 @@ change_user_status = (req, email, diff, callback) =>
 
 create_user_status = (email, data, callback) =>
     status = api.db.collection("userstatus")
-    user = api.db.collection("user")
+    
     log = db.collection("userstatuslog")
     query = email: email
-    user.findOne query, (err, user_exists) =>
+    usercollection.findOne query, (err, user_exists) =>
         if user_exists
             status.findOne query, (err, userstatus) =>
                 if err then return callback new api.APIError(err)
@@ -421,7 +423,7 @@ create_user_status = (email, data, callback) =>
                                 if err
                                     console.log "User Status logging failed for #{email}"
                             update_user = $set: {status_id: newstatus._id.toString()}
-                            user.update query, update_user, {safe: true, upsert: true}, (err, auth_user) =>
+                            usercollection.update query, update_user, {safe: true, upsert: true}, (err, auth_user) =>
                                 if err
                                     console.log err
                                     return new api.APIError(err)
