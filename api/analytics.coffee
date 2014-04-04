@@ -389,7 +389,7 @@ change_user_status = (req, email, diff, callback) =>
                         data.email = email
                         data.diff = key
                         data.ip = req?.connection?.remoteAddress
-                        log.save data, (err, obj) =>
+                        statuslog.save data, (err, obj) =>
                             if err
                                 console.log "User Status logging failed for #{email}"
                         callback data
@@ -419,7 +419,7 @@ create_user_status = (email, data, callback) =>
                             if err then return new api.APIError(err)
                             data.timestamp = new Date()
                             data.diff = "new"
-                            log.save data, (err, obj) =>
+                            statuslog.save data, (err, obj) =>
                                 if err
                                     console.log "User Status logging failed for #{email}"
                             update_user = $set: {status_id: newstatus._id.toString()}
