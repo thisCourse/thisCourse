@@ -292,6 +292,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     progress: data.progress
                     sync: PreTestAnalytics
                     complete: @complete
+                    timedelay: true
             xhdr.error handleError
         
         complete: =>
@@ -322,6 +323,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     progress: data.progress
                     sync: PostTestAnalytics
                     complete: @complete
+                    timedelay: true
             xhdr.error handleError
         
         complete: =>
@@ -386,8 +388,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$('.answerbtn, .skipbutton').text('Loading')
             if @collection.models.length == 1
                 @$('.skipbutton').hide()
-            @$('.answerbtn').attr('disabled','disabled')
-            @timeOut = setTimeout @allowAnswer, 5000
+            if @options.timedelay
+                @$('.answerbtn').attr('disabled','disabled')
+                @timeOut = setTimeout @allowAnswer, 5000
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
         
         allowAnswer: =>
