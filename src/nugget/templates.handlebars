@@ -87,10 +87,14 @@
     <h1>Lectures</h1>
 
     <div id='studyapp' class='container'>
+    <div id='themes' class='container'>
+    <h3>Themes</h3>
+
+    </div>
     <div id='lectureview' class='view'>
         <ul class='nav nav-pills'>
             {{#each lecture}}
-            <li class="{{#if draft}}editor-only{{/if}}" id='{{lecture}}'><a href='{{ ../url }}lecture/{{lecture}}/' class='lecture {{status}}'><div><p id='{{lecture}}'>{{title}}</p><div class='points'><p id='{{lecture}}'><strong id='{{lecture}}'>{{#if points}}{{points}}{{/if}}</strong></p></div></div></a></li>
+            <li class="{{#if draft}}editor-only{{/if}}" id='{{lecture}}'><a href='{{ ../url }}lecture/{{lecture}}/' class='lecture {{status}}'><div><p id='{{lecture}}'>{{title}}</p><div class='points'><p id='{{lecture}}'><strong id='{{lecture}}'>{{#if points}}<span class="badge">{{points}}</span>{{/if}}</strong></p></div></div></a></li>
             {{/each}}
         </ul>
     </div>

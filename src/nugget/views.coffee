@@ -116,6 +116,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             quizUrl = url: if tags then @url + quiz + '?' + tags + (if claimed then '&' + claimed else '') else @url + quiz + (if claimed then '?' + claimed else '')
     
     class LectureListView extends baseviews.RouterView
+
+        events:
+            "click .theme": "highlight"
                 
         routes: =>
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
@@ -152,6 +155,10 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             require('app').bind "nuggetAnalyticsChanged", @render
             
         
+        highlight: (ev) =>
+            theme = ev.target.id
+            @$("." + theme).toggleClass("highlight")
+
         clusterView: (ev) =>
             lecture = ev.target.id
             @$(".view").toggleClass('hidden')
