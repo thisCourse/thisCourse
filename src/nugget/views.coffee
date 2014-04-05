@@ -125,12 +125,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         render: =>
             @$el.html templates.nugget_lecture_list @context(@lecturelist)
-            @lecturelist = {lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints, draft: lect.draft} for lecture, lect of hardcode.knowledgestructure,totalpoints: 0}
+            themes = _.uniq(_.flatten(theme for theme in lect.tags for lecture, lect of hardcode.knowledgestructure))
+            @lecturelist = 
+                lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints, draft: lect.draft, themes: lect.tags} for lecture, lect of hardcode.knowledgestructure
+                totalpoints: 0
+                theme: ({theme_id: theme, theme_name: theme.replace(/-/g," ")} for theme in themes)
             if require('app').get('userstatus')
                 require('app').get('userstatus').getKeyWhenReady 'claimed', (claimed) =>
                     @annotate(claimed)
-            else
-                @annotate models: []
 
 
         annotate: (claimed) =>
@@ -157,7 +159,13 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         highlight: (ev) =>
             theme = ev.target.id
-            @$("." + theme).toggleClass("highlight")
+            checked = @$("#" + theme).hasClass("highlight")
+            @$(".theme, .lecture").removeClass("highlight")
+            @$(".lecture").removeClass("lowlight")
+            if not checked
+                @$("." + theme).addClass("highlight")
+                @$("#" + theme).addClass("highlight")
+                @$(".lecture").addClass("lowlight")
 
         clusterView: (ev) =>
             lecture = ev.target.id
