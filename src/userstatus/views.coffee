@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles"], \
-        (baseviews, models, templates, styles) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles", "cs!../userstatus/models"], \
+        (baseviews, models, templates, styles, userstatusmodels) ->
 
     class UserStatusRouterView extends baseviews.RouterView
 
@@ -9,6 +9,14 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
 
     class UserStatusListView extends baseviews.BaseView
+
+        initialize: =>
+            @collection = new userstatusmodels.UserStatusCollection
+            @collection.fetch().success @render
+            @collection.bind "add", _.debounce @render, 50
+            @collection.bind "change", @render
+            @collection.bind "loaded", @render
+
 
         render: =>
             @$el.html templates.user_status_list @context()
