@@ -34,6 +34,8 @@
 @partialcolor: #EEEEAA;
 @claimedcolor: #AAFFCC;
 @unclaimedcolor: #AACCFF;
+@highlight: #EE8800;
+@lowlight: #CCCCCC;
 @lecturesquare: 90px;
 
 .tab-pane {
@@ -67,6 +69,14 @@
 }
 
 .LectureListView {
+
+    #themes {
+        .btn {
+            &.highlight {
+                background: @highlight;
+            }
+        }
+    }
     
     ul {
         margin: 0;
@@ -105,6 +115,17 @@
             &:hover {
                 .hovershadowbox (@partialcolor,5px,5px,3px,#888,10px,25px,23px,10px,8px,8px);
             }
+        }
+        &.highlight {
+            &.lowlight {
+                background-color: @highlight;
+                &:hover {
+                    .hovershadowbox (@highlight,5px,5px,3px,#888,10px,25px,23px,10px,8px,8px);
+                }
+            }
+        }
+        &.lowlight {
+            background-color: @lowlight;
         }
         .points {
             color:#888822;

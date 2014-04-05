@@ -1,6 +1,31 @@
 <script id="user_status_list" type="text/x-handlebars-template">
-    
-
+    <div>
+    <h2>User Progress Summary</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Life</th>
+                <th>Shield</th>
+                <th>No. Claimed</th>
+                <th>No. Attempted</th>
+                <th>No. Unclaimed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each collection.models }}
+                <tr>
+                    <td>{{attributes.email}}</td>
+                    <td>{{attributes.life}}</td>
+                    <td>{{attributes.shield}}</td>
+                    <td>{{attributes.claimed.length}}</td>
+                    <td>{{attributes.partial.length}}</td>
+                    <td>{{attributes.unclaimed.length}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    </div>
 </script>
 
 <script id="user_status" type="text/x-handlebars-template">
