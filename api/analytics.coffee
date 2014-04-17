@@ -331,16 +331,17 @@ change_user_status = (req, email, diff, callback) =>
                 probetimes = model.get "probetimes"
                 update = false
                 if probetimes
-                    update = true
                     if probetimes[_id]
-                        if not (timenow.getTime() - probetimes[_id].getTime())/1000 > 7*24*60*60
-                            update = false
+                        if (timenow.getTime() - probetimes[_id].getTime())/1000 > 7*24*60*60
+                            update = true
                 else if (timenow.getTime() - model.get("timestamp").getTime())/1000 > 7*24*60*60
                     model.set "probetimes": {}
                     update = true
                 if update
+                    probetimes = probetimes or {}
                     userstatus.shield = Math.min(100, userstatus.shield + data.earnedpoints)
                     probetimes[_id] = timenow
+                    userstatus.claimed.get(data.nugget_id).set "probetimes": probetimes
                     userstatus.claimed = userstatus.claimed.toJSON()
                     return userstatus
             return false
