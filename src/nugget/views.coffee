@@ -124,7 +124,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
             
         render: =>
-            @$el.html templates.nugget_lecture_list @context(@lecturelist)
             themes = _.uniq(_.flatten(theme for theme in lect.tags for lecture, lect of hardcode.knowledgestructure))
             @lecturelist = 
                 lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints, draft: lect.draft, themes: lect.tags} for lecture, lect of hardcode.knowledgestructure
@@ -133,7 +132,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if require('app').get('userstatus')
                 require('app').get('userstatus').getKeyWhenReady 'claimed', (claimed) =>
                     @annotate(claimed)
-
+            else
+                @annotate models:[]
 
         annotate: (claimed) =>
             relec = new RegExp('(L[0-9]+)')
