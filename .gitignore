@@ -7,3 +7,8 @@ build/
 *.pyc
 npm-debug.log
 secrets.coffee
+tools/createpassword.coffee
+analysis/
+admin/
+src/nugget/hardcode.coffee
+settings.coffee

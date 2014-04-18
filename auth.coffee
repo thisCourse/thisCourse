@@ -56,6 +56,11 @@ get_user_password_hash = (email, callback) ->
         usercollection.findOne email: email, (err, obj={}) =>
             callback obj.passwordHash or ""
 
+get_user_status_id = (email, callback) ->
+    #TODO: Cache requests
+    usercollection.findOne email: email, (err, obj={}) =>
+        callback obj.status_id or ""
+
 create_user = (email, password, callback) ->
     console.log "Creating user", email
     hash_password password, (err, passwordHash) =>
@@ -78,7 +83,12 @@ login = (req, res, next) ->
                         req.session.regenerate (err) ->
                             if err then throw err
                             req.session.email = email
-                            res.json email: email, token: req.sessionID
+                            get_user_status_id email, (err, status_id) ->
+                                if not err
+                                    req.session.status_id = status_id
+                                    res.json email: email, token: req.sessionID, status_id: status_id
+                                else
+                                    res.json {error: "Login failed!"}, 405
                     else
                         res.json {error: "Login failed!"}, 405
             else
@@ -89,7 +99,9 @@ login = (req, res, next) ->
                     req.session.regenerate (err) ->
                             if err then throw err
                             req.session.email = email
-                            res.json email: email, token: req.sessionID
+                            get_user_status_id email, (status_id) ->
+                                req.session.status_id = status_id
+                                res.json email: email, token: req.sessionID, status_id: status_id
                 else
                     res.json {error: "Login failed!"}, 405
     else
@@ -97,7 +109,7 @@ login = (req, res, next) ->
 
 check = (req, res, next) ->
     req.session.touch()
-    res.json {email: req.session.email, token: req.sessionID}
+    res.json {email: req.session.email, token: req.sessionID, status_id: req.session.status_id}
 
 logout = (req, res, next) ->
     req.session.destroy ->

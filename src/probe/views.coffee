@@ -138,8 +138,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             xhdr.error handleError
                 
         nuggetAttempt: (nuggetattempt, callback) =>
-            xhdr = doPost '/analytics/nuggetattempt/', nuggetattempt, =>
-                callback()
+            xhdr = doPost '/analytics/nuggetattempt/', nuggetattempt, (data) =>
+                callback data
             xhdr.error handleError
 
         skipQuestion: (response, callback) =>
@@ -292,6 +292,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     progress: data.progress
                     sync: PreTestAnalytics
                     complete: @complete
+                    timedelay: true
             xhdr.error handleError
         
         complete: =>
@@ -322,6 +323,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     progress: data.progress
                     sync: PostTestAnalytics
                     complete: @complete
+                    timedelay: true
             xhdr.error handleError
         
         complete: =>
@@ -387,7 +389,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 review = @options.inc.get("review") or []
             if @options.nofeedback and not @options.noskipping
                 require("app").bind "windowBlur", @performQuestionSkipping
-            @claimed = true
+            @claimed = false
             @progress = Number(@options.progress or 0)
             @inc = @options.inc.get("index") or 0
             @submitting = 0
@@ -397,14 +399,24 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @showNextProbe()
             xhdr = @model.fetch()
             xhdr?.error handleError
+            require("app").bind "exitQuiz", @exitQuiz
+            @timeOut = null
         
         render: =>
             @$el.html templates.probe_container allowskipping: @options.notclaiming and not @options.noskipping
             if @submitting == 1
                 @$('.answerbtn, .skipbutton').attr('disabled','disabled')
                 @$('.answerbtn, .skipbutton').text('Loading')
+            if @collection.models.length == 1
+                @$('.skipbutton').hide()
+            if @options.timedelay
+                @$('.answerbtn').attr('disabled','disabled')
+                @timeOut = setTimeout @allowAnswer, 5000
             @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
-                       
+        
+        allowAnswer: =>
+            @$('.answerbtn').removeAttr('disabled')
+
         nextProbe: =>
             if @$('.nextquestion').attr('disabled') then return
             @$('.nextquestion').attr('disabled','disabled')
@@ -412,15 +424,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 require("app").unbind "windowBlur", @performQuestionSkipping
                 @inc += 1
                 if not @options.notclaiming
-                    nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @points
-                    @options.sync.nuggetAttempt nuggetattempt, =>
-                        if @claimed
-                            @$el.html "<h4>Nugget Claimed!</h4>"
-                            require('app').get('user').get('claimed').add _id: @model.parent.model.id, points: @points
-                        else
-                            @$el.html "<h4>Practice makes better!</h4>"
-                            require('app').get('user').get('partial').add _id: @model.parent.model.id
-                    return
+                    @claimed = @earnedpoints == @points
+                    @claimNugget()
                 else
                     @showReviewFeedback()
                     return
@@ -444,6 +449,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @$el.html "Test Complete - Your grade will be available on the course site after grading. If you want to leave early, please come and sign out at the front of the room. Otherwise, please close your laptop now so we know you're finished."
 
         showNextProbe: =>
+            clearTimeout(@timeOut)
             @model = @collection.at(@inc)
             @inc += 1
             @model.whenLoaded @render
@@ -461,7 +467,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.skipbutton').attr('disabled','disabled')
             @$('.skipbutton').text('Loading')
             responsetime = new Date - @subviews.probeview.timestamp_load
-            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime
+            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime, options: @options, nugget_id: @model.parent?.model.id
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -472,21 +478,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @options.sync.submitQuestion response, (data) =>
                 if not @options.nofeedback then @$('.answerbtn, .skipbutton').hide()
                 if @options.sync.nuggetAttempt
-                    if not data.correct 
-                        @claimed = false
-                        if @options.notclaiming
-                            @review.push @model.parent.model
-                            if @options.inc then @options.inc.get("review").push @model.parent.model
-                    correct = (answer._id for answer in data.probe.answers when answer.correct)
-                    increment = if response.answers.length <= correct.length then _.intersection(response.answers,correct).length else _.intersection(response.answers,correct).length - (response.answers.length-correct.length)
-                    @earnedpoints += Math.max(0, increment)
-                    @points += correct.length
+                    if not data.correct and @options.notclaiming
+                        @review.push @model.parent.model
+                    @earnedpoints += data.earnedpoints
+                    @points += data.totalpoints
                     if not @options.nofeedback then @subviews.probeview.answered(data)
-                    if @options.inc
-                        @options.inc.set "points": @points, "earnedpoints": @earnedpoints
-                        @options.inc.save()
+                    if data.userstatus then require('app').updateUserStatus(data)
                 if @options.nofeedback
-                    @$('.answerbtn').removeAttr('disabled')
+                    if not @timeOut
+                        @allowAnswer()
                     @$('.answerbtn').text('Submit Answer')
                     @$('.skipbutton').removeAttr('disabled')
                     @$('.skipbutton').text('Skip Question')
@@ -508,6 +508,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
         performQuestionSkipping: (manual) =>
             if @options.nofeedback then @submitting = 1
+            clearTimeout(@timeOut)
             @$('.answerbtn').attr('disabled','disabled')
             @$('.answerbtn').text('Loading')
             @$('.skipbutton').attr('disabled','disabled')
@@ -523,6 +524,24 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @model = @collection.at(@inc-1)
             @model.whenLoaded @render
             @prefetchProbe()
+
+        exitQuiz: =>
+            if @inc > 1 and not @options.notclaiming
+                @claimNugget()
+            else
+                @navigateBack()
+            
+        navigateBack: =>
+            require("app").navigate "../.."
+
+        claimNugget: =>
+            nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @earnedpoints
+            @options.sync.nuggetAttempt nuggetattempt, (data) =>
+                if @claimed
+                    @$el.toggle "highlight", {"color": "#00FF77", "complete": @navigateBack}
+                else
+                    @$el.toggle "highlight", {"color": "#BBFF00", "complete": @navigateBack}
+                if data.userstatus then require('app').updateUserStatus(data)
 
 
     class ProbeView extends baseviews.BaseView
@@ -587,10 +606,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             
         showFeedback: =>
             if @model.get('correct')
-                @$('.answertext').addClass('showing')
+                @$('.answer').addClass('correct')
                 if @model.get('feedback')
                     @$('.feedback').append(@model.get('feedback'))
                     @parent.feedback = true
+            else
+                @$('.select').addClass('incorrect')
             if @selected then @addFeedback()
 
         
@@ -632,6 +653,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         save: =>
             @$("input").blur()
             @updateQuestion()
+            @updateFeedback()
             @$(".save.btn").button "loading"
             @model.save().success =>
                 console.log @url

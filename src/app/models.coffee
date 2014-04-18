@@ -1,5 +1,5 @@
-define ["cs!base/models", "cs!course/models", "cs!auth/models", "cs!./router"], \
-        (basemodels, coursemodels, authmodels, router) ->
+define ["cs!base/models", "cs!course/models", "cs!auth/models", "cs!./router", "cs!userstatus/models"], \
+        (basemodels, coursemodels, authmodels, router, userstatusmodels) ->
     
     class AppModel extends basemodels.LazyModel
                 
@@ -33,6 +33,11 @@ define ["cs!base/models", "cs!course/models", "cs!auth/models", "cs!./router"], 
         start: ->
             @router.start()
             Backbone.history.start pushState: true, root: @get("root_url")
+
+        updateUserStatus: (data) =>
+            @get('userstatus').clear silent: true
+            @get('userstatus').set data.userstatus
+            @trigger "nuggetAnalyticsChanged"
 
     class TabModel extends basemodels.LazyModel
         

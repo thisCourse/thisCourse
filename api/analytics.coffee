@@ -1,5 +1,6 @@
 mongoskin = require('mongoskin')
 async = require('async')
+Backbone = require('backbone')
 express = require("express")
 nodeStatic = require('node-static')
 utils = require("./utils.coffee")
@@ -12,6 +13,7 @@ db = mongoskin.db('127.0.0.1/analytics?auto_reconnect')
 ObjectId = db.bson_serializer.ObjectID
 
 routing_pattern = '/:collection([a-z]+)/'
+Backbone.Model.prototype.idAttribute = "_id"
 
 router = ->
     # attach the various HTTP verbs to the api path (for some reason this.all(...) doesn't work here)
@@ -24,6 +26,7 @@ router = ->
 request_handler = (req, res) ->
     handler = new (collections[req.params.collection])
     handler.handle_request(req, res)
+
 
 class AnalyticsHandler
     
@@ -73,7 +76,13 @@ class NuggetAttempt extends AnalyticsHandler
 
     handle_POST: (callback) =>
         # return callback new api.APIError("No can do. Time is up.")
-        @save_analytics_object @req.body, callback
+        @save_analytics_object @req.body, (response) =>
+            if response.status == 200
+                change_user_status @req, @req.session.email, "claimed": response.body, (userstatus) =>
+                    response.body.userstatus = userstatus
+                    callback response
+            else
+                callback response
 
     handle_GET: (callback) =>
         get_student_nugget_attempts @req.session.email, (err, claimed, attempted) =>
@@ -279,15 +288,155 @@ class ProbeResponse extends AnalyticsHandler
             if not probes?.length then return callback new api.APIError("Probe could not be found.")
             probe = probes[0]
             correct = true
+            totalpoints = 0
+            earnedpoints = 0
             for answer in probe.answers
-                # console.log answer.correct, (answer._id in data.answers), data.answers, answer._id.toString()
-                correct and= ((answer.correct or false) == (answer._id.toString() in data.answers)) # TODO: ahahahahaha
+                if answer.correct
+                    totalpoints += 1
+                    if answer._id.toString() in data.answers then earnedpoints += 1
+                else
+                    if answer._id.toString() in data.answers
+                        earnedpoints -= 1
+                        correct = false
+            data.totalpoints = totalpoints
+            data.earnedpoints = Math.max(0, earnedpoints)
             data.correct = correct
+            #Note calculating this all server side results in a 50% slowdown, but still <1ms on benchmarking
             @save_analytics_object data, (response) =>
-                if response.status == 200
-                    response.body.probe = probe
-                callback response
+                if response.status == 200 and data.options.notclaiming
+                    change_user_status @req, @req.session.email, "review": response.body, (userstatus) =>
+                        response.body.userstatus = userstatus
+                        callback response
+                else
+                    callback response
 
+
+status = api.db.collection("userstatus")
+statuslog = db.collection("userstatuslog")
+usercollection = api.db.collection("user")
+
+change_user_status = (req, email, diff, callback) =>
+    query = email: email
+    diff_actions = 
+        "set": (data, userstatus) ->
+            data
+
+        "review": (data, userstatus) ->
+            if not data.options.notclaiming then return false
+            userstatus.claimed = new Backbone.Collection(userstatus.claimed)
+            model = userstatus.claimed.get data.nugget_id
+            _id = data.probe
+            if model
+                timenow = new Date()
+                probetimes = model.get "probetimes"
+                update = false
+                if probetimes
+                    if probetimes[_id]
+                        if (timenow.getTime() - probetimes[_id].getTime())/1000 > 7*24*60*60
+                            update = true
+                    else if (timenow.getTime() - model.get("timestamp").getTime())/1000 > 7*24*60*60
+                        update = true
+                else if (timenow.getTime() - model.get("timestamp").getTime())/1000 > 7*24*60*60
+                    model.set "probetimes": {}
+                    update = true
+                if update
+                    probetimes = probetimes or {}
+                    userstatus.shield = Math.min(100, userstatus.shield + data.earnedpoints)
+                    probetimes[_id] = timenow
+                    userstatus.claimed.get(data.nugget_id).set "probetimes": probetimes
+                    userstatus.claimed = userstatus.claimed.toJSON()
+                    return userstatus
+            return false
+
+        "claimed": (data, userstatus) ->
+            userstatus.claimed = new Backbone.Collection(userstatus.claimed)
+            userstatus.partial = new Backbone.Collection(userstatus.partial)
+            userstatus.unclaimed = new Backbone.Collection(userstatus.unclaimed)
+            if data.unclaimed
+                unclaimed = userstatus.claimed.get data.nugget
+                userstatus.claimed.remove data.nugget
+                userstatus.unclaimed.add unclaimed
+            if data.claimed
+                if not userstatus.claimed.get data.nugget
+                    userstatus.claimed.add _id: data.nugget, points: data.points, timestamp: new Date()
+                    userstatus.partial.remove data.nugget
+                    if not userstatus.unclaimed.get data.nugget
+                        userstatus.shield = Math.min(100, userstatus.shield + data.points*3)
+            if data.claimed is false and not userstatus.claimed.get data.nugget
+                userstatus.partial.add _id: data.nugget
+            userstatus.claimed = userstatus.claimed.toJSON()
+            userstatus.partial = userstatus.partial.toJSON()
+            userstatus.unclaimed = userstatus.unclaimed.toJSON()
+            return userstatus
+
+        "erode": (data, userstatus) ->
+            if data.remove
+                userstatus.shield -= data.remove
+                if userstatus.shield < 0
+                    userstatus.life += userstatus.shield
+                    userstatus.shield = 0
+                console.log userstatus.shield
+            return userstatus
+
+    #TODO: Implement Caching of server side Backbone Collections with node-cache. (5x speed up)
+    status.findOne query, (err, userstatus) =>
+        if err then return callback new api.APIError(err)
+        if userstatus
+            for key, obj of diff
+                data = diff_actions[key] obj, userstatus
+                if data
+                    if data._id then delete data._id
+                    status.update query, data, {safe: true, upsert: true}, (err, updatedstatus) =>
+                        if err then return new api.APIError(err)
+                        data.timestamp = new Date()
+                        data.email = email
+                        data.diff = key
+                        data.ip = req?.connection?.remoteAddress
+                        statuslog.save data, (err, obj) =>
+                            if err
+                                console.log "User Status logging failed for #{email}"
+                        callback data
+                else
+                    callback null
+        else
+            callback null
+
+create_user_status = (email, data, callback) =>
+    status = api.db.collection("userstatus")
+    
+    log = db.collection("userstatuslog")
+    query = email: email
+    usercollection.findOne query, (err, user_exists) =>
+        if user_exists
+            status.findOne query, (err, userstatus) =>
+                if err then return callback new api.APIError(err)
+                if userstatus
+                    console.log "User Status for #{email} already exists"
+                    callback null
+                else
+                    if data
+                        if data._id then delete data._id
+                        data.email = email
+                        status.insert data, (err, newstatus) =>
+                            newstatus = newstatus[0]
+                            if err then return new api.APIError(err)
+                            data.timestamp = new Date()
+                            data.diff = "new"
+                            statuslog.save data, (err, obj) =>
+                                if err
+                                    console.log "User Status logging failed for #{email}"
+                            update_user = $set: {status_id: newstatus._id.toString()}
+                            usercollection.update query, update_user, {safe: true, upsert: true}, (err, auth_user) =>
+                                if err
+                                    console.log err
+                                    return new api.APIError(err)
+                                callback data
+                    else
+                        console.log "No data passed for creation of user status"
+                        callback null
+        else
+            console.log "User not found"
+            callback null
 
 collections =
     nuggetattempt: NuggetAttempt
@@ -303,4 +452,5 @@ module.exports =
     db: db
     get_student_nugget_attempts: get_student_nugget_attempts
     get_student_probe_scores: get_student_probe_scores
-
+    change_user_status: change_user_status
+    create_user_status: create_user_status

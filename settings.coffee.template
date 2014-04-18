@@ -1,0 +1,5 @@
+module.exports =
+
+    varnish:
+        port: #Put port of Varnish server here
+        host: "127.0.0.1"

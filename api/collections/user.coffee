@@ -19,7 +19,7 @@ requirejs ['cs!auth/models'], (models) =>
         
         process_PUT_collection: (callback) =>
             # login/logout happens here?
-            super calback
+            super callback
 
         # process_GET_collection: (callback) =>
         #     query = @req.query

@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles"], \
-        (baseviews, courseviews, authviews, templates, bootstrap, styles) ->
+define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.handlebars", "less!libs/bootstrap/bootstrap", "less!./styles", "cs!userstatus/views", "cs!userstatus/models"], \
+        (baseviews, courseviews, authviews, templates, bootstrap, styles, userstatusviews, userstatusmodels) ->
 
     class AppView extends baseviews.BaseView
 
@@ -16,6 +16,8 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
             is_editor = is_logged_in and @model.get("user").get("email")=="admin"
             @$el.toggleClass "editable", is_editor
             @$el.toggleClass "uneditable", not is_editor
+            if is_logged_in then @addUserStatus() else @clearUserStatus()
+            @model.trigger "nuggetAnalyticsChanged"
 
         listenForWindowBlur: =>
             timer = 0
@@ -30,6 +32,22 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
             @add_subview "courseview", new courseviews.CourseView(model: @model.get("course")), "#content"
             @add_subview "toptabsview", new TopTabsView(collection: @model.get("tabs")), "#toptabs"
             @add_subview "loginview", new authviews.LoginView(model: @model.get("user")), "#authbar"
+
+        addUserStatus: =>
+            if @model.get("user").get("status_id")
+                @model.set "userstatus": new userstatusmodels.UserStatusModel(_id: @model.get("user").get("status_id"))
+                @model.get("userstatus").fetch().success =>
+                    @model.get("userstatus").bind "nuggetAnalytics", @model.trigger "nuggetAnalyticsChanged"
+                    @model.trigger "nuggetAnalyticsChanged"
+                    @add_subview "userstatusview", new userstatusviews.UserStatusView(model: @model.get("userstatus")), "#life_shield"
+
+        clearUserStatus: =>
+            if "userstatusview" of @subviews
+                @close_subview "userstatusview"
+            if @model.get("userstatus")
+                @model.get("userstatus").clear()
+            @model.trigger "nuggetAnalyticsChanged"
+
 
     class TopTabsView extends baseviews.BaseView
 
