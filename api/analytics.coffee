@@ -334,6 +334,8 @@ change_user_status = (req, email, diff, callback) =>
                     if probetimes[_id]
                         if (timenow.getTime() - probetimes[_id].getTime())/1000 > 7*24*60*60
                             update = true
+                    else if (timenow.getTime() - model.get("timestamp").getTime())/1000 > 7*24*60*60
+                        update = true
                 else if (timenow.getTime() - model.get("timestamp").getTime())/1000 > 7*24*60*60
                     model.set "probetimes": {}
                     update = true
