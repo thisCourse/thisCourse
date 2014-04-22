@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.handlebars", "less!./styles"], \
-        (baseviews, models, dialogviews, templates, styles) ->
+define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.handlebars", "less!./styles", "cs!./localmodels"], \
+        (baseviews, models, dialogviews, templates, styles, localmodels) ->
 
     class ProbeRouterView extends baseviews.RouterView
 
@@ -333,11 +333,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
         redirect: =>
             window.location = "http://bit.ly/M9mlCF"
     
-    Quizzes = new models.QuizCollection
+    Quizzes = new localmodels.QuizCollection
 
     class QuizView extends baseviews.BaseView
         
         initialize: ->
+            require('app').bind "nuggetAnalyticsChanged", @quizFetch
             Quizzes.fetch success: @initQuiz
 
         render: =>
@@ -355,8 +356,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     for probe in nugget.get('probeset').models
                         probe.set "nugget": nugget
                         probes.push probe
-                if probes.length==0 then return
-                @quiz = new models.QuizModel
+                if probes.length == 0 then return
+                @quiz = new localmodels.QuizModel
                     "probes": _.shuffle(probes)
                     "index": 0
                     "review": []
