@@ -342,11 +342,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         render: =>
             if not @quiz then return
-            console.log @quiz
-            @add_subview "probecontainer", new ProbeContainerView(collection: @quiz.get("probes"), notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics, inc: @quiz)
+            @add_subview "probecontainer", new ProbeContainerView(collection: @quiz.get("probes"), notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics, quiz: @quiz)
 
         initQuiz: =>
-            console.log Quizzes
             @collection.fetch success: @quizFetch
 
         quizFetch: =>
@@ -355,16 +353,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 probes = []
                 for nugget in @collection.selectNuggets(@query).models
                     for probe in nugget.get('probeset').models
+                        probe.set "nugget": nugget
                         probes.push probe
                 if probes.length==0 then return
                 @quiz = new models.QuizModel
-                    "probes": new models.ProbeCollection(_.shuffle(probes))
+                    "probes": _.shuffle(probes)
                     "index": 0
                     "review": []
                 Quizzes.add @quiz
-                console.log "Setting Quiz"
-                @quiz.save null, success: =>
-                    @render()
+                @quiz.save null
+                    success: =>
+                        @render()
             else
                 @render()
 
@@ -386,15 +385,15 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     return
             # console.log "COLLECTION LENGTH:", @collection.length
             if @options.notclaiming
-                review = @options.inc.get("review") or []
+                @review = @options.quiz?.get("review")
             if @options.nofeedback and not @options.noskipping
                 require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = false
             @progress = Number(@options.progress or 0)
-            @inc = @options.inc.get("index") or 0
+            @inc = @options.quiz?.get("index") or 0
             @submitting = 0
-            @points = @options.inc.get("points") or 0
-            @earnedpoints = @options.inc.get("earnedpoints") or 0
+            @points = @options.quiz?.get("points") or 0
+            @earnedpoints = @options.quiz?.get("earnedpoints") or 0
             # @starttime = new Date
             @showNextProbe()
             xhdr = @model.fetch()
@@ -430,17 +429,17 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @showReviewFeedback()
                     return
             else
-                if @options.inc
-                    @options.inc.set "index": @options.inc.get("index") + 1
-                    @options.inc.save()
+                if @options.quiz
+                    @options.quiz.set "index": @options.quiz.get("index") + 1
+                    @options.quiz.save()
                 @showNextProbe()
         
         showReviewFeedback: =>
-            # console.log @review
-            # console.log @earnedpoints
+            @options.quiz.destroy()
             Quizzes.reset()
             if @review.length > 0
-                @$el.html templates.nugget_review_list collection: new Backbone.Collection(_.uniq(@review)), query: @query, totalpoints: @points, earnedpoints: @earnedpoints
+                collection = require("app").get("course").get("nuggets").filterWithIds(_.uniq(@review))
+                @$el.html templates.nugget_review_list collection: collection, query: @query, totalpoints: @points, earnedpoints: @earnedpoints
             else if @earnedpoints > 0
                 @$el.html templates.nugget_review_list query: @query, totalpoints: @points, earnedpoints: @earnedpoints
             else if @options.complete
@@ -467,7 +466,18 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @$('.skipbutton').attr('disabled','disabled')
             @$('.skipbutton').text('Loading')
             responsetime = new Date - @subviews.probeview.timestamp_load
-            response = probe: @model.id, type: "proberesponse",answers:[],responsetime:responsetime, options: @options, nugget_id: @model.parent?.model.id
+            response = 
+                probe: @model.id
+                type: "proberesponse"
+                answers:[]
+                responsetime:responsetime
+                options:
+                    notclaiming: @options.notclaiming
+                    nofeedback: @options.nofeedback
+                nugget_id: @model.parent?.model.id
+            if @options.notclaiming 
+                response.nugget_id = @model.get("parent")._id
+                response.options.quiz = {}
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -479,9 +489,14 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 if not @options.nofeedback then @$('.answerbtn, .skipbutton').hide()
                 if @options.sync.nuggetAttempt
                     if not data.correct and @options.notclaiming
-                        @review.push @model.parent.model
+                        @review.push @model.get("parent")._id
+                        @options.quiz.set "review": @review
+                        @options.quiz.save()
                     @earnedpoints += data.earnedpoints
                     @points += data.totalpoints
+                    if @options.notclaiming
+                        @options.quiz.set "earnedpoints": @earnedpoints
+                        @options.quiz.set "points": @points
                     if not @options.nofeedback then @subviews.probeview.answered(data)
                     if data.userstatus then require('app').updateUserStatus(data)
                 if @options.nofeedback
@@ -521,6 +536,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @submitting = 0
             skipmodel = @collection.models.splice(@inc-1,1)
             @collection.models.push skipmodel[0]
+            if @options.quiz then @options.quiz.save()
             @model = @collection.at(@inc-1)
             @model.whenLoaded @render
             @prefetchProbe()
