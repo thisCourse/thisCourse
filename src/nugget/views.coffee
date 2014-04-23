@@ -113,9 +113,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
             
         quizUrl: (quiz) =>
-            claimed = if @query.claimed then 'claimed='+@query.claimed else ''
-            tags = if @query.tags then 'tags='+@query.tags else ''
-            quizUrl = url: if tags then @url + quiz + '?' + tags + (if claimed then '&' + claimed else '') else @url + quiz + (if claimed then '?' + claimed else '')
+            params = {}
+            if @query.claimed then params['claimed'] = @query.claimed
+            if @query.tags then params['tags']  = @query.tags
+            if @query.ripe then params['ripe'] = @query.ripe
+            quizUrl = url: @url + quiz + '?' + $.param(params)
     
     class LectureListView extends baseviews.RouterView
 
