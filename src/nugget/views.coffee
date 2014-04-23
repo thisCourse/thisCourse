@@ -96,7 +96,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         claimedUrl: () =>
             tags = if @query.tags then 'tags='+@query.tags else ''
-            all = text: 'All',selected: not @query.claimed, url: if tags then @url + '?' + tags else @url
+            all = text: 'All',selected: not (@query.claimed or @query.ripe!=undefined), url: if tags then @url + '?' + tags else @url
             ripe = text: 'Ready to Review', selected: @query.ripe!=undefined, url: if tags then @url + '?' + tags + '&' + 'ripe=1' else @url + '?' + 'ripe=1'
             claimed = text: 'Claimed',selected: @query.claimed=='1', url: if tags then @url + '?' + tags + '&' + 'claimed=1' else @url + '?' + 'claimed=1'
             unclaimed = text: 'Unclaimed',selected: @query.claimed=='0', url: if tags then @url + '?' + tags + '&' + 'claimed=0' else @url + '?' + 'claimed=0'
