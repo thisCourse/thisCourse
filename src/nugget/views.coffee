@@ -38,6 +38,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         initialize: ->
             # console.log "init NuggetListView"
+            require('app').bind "nuggetAnalyticsChanged", @render
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", _.debounce @render, 50 # TODO: this gets fired a kazillion times!
@@ -95,10 +96,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         claimedUrl: () =>
             tags = if @query.tags then 'tags='+@query.tags else ''
-            all = text: 'All',selected: not @query.claimed, url: if tags then @url + '?' + tags else @url
+            all = text: 'All',selected: not (@query.claimed or @query.ripe!=undefined), url: if tags then @url + '?' + tags else @url
+            ripe = text: 'Ready to Review', selected: @query.ripe!=undefined, url: if tags then @url + '?' + tags + '&' + 'ripe=1' else @url + '?' + 'ripe=1'
             claimed = text: 'Claimed',selected: @query.claimed=='1', url: if tags then @url + '?' + tags + '&' + 'claimed=1' else @url + '?' + 'claimed=1'
             unclaimed = text: 'Unclaimed',selected: @query.claimed=='0', url: if tags then @url + '?' + tags + '&' + 'claimed=0' else @url + '?' + 'claimed=0'
-            claimfilter = [all,claimed,unclaimed]
+            claimfilter = [all,ripe, claimed,unclaimed]
         
         tagUrl: (tagname,selected) =>
             claimed = if @query.claimed then 'claimed='+@query.claimed else ''
@@ -111,9 +113,11 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
             
         quizUrl: (quiz) =>
-            claimed = if @query.claimed then 'claimed='+@query.claimed else ''
-            tags = if @query.tags then 'tags='+@query.tags else ''
-            quizUrl = url: if tags then @url + quiz + '?' + tags + (if claimed then '&' + claimed else '') else @url + quiz + (if claimed then '?' + claimed else '')
+            params = {}
+            if @query.claimed then params['claimed'] = @query.claimed
+            if @query.tags then params['tags']  = @query.tags
+            if @query.ripe then params['ripe'] = @query.ripe
+            quizUrl = url: @url + quiz + '?' + $.param(params)
     
     class LectureListView extends baseviews.RouterView
 
@@ -124,7 +128,6 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             "lecture/:lecture_id/": (lecture_id) => view: LectureView, datasource: "collection", lecture: lecture_id
             
         render: =>
-            @$el.html templates.nugget_lecture_list @context(@lecturelist)
             themes = _.uniq(_.flatten(theme for theme in lect.tags for lecture, lect of hardcode.knowledgestructure))
             @lecturelist = 
                 lecture:{title: lect.title, lecture: lecture,points:0,status:'unclaimed',minpoints:lect.minpoints, draft: lect.draft, themes: lect.tags} for lecture, lect of hardcode.knowledgestructure
@@ -133,7 +136,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if require('app').get('userstatus')
                 require('app').get('userstatus').getKeyWhenReady 'claimed', (claimed) =>
                     @annotate(claimed)
-
+            else
+                @annotate models:[]
 
         annotate: (claimed) =>
             relec = new RegExp('(L[0-9]+)')
