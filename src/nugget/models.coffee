@@ -31,6 +31,7 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                 else
                     taglist = []
                 claimed = query.claimed or ''
+                ripecheck = query.ripe or ''
                 filteredlist = @filter (nugget) =>
                     switch claimed
                         when '1' then select = 1 if require('app').get('userstatus').get('claimed').get(nugget.id)
@@ -38,7 +39,25 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                         else select = 1
                     nuggettags = (tag.trim().toLowerCase() for tag in nugget.get('tags') or [])
                     tagged = if taglist then _.isEqual(_.intersection(nuggettags,taglist).sort(),taglist.sort()) else true
-                    tagged and select and nugget.get('title') #HACK to exclude title-less nuggets
+                    
+                    ripe = true
+                    if ripecheck
+                        console.log "reach ripecheck"
+                        # console.log require('app').get('userstatus').get('claimed').get(nugget.id)
+                        nuggetdata = require('app').get('userstatus').get('claimed').get(nugget.id)
+                        if nuggetdata
+                            console.log "reached nuggetdata"
+                            timenow = new Date()
+                            if nuggetdata.probetimes  
+                                if _.every(nuggetdata.probetimes, (time) -> (timenow.getTime() - time.getTime())/1000 < 60)
+                                    ripe = false
+                            else
+                                if (timenow.getTime() - nuggetdata.timestamp.getTime())/1000 < 60
+                                    ripe = false
+                        else
+                            ripe = false
+                                                            
+                    tagged and select and nugget.get('title') and ripe #HACK to exclude title-less nuggets
             else
                 filteredlist = @models
             filteredcollection = new Backbone.Collection filteredlist

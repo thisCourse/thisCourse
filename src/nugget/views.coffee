@@ -38,6 +38,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         initialize: ->
             # console.log "init NuggetListView"
+            require('app').bind "nuggetAnalyticsChanged", @render
             @collection.bind "change", @render
             @collection.bind "remove", @render
             @collection.bind "add", _.debounce @render, 50 # TODO: this gets fired a kazillion times!
