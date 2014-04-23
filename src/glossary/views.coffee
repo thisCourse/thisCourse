@@ -74,7 +74,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
     class GlossaryEditView extends baseviews.BaseView
         
         minwidth: 12
-        
+
         events:  
             "click .save": "save"
             "click .cancel": "cancel"
@@ -92,9 +92,14 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
     
         save: =>
             if @$(".ckeditor").val() == ""
-                dialogviews.dialog_confirmation "Creating empty glossary item","Do you really want to save this glossary item?", @finalSave, confirm_button:"Save", cancel_button:"Cancel"
+                dialogviews.dialog_confirmation "Creating empty glossary item",
+                    "Do you really want to save this glossary item?",
+                    => @addTitle(callback=@finalSave),
+                    confirm_button:"Save",
+                    cancel_button:"Cancel"
             else
-                @finalSave()
+                @addTitle(callback=@finalSave)
+                
                 
         finalSave: =>                            
             @model.set html: @$(".ckeditor").val(), title: @$(".span12").val()
@@ -126,11 +131,15 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             @close()
             
         addAltTitleOnEnter: (ev) =>
-            if ev.which is 13 and not (@$("#altTitle").val() == "")
-                altTitle = @model.get('alternateTitle').create {alternateTitle: @$("#altTitle").val()}
+            if ev.which is 13
+                @addTitle()
+            
+        addTitle: (callback=null) =>
+            if not (@$("#altTitle").val() == "")
+                altTitle = @model.get('alternateTitle').create {alternateTitle: @$("#altTitle").val()}, success: callback
                 @$("#altTitle").val('')
                 @addAlternateTitle altTitle,@model.get('alternateTitle')
-                
+                    
         addAlternateTitle:(model,coll) =>
             viewid = model.id or @newalt
             @add_subview "alttitleview_"+viewid, new AlternateTitleView(model: model), ".attachAltTitle"

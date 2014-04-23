@@ -40,15 +40,18 @@
 
 <script id="tag_selector" type="text/x-handlebars-template">
 
-    <div class='logged-in-only quizme'><a href ='{{quiz.url}}' class='item-button btn primary quizme' title="Test yourself on the quiz questions in the selected nuggets">Quiz Me (with Feedback)</a></br></br>
-    <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a></div>
     <div class="pagination logged-in-only">
         <ul>
             {{#each claimfilter}}<li {{#if selected}}class='active'{{/if}}><a href='{{url}}'>{{ text }}</a></li>{{/each}}
         </ul>
     </div>
+    <div class='logged-in-only quizme'>
+        <a href ='{{quiz.url}}' class='item-button btn primary quizme' title="Test yourself on the quiz questions in the selected nuggets">Quiz Me (with Feedback)</a></br></br>
+        <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a>
+    </div>
+    <div>
         {{#each taglist}}<a href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
-    
+    </div>
 </script>
 
 <script id="nugget_top" type="text/x-handlebars-template">
