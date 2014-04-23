@@ -42,17 +42,16 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                     
                     ripe = true
                     if ripecheck
-                        console.log "reach ripecheck"
                         # console.log require('app').get('userstatus').get('claimed').get(nugget.id)
                         nuggetdata = require('app').get('userstatus').get('claimed').get(nugget.id)
                         if nuggetdata
-                            console.log "reached nuggetdata"
                             timenow = new Date()
-                            if nuggetdata.probetimes  
-                                if _.every(nuggetdata.probetimes, (time) -> (timenow.getTime() - time.getTime())/1000 < 60)
+                            console.log nuggetdata
+                            if nuggetdata.get("probetimes")
+                                if _.every(nuggetdata.get("probetimes"), (time) -> (timenow.getTime() - (new Date(time)).getTime())/1000 < 7*24*60*60)
                                     ripe = false
                             else
-                                if (timenow.getTime() - nuggetdata.timestamp.getTime())/1000 < 60
+                                if (timenow.getTime() - (new Date(nuggetdata.get("timestamp"))).getTime())/1000 < 7*24*60*60
                                     ripe = false
                         else
                             ripe = false
