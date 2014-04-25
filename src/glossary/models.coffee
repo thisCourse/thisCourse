@@ -11,6 +11,7 @@ define ["cs!base/models"], (basemodels) ->
             search_array = (model.get("alternateTitle") for model in @get("alternateTitle").models)
             search_array.unshift @get("title")
             for term in search_array
+                if term!=undefined
                     re =  new RegExp("([ \.,;:'\"\s\u00A0]+)(#{term.trim()})([ \.,;:'\"\s\u00A0]+)","gi")
                     replace = "$1<glossary "
                     if @get("anatomy") then replace+="class='anatomy' "
@@ -21,7 +22,6 @@ define ["cs!base/models"], (basemodels) ->
                             @replaceText(object, re, replace, remove)
                         if remove.length
                             $(remove, el).remove()
-                            console.log term
         
         replaceText: (node, search, replace, remove) =>
             if node.childNodes
