@@ -350,6 +350,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         quizFetch: =>
             @quiz = Quizzes.last()
+            if @quiz
+                if not _.isEqual @quiz.get("query"), @query
+                    @quiz = undefined
             if not @quiz
                 probes = []
                 for nugget in @collection.selectNuggets(@query).models
@@ -361,6 +364,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     "probes": _.shuffle(probes)
                     "index": 0
                     "review": []
+                    "query": @query
                 Quizzes.add @quiz
                 @quiz.save null
                     success: =>
