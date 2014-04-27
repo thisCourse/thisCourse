@@ -42,11 +42,9 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                     
                     ripe = true
                     if ripecheck
-                        # console.log require('app').get('userstatus').get('claimed').get(nugget.id)
                         nuggetdata = require('app').get('userstatus').get('claimed').get(nugget.id)
                         if nuggetdata
                             timenow = new Date()
-                            console.log nuggetdata
                             if nuggetdata.get("probetimes")
                                 if _.every(nuggetdata.get("probetimes"), (time) -> (timenow.getTime() - (new Date(time)).getTime())/1000 < 7*24*60*60)
                                     ripe = false
