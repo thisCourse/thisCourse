@@ -396,6 +396,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @claimed = false
             @progress = Number(@options.progress or 0)
             @inc = @options.quiz?.get("index") or 0
+            if @options.quiz
+                @options.quiz.set "index": @options.quiz.get("index") - 1
+                @options.quiz.save()
             @submitting = 0
             @points = @options.quiz?.get("points") or 0
             @earnedpoints = @options.quiz?.get("earnedpoints") or 0
@@ -457,6 +460,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             clearTimeout(@timeOut)
             @model = @collection.at(@inc)
             @inc += 1
+            if @options.quiz
+                @options.quiz.set "index": @options.quiz.get("index") + 1
+                @options.quiz.save()
             @model?.whenLoaded @render
             @prefetchProbe()
 
@@ -503,7 +509,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     if @options.notclaiming
                         @options.quiz.set "earnedpoints": @earnedpoints
                         @options.quiz.set "points": @points
-                        @options.quiz.set "index": @options.quiz.get("index") + 1
                         @options.quiz.save()
                     if not @options.nofeedback then @subviews.probeview.answered(data)
                     if data.userstatus then require('app').updateUserStatus(data)
