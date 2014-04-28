@@ -343,6 +343,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         render: =>
             if not @quiz then return
+            require('app').unbind "nuggetAnalyticsChanged", @quizFetch
             @add_subview "probecontainer", new ProbeContainerView(collection: @quiz.get("probes"), notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics, quiz: @quiz)
 
         initQuiz: =>
