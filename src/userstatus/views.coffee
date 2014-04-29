@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles", "cs!../userstatus/models"], \
-        (baseviews, models, templates, styles, userstatusmodels) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles", "cs!../userstatus/models", "cs!ui/spinner/views"], \
+        (baseviews, models, templates, styles, userstatusmodels, spinnerviews) ->
 
     class UserStatusRouterView extends baseviews.RouterView
 
@@ -12,19 +12,29 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
         initialize: =>
             @collection = new userstatusmodels.UserStatusCollection
-            @collection.fetch().success @render
+            @collection.fetch().success @annotate
             @collection.bind "add", _.debounce @render, 50
             @collection.bind "change", @render
-            @collection.bind "loaded", @render
 
 
         render: =>
+            if @annotated
+                @subviews["spinner"].hide()
+                @$el.html templates.user_status_list @context()
+            else
+                @$el.html templates.user_status_list @context()
+                @add_subview "spinner", new spinnerviews.SpinnerView model: null, ".footer"
+                @subviews["spinner"].show()
+
+        annotate: =>
+            console.log "loaded"
             for user in @collection.models
                 points = 0
                 for model in user.get("claimed").models
                     points += model.get("points")
                 user.set "points": points
-            @$el.html templates.user_status_list @context()
+            @annotated = true
+            @render()
             
 
     class UserStatusView extends baseviews.BaseView
