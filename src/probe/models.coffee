@@ -10,10 +10,11 @@ define ["cs!base/models"], (basemodels) ->
     class ProbeModel extends basemodels.LazyModel
         
         url: =>
-            if app.get("user")?.get("email") is "admin"
-                super
-            else
-                "/api/probe/" + (@id or "")
+            "/api/probe/" + (@id or "")
+
+        save: (attributes, options) =>
+            options = _.defaults((options || {}), url: basemodels.LazyModel.prototype.url.call(@))
+            return basemodels.LazyModel.prototype.save.call(@, attributes, options)
         
         apiCollection: "probe"
         
