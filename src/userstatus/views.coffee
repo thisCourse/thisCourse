@@ -19,6 +19,11 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
 
         render: =>
+            for user in @collection.models
+                points = 0
+                for model in user.get("claimed").models
+                    points += model.get("points")
+                user.set "points": points
             @$el.html templates.user_status_list @context()
             
 
