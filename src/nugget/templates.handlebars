@@ -90,6 +90,7 @@
     <h1>Lectures</h1>
 
     <div id='studyapp' class='container'>
+    {{#if totalpoints}}<h2>Total Points: {{totalpoints}}</h2>{{/if}}
     <div id='themes' class='container'>
     <h3>Themes</h3>
     <div class="btn-group btn-group-justified">
@@ -105,7 +106,6 @@
             {{/each}}
         </ul>
     </div>
-    {{#if totalpoints}}<h2>Total Points: {{totalpoints}}</h2>{{/if}}
 </div>
 
 </script>
