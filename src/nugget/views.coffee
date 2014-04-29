@@ -82,7 +82,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 @claimfilter = @claimedUrl()
                 for nugget in @collection.models
                     for tag in (nugget.get('tags') or [])
-                        tags.push tag.trim().toLowerCase()
+                        if tag
+                            tags.push tag.trim().toLowerCase()
                 tags = _.uniq(tags)
                 tags.sort()
                 for tag in tags
@@ -103,7 +104,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             claimfilter = [all,ripe, claimed,unclaimed]
         
         tagUrl: (tagname,selected) =>
-            taglist = if @query.tags then (tag for tag in @query.tags.split(';')) else []
+            taglist = if @query.tags then (tag for tag in decodeURIComponent(@query.tags).split(';')) else []
             if selected
                 taglist = _.without(taglist,encodeURIComponent(tagname))
             else
@@ -113,14 +114,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if @query.claimed then params['claimed'] = @query.claimed
             if tags then params['tags']  = tags
             if @query.ripe then params['ripe'] = @query.ripe
-            url = (@url + '?' + $.param(params)).replace("%3B", ";")
+            url = @url + '?' + $.param(params)
             
         quizUrl: (quiz) =>
             params = {}
             if @query.claimed then params['claimed'] = @query.claimed
             if @query.tags then params['tags']  = @query.tags
             if @query.ripe then params['ripe'] = @query.ripe
-            quizUrl = url: (@url + quiz + '?' + $.param(params)).replace("%3B", ";")
+            quizUrl = url: @url + quiz + '?' + $.param(params)
     
     class LectureListView extends baseviews.RouterView
 
