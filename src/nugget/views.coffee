@@ -81,12 +81,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if @nuggetsChecked.length
                 for model in @nuggetsChecked.models
                     model.set "draft" : true
+                    model.save()
                 @nuggetsChecked = new Backbone.Collection
             
         publishNugget: (ev) =>
             if @nuggetsChecked.length
                 for model in @nuggetsChecked.models
                     model.set "draft" : false
+                    model.save()
                 @nuggetsChecked = new Backbone.Collection
         
         unselectNuggets: (ev) =>
@@ -117,22 +119,23 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         
         render: =>
             @taglist = []
-            tags = []
+            tags = {}
             if @query
                 @claimfilter = @claimedUrl()
                 for nugget in @collection.models
                     for tag in (nugget.get('tags') or [])
                         if tag
-                            tags.push tag.trim().toLowerCase()
+                            tags[tag.trim().toLowerCase()] = if tag.trim().toLowerCase() of tags then (nugget.get("draft") and tags[tag.trim().toLowerCase()]) else nugget.get("draft")
                 if @query.tags        
-                    tags.push (decodeURIComponent(@query.tags) or '').split(';')...
-                tags = _.uniq(tags)
-                tags.sort()
-                for tag in tags
+                    for tag in (decodeURIComponent(@query.tags) or '').split(';')
+                        if tag
+                            tags[tag.trim().toLowerCase()] = false
+                for tag, value of tags
                     if tag in (decodeURIComponent(@query.tags) or '').split(';')
-                        @taglist.push tagname: tag, selected: true, url: @tagUrl(tag,true)
+                        @taglist.push tagname: tag, selected: true, url: @tagUrl(tag,true), draft: value
                     else
-                        @taglist.push tagname: tag, url: @tagUrl(tag,false)
+                        @taglist.push tagname: tag, url: @tagUrl(tag,false), draft: value
+            @taglist = _.sortBy @taglist, (obj) -> obj.tagname
             @quiz = @quizUrl('quiz/take/')
             @test = @quizUrl('test/')
             @$el.html templates.tag_selector @context(@taglist,@claimfilter,@quiz)
@@ -395,7 +398,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         Handlebars.registerHelper ('comma_join'), (tags) -> _.isArray(tags) and tags.join?(",") or ""
         
         initialize: ->
-            # @model.bind "change", @render
+            @model.bind "change", @render
 
         events: => _.extend super,
             "click .edit-button": "edit"
@@ -412,10 +415,12 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         makeDraft: =>
             @model.set "draft": true
+            @model.save()
             
         publish: =>
             @model.set "draft": false
-
+            @model.save()
+            
     class NuggetTopEditView extends baseviews.BaseView
 
         initialize: ->
