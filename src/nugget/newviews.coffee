@@ -17,7 +17,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
 
         events:
             "click .add-button": "addNewNugget"
-            "click .delete-button": "addNewNugget"
+            "click .delete-button": "deleteNugget"
+            "click .nugget-select": "nuggetPresent"
 
         render: =>
             # console.log "rendering NuggetListView"
@@ -25,6 +26,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @makeSortable()
             
         initialize: ->
+            @nuggetsToDraft = new Backbone.Collection
             # console.log "init NuggetListView"
             @collection.bind "change", @render
             @collection.bind "remove", @render
@@ -39,6 +41,14 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             nugget = @collection.get(ev.target.id)
             dialogviews.delete_confirmation nugget, "nugget", =>
                 @collection.remove nugget
+            
+        nuggetPresent: (ev) =>
+            nugget = @collection.get(ev.target.value)
+            if nugget in @nuggetsToDraft.models
+                @nuggetsToDraft.remove nugget
+            else 
+                @nuggetsToDraft.add nugget
+            
 
         # nuggetAdded: (model, coll) =>
         #     alert "added"

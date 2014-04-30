@@ -186,10 +186,16 @@
 }
 
 .NuggetListView {
+    .claimed{
+        background-color: @claimedcolor;
+    }
+    .partial{
+        background-color: @partialcolor;
+    }
     
     .nuggetlist {
         float: left;
-        width: 45%
+        width: 45%;
     }
     
     .tagselectorview {
@@ -217,5 +223,14 @@
 .ClusterListView {
     li {
         padding-bottom: 0px;
+    }
+}
+
+.LectureView{
+    .claimed{
+            background-color: @claimedcolor;
+    }
+    .partial{
+            background-color: @partialcolor;
     }
 }
