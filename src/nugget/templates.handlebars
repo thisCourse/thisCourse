@@ -22,15 +22,36 @@
     
     <h2>Nuggets</h2>
     
+    
+    <b>Claimed</b>
+    <span class = "claimed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    
+    <b>Partial</b>
+    <span class = "partial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    
     <p><i>Please use the tags and filters to review and quiz yourself on specific nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
     
     <div class="nuggetlist">
+        <span class="editor-only">  
+            <button class="add-button btn success">Add nugget</button>
+            <button class="del-button btn danger">Delete nuggets</button>
+            <button class="draft-button btn ">Draft nuggets</button>
+            <button class="publish-button btn ">Publish nuggets</button>
+            <button class="selectAll-button btn "> Select all nuggets</button>
+            <button class="selectNone-button btn "> Deselect all nuggets</button>
+        </span>
         <ul>
             {{#each collection.models }}
-                {{#if attributes.title }}<li><a href="{{ ../../url }}{{ slug }}/">{{ attributes.title }}</a></li>{{/if}}
+                {{#if attributes.title }}
+                    <li {{#if attributes.draft }} class="editor-only"{{/if}}>
+                        <input type="checkbox" class ="nugget-select" value='{{id}}'>
+                        <a class = "{{status}}" href="{{ ../../url }}{{ slug }}/">
+                            {{ attributes.title }}
+                        </a>
+                    </li>
+                {{/if}}
             {{/each }}
         </ul>
-        <span class="editor-only"><button class="add-button btn success">Add nugget</button></span>
     </div>
 
     <div class="tagselectorview"></div>
@@ -68,7 +89,13 @@
     <span class="probetoggle logged-in-only"></span>
 
     <span class="editor-only"><button class="item-button edit-button btn success">Edit nugget details</button></span>
-    
+    {{#if draft}}
+    <span class="editor-only"><button class="btn success draft" disabled = "disabled">Drafted</button></span>
+    <span class="editor-only"><button class="btn success publishIt">Publish</button></span>
+    {{else}}
+    <span class="editor-only"><button class="btn success draft">Make Draft</button></span>
+    <span class="editor-only"><button class="btn success publishIt" disabled = "disabled">Published</button></span>
+    {{/if}}    
 </script>
 
 <script id="probe_enable" type="text/x-handlebars-template">
