@@ -44,7 +44,7 @@
             {{#each collection.models }}
                 {{#if attributes.title }}
                     <li {{#if attributes.draft }} class="editor-only"{{/if}}>
-                        <input type="checkbox" class ="nugget-select" value='{{id}}'>
+                        <input type="checkbox" class ="nugget-select editor-only" value='{{id}}'>
                         <a class = "{{status}}" href="{{ ../../url }}{{ slug }}/">
                             {{ attributes.title }}
                         </a>
@@ -71,7 +71,7 @@
         <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a>
     </div>
     <div>
-        {{#each taglist}}<a href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
+        {{#each taglist}}<a {{#if draft}}class='editor-only'{{/if}} href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
     </div>
 </script>
 
@@ -93,7 +93,7 @@
     <span class="editor-only"><button class="btn success draft" disabled = "disabled">Drafted</button></span>
     <span class="editor-only"><button class="btn success publishIt">Publish</button></span>
     {{else}}
-    <span class="editor-only"><button class="btn success draft">Make Draft</button></span>
+    <span class="editor-only"><button class="btn success draft">Make Draft</button> </span>
     <span class="editor-only"><button class="btn success publishIt" disabled = "disabled">Published</button></span>
     {{/if}}    
 </script>
