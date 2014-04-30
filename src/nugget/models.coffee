@@ -34,19 +34,17 @@ define ["cs!base/models", "cs!page/models", "cs!probe/models"], (basemodels, pag
                 ripecheck = query.ripe or ''
                 filteredlist = @filter (nugget) =>
                     switch claimed
-                        when '1' then select = 1 if require('app').get('userstatus').get('claimed').get(nugget.id)
-                        when '0' then select = 1 if not require('app').get('userstatus').get('claimed').get(nugget.id)
+                        when '1' then select = 1 if require('app').get('userstatus')?.get('claimed').get(nugget.id)
+                        when '0' then select = 1 if not require('app').get('userstatus')?.get('claimed').get(nugget.id)
                         else select = 1
                     nuggettags = (tag.trim().toLowerCase() for tag in nugget.get('tags') or [])
                     tagged = if taglist then _.isEqual(_.intersection(nuggettags,taglist).sort(),taglist.sort()) else true
                     
                     ripe = true
                     if ripecheck
-                        # console.log require('app').get('userstatus').get('claimed').get(nugget.id)
-                        nuggetdata = require('app').get('userstatus').get('claimed').get(nugget.id)
+                        nuggetdata = require('app').get('userstatus')?.get('claimed').get(nugget.id)
                         if nuggetdata
                             timenow = new Date()
-                            console.log nuggetdata
                             if nuggetdata.get("probetimes")
                                 if _.every(nuggetdata.get("probetimes"), (time) -> (timenow.getTime() - (new Date(time)).getTime())/1000 < 7*24*60*60)
                                     ripe = false

@@ -343,6 +343,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         render: =>
             if not @quiz then return
+            require('app').unbind "nuggetAnalyticsChanged", @quizFetch
             @add_subview "probecontainer", new ProbeContainerView(collection: @quiz.get("probes"), notclaiming: true, nofeedback: @options.nofeedback, sync:QuizAnalytics, quiz: @quiz)
 
         initQuiz: =>
@@ -350,6 +351,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
 
         quizFetch: =>
             @quiz = Quizzes.last()
+            if @quiz
+                if not _.isEqual @quiz.get("query"), @query
+                    @quiz = undefined
             if not @quiz
                 probes = []
                 for nugget in @collection.selectNuggets(@query).models
@@ -361,6 +365,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     "probes": _.shuffle(probes)
                     "index": 0
                     "review": []
+                    "query": @query
                 Quizzes.add @quiz
                 @quiz.save null
                     success: =>
@@ -392,27 +397,34 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @claimed = false
             @progress = Number(@options.progress or 0)
             @inc = @options.quiz?.get("index") or 0
+            if @options.quiz
+                @options.quiz.set "index": @options.quiz.get("index") - 1
+                @options.quiz.save()
             @submitting = 0
             @points = @options.quiz?.get("points") or 0
             @earnedpoints = @options.quiz?.get("earnedpoints") or 0
             # @starttime = new Date
             @showNextProbe()
-            xhdr = @model.fetch()
+            xhdr = @model?.fetch()
             xhdr?.error handleError
             require("app").bind "exitQuiz", @exitQuiz
             @timeOut = null
         
         render: =>
-            @$el.html templates.probe_container allowskipping: @options.notclaiming and not @options.noskipping
-            if @submitting == 1
-                @$('.answerbtn, .skipbutton').attr('disabled','disabled')
-                @$('.answerbtn, .skipbutton').text('Loading')
-            if @collection.models.length == 1
-                @$('.skipbutton').hide()
-            if @options.timedelay
-                @$('.answerbtn').attr('disabled','disabled')
-                @timeOut = setTimeout @allowAnswer, 5000
-            @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
+            if @inc > @collection.length
+                @$el.html templates.show_review
+                _.defer => @$(".nextquestion").show()
+            else
+                @$el.html templates.probe_container allowskipping: @options.notclaiming and not @options.noskipping
+                if @submitting == 1
+                    @$('.answerbtn, .skipbutton').attr('disabled','disabled')
+                    @$('.answerbtn, .skipbutton').text('Loading')
+                if @collection.models.length == 1
+                    @$('.skipbutton').hide()
+                if @options.timedelay
+                    @$('.answerbtn').attr('disabled','disabled')
+                    @timeOut = setTimeout @allowAnswer, 5000
+                @add_subview "probeview", new ProbeView(model: @model), ".probequestion"
         
         allowAnswer: =>
             @$('.answerbtn').removeAttr('disabled')
@@ -430,9 +442,6 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     @showReviewFeedback()
                     return
             else
-                if @options.quiz
-                    @options.quiz.set "index": @options.quiz.get("index") + 1
-                    @options.quiz.save()
                 @showNextProbe()
         
         showReviewFeedback: =>
@@ -452,7 +461,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             clearTimeout(@timeOut)
             @model = @collection.at(@inc)
             @inc += 1
-            @model.whenLoaded @render
+            if @options.quiz
+                @options.quiz.set "index": @options.quiz.get("index") + 1
+                @options.quiz.save()
+            @model?.whenLoaded @render
             @prefetchProbe()
 
         prefetchProbe: =>
@@ -498,6 +510,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     if @options.notclaiming
                         @options.quiz.set "earnedpoints": @earnedpoints
                         @options.quiz.set "points": @points
+                        @options.quiz.save()
                     if not @options.nofeedback then @subviews.probeview.answered(data)
                     if data.userstatus then require('app').updateUserStatus(data)
                 if @options.nofeedback

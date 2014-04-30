@@ -122,7 +122,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
                 @claimfilter = @claimedUrl()
                 for nugget in @collection.models
                     for tag in (nugget.get('tags') or [])
-                        tags.push tag.trim().toLowerCase()
+                        if tag
+                            tags.push tag.trim().toLowerCase()
                 if @query.tags        
                     tags.push (decodeURIComponent(@query.tags) or '').split(';')...
                 tags = _.uniq(tags)
@@ -145,14 +146,17 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             claimfilter = [all,ripe, claimed,unclaimed]
         
         tagUrl: (tagname,selected) =>
-            claimed = if @query.claimed then 'claimed='+@query.claimed else ''
-            taglist = if @query.tags then (tag for tag in @query.tags.split(';')) else []
+            taglist = if @query.tags then (tag for tag in decodeURIComponent(@query.tags).split(';')) else []
             if selected
                 taglist = _.without(taglist,encodeURIComponent(tagname))
             else
                 taglist.push tagname
-            tags = if taglist.join(';') then 'tags='+taglist.join(';') else ''
-            url = if tags then @url + '?' + tags + (if claimed then '&' + claimed else '') else @url + (if claimed then '?' + claimed else '')
+            tags = if taglist.join(';') then taglist.join(';') else ''
+            params = {}
+            if @query.claimed then params['claimed'] = @query.claimed
+            if tags then params['tags']  = tags
+            if @query.ripe then params['ripe'] = @query.ripe
+            url = @url + '?' + $.param(params)
             
         quizUrl: (quiz) =>
             params = {}
