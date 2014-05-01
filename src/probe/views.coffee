@@ -445,8 +445,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @showNextProbe()
         
         showReviewFeedback: =>
-            @options.quiz.destroy()
-            Quizzes.reset()
+            if @options.quiz
+                @options.quiz.destroy()
+                Quizzes.reset()
             if @review.length > 0
                 collection = require("app").get("course").get("nuggets").filterWithIds(_.uniq(@review))
                 @$el.html templates.nugget_review_list collection: collection, query: @query, totalpoints: @points, earnedpoints: @earnedpoints
