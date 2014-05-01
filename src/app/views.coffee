@@ -45,7 +45,7 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
             if "userstatusview" of @subviews
                 @close_subview "userstatusview"
             if @model.get("userstatus")
-                @model.get("userstatus").clear()
+                @model.unset "userstatus"
             @model.trigger "nuggetAnalyticsChanged"
 
 
