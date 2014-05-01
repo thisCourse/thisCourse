@@ -96,7 +96,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             $("input[type=checkbox]").removeAttr("checked")
             
         selectAllNuggets: (ev) =>
-            @nuggetsChecked = new Backbone.Collection(@filteredcollection)    
+            @nuggetsChecked = new Backbone.Collection(@filteredcollection.models)    
             @$("input[type=checkbox]").attr("checked", "checked")
         # nuggetAdded: (model, coll) =>
         #     alert "added"
