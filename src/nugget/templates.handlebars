@@ -33,12 +33,18 @@
     
     <div class="nuggetlist">
         <span class="editor-only">  
-            <button class="add-button btn success">Add nugget</button>
-            <button class="del-button btn danger">Delete nuggets</button>
-            <button class="draft-button btn ">Draft nuggets</button>
-            <button class="publish-button btn ">Publish nuggets</button>
-            <button class="selectAll-button btn "> Select all nuggets</button>
-            <button class="selectNone-button btn "> Deselect all nuggets</button>
+            <div class = padding>
+                <button class="add-button btn success setWidth">Add</button>
+                <button class="del-button btn danger setWidth">Delete</button>
+            </div>
+            <div class = padding>
+                <button class="draft-button btn danger setWidth">Draft</button>
+                <button class="publish-button btn floatR success setWidth">Publish</button>
+            </div>
+            <div class = lastbutton><div class = padding>
+                <button class="selectNone-button btn floatR primary setWidth"> Select All</button>
+                <button class="selectAll-button btn primary setWidth"> Deselect All</button>
+            </div></div>        
         </span>
         <ul>
             {{#each collection.models }}
