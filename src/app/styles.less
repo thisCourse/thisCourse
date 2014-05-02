@@ -23,8 +23,15 @@
     }    
 }
 
+// .editable .editor-only {
+//     display: inline;
+// }
+//commented out in order to prevent nuggetListView to remain as a list when nugget is drafted
+
 .editable .editor-only {
-    display: inline;
+    &li {
+        display: list-item;
+    }
 }
 
 .uneditable .editor-only {

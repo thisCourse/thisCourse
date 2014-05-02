@@ -391,7 +391,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             #     return
             # console.log "COLLECTION LENGTH:", @collection.length
             if @options.notclaiming
-                @review = @options.quiz?.get("review")
+                @review = @options.quiz?.get("review") or []
             if @options.nofeedback and not @options.noskipping
                 require("app").bind "windowBlur", @performQuestionSkipping
             @claimed = false
@@ -445,8 +445,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 @showNextProbe()
         
         showReviewFeedback: =>
-            @options.quiz.destroy()
-            Quizzes.reset()
+            if @options.quiz
+                @options.quiz.destroy()
+                Quizzes.reset()
             if @review.length > 0
                 collection = require("app").get("course").get("nuggets").filterWithIds(_.uniq(@review))
                 @$el.html templates.nugget_review_list collection: collection, query: @query, totalpoints: @points, earnedpoints: @earnedpoints
@@ -488,9 +489,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     notclaiming: @options.notclaiming
                     nofeedback: @options.nofeedback
                 nugget_id: @model.parent?.model.id
-            if @options.notclaiming 
+            if @options.quiz
                 response.nugget_id = @model.get("parent")._id
-                response.options.quiz = {}
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -501,13 +501,13 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @options.sync.submitQuestion response, (data) =>
                 if not @options.nofeedback then @$('.answerbtn, .skipbutton').hide()
                 if @options.sync.nuggetAttempt
-                    if not data.correct and @options.notclaiming
+                    if not data.correct and @options.quiz
                         @review.push @model.get("parent")._id
                         @options.quiz.set "review": @review
                         @options.quiz.save()
                     @earnedpoints += data.earnedpoints
                     @points += data.totalpoints
-                    if @options.notclaiming
+                    if @options.quiz
                         @options.quiz.set "earnedpoints": @earnedpoints
                         @options.quiz.set "points": @points
                         @options.quiz.save()

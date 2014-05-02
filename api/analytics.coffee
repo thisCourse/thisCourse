@@ -303,7 +303,7 @@ class ProbeResponse extends AnalyticsHandler
             data.correct = correct
             #Note calculating this all server side results in a 50% slowdown, but still <1ms on benchmarking
             @save_analytics_object data, (response) =>
-                if response.status == 200 and data.options.notclaiming
+                if response.status == 200
                     change_user_status @req, @req.session.email, "review": response.body, (userstatus) =>
                         response.body.userstatus = userstatus
                         callback response
@@ -322,7 +322,7 @@ change_user_status = (req, email, diff, callback) =>
             data
 
         "review": (data, userstatus) ->
-            if not data.options.notclaiming then return false
+            if not data.earnedpoints then return false
             userstatus.claimed = new Backbone.Collection(userstatus.claimed)
             model = userstatus.claimed.get data.nugget_id
             _id = data.probe
@@ -337,7 +337,6 @@ change_user_status = (req, email, diff, callback) =>
                     else if (timenow.getTime() - model.get("timestamp").getTime())/1000 > 7*24*60*60
                         update = true
                 else if (timenow.getTime() - model.get("timestamp").getTime())/1000 > 7*24*60*60
-                    model.set "probetimes": {}
                     update = true
                 if update
                     probetimes = probetimes or {}

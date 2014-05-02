@@ -22,15 +22,42 @@
     
     <h2>Nuggets</h2>
     
+    
+    <b>Claimed</b>
+    <span class = "claimed">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    
+    <b>Partial</b>
+    <span class = "partial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    
     <p><i>Please use the tags and filters to review and quiz yourself on specific nuggets; to explore nuggets organized by lecture and cluster (subtopic), please use the "<a href="/course/study/">Study</a>" tab.</i></p>
     
     <div class="nuggetlist">
+        <span class="editor-only">  
+            <div class = padding>
+                <button class="add-button btn success setWidth">Add</button>
+                <button class="del-button btn danger setWidth">Delete</button>
+            </div>
+            <div class = padding>
+                <button class="draft-button btn danger setWidth">Draft</button>
+                <button class="publish-button btn floatR success setWidth">Publish</button>
+            </div>
+            <div class = lastbutton><div class = padding>
+                <button class="selectNone-button btn floatR primary setWidth"> Select All</button>
+                <button class="selectAll-button btn primary setWidth"> Deselect All</button>
+            </div></div>        
+        </span>
         <ul>
             {{#each collection.models }}
-                {{#if attributes.title }}<li><a href="{{ ../../url }}{{ slug }}/">{{ attributes.title }}</a></li>{{/if}}
+                {{#if attributes.title }}
+                    <li {{#if attributes.draft }} class="editor-only"{{/if}}>
+                        <input type="checkbox" class ="nugget-select editor-only" value='{{id}}'>
+                        <a class = "{{status}}" href="{{ ../../url }}{{ slug }}/">
+                            {{ attributes.title }}
+                        </a>
+                    </li>
+                {{/if}}
             {{/each }}
         </ul>
-        <span class="editor-only"><button class="add-button btn success">Add nugget</button></span>
     </div>
 
     <div class="tagselectorview"></div>
@@ -50,7 +77,7 @@
         <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a>
     </div>
     <div>
-        {{#each taglist}}<a href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
+        {{#each taglist}}<a {{#if draft}}class='editor-only'{{/if}} href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
     </div>
 </script>
 
@@ -68,13 +95,19 @@
     <span class="probetoggle logged-in-only"></span>
 
     <span class="editor-only"><button class="item-button edit-button btn success">Edit nugget details</button></span>
-    
+    {{#if draft}}
+    <span class="editor-only"><button class="btn success draft" disabled = "disabled">Drafted</button></span>
+    <span class="editor-only"><button class="btn success publishIt">Publish</button></span>
+    {{else}}
+    <span class="editor-only"><button class="btn success draft">Make Draft</button> </span>
+    <span class="editor-only"><button class="btn success publishIt" disabled = "disabled">Published</button></span>
+    {{/if}}    
 </script>
 
 <script id="probe_enable" type="text/x-handlebars-template">
     {{#if probeset.length }}<a href='{{url}}quiz/take/' class='item-button btn primary quizme'>Quiz Me</a>{{/if }}
     <span class='editor-only'><a href='{{url}}quiz/edit/' class='item-button btn success quizme'>Edit Probes</a></span>
-    {{#if claimed }}<a href='#' class='item-button btn danger quizme unclaim'>Unclaim Nugget</a><div class="claimed">Claimed!</div>{{else}}{{#if partial}}<div class="partial">Try again?</div>{{else}}{{#if unclaimed}}<div class="claimed">Reclaim?</div>{{/if}}{{/if}}{{/if }}
+    {{#if claimed }}<a href='#' class='item-button btn danger quizme unclaim'>Unclaim Nugget</a><div class="claimed">Claimed!</div>{{else}}{{#if partial}}<div class="claimed">Try again?</div>{{else}}{{#if unclaimed}}<div class="claimed">Reclaim?</div>{{/if}}{{/if}}{{/if }}
 </script>
 
 <script id="probe_disable" type="text/x-handlebars-template">
@@ -90,6 +123,7 @@
     <h1>Lectures</h1>
 
     <div id='studyapp' class='container'>
+    {{#if totalpoints}}<h2>Total Points: {{totalpoints}}</h2>{{/if}}
     <div id='themes' class='container'>
     <h3>Themes</h3>
     <div class="btn-group btn-group-justified">
@@ -105,7 +139,6 @@
             {{/each}}
         </ul>
     </div>
-    {{#if totalpoints}}<h2>Total Points: {{totalpoints}}</h2>{{/if}}
 </div>
 
 </script>
