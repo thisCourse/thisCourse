@@ -489,8 +489,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     notclaiming: @options.notclaiming
                     nofeedback: @options.nofeedback
                 nugget_id: @model.parent?.model.id
-            if @options.notclaiming 
-                response.nugget_id = response.nugget_id or @model.get("parent")._id
+            if @options.quiz
+                response.nugget_id = @model.get("parent")._id
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
