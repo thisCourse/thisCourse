@@ -1,6 +1,15 @@
 define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views", "cs!ui/dialogs/views", "cs!probe/views", "hb!./templates.handlebars", "cs!./hardcode", "less!./styles"], \
         (baseviews, models, pageviews, itemviews, dialogviews, probeviews, templates, hardcode, styles) ->
-
+    
+    
+    (($, oldFunction) ->
+        $.param = (a, traditional) ->
+            s = oldFunction.apply(oldFunction, [a,traditional])
+            # Return the resulting serialization
+            s.replace /\+/g, "%20"
+        return
+    ) jQuery, jQuery.param
+    
     class StudyRouterView extends baseviews.RouterView
 
         routes: =>
@@ -151,7 +160,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
         tagUrl: (tagname,selected) =>
             taglist = if @query.tags then (tag for tag in decodeURIComponent(@query.tags).split(';')) else []
             if selected
-                taglist = _.without(taglist,encodeURIComponent(tagname))
+                taglist = _.without(taglist,tagname)
             else
                 taglist.push tagname
             tags = if taglist.join(';') then taglist.join(';') else ''
@@ -159,7 +168,9 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if @query.claimed then params['claimed'] = @query.claimed
             if tags then params['tags']  = tags
             if @query.ripe then params['ripe'] = @query.ripe
+            console.log $.param(params)
             url = @url + '?' + $.param(params)
+            
             
         quizUrl: (quiz) =>
             params = {}
