@@ -22,4 +22,4 @@ generate = (email, callback) =>
 quit = (err) ->
     if err then console.log err else process.exit()
 
-async.forEach(students, generate, quit)
+async.forEachSeries(students, generate, quit)
