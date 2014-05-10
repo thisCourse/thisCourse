@@ -315,6 +315,10 @@ statuslog = db.collection("userstatuslog")
 usercollection = api.db.collection("user")
 
 change_user_status = (req, email, diff, callback) =>
+    for key, obj of diff
+        if obj.check
+            check = true
+    if not check then return callback null      
     query = email: email
     diff_actions = 
         "set": (data, userstatus) ->

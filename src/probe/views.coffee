@@ -497,9 +497,10 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                     timenow = new Date()
                     check = true
                     probetimes = nuggetdata.get("probetimes") 
+                    _id = @model.id
                     if probetimes
                         if probetimes[_id]
-                            if (timenow.getTime() - probetimes[_id].getTime())/1000 < 7*24*60*60
+                            if (timenow.getTime() - (new Date(probetimes[_id])).getTime())/1000 < 7*24*60*60
                                 check = false
                         else if (timenow.getTime() - (new Date(nuggetdata.get("timestamp"))).getTime())/1000 < 7*24*60*60
                             check = false
