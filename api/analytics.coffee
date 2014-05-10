@@ -384,6 +384,7 @@ change_user_status = (req, email, diff, callback) =>
     status.findOne query, (err, userstatus) =>
         if err then return callback new api.APIError(err)
         if userstatus
+            if not userstatus.enabled then return callback null
             for key, obj of diff
                 data = diff_actions[key] obj, userstatus
                 if data
