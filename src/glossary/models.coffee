@@ -54,16 +54,19 @@ define ["cs!base/models"], (basemodels) ->
                                 child.nodeValue = new_val;
                         else 
                             
-                            if val.toLowerCase().trim() == actual 
-                                if /</.test( exactreplace )
-                                    $(child).before exactreplace
+                            if val.toLowerCase().trim() == actual
+                                replacement = exactreplace
+                                if val.toLowerCase().trim() != val.toLowerCase()
+                                    replacement = " " + replacement + " "
+                                if /</.test( replacement )
+                                    $(child).before replacement
                                     #Don't remove the node yet, or the loop will lose its place.
                                     remove.push child
                                     break
                                 else
                                     #The new value contains no HTML, so it can be set in this
                                     #very fast, simple way.
-                                    child.nodeValue = exactreplace;
+                                    child.nodeValue = replacement;
 
                     else if child.nodeType in [1,2,3,5,6,11] 
                         @replaceText(child, search, replace, remove,actual, exactreplace)        
