@@ -1,11 +1,11 @@
 async = require("async")
 analytics = require("../api/analytics")
 
-students = ["test"]
+# students = require("./students.coffee")
 
 
 erode = (student, callback) ->
-    analytics.change_user_status {}, student, "erode": {"remove": 10}, =>
+    analytics.change_user_status {}, student, "erode": {"remove": 15, "check": true}, =>
         console.log "Eroded #{student} status"
         callback()
 
