@@ -43,6 +43,9 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             @model.bind "change", @render
         
         render: =>
+            if not app.get("userstatus")?.get("enabled")
+                @$el.html "<h3 class='btn info' disabled='disabled' style='float:right; margin:5px; padding:5px;'>Shield Disabled</h3>"
+                return false
             life = @model.get("life")
             shield = @model.get("shield")
             if life!=undefined and shield!=undefined
