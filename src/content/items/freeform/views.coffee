@@ -10,7 +10,6 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views","cs!glossary/views",
             @$el.html templates.item_freeform_edit @context()
             _.defer => $(".ckeditor").ckeditor ckeditorviews.get_config()
             #@add_subview "ckeditor", new ckeditorviews.CKEditorView(html: @model.get("html")), ".html"
-    
         save: =>
             @model.set html: @$(".ckeditor").val()
             super
@@ -34,9 +33,19 @@ define ["cs!../views", "cs!base/views", "cs!ckeditor/views","cs!glossary/views",
             _.defer => @tagGlossary()
 
         tagGlossary: =>
-            for glossaryitem in app.get("course").get("glossary").models
-                glossaryitem.searchTitle(@$el)
-            
+            if app.get("user").get("email") == "admin"
+                nugget = @model.parent.model.parent.model.parent.model.parent.model
+                for glossaryitem in app.get("course").get("glossary").models
+                    if glossaryitem.searchTitle(@$el)
+                        taglist = nugget.get("tags")
+                        if not (glossaryitem.get("title") in taglist)
+                            if not (glossaryitem.get("title") == "")
+                                taglist.push(glossaryitem.get("title"))
+                nugget.save()
+            else
+                for glossaryitem in app.get("course").get("glossary").models
+                    glossaryitem.searchTitle(@$el)
+                    
         showDef: (ev) => 
             if "glossaryItem_" + ev.target.id in Object.keys(@subviews)
                 return

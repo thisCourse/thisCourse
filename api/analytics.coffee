@@ -297,10 +297,9 @@ class ProbeResponse extends AnalyticsHandler
                 else
                     if answer._id.toString() in data.answers
                         earnedpoints -= 1
-                        correct = false
             data.totalpoints = totalpoints
             data.earnedpoints = Math.max(0, earnedpoints)
-            data.correct = correct
+            data.correct = (totalpoints == earnedpoints)
             #Note calculating this all server side results in a 50% slowdown, but still <1ms on benchmarking
             @save_analytics_object data, (response) =>
                 if response.status == 200
@@ -316,6 +315,10 @@ statuslog = db.collection("userstatuslog")
 usercollection = api.db.collection("user")
 
 change_user_status = (req, email, diff, callback) =>
+    for key, obj of diff
+        if obj.check
+            check = true
+    if not check then return callback null      
     query = email: email
     diff_actions = 
         "set": (data, userstatus) ->
@@ -381,6 +384,7 @@ change_user_status = (req, email, diff, callback) =>
     status.findOne query, (err, userstatus) =>
         if err then return callback new api.APIError(err)
         if userstatus
+            if not userstatus.enabled then return callback null
             for key, obj of diff
                 data = diff_actions[key] obj, userstatus
                 if data
