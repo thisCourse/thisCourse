@@ -491,6 +491,22 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 nugget_id: @model.parent?.model.id
             if @options.quiz
                 response.nugget_id = @model.get("parent")._id
+            if @options.sync.nuggetAttempt
+                nuggetdata = require('app').get('userstatus')?.get('claimed').get(response.nugget_id)
+                if nuggetdata
+                    timenow = new Date()
+                    check = true
+                    probetimes = nuggetdata.get("probetimes") 
+                    _id = @model.id
+                    if probetimes
+                        if probetimes[_id]
+                            if (timenow.getTime() - (new Date(probetimes[_id])).getTime())/1000 < 7*24*60*60
+                                check = false
+                        else if (timenow.getTime() - (new Date(nuggetdata.get("timestamp"))).getTime())/1000 < 7*24*60*60
+                            check = false
+                    else if (timenow.getTime() - (new Date(nuggetdata.get("timestamp"))).getTime())/1000 < 7*24*60*60
+                        check = false
+                if check then response.check = check
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -565,7 +581,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             require("app").navigate "../.."
 
         claimNugget: =>
-            nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @earnedpoints
+            check = require('app').get('userstatus')?.get('claimed').get(@model.parent.model.id) == undefined
+            nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @earnedpoints, check:check
             @options.sync.nuggetAttempt nuggetattempt, (data) =>
                 if @claimed
                     @$el.toggle "highlight", {"color": "#00FF77", "complete": @navigateBack}
