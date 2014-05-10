@@ -139,6 +139,8 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 altTitle = @model.get('alternateTitle').create {alternateTitle: @$("#altTitle").val()}, success: callback
                 @$("#altTitle").val('')
                 @addAlternateTitle altTitle,@model.get('alternateTitle')
+            else
+                if callback then callback()
                     
         addAlternateTitle:(model,coll) =>
             viewid = model.id or @newalt

@@ -27,11 +27,8 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 @subviews["spinner"].show()
 
         annotate: =>
-            console.log "loaded"
-            for user in @collection.models
-                points = 0
-                for model in user.get("claimed").models
-                    points += model.get("points")
+            @collection.models.forEach (user) ->
+                points = _.reduce user.get("claimed").models, ((points, probe) -> points += probe.get("points")), 0
                 user.set "points": points
             @annotated = true
             @render()
