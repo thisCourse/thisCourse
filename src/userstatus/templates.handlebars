@@ -7,6 +7,7 @@
                 <th>Email</th>
                 <th>Life</th>
                 <th>Shield</th>
+                <th>Shield Active</th>
                 <th>No. Claimed</th>
                 <th>Points Claimed</th>
                 <th>No. Attempted</th>
@@ -19,6 +20,7 @@
                     <td>{{attributes.email}}</td>
                     <td>{{attributes.life}}</td>
                     <td>{{attributes.shield}}</td>
+                    <td>{{#if attributes.enabled }}<p class="active">Active</p>{{else}}<p class="inactive">Disabled</p>{{/if}}</td>
                     <td>{{attributes.claimed.length}}</td>
                     <td>{{attributes.points}}</td>
                     <td>{{attributes.partial.length}}</td>
