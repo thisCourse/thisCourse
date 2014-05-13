@@ -28,7 +28,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
             "quiz/take/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true
             "test/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true, nofeedback: true
-
+            "exam/preview/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true, exam: true
+        
         initialize: ->
             # console.log "NuggetRouterView init"
             super
