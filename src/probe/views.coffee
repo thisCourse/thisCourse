@@ -355,9 +355,12 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 if not _.isEqual @quiz.get("query"), @query
                     @quiz = undefined
             if not @quiz
+                probekey = "probeset"
+                if @query.exam
+                    probekey = "examquestions"
                 probes = []
-                for nugget in @collection.selectNuggets(@query).models
-                    for probe in nugget.get('probeset').models
+                for nugget in @collection.selectNuggets(@query).models 
+                    for probe in nugget.get(probekey).models
                         probe.set "nugget": nugget
                         probes.push probe
                 if probes.length == 0 then return
