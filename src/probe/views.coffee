@@ -24,6 +24,9 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             super
 
     class QuestionTypeListView extends baseviews.BaseView
+        initialize: =>
+            require('app').trigger "checkLogin"
+
         events:
              "click .swap-button": "swapProbes"
              "click .question-select": "boxChecked"
@@ -107,10 +110,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 targetColl.add model
             @itemsToMove = new Backbone.Collection
             @collection.parent.model.save()
-            
-                             
 
-        
 
     doPost = (url, data, success) ->
         $.ajax
@@ -338,6 +338,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
     class QuizView extends baseviews.BaseView
         
         initialize: ->
+            require('app').trigger "checkLogin"
             require('app').bind "nuggetAnalyticsChanged", @quizFetch
             Quizzes.fetch success: @initQuiz
 
@@ -350,18 +351,18 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             @collection.fetch success: @quizFetch
 
         quizFetch: =>
+            probekey = "probeset"
+            if @options.exam
+                if require("app").get("user").get("email") == "admin"
+                    probekey = "examquestions"
+                else
+                    @$el.html "You are not authorized to view this page."
+                    return false
             @quiz = Quizzes.last()
             if @quiz
                 if not _.isEqual @quiz.get("query"), @query
                     @quiz = undefined
             if not @quiz
-                probekey = "probeset"
-                if @options.exam
-                    if require("app").get("user").get("email") == "admin"
-                        probekey = "examquestions"
-                    else
-                        @$el.html "You are not authorized to view this page."
-                        return false
                 probes = []
                 for nugget in @collection.selectNuggets(@query).models 
                     for probe in nugget.get(probekey).models
