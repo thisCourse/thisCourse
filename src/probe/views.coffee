@@ -509,7 +509,7 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                             check = false
                     else if (timenow.getTime() - (new Date(nuggetdata.get("timestamp"))).getTime())/1000 < 7*24*60*60
                         check = false
-                if check then response.check = check
+                if check and require('app').get('userstatus')?.get('enabled') then response.check = check
             for key,subview of @subviews.probeview.subviews
                 if subview.selected then response.answers.push subview.model.id
             if response.answers.length == 0
@@ -584,7 +584,8 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
             require("app").navigate "../.."
 
         claimNugget: =>
-            check = require('app').get('userstatus')?.get('claimed').get(@model.parent.model.id) == undefined
+            if require('app').get('userstatus')?.get('enabled')
+                check = require('app').get('userstatus')?.get('claimed').get(@model.parent.model.id) == undefined
             nuggetattempt = claimed: @claimed, nugget: @model.parent.model.id, points: @earnedpoints, check:check
             @options.sync.nuggetAttempt nuggetattempt, (data) =>
                 if @claimed
