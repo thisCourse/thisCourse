@@ -147,6 +147,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @taglist = _.sortBy @taglist, (obj) -> obj.tagname
             @quiz = @quizUrl('quiz/take/')
             @test = @quizUrl('test/')
+            @exam = @quizUrl('exam/preview/')
             @$el.html templates.tag_selector @context(@taglist,@claimfilter,@quiz)
             
         claimedUrl: () =>
