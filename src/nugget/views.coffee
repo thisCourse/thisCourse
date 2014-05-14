@@ -345,7 +345,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         unClaim: =>
             dialogviews.dialog_confirmation "Unclaim Nugget","Do you really want to Unclaim this Nugget? (you will need to take the quiz again if you want to reclaim it later)", =>
-                nuggetattempt = unclaimed: true, nugget: @parent.model.id
+                nuggetattempt = unclaimed: true, nugget: @parent.model.id, check: true
                 doPost '/analytics/nuggetattempt/', nuggetattempt, (data) =>
                     require('app').updateUserStatus(data)
             , confirm_button:"Unclaim", cancel_button:"Cancel"
