@@ -43,8 +43,14 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             if not app.get("userstatus")?.get("enabled")
                 @$el.html "<h3 class='btn info' disabled='disabled' style='float:right; margin:5px; padding:5px;'>Shield Disabled</h3>"
                 return false
+            points = _.reduce @model.get("claimed").models, ((points, probe) -> points += probe.get("points")), 0
             life = @model.get("life")
             shield = @model.get("shield")
+            target = @model.get("target")
+            pointscolour = 
+                    red: Math.floor(255*(target-points)/target)
+                    green: Math.floor(255*Math.min(points,target)/target)
+                    blue: 0
             if life!=undefined and shield!=undefined
                 liferadius = Math.sqrt(33*life/3.14)
                 shieldradius = liferadius + shield/3
@@ -64,9 +70,26 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 rightX = 80 + shieldradius
                 startY = 80 + .5*fontsize
                 greaterthan60 = shield > 60
-                startshieldtext = 80 - (liferadius + (shieldradius - liferadius)/2)
-                startoutershieldtext = 77- shieldradius
-                @$el.html templates.user_status @context(startoutershieldtext: startoutershieldtext, startshieldtext: startshieldtext, liferadius: liferadius, shieldradius: shieldradius, shieldstartoffset: shieldstartoffset, startcolour: startcolour, endcolour: endcolour, fontsize: fontsize, shieldfontsize: shieldfontsize, startY: startY, leftX: leftX, rightX: rightX, greaterthan60:greaterthan60)
+                startshieldtext = 100 - (liferadius + (shieldradius - liferadius)/2)
+                startoutershieldtext = 97- shieldradius
+                @$el.html templates.user_status @context(
+                    startoutershieldtext: startoutershieldtext
+                    startshieldtext: startshieldtext
+                    liferadius: liferadius
+                    shieldradius: shieldradius
+                    shieldstartoffset: shieldstartoffset
+                    startcolour: startcolour
+                    endcolour: endcolour
+                    fontsize: fontsize
+                    shieldfontsize: shieldfontsize
+                    startY: startY
+                    leftX: leftX
+                    rightX: rightX
+                    greaterthan60:greaterthan60
+                    points: points
+                    pointscolour: pointscolour
+                    reached: points >= target
+                    )
             else
                 return false
 
