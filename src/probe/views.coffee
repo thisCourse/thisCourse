@@ -355,9 +355,16 @@ define ["cs!base/views", "cs!./models", "cs!ui/dialogs/views", "hb!./templates.h
                 if not _.isEqual @quiz.get("query"), @query
                     @quiz = undefined
             if not @quiz
+                probekey = "probeset"
+                if @options.exam
+                    if require("app").get("user").get("email") == "admin"
+                        probekey = "examquestions"
+                    else
+                        @$el.html "You are not authorized to view this page."
+                        return false
                 probes = []
-                for nugget in @collection.selectNuggets(@query).models
-                    for probe in nugget.get('probeset').models
+                for nugget in @collection.selectNuggets(@query).models 
+                    for probe in nugget.get(probekey).models
                         probe.set "nugget": nugget
                         probes.push probe
                 if probes.length == 0 then return

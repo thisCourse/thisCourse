@@ -74,7 +74,8 @@
     </div>
     <div class='logged-in-only quizme'>
         <a href ='{{quiz.url}}' class='item-button btn primary quizme' title="Test yourself on the quiz questions in the selected nuggets">Quiz Me (with Feedback)</a></br></br>
-        <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a>
+        <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a></br></br>
+         <a href ='{{exam.url}}' class='item-button btn primary quizme editor-only' title="Preview exam questions for the selected nuggets">Preview exam questions</a>
     </div>
     <div>
         {{#each taglist}}<a {{#if draft}}class='editor-only'{{/if}} href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}
