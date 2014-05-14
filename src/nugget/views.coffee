@@ -170,15 +170,15 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if @query.claimed then params['claimed'] = @query.claimed
             if tags then params['tags']  = tags
             if @query.ripe then params['ripe'] = @query.ripe
-            console.log $.param(params)
             url = @url + '?' + $.param(params)
             
             
         quizUrl: (quiz) =>
-            params = {}
+            params = {} 
             if @query.claimed then params['claimed'] = @query.claimed
-            if @query.tags then params['tags']  = @query.tags
+            if @query.tags then params['tags']  = decodeURIComponent(@query.tags)
             if @query.ripe then params['ripe'] = @query.ripe
+            
             quizUrl = url: @url + quiz + '?' + $.param(params)
     
     class LectureListView extends baseviews.RouterView
