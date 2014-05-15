@@ -17,7 +17,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                     reviewlist = app.get("course").get("nuggets").filterWithIds(model.get("review"))
                     if reviewlist.models.length then model.set "review", reviewlist
                 console.log @collection
-                @render
+                @render()
             
             
     GradesView: GradesView
