@@ -10,7 +10,7 @@ requirejs ['cs!grade/models'], (models) =>
 
         initialPermissionCheck: (callback) =>
             if not @email
-                return callback new APIError("You must be logged in to view grades!", 403)
+                return callback new api.APIError("You must be logged in to view grades!", 403)
             callback()
 
         finishProcessingRequest: (callback) =>
