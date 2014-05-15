@@ -6,18 +6,21 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
         initialize: ->
             @collection = new models.GradeCollection
             @collection.bind "change", @render
-            @collection.fetch().success @setReview
+            @collection.fetch success: @render
 
         render: =>
+            rerender = false
+            for model in @collection.models
+                if Array.isArray model.get("review")
+                    rerender = rerender or @setReview(model)
+            if rerender then _.defer @render
             @$el.html templates.grades @context()
             
-        setReview: =>
-            if @collection.models
-                for model in @collection.models
-                    reviewlist = app.get("course").get("nuggets").filterWithIds(model.get("review"))
-                    if reviewlist.models.length then model.set "review", reviewlist
-                console.log @collection
-                @render()
+        setReview: (model) =>
+            if model
+                reviewlist = app.get("course").get("nuggets").filterWithIds(model.get("review"))
+                if reviewlist.models.length then model.set "review", reviewlist
+            return true
             
             
     GradesView: GradesView
