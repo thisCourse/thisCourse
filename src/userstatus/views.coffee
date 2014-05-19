@@ -43,7 +43,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             if not app.get("userstatus")?.get("enabled")
                 @$el.html "<h3 class='btn info' disabled='disabled' style='float:right; margin:5px; padding:5px;'>Shield Disabled</h3>"
                 return false
-            points = _.reduce @model.get("claimed").models, ((points, probe) -> points += probe.get("points")), 0
+            points = _.reduce @model.get("claimed").models, ((points, nugget) -> if nugget.id.length==24 then points += nugget.get("points")), 0
             life = @model.get("life")
             shield = @model.get("shield")
             target = @model.get("target")
