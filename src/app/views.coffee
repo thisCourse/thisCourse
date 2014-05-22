@@ -40,6 +40,7 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
                     @model.get("userstatus").bind "nuggetAnalytics", @model.trigger "nuggetAnalyticsChanged"
                     @model.trigger "nuggetAnalyticsChanged"
                     @add_subview "userstatusview", new userstatusviews.UserStatusView(model: @model.get("userstatus")), "#life_shield"
+                    @setTabs()
 
         clearUserStatus: =>
             if "userstatusview" of @subviews
@@ -48,6 +49,14 @@ define ["cs!base/views", "cs!course/views", "cs!auth/views", "hb!./templates.han
                 @model.unset "userstatus"
             @model.trigger "nuggetAnalyticsChanged"
 
+        setTabs: =>
+            if @model.get("userstatus") 
+                if @model.get("userstatus").get("examMode") == 'Midterm'
+                    @model.get("tabs").reset()
+                    app.get("tabs").add title: "Midterm", slug: "midterm", priority: 0
+                else if @model.get("userstatus").get("examMode") == 'Final'
+                    @model.get("tabs").reset()
+                    app.get("tabs").add title: "Final", slug: "final", priority: 0
 
     class TopTabsView extends baseviews.BaseView
 
