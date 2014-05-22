@@ -25,7 +25,7 @@ define ["cs!utils/handlebars", "cs!./models", "cs!course/models"], \
 
     app.get("course").fetch().success =>
         console.log "fetched!"
-        app.course.set app.course.attributes
+        # app.course.set app.course.attributes
         
         
     return app
