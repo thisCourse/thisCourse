@@ -9,8 +9,14 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
 
     class UserStatusListView extends baseviews.BaseView
-
+        events:
+            "click .usrstatus-select": "selectedUsrStatusColl"
+            "click .setExam-button":"setExamMode"
+            "click .selectAll-button":"selectAllUsrStatus"
+            "click .selectNone-button":"unselectAllUsrStatus"
+            "click .toggleShield-button": "toggleShield"
         initialize: =>
+            @usrStatusChecked = new Backbone.Collection
             @collection = new userstatusmodels.UserStatusCollection
             @collection.fetch().success @annotate
             @collection.bind "add", _.debounce @render, 50
@@ -32,7 +38,36 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 user.set "points": points
             @annotated = true
             @render()
+        
+        selectedUsrStatusColl: (ev) =>
+            user = @collection.get(ev.target.value)
+            if user in @usrStatusChecked.models
+                @usrStatusChecked.remove user
+            else 
+                @usrStatusChecked.add user
+        
+        setExamMode:(ev) =>
+            if @usrStatusChecked.length
+                for model in @usrStatusChecked.models
+                    model.set "examMode" : @$("select").val()
+                    model.save()
+                @usrStatusChecked = new Backbone.Collection
             
+        unselectAllUsrStatus: (ev) =>
+            @usrStatusChecked = new Backbone.Collection
+            $("input[type=checkbox]").removeAttr("checked")
+            
+        selectAllUsrStatus: (ev) =>
+            @usrStatusChecked = new Backbone.Collection(@collection.models)    
+            @$("input[type=checkbox]").attr("checked", "checked")
+        
+        toggleShield: (ev) =>
+            console.log "reacdhe"
+            if @usrStatusChecked.length
+                for model in @usrStatusChecked.models
+                    model.set "enabled": not model.get("enabled")
+                    model.save()
+                @usrStatusChecked = new Backbone.Collection            
 
     class UserStatusView extends baseviews.BaseView
         
