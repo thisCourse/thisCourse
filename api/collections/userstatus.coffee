@@ -9,7 +9,7 @@ requirejs ['cs!userstatus/models'], (models) =>
         Collection: models.UserStatusCollection
 
         initialPermissionCheck: (callback) =>
-            if ((@req.method is "POST"  @req.method is "PUT") and @email!="admin") or (@email!="admin" and @req.params.id==undefined)
+            if ((@req.method is "POST" or @req.method is "PUT") and @email!="admin") or (@email!="admin" and @req.params.id==undefined)
                 return callback new api.APIError("Must be logged in as admin", 403)
             callback()
 

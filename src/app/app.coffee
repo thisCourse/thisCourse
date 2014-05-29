@@ -19,9 +19,9 @@ define ["cs!utils/handlebars", "cs!./models", "cs!course/models"], \
     app.get("tabs").add title: "Analytics", slug: "analytics", priority: 4, classes: "editor-only"
     app.get("tabs").add title: "Admin", slug: "admin", priority: 5, classes: "editor-only"
     app.get("tabs").add title: "Grades", slug: "grades", priority: 5, classes: "logged-in-only"
-    app.get("tabs").add title: "Midterm", slug: "midterm", priority: 0
-    app.get("tabs").add title: "Final", slug: "final", priority: 0
-    app.get("tabs").add title: "Pretest", slug: "pretest", priority: 0
+    # app.get("tabs").add title: "Midterm", slug: "midterm", priority: 0
+    # app.get("tabs").add title: "Final", slug: "final", priority: 0
+    # app.get("tabs").add title: "Pretest", slug: "pretest", priority: 0
 
     app.get("course").fetch().success =>
         console.log "fetched!"
