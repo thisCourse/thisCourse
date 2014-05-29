@@ -81,14 +81,14 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             points = _.reduce @model.get("claimed").models, ((points, nugget) -> if nugget.id.length==24 then points += nugget.get("points") else points), 0
             life = @model.get("life")
             shield = @model.get("shield")
-            target = @model.get("target")
+            target = @model.get("target") or 1
             pointscolour = 
                     red: Math.floor(255*(target-points)/target)
                     green: Math.floor(255*Math.min(points,target)/target)
                     blue: 0
             if life!=undefined and shield!=undefined
                 liferadius = Math.sqrt(33*life/3.14)
-                shieldradius = liferadius + shield/3
+                shieldradius = (liferadius + shield/3) or 1
                 shieldstartoffset = 100*liferadius/shieldradius
                 shieldendoffset = 200-shieldradius
                 startcolour = 
