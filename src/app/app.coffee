@@ -11,18 +11,21 @@ define ["cs!utils/handlebars", "cs!./models", "cs!course/models"], \
     # c = new (require("cs!course/models").CourseModel); c.save().success(function() { console.log(c.id); })
     app.set course: new coursemodels.CourseModel(_id: course_id)
     
+
+
     app.get("tabs").add title: "Home", slug: "", priority: 0
     app.get("tabs").add title: "Study", slug: "study", priority: 1
     app.get("tabs").add title: "Nuggets", slug: "nuggets", priority: 2
     app.get("tabs").add title: "Analytics", slug: "analytics", priority: 4, classes: "editor-only"
     app.get("tabs").add title: "Admin", slug: "admin", priority: 5, classes: "editor-only"
-    # app.get("tabs").add title: "Grades", slug: "grades", priority: 5, classes: "logged-in-only"
-    # app.get("tabs").add title: "Midterm", slug: "midterm", priority: 0
-    # app.get("tabs").add title: "Final", slug: "final", priority: 0
-    # app.get("tabs").add title: "Pretest", slug: "pretest", priority: 0
-    
+    app.get("tabs").add title: "Grades", slug: "grades", priority: 5, classes: "logged-in-only"
+    app.get("tabs").add title: "Midterm", slug: "midterm", priority: 0
+    app.get("tabs").add title: "Final", slug: "final", priority: 0
+    app.get("tabs").add title: "Pretest", slug: "pretest", priority: 0
+
     app.get("course").fetch().success =>
         console.log "fetched!"
-        #app.course.set app.course.attributes
-    
+        # app.course.set app.course.attributes
+        
+        
     return app
