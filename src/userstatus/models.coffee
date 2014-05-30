@@ -3,10 +3,7 @@ define ["cs!base/models"], (basemodels) ->
     class UserStatusModel extends basemodels.LazyModel
 
         apiCollection: "userstatus"
-        
-        url: ->
-            "/api/" + @apiCollection + "/" + @id
-
+    
         relations: ->
             claimed:
                 collection: Backbone.Collection

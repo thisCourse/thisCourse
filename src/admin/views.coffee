@@ -1,5 +1,5 @@
-define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles", "cs!../userstatus/views"], \
-        (baseviews, models, templates, styles, userstatusviews) ->
+define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./styles", "cs!../class/views"], \
+        (baseviews, models, templates, styles, classviews) ->
 
     class AdminRouterView extends baseviews.RouterView
 
@@ -13,7 +13,7 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
 
         render: =>
             @$el.html templates.admin @context()
-            @add_subview "#userstatuslist", new userstatusviews.UserStatusListView(), ".statuslist"
+            @add_subview "#classeslist", new classviews.ClassWrapperView(), ".classlist"
             
     
     class TestView extends baseviews.BaseView
