@@ -15,17 +15,24 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             "click .selectAll-button":"selectAllUsrStatus"
             "click .selectNone-button":"unselectAllUsrStatus"
             "click .toggleShield-button": "toggleShield"
+            "click .user-move-button": "moveUser"
         initialize: =>
             @usrStatusChecked = new Backbone.Collection
-            @collection = new userstatusmodels.UserStatusCollection
-            @collection.fetch().success @annotate
+            @filter = (model.get("_id") for model in @collection.models.slice())
+            promises = []
+            for model in @collection.models
+                promises.push model.fetch()
+            $.when.apply($, promises).then @annotate
             @collection.bind "add", _.debounce @render, 50
             @collection.bind "change", @render
-
+            @collection.bind "remove", @render
+            if @options.classes
+                @classmodel =@options.classmodel
 
         render: =>
             if @annotated
-                @subviews["spinner"].hide()
+                if @subviews["spinner"]
+                    @subviews["spinner"].hide()
                 @$el.html templates.user_status_list @context()
             else
                 @$el.html templates.user_status_list @context()
@@ -33,8 +40,14 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 @subviews["spinner"].show()
 
         annotate: =>
+            # console.log @filter
+            # console.log @classmodel.get("list")
+            # @collection = @classmodel.get("list")
+            # @collection.bind "remove", @render
+            # # @collection = new models.UserStatusCollection(_.filter(@collection.models, (model) => model.id in @filter))
+            # console.log @collection
             @collection.models.forEach (user) ->
-                points = _.reduce user.get("claimed").models, ((points, probe) -> points += probe.get("points")), 0
+                points = _.reduce user.get("claimed").models, ((points, probe) -> if probe.get("points") then return points += probe.get("points") else return points), 0
                 user.set "points": points
             @annotated = true
             @render()
@@ -45,11 +58,12 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
                 @usrStatusChecked.remove user
             else 
                 @usrStatusChecked.add user
+            
         
         setExamMode:(ev) =>
             if @usrStatusChecked.length
                 for model in @usrStatusChecked.models
-                    model.set "examMode" : @$("select").val()
+                    model.set "examMode" : @$("#select-exam").val()
                     model.save()
                 @usrStatusChecked = new Backbone.Collection
             
@@ -62,12 +76,24 @@ define ["cs!base/views", "cs!./models", "hb!./templates.handlebars", "less!./sty
             @$("input[type=checkbox]").attr("checked", "checked")
         
         toggleShield: (ev) =>
-            console.log "reacdhe"
             if @usrStatusChecked.length
                 for model in @usrStatusChecked.models
                     model.set "enabled": not model.get("enabled")
                     model.save()
-                @usrStatusChecked = new Backbone.Collection            
+                @usrStatusChecked = new Backbone.Collection  
+                
+        moveUser: =>
+            console.log "MOVE"
+            @usrStatusChecked.length
+            if @usrStatusChecked.length
+                targetModel = @options.classes.get(@$("#select-class").val())
+                for model in @usrStatusChecked.models
+                    console.log model
+                    @collection.remove model
+                    targetModel.get("list").add model
+                @classmodel.save()
+                targetModel.save()
+            @usrStatusChecked = new Backbone.Collection            
 
     class UserStatusView extends baseviews.BaseView
         

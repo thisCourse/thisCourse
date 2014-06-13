@@ -4,8 +4,16 @@
     <div class="usrStatuslist">
         <span class="editor-only">  
             <div class = "padding">
+                <button class="user-move-button btn success setWidth editor-only">Move user</button>
+                <select id = "select-class">
+                    {{#each options.classes.models}}
+                        <option value="{{attributes._id}}">{{attributes.title}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class = "padding">
                 <button class="setExam-button btn success setWidth">Set Exam Mode</button>
-                <select id = "select">
+                <select id = "select-exam">
                   <option value="">None</option>
                   <option value="Midterm">Midterm</option>
                   <option value="Final">Final</option>
