@@ -33,17 +33,17 @@
     
     <div class="nuggetlist">
         <span class="editor-only">  
-            <div class = padding>
+            <div class = "padding">
                 <button class="add-button btn success setWidth">Add</button>
                 <button class="del-button btn danger setWidth">Delete</button>
             </div>
-            <div class = padding>
+            <div class = "padding">
                 <button class="draft-button btn danger setWidth">Draft</button>
                 <button class="publish-button btn floatR success setWidth">Publish</button>
             </div>
-            <div class = lastbutton><div class = padding>
-                <button class="selectNone-button btn floatR primary setWidth"> Select All</button>
-                <button class="selectAll-button btn primary setWidth"> Deselect All</button>
+            <div class = "lastbutton"><div class = "padding">
+                <button class="selectAll-button btn floatR primary setWidth"> Select All</button>
+                <button class="selectNone-button btn primary setWidth"> Deselect All</button>
             </div></div>        
         </span>
         <ul>
@@ -74,7 +74,8 @@
     </div>
     <div class='logged-in-only quizme'>
         <a href ='{{quiz.url}}' class='item-button btn primary quizme' title="Test yourself on the quiz questions in the selected nuggets">Quiz Me (with Feedback)</a></br></br>
-        <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a>
+        <a href ='{{test.url}}' class='item-button btn danger quizme' title="Take a practice test on the selected nuggets">Quiz Me (in Exam Mode)</a></br></br>
+         <a href ='{{exam.url}}' class='item-button btn primary quizme editor-only' title="Preview exam questions for the selected nuggets">Preview exam questions</a>
     </div>
     <div>
         {{#each taglist}}<a {{#if draft}}class='editor-only'{{/if}} href='{{url}}'><span class='label {{#if selected}}success{{/if}}'>{{tagname}}</span></a>{{/each}}

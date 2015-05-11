@@ -1,8 +1,8 @@
 _ = require("underscore")
 async = require("async")
 analytics = require("../api/analytics")
-students = require("./students.coffee")
-
+#students = require("./students.coffee")
+students = ["raj", "testing", "someoneelse", "another", "This", "that"]
 
 data =
     life: 100
@@ -10,6 +10,8 @@ data =
     claimed: []
     partial: []
     unclaimed: []
+    enabled: true
+    target: 250
 
 generate = (email, callback) =>
     analytics.create_user_status email, data, (status) =>
@@ -22,4 +24,4 @@ generate = (email, callback) =>
 quit = (err) ->
     if err then console.log err else process.exit()
 
-async.forEach(students, generate, quit)
+async.forEachSeries(students, generate, quit)

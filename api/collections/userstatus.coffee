@@ -9,13 +9,13 @@ requirejs ['cs!userstatus/models'], (models) =>
         Collection: models.UserStatusCollection
 
         initialPermissionCheck: (callback) =>
-            if (@req.method is "POST" and @email!="admin") or (@email!="admin" and @req.params.id==undefined)
+            if ((@req.method is "POST" or @req.method is "PUT") and @email!="admin") or (@email!="admin" and @req.params.id==undefined)
                 return callback new api.APIError("Must be logged in as admin", 403)
             callback()
 
         finishProcessingRequest: (callback) =>
-            if @type not in ['GET_collection', 'GET_document', 'POST_document', 'POST_collection']
-                return callback new api.APIError("Cannot perform a #{@req.method} on a Grade collection (or the specified subpath).")
+            if @type not in ['GET_collection', 'GET_document', 'POST_document', 'POST_collection', 'PUT_document', 'PUT_collection']
+                return callback new api.APIError("Cannot perform a #{@req.method} on a UserStatus collection (or the specified subpath).")
             super
 
         process_GET_document: (callback) =>

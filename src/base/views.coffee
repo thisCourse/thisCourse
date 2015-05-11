@@ -108,6 +108,7 @@ define ["cs!./modelbinding", "less!./styles"], (modelbinding) ->
             subview_created = false
             
             create_subview_if_ready = =>
+               
                 if subview_created then return # TODO: could unbind after success, instead of doing this check here            
 
                 do_create_subview = =>

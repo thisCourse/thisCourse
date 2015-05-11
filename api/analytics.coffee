@@ -59,7 +59,7 @@ class AnalyticsHandler
         if not @collection then return callback new api.APIError("No collection specified in AnalyticsHandler.")
         data.timestamp = new Date()
         data.email = @req.session.email if @req.session.email
-        data.ip = @req.connection.remoteAddress
+        data.ip = @req.headers['x-forwarded-for'] or @req.connection.remoteAddress
         @collection.save data, (err, obj) =>
             if err
                 callback new api.APIError(err)
@@ -394,7 +394,7 @@ change_user_status = (req, email, diff, callback) =>
                         data.timestamp = new Date()
                         data.email = email
                         data.diff = key
-                        data.ip = req?.connection?.remoteAddress
+                        data.ip = req?.headers?['x-forwarded-for'] or req?.connection?.remoteAddress
                         statuslog.save data, (err, obj) =>
                             if err
                                 console.log "User Status logging failed for #{email}"

@@ -1,7 +1,8 @@
 auth = require("../auth.coffee")
 crypto = require("crypto")
 emailer = require("../api/email.coffee")
-students = require("./students.coffee")
+#students = require("./students.coffee")
+students = ["someoneelse", "another", "This", "that"]
 
 students.forEach (email) => 
     shasum = crypto.createHash('sha1')

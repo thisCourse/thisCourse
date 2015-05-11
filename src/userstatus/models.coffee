@@ -2,20 +2,26 @@ define ["cs!base/models"], (basemodels) ->
 
     class UserStatusModel extends basemodels.LazyModel
 
+        url: =>
+            "/api/userstatus/" + (@id or "")
+        
         apiCollection: "userstatus"
-
+    
         relations: ->
             claimed:
-                collection: Backbone.Collection
+                collection: basemodels.LazyCollection
                 includeinJSON: true
             partial:
-                collection: Backbone.Collection
+                collection: basemodels.LazyCollection
                 includeinJSON: true
             unclaimed:
-                collection: Backbone.Collection
+                collection: basemodels.LazyCollection
                 includeinJSON: true
 
     class UserStatusCollection extends basemodels.LazyCollection
+
+        url: =>
+            "/api/userstatus/"
 
         model: UserStatusModel
 

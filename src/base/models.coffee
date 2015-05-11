@@ -348,7 +348,7 @@ define ["cs!utils/formatters"], (formatters) ->
             if parent_url = get_url(@parent?.model?.url) # if collection has a parent model, derive url from parent
                 rootUrl = parent_url + "/" + @parent.key
             else if @apiCollection # otherwise, use the root api url
-                rootUrl = "/api/" + @apiCollection + "/"
+                rootUrl = "/api/" + @apiCollection
 
 
     BaseModel: BaseModel

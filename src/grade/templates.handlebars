@@ -2,7 +2,7 @@
     
     {{#if models.length}}
     <h3>Your Score</h3>
-    {{#each models}}<b>{{ attributes.title }}</b>: score of {{ attributes.points }} points, which is a grade of {{ attributes.grade }}<br/>
+    {{#each models}}<b>{{ attributes.title }}</b>: {{ attributes.percent }}% (score of {{ attributes.points }} points out of {{ attributes.maxpoints }}), which is a grade of {{ attributes.grade }}<br/>
         
         {{#if attributes.review}}
         
@@ -33,7 +33,7 @@
                 <p><b>Letter grade</b></p>
             </td>
             <td>
-                <p><b>Midterm score</b></p>
+                <p><b>Midterm percentage</b></p>
             </td>
         </tr>
         <tr valign=top>
@@ -137,7 +137,7 @@
                 <p>F</p>
             </td>
             <td>
-                <p>&lt;= 60</p>
+                <p>&lt; 60</p>
             </td>
         </tr>
     </table>

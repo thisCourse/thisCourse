@@ -1,9 +1,35 @@
 <script id="user_status_list" type="text/x-handlebars-template">
     <div>
     <h2>User Progress Summary</h2>
+    <div class="usrStatuslist">
+        <span class="editor-only">  
+            <div class = "padding">
+                <button class="user-move-button btn success setWidth editor-only">Move user</button>
+                <select id = "select-class">
+                    {{#each options.classes.models}}
+                        <option value="{{attributes._id}}">{{attributes.title}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class = "padding">
+                <button class="setExam-button btn success setWidth">Set Exam Mode</button>
+                <select id = "select-exam">
+                  <option value="">None</option>
+                  <option value="Midterm">Midterm</option>
+                  <option value="Final">Final</option>
+                </select>
+            </div>
+            <div class = "lastbutton"><div class = "padding">
+                <button class="toggleShield-button btn success setWidth"> Toggle Shield</button>
+                <button class="selectAll-button btn floatR primary setWidth"> Select All</button>
+                <button class="selectNone-button btn primary setWidth"> Deselect All</button>
+            </div></div>        
+        </span>
+     </div>
     <table>
         <thead>
             <tr>
+                <th></th>
                 <th>Email</th>
                 <th>Life</th>
                 <th>Shield</th>
@@ -12,11 +38,13 @@
                 <th>Points Claimed</th>
                 <th>No. Attempted</th>
                 <th>No. Unclaimed</th>
+                <th>Exam Mode</th>
             </tr>
         </thead>
         <tbody>
             {{#each collection.models }}
                 <tr>
+                    <td><input type="checkbox" class ="usrstatus-select editor-only" value='{{id}}'></td>
                     <td>{{attributes.email}}</td>
                     <td>{{attributes.life}}</td>
                     <td>{{attributes.shield}}</td>
@@ -25,6 +53,7 @@
                     <td>{{attributes.points}}</td>
                     <td>{{attributes.partial.length}}</td>
                     <td>{{attributes.unclaimed.length}}</td>
+                    <td>{{attributes.examMode}}</td>
                 </tr>
             {{/each}}
         </tbody>
@@ -36,7 +65,7 @@
 
 <script id="user_status" type="text/x-handlebars-template">
     <div class="logged-in-only">
-    <svg id = "svg_element" style ="height: 180px; width: 180px; float:right" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <svg id = "svg_element" style ="height: 200px; width: 180px; float:right" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <defs>
             <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
                 <stop offset="{{shieldstartoffset}}%" style="stop-color:rgb({{startcolour.red}},{{startcolour.green}},{{startcolour.blue}});stop-opacity:1" />
@@ -44,9 +73,11 @@
             </radialGradient>
              <path id="text_0_path" d="M {{leftX}},80 A {{shieldradius}},{{shieldradius}} 0 1,1 {{rightX}},80"/>
         </defs>
-        <circle cx="80" cy="80" r='{{shieldradius}}' style="fill:url(#grad1); stroke: #005000;stroke-width: 0;"/>
-        <circle cx="80" cy="80" r="{{liferadius}}" style="stroke-width:2; fill:#ff3300;stroke: #000000;"/> 
-        <text x="80"  y="80" style="font-family:Arial; font-size:{{fontsize}}; fill:#000000; 
+        <text x="80"  y="20" style="font-family:Arial; font-size:22; font-weight: bold; fill:rgb({{pointscolour.red}},{{pointscolour.green}},{{pointscolour.blue}}); 
+            text-anchor: middle; dominant-baseline: middle;">Points: {{points}}{{#if reached }}&#10003;{{else}}/{{target}}{{/if}}</text>
+        <circle cx="80" cy="100" r='{{shieldradius}}' style="fill:url(#grad1); stroke: #005000;stroke-width: 0;"/>
+        <circle cx="80" cy="100" r="{{liferadius}}" style="stroke-width:2; fill:#ff3300;stroke: #000000;"/> 
+        <text x="80"  y="100" style="font-family:Arial; font-size:{{fontsize}}; fill:#000000; 
             text-anchor: middle; dominant-baseline: middle;">{{life}}</text>
         
         {{#if greaterthan60}}

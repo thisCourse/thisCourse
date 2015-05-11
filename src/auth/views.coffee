@@ -10,6 +10,7 @@ define ["cs!base/views", "cs!./models", "cs!./utils", "hb!./templates.handlebars
 
         initialize: ->
             @model.bind "change:loggedIn", @loginStatusChanged
+            require("app").bind "checkLogin", @checkLoginStatus
             @checkLoginStatus()
             setInterval @checkLoginStatus, 60000 * 15
         

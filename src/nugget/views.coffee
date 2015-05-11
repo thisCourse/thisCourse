@@ -28,7 +28,8 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             ":nugget_id/": (nugget_id) => view: NuggetView, datasource: "collection", key: nugget_id
             "quiz/take/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true
             "test/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true, nofeedback: true
-
+            "exam/preview/": => view: probeviews.QuizView, datasource: "collection", nonpersistent: true, notclaiming: true, exam: true
+        
         initialize: ->
             # console.log "NuggetRouterView init"
             super
@@ -147,6 +148,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             @taglist = _.sortBy @taglist, (obj) -> obj.tagname
             @quiz = @quizUrl('quiz/take/')
             @test = @quizUrl('test/')
+            @exam = @quizUrl('exam/preview/')
             @$el.html templates.tag_selector @context(@taglist,@claimfilter,@quiz)
             
         claimedUrl: () =>
@@ -168,15 +170,15 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             if @query.claimed then params['claimed'] = @query.claimed
             if tags then params['tags']  = tags
             if @query.ripe then params['ripe'] = @query.ripe
-            console.log $.param(params)
             url = @url + '?' + $.param(params)
             
             
         quizUrl: (quiz) =>
-            params = {}
+            params = {} 
             if @query.claimed then params['claimed'] = @query.claimed
-            if @query.tags then params['tags']  = @query.tags
+            if @query.tags then params['tags']  = decodeURIComponent(@query.tags)
             if @query.ripe then params['ripe'] = @query.ripe
+            
             quizUrl = url: @url + quiz + '?' + $.param(params)
     
     class LectureListView extends baseviews.RouterView
@@ -345,7 +347,7 @@ define ["cs!base/views", "cs!./models", "cs!page/views", "cs!content/items/views
             
         unClaim: =>
             dialogviews.dialog_confirmation "Unclaim Nugget","Do you really want to Unclaim this Nugget? (you will need to take the quiz again if you want to reclaim it later)", =>
-                nuggetattempt = unclaimed: true, nugget: @parent.model.id
+                nuggetattempt = unclaimed: true, nugget: @parent.model.id, check: true
                 doPost '/analytics/nuggetattempt/', nuggetattempt, (data) =>
                     require('app').updateUserStatus(data)
             , confirm_button:"Unclaim", cancel_button:"Cancel"
